@@ -1,0 +1,85 @@
+import os
+from pprint import pformat
+import shutil
+import shlex
+import unittest
+import logging
+import tempfile
+
+from base_test_case import ROOT_DATA_DIR, run_backticks
+
+import pbreports.report.motifs
+from pbreports.report.motifs import to_motifs_report
+
+log = logging.getLogger()
+
+EXE = 'motifs_report'
+_DATA_NAME = 'kinetics'
+_DATA_DIR = os.path.join(ROOT_DATA_DIR, _DATA_NAME)
+
+_MOTIF_SUMMARY_CSV = os.path.join(_DATA_DIR, 'motif_summary.csv')
+_MOTIF_GFF = os.path.join(_DATA_DIR, 'motifs.gff.gz')
+
+
+def _to_cmd(gff, csv, output_dir, report_json):
+    _d = dict(e=EXE, g=gff, c=csv, d=output_dir, j=report_json)
+    cmd_str = '{e} {g} {c} {j}'.format(**_d)
+    return cmd_str
+
+
+class TestKineticsMotifs(unittest.TestCase):
+
+    def test_basic(self):
+        d = tempfile.mkdtemp()
+        t = tempfile.NamedTemporaryFile(suffix="_motif_report.json", delete=False, dir=d)
+        t.close()
+        json_report = t.name
+        output_dir = os.path.dirname(json_report)
+
+        report = to_motifs_report(_MOTIF_GFF, _MOTIF_SUMMARY_CSV, output_dir)
+
+        log.info(pformat(report.plotGroups[0].to_dict(), indent=4))
+        log.info(str(report.tables[0]))
+
+        self.assertTrue(True)
+
+        if os.path.exists(d):
+            shutil.rmtree(d)
+
+class TestIntegrationKineticsMotifs(unittest.TestCase):
+
+    def test_basic(self):
+        t = tempfile.NamedTemporaryFile(suffix="_motif_report.json", delete=False)
+        t.close()
+        json_report = t.name
+        output_dir = os.path.dirname(json_report)
+
+        _d = dict(g=_MOTIF_GFF, c=_MOTIF_SUMMARY_CSV, j=json_report,
+                  d=output_dir,
+                  e=EXE)
+        cmd_str = '{e} {g} {c} {j}'.format(**_d)
+
+        rcode = run_backticks(cmd_str)
+        self.assertEqual(rcode, 0, "Exit code '{o}' for command '{c}'".format(o=rcode, c=cmd_str))
+
+
+class TestKineticsMotifsMain(unittest.TestCase):
+    def test_basic(self):
+        t = tempfile.NamedTemporaryFile(suffix="_motif_report.json", delete=False)
+        t.close()
+        json_report = t.name
+        output_dir = os.path.dirname(json_report)
+
+        _d = dict(g=_MOTIF_GFF, c=_MOTIF_SUMMARY_CSV, j=json_report,
+                  d=output_dir,
+                  e=EXE)
+        cmd_str = '{e} {g} {c} {j}'.format(**_d)
+
+        cmd = shlex.split(cmd_str)
+
+        log.debug(cmd_str)
+        log.info(cmd)
+
+        report = pbreports.report.motifs.main(cmd)
+
+        self.assertIsNotNone(report)

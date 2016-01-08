@@ -1,0 +1,1042 @@
+"""
+General Model.
+
+An alignments file generate a reads (np.array) and a subreads (recarray)
+
+Aggregator classes must inherit from SubreadAggregator, ReadAggregator
+
+The inheritance model is a bit convoluted. Not easy to compositionally build a model.
+
+
+"""
+import sys
+import os
+import math
+import time
+import functools
+import logging
+
+import numpy as np
+
+from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.cli import pbparser_runner
+from pbcommand.utils import setup_log
+from pbcore.io import openAlignmentFile, openDataSet
+from pbcore.io import AlignmentSet, ConsensusAlignmentSet
+
+from pbreports.plot.helper import get_blue, get_green
+from pbreports.io.align import (from_alignment_file, CrunchedAlignments)
+from pbreports.model.model import (Attribute, Report, Table, Column)
+from pbreports.report.streaming_utils import (PlotViewProperties,
+                                              to_plot_groups, get_percentile,
+                                              generate_plot)
+from pbreports.report.filter_stats import _compute_n50_from_bins
+
+log = logging.getLogger(__name__)
+
+__version__ = '4.2.0'
+TOOL_ID = "pbreports.tasks.mapping_stats"
+
+SUBREAD_TYPE = 'SubreadType'
+READ_TYPE = 'ReadType'
+
+DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
+
+
+class Constants(object):
+    # Report Id
+    R_ID = "mapping_stats"
+
+    # Column ids
+    C_MOVIE = 'movie'
+    C_READS = "mapped_reads"
+    C_READLENGTH = 'mapped_polymerase_read_length'
+    C_READLENGTH_N50 = 'mapped_polymerase_read_length_n50'
+    C_SUBREADS = 'mapped_subreads'
+    C_SUBREAD_NBASES = 'mapped_subread_base'
+    C_SUBREAD_LENGTH = 'mapped_subread_length'
+    C_SUBREAD_ACCURACY = 'mapped_subread_accuracy'
+
+    # Table id
+    #
+    T_STATS = 'mapping_stats_table'
+
+    # Attribute Ids
+    A_NALIGNMENTS = 'number_of_aligned_reads'
+    A_NBASES = 'mapped_bases_n'
+    A_NREADS = 'mapped_reads_n'
+    A_READLENGTH = 'mapped_readlength_mean'
+    A_READLENGTH_Q95 = 'mapped_readlength_q95'
+    A_READLENGTH_MAX = 'mapped_readlength_max'
+    A_READLENGTH_N50 = 'mapped_readlength_n50'
+
+    A_FILTERED_READS = 'post_filter_reads_n'
+
+    A_NSUBREADS = 'mapped_subreads_n'
+    A_SUBREAD_NBASES = 'mapped_subread_bases_n'
+    A_SUBREAD_ACCURACY = 'mapped_subread_accuracy_mean'
+    A_SUBREAD_QUALITY = 'mapped_subread_read_quality_mean'
+    A_SUBREAD_LENGTH = 'mapped_subread_readlength_mean'
+    A_SUBREAD_LENGTH_N50 = 'mapped_subreadlength_n50'
+
+    # Plot Group ids
+    PG_SUBREAD_ACCURACY = 'subread_accuracy_group'
+    PG_SUBREAD_LENGTH = 'subreadlength_plot'
+    PG_READLENGTH = 'readlength_plot'
+
+    # Plot ids
+    P_SUBREAD_ACCURACY = 'subread_accuracy_group_accuracy_plot'
+    P_SUBREAD_LENGTH = 'subreadlength_plot'
+    P_READLENGTH = 'readlength_plot'
+
+
+def _validate_file_or_none(arg):
+    if arg is None:
+        return None
+    else:
+        return validate_file(arg)
+
+
+class _MetaKlassAggregator(type):
+
+    def __new__(cls, name, parents, dct):
+        """
+        A little bit of basic checking to make sure the subclasses are well formed.
+        """
+        _REQUIRED = 'apply __repr__'.split()
+
+        if name not in ('BaseAggregator', '_BaseHistogram', '_MeanAggregator', '_BaseTotalAggregator'):
+            for required in _REQUIRED:
+                was_found = False
+                if required in dct:
+                    was_found = True
+                else:
+                    # look to super classes
+                    for parent in parents:
+                        if hasattr(parent, required):
+                            was_found = True
+
+                if not was_found:
+                    raise ValueError(
+                        "{r} must be defined for class {c}".format(c=name, r=required))
+
+        return super(_MetaKlassAggregator, cls).__new__(cls, name, parents, dct)
+
+
+class BaseAggregator(object):
+    __metaclass__ = _MetaKlassAggregator
+    DATA_TYPE = None
+
+
+class AttributeAble(object):
+
+    """
+    Any aggregator that is to be used as a pbreport.model.Attribute,
+    must implement this interface.
+    """
+    @property
+    def attribute(self):
+        raise NotImplemented
+
+
+class _BaseTotalAggregator(BaseAggregator, AttributeAble):
+
+    """Base class for summing values"""
+
+    def __init__(self, value=0):
+        self.value = value
+
+    def apply(self, crunched_npa):
+        self.value += len(crunched_npa)
+
+    @property
+    def attribute(self):
+        return self.value
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  t=self.value)
+        return "<{k} total={t} >".format(**_d)
+
+    def __add__(self, other):
+        if isinstance(other, self.__class__):
+            total = self.value + other.value
+            return self.__class__(total=total)
+        else:
+            _d = dict(s=type(self), o=type(other))
+            raise TypeError("Incompatible types. {s} {o}".format(**_d))
+
+
+class _MeanAggregator(BaseAggregator, AttributeAble):
+    NP_FIELD = None
+
+    def __init__(self, nvalues=0, total=0):
+        self.nvalues = nvalues
+        self.total = total
+
+    def apply(self, crunched_npa):
+        self.nvalues += crunched_npa[self.NP_FIELD].shape[0]
+        self.total += crunched_npa[self.NP_FIELD].sum()
+
+    @property
+    def attribute(self):
+        return self.mean
+
+    @property
+    def mean(self):
+        if self.nvalues == 0:
+            # Maybe this is not the expected result
+            return 0.0
+        return self.total / float(self.nvalues)
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  n=self.nvalues,
+                  t=self.total,
+                  m=self.mean)
+        return "<{k} nvalues:{n} total:{t} mean:{m} >".format(**_d)
+
+    def __add__(self, other):
+        if isinstance(other, self.__class__):
+            nvalues = self.nvalues + other.nvalues
+            total = self.total + other.total
+            return self.__class__(nvalues=nvalues, total=total)
+        else:
+            _d = dict(s=type(self), o=type(other))
+            raise TypeError("Incompatible types. {s} {o}".format(**_d))
+
+
+class _BaseHistogram(BaseAggregator):
+
+    def __init__(self, dx=100.0, nbins=1000, dtype=np.int32):
+        """
+        :param dx: float, int
+        :param nbins: int
+        :param dtype: type used to create the np array
+        """
+        self.dx = dx
+        self.dtype = dtype
+        self.bins = np.zeros(nbins, dtype=np.int32)
+
+    @property
+    def nbins(self):
+        return len(self.bins)
+
+    @property
+    def bin_edges(self):
+        """Used for plotting cdf
+
+        ds = zip(self.bin_edges, self.bins)
+
+        c = to_cdf(ds)
+
+        plot(self.bin_edges, c)
+        plot(self.bin_edges, self.bins)
+
+        """
+        return [self.dx * i for i in xrange(self.nbins)]
+
+    def apply(self, npa):
+        """This will be readlengths"""
+        raise NotImplemented
+
+    def __repr__(self):
+        x = self.dx * self.nbins
+        _d = dict(k=self.__class__.__name__,
+                  d=self.dx,
+                  n=self.nbins,
+                  x=x,
+                  i=0)
+        return "<{k} dx:{d} nbins:{n} min:{i} max:{x} >".format(**_d)
+
+    def __add__(self, other):
+        raise NotImplemented
+
+
+# Read Aggregator Classes
+
+class ReadCounterAggregator(_BaseTotalAggregator):
+    DATA_TYPE = READ_TYPE
+
+    def apply(self, npa):
+        self.value += len(npa)
+
+
+class NumberBasesAggregator(_BaseTotalAggregator):
+    DATA_TYPE = READ_TYPE
+
+    def apply(self, npa):
+        self.value += npa.sum()
+
+    @property
+    def attribute(self):
+        return int(self.value)
+
+
+class MaxReadLengthAggregator(_BaseTotalAggregator):
+    DATA_TYPE = READ_TYPE
+
+    def apply(self, npa):
+        value = npa.max()
+        if value > self.value:
+            self.value = value
+
+    def __add__(self, other):
+        if isinstance(other, self.__class__):
+            value = max(self.value, other.value)
+            return self.__class__(value=value)
+        else:
+            _d = dict(s=type(self), o=type(other))
+            raise TypeError("Incompatible types. {s} {o}".format(**_d))
+
+
+class MeanReadLengthAggregator(_MeanAggregator, AttributeAble):
+    DATA_TYPE = READ_TYPE
+
+    def apply(self, npa):
+        self.nvalues += npa.shape[0]
+        self.total += npa.sum()
+
+    @property
+    def attribute(self):
+        return int(np.round(self.mean))
+
+
+class ReadLengthHistogram(_BaseHistogram):
+    DATA_TYPE = READ_TYPE
+
+    def apply(self, npa):
+        """This will be readlengths"""
+        for value in npa:
+            i = int(math.ceil(value / self.dx))
+            # add
+            if i > self.bins.size:
+                self.bins.resize(i+1)
+            self.bins[i] += 1
+
+
+class N50Aggreggator(BaseAggregator, AttributeAble):
+    DATA_TYPE = READ_TYPE
+
+    def __init__(self, max_bins=200000):
+        self.max_bins = int(max_bins)
+        self.bins = np.zeros(self.max_bins)
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  n=len(self.bins),
+                  a=self.attribute)
+        return "<{k} nbins:{n} attribute:{a} >".format(**_d)
+
+    def apply(self, npa):
+        for value in npa:
+            if int(value) > self.bins.size:
+                self.bins.resize(int(value)+1)
+            self.bins[int(value)] += 1
+
+    @property
+    def attribute(self):
+        return _compute_n50_from_bins(self.bins)
+
+
+class SubreadN50Aggregator(BaseAggregator, AttributeAble):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def __init__(self, max_bins=200000):
+        self.bins = np.zeros(max_bins)
+
+    def apply(self, crunched_npa):
+        for value in crunched_npa['Length']:
+            if int(value) > self.bins.size:
+                self.bins.resize(int(value)+1)
+            self.bins[int(value)] += 1
+
+    @property
+    def attribute(self):
+        return _compute_n50_from_bins(self.bins)
+
+
+# Subread Aggregator Classes
+class SubreadCounterAggregator(_BaseTotalAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, npa):
+        self.value += len(npa)
+
+
+class SubreadNumberOfBasesAggregator(_BaseTotalAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, crunched_npa):
+        self.value += crunched_npa["Length"].sum()
+
+    @property
+    def attribute(self):
+        return int(np.round(self.value))
+
+
+class MaxSubreadlengthAggregator(_BaseTotalAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, crunched_npa):
+        value = crunched_npa['Length'].max()
+        if value > self.value:
+            self.value = value
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  t=self.value)
+        return "<{k} max={t} >".format(**_d)
+
+    def __add__(self, other):
+        if isinstance(other, self.__class__):
+            value = self.value + other.value
+            return self.__class__(value=value)
+        else:
+            _d = dict(s=type(self), o=type(other))
+            raise TypeError("Incompatible types. {s} {o}".format(**_d))
+
+
+class NumberSubreadBasesAggregator(_BaseTotalAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, crunched_npa):
+        """
+        This is computed differently in the old report code:
+
+        nlen(subreads) * int(round(np.mean(subreads["Length"]))
+
+        """
+        self.value += crunched_npa['Length'].sum()
+
+    @property
+    def attribute(self):
+        return int(np.round(self.value))
+
+
+class MeanSubreadLengthAggregator(_MeanAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, npa):
+        self.nvalues += npa['Length'].shape[0]
+        self.total += npa['Length'].sum()
+
+    @property
+    def attribute(self):
+        return int(np.round(self.mean))
+
+
+class MeanSubreadAccuracyAggregator(_MeanAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, npa):
+        self.nvalues += npa['Accuracy'].shape[0]
+        self.total += npa['Accuracy'].sum()
+
+    @property
+    def attribute(self):
+        # hack to make it look like the old report values
+        # v = self.mean * 100
+        v = self.mean
+        return np.round(v, decimals=4)
+
+
+class MeanSubreadQualityAggregator(_MeanAggregator):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, npa):
+        self.nvalues += npa['Read quality'].shape[0]
+        self.total += npa['Read quality'].sum()
+
+    @property
+    def attribute(self):
+        # hack to make it look like the old report values
+        # v = self.mean * 100
+        v = self.mean
+        return np.round(v, decimals=4)
+
+
+class SubReadlengthHistogram(_BaseHistogram):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def apply(self, crunched_npa):
+        """This will be readlengths"""
+        for value in crunched_npa['Length']:
+            i = int(math.ceil(value / self.dx))
+            # add
+            if i > self.bins.size:
+                self.bins.resize(i+1)
+            self.bins[i] += 1
+
+
+class SubReadAccuracyHistogram(_BaseHistogram):
+    DATA_TYPE = SUBREAD_TYPE
+
+    def __init__(self, dx=0.01, nbins=101):
+        super(SubReadAccuracyHistogram, self).__init__(dx=dx, nbins=nbins)
+
+    def apply(self, crunched_npa):
+        """This will be readlengths"""
+        for value in crunched_npa['Accuracy']:
+            i = int(math.ceil(value / self.dx))
+            if i < 0:
+                log.warn(
+                    "Assuming GMAP mode. Negative accuracy found {n}".format(n=i))
+                continue
+            # add
+            try:
+                if i > self.bins.size:
+                    self.bins.resize(i+1)
+                self.bins[i] += 1
+            except IndexError as e:
+                log.error(e)
+                x = self.dx * self.nbins
+                _d = dict(v=value, i=i, d=self.dx, x=x, n=self.nbins)
+                log.error(
+                    "Max value {v} dx:{d} nbins{n} value {x}".format(**_d))
+                raise
+
+
+class MappedReadLengthQ95(ReadLengthHistogram, AttributeAble):
+
+    """
+    mapped_readlength_q95
+
+    This aggregator is a histogram and a regular attribute-style
+
+    """
+
+    @property
+    def attribute(self):
+        percentile = 95
+        value = get_percentile(self.bins, self.bin_edges, percentile)
+        return value
+
+    def __repr__(self):
+        x = self.dx * self.nbins
+        _d = dict(k=self.__class__.__name__,
+                  d=self.dx,
+                  n=self.nbins,
+                  x=x,
+                  i=0,
+                  a=self.attribute)
+        return "<{k} q95:{a} dx:{d} nbins:{n} min:{i} max:{x} >".format(**_d)
+
+
+def _get_resquencing_display():
+    """Change display text to show CCS Read instead of Subread,
+    if read type is CCS
+
+    This creates a lot of instance vars that are tuples of (display name, id)
+
+
+    Order is important here, since this dictates how attributes are displayed in portal
+
+    dict -> {id: display_name}
+
+    Dragging this over from the old code. This is used in the Attribute creation.
+    """
+
+    attrs = {}
+
+    # mappedPostFilterReads
+    attrs['post_filter_reads_n'] = 'Post-Filter Reads'
+
+    # mappedSubreadAccuracyMean
+    attrs['mapped_subread_accuracy_mean'] = 'Mapped Subread Accuracy'
+
+    #
+    attrs['mapped_subread_read_quality_mean'] = "Mapped Subread Read Quality"
+
+    # mappedReads
+    attrs['mapped_reads_n'] = 'Mapped Reads'
+
+    # mappedSubreadsN = (_subreadStrReplace('Mapped Subreads'),
+    # 'mapped_subreads_n')
+    attrs['mapped_subreads_n'] = "Mapped Subreads"
+
+    # mappedBasesN
+    attrs['mapped_bases_n'] = 'Mapped Polymerase Bases'
+
+    # mappedSubreadBases = (_subreadStrReplace('Mapped Subread Bases'),
+    # 'mapped_subread_bases_n')
+    attrs['mapped_subread_bases_n'] = "Mapped Subread Bases"
+
+    # mappedReadlengthMean = (_subreadStrReplace('Mapped Polymerase Read
+    # Length'), 'mapped_readlength_mean')
+    attrs['mapped_readlength_mean'] = 'Mapped Polymerase Read Length'
+
+    # mappedSubreadLengthMean = (_subreadStrReplace('Mapped Subread Length'),
+    # 'mapped_subread_readlength_mean')
+    attrs['mapped_subread_readlength_mean'] = 'Mapped Subread Length'
+
+    # mappedReadlengthQ95 = (_subreadStrReplace('Mapped Polymerase Read Length
+    # 95%'), 'mapped_readlength_q95')
+    attrs['mapped_readlength_q95'] = 'Mapped Polymerase Read Length 95%'
+
+    # mappedReadlengthMax = (_subreadStrReplace('Mapped Polymerase Read Length
+    # Max'), 'mapped_readlength_max')
+    attrs['mapped_readlength_max'] = 'Mapped Polymerase Read Length Max'
+
+    # mappedFullSubreadLengthMean = (_subreadStrReplace('Mapped Full Subread
+    # Length'), 'mapped_full_subread_readlength_mean')
+    attrs['mapped_full_subread_readlength_mean'] = 'Mapped Full Subread Length'
+
+    attrs['number_of_aligned_reads'] = "Number of Aligned Reads"
+
+    attrs['mapped_subreadlength_n50'] = "Mapped Subread N50"
+
+    attrs['mapped_readlength_n50'] = "Mapped N50"
+
+    return attrs
+
+
+def analyze_movie(movie, alignment_file, stats_models):
+    """
+    The regions should only correspond to a single Movie
+
+
+    :type movie: Movie
+    :type stats_models: list
+    """
+
+    started_at = time.time()
+    log.info("Analyzing Movie {n}".format(n=movie))
+
+    movie_names, unrolled, data_, columns = from_alignment_file(
+        movie, alignment_file)
+
+    if len(data_) == 0:
+        msg = "Movie '{n}' produced no alignments.".format(n=movie)
+        log.warn(msg)
+        return
+
+    crunched = CrunchedAlignments(movie_names, unrolled, data_, columns)
+
+    log.debug("Movie names from crunched {m}.".format(m=movie_names))
+
+    reads = crunched.reads()
+
+    # subreads recarray
+    # ["Length", "Accuracy", "isFirst", "modStart", "isFullSubread", "isMaxSubread"]
+    subreads = crunched.subreads()
+
+    log.info("Movie")
+    log.info(movie)
+    log.info(('Number or reads', len(reads)))
+    log.info(('Number of subreads', len(subreads)))
+
+    for model in stats_models:
+        if model.filter_func(movie):
+            for aggregator in model.aggregators:
+                if aggregator.DATA_TYPE == READ_TYPE:
+                    aggregator.apply(reads)
+                if aggregator.DATA_TYPE == SUBREAD_TYPE:
+                    aggregator.apply(subreads)
+        else:
+            log.warn(
+                "model {m}. Skipping movie {r}".format(m=repr(model), r=movie))
+            pass
+
+    run_time = time.time() - started_at
+    _d = dict(n=movie, s=run_time)
+    log.info("Completed analyzing Movie {n} with in {s:.2f} sec.".format(**_d))
+
+
+def analyze_movies(movies, alignment_file_names, stats_models):
+    for movie in movies:
+        for alignment_file_name in alignment_file_names:
+            analyze_movie(movie, alignment_file_name, stats_models)
+
+    log.info("Completed analyzing {n} movies.".format(n=len(movies)))
+
+
+class StatisticsModel(object):
+
+    def __init__(self, aggregators, filter_func=None):
+        """Core container class used to apply subreads, reads
+
+        the filter func operates on a region_file
+
+        if the filter_func returns True, the aggregator.apply will be called
+
+        """
+        self.aggregators = aggregators
+        self.filter_func = filter_func
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  n=len(self.aggregators))
+        return "<{k} naggregators:{n} >".format(**_d)
+
+
+def get_attributes(aggregators_d, display_names_d):
+
+    attributes = []
+
+    for id_, aggregator in aggregators_d.iteritems():
+        if isinstance(aggregator, AttributeAble):
+            if id_ in display_names_d:
+                display_name = display_names_d[id_]
+            else:
+                display_name = aggregator.__class__.__name__
+
+            a = Attribute(id_, aggregator.attribute, name=display_name)
+            attributes.append(a)
+        else:
+            # log.warn("Skipping attribute {i} for
+            # {c}.".format(c=aggregator.__class__.__name__, i=id_))
+            pass
+
+    return attributes
+
+
+def _to_table(movie_datum):
+    """
+    Create a pbreports Table for each movie.
+
+    :param movie_datum: List of
+
+    [(
+    movie_name,
+    reads,
+    mean readlength,
+    polymerase readlength
+    number of subread bases
+    mean subread readlength
+    mean subread accuracy), ...]
+
+    """
+    columns = [Column(Constants.C_MOVIE, header="Movie"),
+               Column(Constants.C_READS, header="Mapped Reads"),
+               Column(Constants.C_READLENGTH,
+                      header="Mapped Polymerase Read Length"),
+               Column(Constants.C_READLENGTH_N50,
+                      header="Mapped Polymerase Read Length n50"),
+               Column(Constants.C_SUBREADS, header="Mapped Subreads"),
+               Column(Constants.C_SUBREAD_NBASES,
+                      header="Mapped Subread Bases"),
+               Column(Constants.C_SUBREAD_LENGTH,
+                      header="Mapped Subread Length"),
+               Column(Constants.C_SUBREAD_ACCURACY, header="Mapped Subread Accuracy")]
+
+    table = Table(Constants.T_STATS,
+                  title="Mapping Statistics Summary",
+                  columns=columns)
+
+    for movie_data in movie_datum:
+        if len(movie_data) != len(columns):
+            log.error(movie_datum)
+            raise ValueError(
+                "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
+
+        for value, c in zip(movie_data, columns):
+            table.add_data_by_column_id(c.id, value)
+
+    log.debug(str(table))
+    print table
+    return table
+
+
+def _plot_view_configs():
+    """
+    Any change to the 'raw' view of a report plot should be changed here.
+
+    There's three histogram plots.
+
+    1. Subread accuracy
+    2. Subread rendlength
+    3. Readlength
+
+    """
+
+    _p = [PlotViewProperties(Constants.P_SUBREAD_ACCURACY,
+                             Constants.PG_SUBREAD_ACCURACY,
+                             generate_plot,
+                             'mapped_subread_accuracy_histogram.png',
+                             xlabel="Concordance",
+                             ylabel="Subreads",
+                             color=get_green(3),
+                             edgecolor=get_green(2),
+                             use_group_thumb=True,
+                             plot_group_title="Mapped Subread Accuracy"),
+          PlotViewProperties(Constants.P_SUBREAD_LENGTH,
+                             Constants.PG_SUBREAD_LENGTH,
+                             generate_plot,
+                             'mapped_subreadlength_histogram.png',
+                             xlabel="Subread Length",
+                             ylabel="Subreads",
+                             use_group_thumb=True,
+                             color=get_blue(3),
+                             edgecolor=get_blue(2),
+                             plot_group_title="Mapped Subread Length"),
+          PlotViewProperties(Constants.P_READLENGTH,
+                             Constants.PG_READLENGTH,
+                             generate_plot,
+                             'mapped_readlength_histogram.png',
+                             xlabel="Read Length",
+                             ylabel="Reads",
+                             color=get_blue(3),
+                             edgecolor=get_blue(2),
+                             use_group_thumb=True,
+                             plot_group_title="Mapped Polymerase Read Length")
+          ]
+
+    # make it easier to access
+    return {v.plot_id: v for v in _p}
+
+def _is_sam_or_bam_file(file_name):
+    exts = {".sam", ".bam"}
+    return any(file_name.endswith(ext) for ext in exts)
+
+
+def _to_alignment_file_list(alignment_filename):
+    """Handle parsing of a Alignment DataSet (.xml) or sam/bam file"""
+    dataset_uuids = []
+
+    if alignment_filename.endswith('.xml'):
+        log.debug('Importing alignments from dataset XML')
+        alignment_set = openDataSet(alignment_filename)
+        if not isinstance(alignment_set, (AlignmentSet, ConsensusAlignmentSet)):
+            raise TypeError("Dataset type %s not allowed here" %
+                type(alignment_set).__name__)
+        alignment_files = alignment_set.toExternalFiles()
+        dataset_uuids.append(alignment_set.uuid)
+        movies = []
+        for x in alignment_files:
+            if not os.path.exists(x):
+                raise IOError("Unable to find DataSet external resource {x}".format(x=x))
+            movies = movies + _movienames_from_bam(x)
+        movies = sorted(list(set(movies)))
+    elif _is_sam_or_bam_file(alignment_filename):
+        alignment_files = [alignment_filename]
+        movies = _movienames_from_bam(alignment_filename)
+    else:
+        raise ValueError("Unsupported alignment file type '${x}'".format(
+            x=alignment_filename))
+
+    return alignment_files, movies, dataset_uuids
+
+
+def _movienames_from_bam(aligned_file):
+    movies = []
+    if _is_sam_or_bam_file(aligned_file):
+        movies = movies + list(openAlignmentFile(aligned_file).movieNames)
+    return movies
+
+
+def to_report(alignment_file, output_dir):
+    """
+    This needs to be cleaned up. Keeping the old interface for testing purposes.
+    """
+    started_at = time.time()
+
+    alignment_file_list, movies, dataset_uuids = _to_alignment_file_list(alignment_file)
+
+    log.info("Found {n} movies.".format(n=len(movies)))
+
+    log.info("Working from {n} alignment file{s}: {f}".format(
+        n=len(alignment_file_list), s='s' if len(alignment_file_list) > 1 else '',
+        f=alignment_file_list))
+
+    # make this a dict {attribute_key_name:Aggreggator} so it's easy to
+    # access the instances after they've been computed.
+    # there's duplicated keys in the attributes?
+    # number_of_aligned_reads/mapped_reads_n
+
+    _total_aggregators = {'mapped_reads_n': ReadCounterAggregator(),
+                          'number_of_aligned_reads': ReadCounterAggregator(),
+                          'mapped_subreads_n': SubreadCounterAggregator(),
+                          # not correct
+                          'mapped_subread_bases_n': SubreadNumberOfBasesAggregator(),
+                          'mapped_readlength_max': MaxReadLengthAggregator(),
+                          'mapped_readlength_mean': MeanReadLengthAggregator(),
+                          'mapped_bases_n': NumberBasesAggregator(),
+                          'mapped_subread_accuracy_mean': MeanSubreadAccuracyAggregator(),
+                          'mapped_subread_read_quality_mean': MeanSubreadQualityAggregator(),
+                          'mapped_subread_readlength_mean': MeanSubreadLengthAggregator(),
+                          'readlength_histogram': ReadLengthHistogram(),
+                          'subreadlength_histogram': SubReadlengthHistogram(),
+                          'subread_accuracy_histogram': SubReadAccuracyHistogram(dx=0.005, nbins=1001),
+                          # the bin size is important here. The computed percentile is
+                          # computed from the integral.
+                          'mapped_readlength_q95': MappedReadLengthQ95(dx=10, nbins=10000),
+                          'mapped_readlength_n50': N50Aggreggator(),
+                          'mapped_subreadlength_n50': SubreadN50Aggregator()}
+
+    null_filter = lambda r: True
+    total_model = StatisticsModel(
+        _total_aggregators.values(), filter_func=null_filter)
+
+    # need to create specific instances for a given movie. This is used to create
+    # the mapping reports stats table
+    _movie_aggregator_klasses = [ReadCounterAggregator,
+                                 MeanReadLengthAggregator,
+                                 N50Aggreggator,
+                                 SubreadCounterAggregator,
+                                 NumberSubreadBasesAggregator,
+                                 MeanSubreadLengthAggregator,
+                                 MeanSubreadAccuracyAggregator]
+
+    movie_models = {}
+
+    def _my_filter(movie_name1, movie_name2):
+        return movie_name1 == movie_name2
+
+    for movie in movies:
+        ags = [k() for k in _movie_aggregator_klasses]
+        # Note this WILL NOT work because of how scope works in python
+        # filter_by_movie_func = lambda m_name: movie.name == m_name
+        _my_filter_func = functools.partial(_my_filter, movie)
+        model = StatisticsModel(ags, filter_func=_my_filter_func)
+        movie_models[movie] = model
+
+    # The statistic models that will be run
+    all_models = [total_model] + movie_models.values()
+    log.debug(all_models)
+
+    # Run all the analysis. Now the aggregators can be accessed
+
+    analyze_movies(movies, alignment_file_list, all_models)
+
+    # temp structure used to create the report table. The order is important
+
+    # add total values
+    _to_a = lambda k: _total_aggregators[k].attribute
+    _names = [
+        'mapped_reads_n', 'mapped_readlength_mean', 'mapped_readlength_n50',
+        'mapped_subreads_n', 'mapped_subread_bases_n',
+        'mapped_subread_readlength_mean', 'mapped_subread_accuracy_mean']
+
+    _row = [_to_a(n) for n in _names]
+    _row.insert(0, 'All Movies')
+    movie_datum = [_row]
+
+    # Add each individual movie stats
+    for movie_name_, model_ in movie_models.iteritems():
+        _row = [movie_name_]
+        for a in model_.aggregators:
+            _row.append(a.attribute)
+        movie_datum.append(_row)
+    log.info(movie_datum)
+
+    # create the Report table
+
+    table = _to_table(movie_datum)
+
+    for movie_name, model in movie_models.iteritems():
+        log.info("Movie name {n}".format(n=movie_name))
+        for a in model.aggregators:
+            log.info(movie_name + " " + repr(a))
+
+    log.info("")
+    log.info("Total models")
+    for a in total_model.aggregators:
+        log.info(a)
+
+    display_names = _get_resquencing_display()
+    attributes = get_attributes(_total_aggregators, display_names)
+
+    log.info("Attributes from streaming mapping Report.")
+    for a in attributes:
+        log.info(a)
+
+    plot_config_views = _plot_view_configs()
+
+    # keeping the ids independent requires a bit of dictionary madness
+    # {report_id:HistogramAggregator}
+    id_to_aggregators = {Constants.P_SUBREAD_ACCURACY:
+                             _total_aggregators['subread_accuracy_histogram'],
+                         Constants.PG_SUBREAD_LENGTH:
+                             _total_aggregators["subreadlength_histogram"],
+                         Constants.P_READLENGTH:
+                             _total_aggregators["readlength_histogram"]}
+
+    plot_groups = to_plot_groups(plot_config_views, output_dir,
+                                 id_to_aggregators)
+
+    tables = [table]
+    report = Report(Constants.R_ID,
+                    attributes=attributes,
+                    plotgroups=plot_groups,
+                    tables=tables,
+                    dataset_uuids=dataset_uuids)
+
+    log.debug(report)
+
+    run_time = time.time() - started_at
+    log.info("Completed running in {s:.2f} sec.".format(s=run_time))
+    return report
+
+
+def summarize_report(report_file, out=sys.stdout):
+    """
+    Utility function to harvest statistics from an existing report
+    """
+    from pbcommand.pb_io.report import load_report_from_json
+    W = lambda s: out.write(s + "\n")
+    report = load_report_from_json(report_file)
+    attr = {a.id: a.value for a in report.attributes}
+    W("%s:" % report_file)
+    W("  MEAN ACCURACY: {f}".format(f=attr["mapped_subread_accuracy_mean"]))
+    W("  NSUBREADS: {n}".format(n=attr["mapped_subreads_n"]))
+    W("  NREADS: {n}".format(n=attr["mapped_reads_n"]))
+    W("  NBASES: {n}".format(n=attr["mapped_subread_bases_n"]))
+    W("  READLENGTH_MEAN: {n}".format(n=attr["mapped_readlength_mean"]))
+    W("  SUBREADLENGTH_MEAN: {n}".format(n=attr["mapped_subread_readlength_mean"]))
+
+
+def _run_and_write_report(alignment_file, json_report):
+    output_dir = os.path.dirname(json_report)
+    report = to_report(alignment_file, output_dir)
+    report.write_json(json_report)
+    log.info("Wrote output to %s" % json_report)
+    return 0
+
+
+def args_runner(args):
+    return _run_and_write_report(args.alignment_file, args.report_json)
+
+
+def resolved_tool_contract_runner(resolved_contract):
+    """
+    Run the mapping report from a resolved tool contract.
+
+    :param resolved_contract:
+    :type resolved_contract: ResolvedToolContract
+    :return: Exit code
+    """
+
+    alignment_path = resolved_contract.task.input_files[0]
+
+    # This is a bit different than the output dir oddness that Johann added.
+    # the reports dir should be determined from the dir of the abspath of the report.json file
+    # resolved values will always be absolute paths.
+    output_report = resolved_contract.task.output_files[0]
+
+    return _run_and_write_report(alignment_path, output_report)
+
+
+def get_parser():
+    desc = "Create a Mapping Report from a Aligned BAM or Alignment DataSet"
+    driver_exe = "python -m pbreports.report.mapping_stats --resolved-tool-contract "
+    parser = get_pbparser(TOOL_ID, __version__, "Mapping Statistics", desc, driver_exe)
+
+    parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file", "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
+    parser.add_output_file_type(FileTypes.REPORT, "report_json", "PacBio Json Report", "Output report JSON file.", "mapping_stats_report.json")
+
+    return parser
+
+
+def main(argv=sys.argv, get_parser_func=get_parser):
+    mp = get_parser_func()
+    return pbparser_runner(argv[1:],
+                           mp,
+                           args_runner,
+                           resolved_tool_contract_runner,
+                           log,
+                           setup_log)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

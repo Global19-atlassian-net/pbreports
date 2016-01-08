@@ -1,0 +1,8 @@
+nose
+ipython
+coverage
+nosexcover
+sphinx
+pep8
+pylint
+jinja2
