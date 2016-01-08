@@ -6,15 +6,19 @@ import random
 import unittest
 import logging
 
-from pbcore.io import CmpH5Reader, GffIO, AlignmentSet
+import pbcommand.testkit
+from pbcore.io import CmpH5Reader, GffIO, AlignmentSet, IndexedBamReader
+import pbcore.data
+
 from pbreports.report.summarize_coverage import interval_tree, summarize_coverage
 
-from base_test_case import ROOT_DATA_DIR
+from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
 
 SC_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'summarize_coverage')
 
 log = logging.getLogger(__name__)
 
+@skip_if_data_dir_not_present
 class TestCompareToPbpy(unittest.TestCase):
 
     """Compare results from the pbreports summarize_coverage to an archived result from pbpy summarizeCoverage.
@@ -126,6 +130,8 @@ class TestCompareToPbpy(unittest.TestCase):
 
         self.assertEqual(len(remaining_pbpy_records), 0)
 
+
+@skip_if_data_dir_not_present
 class TestCompareToPbpyBigGenome(TestCompareToPbpy):
 
     """Compare results from the pbreports summarize_coverage to an archived result from pbpy summarizeCoverage. Same as TestCompareToPbpy, but applied to the human genome.
@@ -141,31 +147,31 @@ class TestCompareToPbpyBigGenome(TestCompareToPbpy):
         """
         pass
 
+
 class TestBuildIntervalLists(unittest.TestCase):
 
-    """Test the building of interval lists from cmph5 alignments."""
+    """Test the building of interval lists from BAM alignments."""
 
     @classmethod
     def setUpClass(cls):
-        cls.cmph5_path = os.path.join(SC_DATA_DIR, 'aligned_reads.cmp.h5')
-        cls.cmph5_reader = CmpH5Reader(cls.cmph5_path)
+        cls.bam_path = pbcore.data.getBamAndCmpH5()[0]
+        cls.bam_reader = IndexedBamReader(cls.bam_path)
         cls.interval_lists = summarize_coverage.build_interval_lists(
-            [cls.cmph5_reader])
+            [cls.bam_reader])
 
     def test_total_alignments(self):
         """Test that all alignments end up in the list."""
         total_ilist_alns = sum(len(v)
                                for v in self.interval_lists.itervalues())
-        total_cmph5_alns = len(self.cmph5_reader)
-        self.assertEqual(total_ilist_alns, total_cmph5_alns)
+        total_bam_alns = len(self.bam_reader)
+        self.assertEqual(total_ilist_alns, total_bam_alns)
 
     def test_keys(self):
-        """Test that alignments for each refGroupID in the cmph5 match the interval_list.
-        """
-        for record in self.cmph5_reader.referenceInfoTable:
+        """Test that alignments for each refGroupID in the BAM match the interval_list."""
+        for record in self.bam_reader.referenceInfoTable:
             ref_id = record.ID
             ref_length = record.Length
-            n_alns = len(self.cmph5_reader.readsInRange(ref_id, 0, ref_length,
+            n_alns = len(self.bam_reader.readsInRange(ref_id, 0, ref_length,
                                                         True))
             if n_alns:
                 self.assertEqual(len(self.interval_lists[ref_id]), n_alns)
@@ -207,6 +213,7 @@ class TestRegionSize(unittest.TestCase):
         self.assertEqual(r_size, 500)
 
 
+    @skip_if_data_dir_not_present
     def test_exit_code_0(self):
         """
         Like a cram test. Assert exits with 0, even though region size is 0 See
@@ -217,11 +224,10 @@ class TestRegionSize(unittest.TestCase):
 #         als = os.path.join(self._data_dir, 'alignment_summary.gff')
 #         variants = os.path.join(self._data_dir, 'variants.gff.gz')
 #         ref = os.path.join(self._data_dir, 'ecoliK12_pbi_March2013')
-        ref = ('/pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013'
-               '/sequence/ecoliK12_pbi_March2013.fasta')
-        tiny_reads = os.path.join(SC_DATA_DIR, 'tiny_aligned_reads.cmp.h5')
+        ref = pbcore.data.getLambdaFasta()
+        tiny_reads = pbcore.data.getBamAndCmpH5()[0]
         out = os.path.join(tempfile.mkdtemp(suffix="summ_cov"), 'gff')
-        cmd = 'summarize_coverage --num_regions=500 {a} {r} {g}'.format(
+        cmd = 'summarize_coverage --region_size=0 --num_regions=500 {a} {r} {g}'.format(
             a=tiny_reads, r=ref, g=out)
 
         o, c, m = backticks(cmd)
@@ -423,6 +429,19 @@ class TestUntruncator(unittest.TestCase):
 
         with self.assertRaises(summarize_coverage.ReferenceTruncationError):
             summarize_coverage.get_name_untruncator(self.bad_repo_path)
+
+
+class TestSummarizeCoverage(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.summarize_coverage.summarize_coverage "
+    DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
+    DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [
+        pbcore.data.getBamAndCmpH5()[0],
+        pbcore.data.getLambdaFasta()
+    ]
+    TASK_OPTIONS = {}
+
 
 if __name__ == '__main__':
     unittest.main()
