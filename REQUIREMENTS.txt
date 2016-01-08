@@ -1,7 +1,8 @@
-numpy
-h5py
+cython
+numpy >= 1.7.1
+h5py >= 2.0.1
+pysam >= 0.8.4
 matplotlib
 jsonschema
 pbcore
 pbcommand
-pysam
