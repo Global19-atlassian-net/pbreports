@@ -1,0 +1,181 @@
+{
+    "_changelist": "UNKNOWN", 
+    "_version": "0.3.7", 
+    "attributes": [
+        {
+            "id": "mapping_stats.mapped_readlength_max", 
+            "name": "Mapped Polymerase Read Length Max", 
+            "value": 6765
+        }, 
+        {
+            "id": "mapping_stats.mapped_subreadlength_n50", 
+            "name": "Mapped Subread N50", 
+            "value": 632
+        }, 
+        {
+            "id": "mapping_stats.mapped_bases_n", 
+            "name": "Mapped Polymerase Bases", 
+            "value": 63746
+        }, 
+        {
+            "id": "mapping_stats.mapped_subread_readlength_mean", 
+            "name": "Mapped Subread Length", 
+            "value": 540
+        }, 
+        {
+            "id": "mapping_stats.mapped_readlength_n50", 
+            "name": "Mapped N50", 
+            "value": 2151
+        }, 
+        {
+            "id": "mapping_stats.mapped_readlength_q95", 
+            "name": "Mapped Polymerase Read Length 95%", 
+            "value": 5900
+        }, 
+        {
+            "id": "mapping_stats.mapped_subread_bases_n", 
+            "name": "Mapped Subread Bases", 
+            "value": 60467
+        }, 
+        {
+            "id": "mapping_stats.number_of_aligned_reads", 
+            "name": "Number of Aligned Reads", 
+            "value": 48
+        }, 
+        {
+            "id": "mapping_stats.mapped_reads_n", 
+            "name": "Mapped Reads", 
+            "value": 48
+        }, 
+        {
+            "id": "mapping_stats.mapped_subread_accuracy_mean", 
+            "name": "Mapped Subread Accuracy", 
+            "value": 0.92830000000000001
+        }, 
+        {
+            "id": "mapping_stats.mapped_subreads_n", 
+            "name": "Mapped Subreads", 
+            "value": 112
+        }, 
+        {
+            "id": "mapping_stats.mapped_readlength_mean", 
+            "name": "Mapped Polymerase Read Length", 
+            "value": 1328
+        }
+    ], 
+    "dataset_uuids": [], 
+    "id": "mapping_stats", 
+    "plotGroups": [
+        {
+            "id": "mapping_stats.subread_accuracy_group", 
+            "legend": null, 
+            "plots": [
+                {
+                    "caption": null, 
+                    "id": "mapping_stats.subread_accuracy_group.subread_accuracy_group_accuracy_plot", 
+                    "image": "mapped_subread_accuracy_histogram.png"
+                }
+            ], 
+            "thumbnail": "mapped_subread_accuracy_histogram_thumb.png", 
+            "title": "Mapped Subread Accuracy"
+        }, 
+        {
+            "id": "mapping_stats.readlength_plot", 
+            "legend": null, 
+            "plots": [
+                {
+                    "caption": null, 
+                    "id": "mapping_stats.readlength_plot.readlength_plot", 
+                    "image": "mapped_readlength_histogram.png"
+                }
+            ], 
+            "thumbnail": "mapped_readlength_histogram_thumb.png", 
+            "title": "Mapped Polymerase Read Length"
+        }, 
+        {
+            "id": "mapping_stats.subreadlength_plot", 
+            "legend": null, 
+            "plots": [
+                {
+                    "caption": null, 
+                    "id": "mapping_stats.subreadlength_plot.subreadlength_plot", 
+                    "image": "mapped_subreadlength_histogram.png"
+                }
+            ], 
+            "thumbnail": "mapped_subreadlength_histogram_thumb.png", 
+            "title": "Mapped Subread Length"
+        }
+    ], 
+    "tables": [
+        {
+            "columns": [
+                {
+                    "header": "Movie", 
+                    "id": "mapping_stats.mapping_stats_table.movie", 
+                    "values": [
+                        "All Movies", 
+                        "m140905_042212_sidney_c100564852550000001823085912221377_s1_X0"
+                    ]
+                }, 
+                {
+                    "header": "Mapped Reads", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_reads", 
+                    "values": [
+                        48, 
+                        48
+                    ]
+                }, 
+                {
+                    "header": "Mapped Polymerase Read Length", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length", 
+                    "values": [
+                        1328, 
+                        1328
+                    ]
+                }, 
+                {
+                    "header": "Mapped Polymerase Read Length n50", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length_n50", 
+                    "values": [
+                        2151, 
+                        2151
+                    ]
+                }, 
+                {
+                    "header": "Mapped Subreads", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_subreads", 
+                    "values": [
+                        112, 
+                        112
+                    ]
+                }, 
+                {
+                    "header": "Mapped Subread Bases", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_base", 
+                    "values": [
+                        60467, 
+                        60467
+                    ]
+                }, 
+                {
+                    "header": "Mapped Subread Length", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_length", 
+                    "values": [
+                        540, 
+                        540
+                    ]
+                }, 
+                {
+                    "header": "Mapped Subread Accuracy", 
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_accuracy", 
+                    "values": [
+                        0.92830000000000001, 
+                        0.92830000000000001
+                    ]
+                }
+            ], 
+            "id": "mapping_stats.mapping_stats_table", 
+            "title": "Mapping Statistics Summary"
+        }
+    ]
+}

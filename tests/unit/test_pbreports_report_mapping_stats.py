@@ -5,11 +5,17 @@ import unittest
 import logging
 import tempfile
 import sys
+
+from pbcore.io import AlignmentSet
+import pbcore.data
+
 from pbreports.model.model import Report
 from pbreports.serializers import dict_to_report
-
-from base_test_case import ROOT_DATA_DIR, run_backticks
+from pbreports.report import mapping_stats_ccs
 from pbreports.report.mapping_stats import to_report, Constants
+
+from base_test_case import ROOT_DATA_DIR, run_backticks, \
+    skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -22,11 +28,10 @@ _LAMBDA_DATA_DIR = os.path.join(
     ROOT_DATA_DIR, 'mapping_stats', "lambda_2372215_0007_tiny")
 _CCS_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'mapping_stats', 'ccs')
 
-_TOTAL_NUMBER_OF_ATTRIBUTES = 13
+_TOTAL_NUMBER_OF_ATTRIBUTES = 12
 _TOTAL_NUMBER_OF_PLOT_GROUPS = 3
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
-
 
 def _almost_value(actual_value, value, delta):
     """Check if a value is +/- delta amount"""
@@ -55,19 +60,18 @@ def _to_cmd(aligned_bam, report_json):
 
 
 class TestIntegrationMappingStatsReport(unittest.TestCase):
+    ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
 
     def setUp(self):
-        _to_p = lambda x: os.path.join(_IO_DATA_DIR, x)
         self.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
-        self.input_xml = _to_p('lambda_aligned.xml')
-        self.aligned_reads_bam = _to_p('lambda_aligned.bam')
+        self.aligned_reads_bam = self.ALIGNMENTS
         t = tempfile.NamedTemporaryFile(
             delete=False, suffix="mapping_report.json")
         t.close()
         self.report_json = t.name
 
     def test_basic(self):
-        cmd = _to_cmd(self.aligned_reads_bam, self.report_json)
+        cmd = _to_cmd(self.ALIGNMENTS, self.report_json)
 
         rcode = run_backticks(cmd)
         self.assertEqual(rcode, 0)
@@ -85,69 +89,39 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
 
 
 class TestMappingStatsReport(unittest.TestCase):
-    ALIGNMENTS = os.path.join(_LAMBDA_DATA_DIR, "lambda_2zmws_mapped.bam")
+    ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
     EXPECTED_VALUES = {
-        Constants.A_READLENGTH: 9717,
-        Constants.A_SUBREAD_LENGTH: 809,
+        Constants.A_SUBREAD_ACCURACY: 0.9283,
+        Constants.A_NREADS: 48,
+        Constants.A_NSUBREADS: 112,
+        Constants.A_NBASES: 63746,
+        Constants.A_SUBREAD_NBASES: 60467,
+        Constants.A_READLENGTH: 1328,
+        Constants.A_SUBREAD_LENGTH: 540,
+        Constants.A_READLENGTH_Q95: 5900,
+        Constants.A_READLENGTH_MAX: 6765,
+        Constants.A_NALIGNMENTS: 48,
+        Constants.A_SUBREAD_LENGTH_N50: 632,
+        Constants.A_READLENGTH_N50: 2151,
     }
 
     @classmethod
-    def setUpClass(cls):
-        _to_p = lambda x: os.path.join(_LAMBDA_DATA_DIR, x)
-        cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
-        t = tempfile.NamedTemporaryFile(
-            delete=False, suffix="mapping_report.json")
-        t.close()
-        cls.report_json = t.name
-        cls.report = to_report(cls.ALIGNMENTS, cls.output_dir)
-
-    def _get_attribute_value_by_id(self, i):
-        """helper method to grab value from the report instance"""
-        a = self.report.get_attribute_by_id(i)
-        if a is None:
-            raise KeyError(
-                "Unable to find attribute id '{i}' in report".format(i=i))
-        else:
-            return a.value
-
-    def _compare_metric_values(self, metric_id):
-        value = self.EXPECTED_VALUES[metric_id]
-        self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
-
-    def test_mapped_readlength_mean(self):
-        self._compare_metric_values(Constants.A_READLENGTH)
-
-    def test_mapped_subread_readlength_mean(self):
-        self._compare_metric_values(Constants.A_SUBREAD_LENGTH)
-
-
-class TestMappingStatsReportLarge(unittest.TestCase):
+    def _get_input_file(cls):
+        return cls.ALIGNMENTS
 
     @classmethod
     def setUpClass(cls):
-        _to_p = lambda x: os.path.join(_IO_DATA_DIR, x)
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
-        cls.input_xml = _to_p('lambda_aligned.xml')
-        cls.aligned_reads_bam = _to_p('lambda_aligned.bam')
-        cls.mode = "external"
         t = tempfile.NamedTemporaryFile(
             delete=False, suffix="mapping_report.json")
         t.close()
         cls.report_json = t.name
-        cls.report = to_report(cls.aligned_reads_bam, cls.output_dir)
-        if isinstance(cls.report, Report):
-            log.info(pprint.pformat(cls.report.to_dict()))
-            for table in cls.report.tables:
-                log.info(str(table))
-
-    def _get_attribute_value_by_id(self, i):
-        """helper method to grab value from the report instance"""
-        a = self.report.get_attribute_by_id(i)
-        if a is None:
-            raise KeyError(
-                "Unable to find attribute id '{i}' in report".format(i=i))
-        else:
-            return a.value
+        cls.report = to_report(cls._get_input_file(), cls.output_dir)
+        cls.report.write_json(cls.report_json)
+        assert isinstance(cls.report, Report)
+        log.info(pprint.pformat(cls.report.to_dict()))
+        for table in cls.report.tables:
+            log.info(str(table))
 
     def test_number_of_attributes(self):
         value = _TOTAL_NUMBER_OF_ATTRIBUTES
@@ -166,118 +140,96 @@ class TestMappingStatsReportLarge(unittest.TestCase):
     def test_number_of_columns_in_table(self):
         self.assertEqual(len(self.report.tables[0].columns), 8)
 
-    @unittest.skip("Filter stats are pulled from the Filter Stat report.")
-    def test_post_filter_reads_n(self):
-        id_ = Constants.A_FILTERED_READS
-        value = 26947
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
+    def _get_attribute_value_by_id(self, i):
+        """helper method to grab value from the report instance"""
+        a = self.report.get_attribute_by_id(i)
+        if a is None:
+            raise KeyError(
+                "Unable to find attribute id '{i}' in report".format(i=i))
+        else:
+            return a.value
+
+    def _compare_metric_values(self, metric_id):
+        value = self.EXPECTED_VALUES[metric_id]
+        self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
+
+    def test_mapped_bases_n(self):
+        self._compare_metric_values(Constants.A_NBASES)
+
+    def test_mapped_subread_bases_n(self):
+        self._compare_metric_values(Constants.A_SUBREAD_NBASES)
+
+    def test_mapped_readlength_max(self):
+        self._compare_metric_values(Constants.A_READLENGTH_MAX)
+
+    def test_number_of_mapped_reads(self):
+        self._compare_metric_values(Constants.A_NREADS)
+
+    def test_number_of_mapped_subreads(self):
+        self._compare_metric_values(Constants.A_NSUBREADS)
+
+    def test_number_of_aligned_reads(self):
+        self._compare_metric_values(Constants.A_NALIGNMENTS)
+
+    def test_mapped_readlength_mean(self):
+        self._compare_metric_values(Constants.A_READLENGTH)
+
+    def test_mapped_subread_readlength_mean(self):
+        self._compare_metric_values(Constants.A_SUBREAD_LENGTH)
+
+    def test_mapped_subreadlength_n50(self):
+        self._compare_metric_values(Constants.A_SUBREAD_LENGTH_N50)
+
+    def test_mapped_readlength_n50(self):
+        self._compare_metric_values(Constants.A_READLENGTH_N50)
 
     def test_mapped_subread_accuracy_mean(self):
         id_ = Constants.A_SUBREAD_ACCURACY
-        value = 0.8723
+        value = self.EXPECTED_VALUES[id_]
         self.assertAlmostEqual(
             self._get_attribute_value_by_id(id_), value, places=2)
-
-    def test_mapped_subread_read_quality_mean(self):
-        id_ = Constants.A_SUBREAD_QUALITY
-        value = 0.8263
-        self.assertAlmostEqual(
-            self._get_attribute_value_by_id(id_), value, places=2)
-
-    def test_mapped_reads_n(self):
-        id_ = Constants.A_NREADS
-        value = 1491
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_subreads_n(self):
-        id_ = Constants.A_NSUBREADS
-        value = 18768
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_bases_n(self):
-        id_ = Constants.A_NBASES
-        value = 16555228
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_subread_bases_n(self):
-        id_ = Constants.A_SUBREAD_NBASES
-        value = 14398098
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_readlength_mean(self):
-        id_ = Constants.A_READLENGTH
-        value = 11103
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_subread_readlength_mean(self):
-        id_ = Constants.A_SUBREAD_LENGTH
-        value = 767
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
     def test_mapped_readlength_q95(self):
         id_ = Constants.A_READLENGTH_Q95
-        value = 23470
+        value = self.EXPECTED_VALUES[id_]
         self.assertTrue(
-            _almost_value(self._get_attribute_value_by_id(id_), value, _Q95_DELTA))
+            _almost_value(self._get_attribute_value_by_id(id_), value,
+            delta=_Q95_DELTA))
+
+
+class TestMappingStatsReportXML(TestMappingStatsReport):
+
+    @classmethod
+    def _get_input_file(cls):
+        ds_xml = tempfile.NamedTemporaryFile(
+            suffix=".alignmentset.xml").name
+        ds = AlignmentSet(cls.ALIGNMENTS, strict=True)
+        ds.write(ds_xml)
+        return ds_xml
+
+
+@skip_if_data_dir_not_present
+class TestMappingStatsReportLarge(TestMappingStatsReport):
+    ALIGNMENTS = os.path.join(_IO_DATA_DIR, "lambda_aligned.xml")
+    EXPECTED_VALUES = {
+        Constants.A_SUBREAD_ACCURACY: 0.8723,
+        Constants.A_NREADS: 1491,
+        Constants.A_NSUBREADS: 18768,
+        Constants.A_NBASES: 16555228,
+        Constants.A_SUBREAD_NBASES: 14398098,
+        Constants.A_READLENGTH: 11103,
+        Constants.A_SUBREAD_LENGTH: 767,
+        Constants.A_READLENGTH_Q95: 23470,
+        Constants.A_READLENGTH_MAX: 28619,
+        Constants.A_NALIGNMENTS: 1491,
+        Constants.A_SUBREAD_LENGTH_N50: 841,
+        Constants.A_READLENGTH_N50: 18057,
+    }
 
     @unittest.skip("Hot start metrics are not supported in streaming model.")
     def test_mean_max_subread_readlength(self):
         id_ = Constants.A_SUBREAD_LENGTH_MAX_MEAN
         value = 2684
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_readlength_max(self):
-        id_ = Constants.A_READLENGTH_MAX
-        value = 28619
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_mapped_full_subread_readlength_mean(self):
-        id_ = Constants.A_FULL_SUBREAD_LENGTH_MEAN
-        value = 1768
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_mean_first_subread_readlength(self):
-        id_ = Constants.A_FIRST_SUBREAD_LENGTH_MEAN
-        value = 2575
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_pct_first_subreads_ts_lt_50(self):
-        id_ = Constants.A_FIRST_SUBREAD_PCT_50
-        value = 0.02
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_pct_first_subreads_ts_lt_100(self):
-        id_ = Constants.A_FIRST_SUBREAD_PCT_100
-        value = 0.02
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_number_of_mapped_reads(self):
-        id_ = Constants.A_NREADS
-        value = 1491
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_number_of_mapped_subreads(self):
-        id_ = Constants.A_NSUBREADS
-        value = 18768
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_number_of_aligned_reads(self):
-        id_ = Constants.A_NALIGNMENTS
-        value = 1491
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_subreadlength_n50(self):
-        id_ = Constants.A_SUBREAD_LENGTH_N50
-        value = 841
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    def test_mapped_readlength_n50(self):
-        id_ = Constants.A_READLENGTH_N50
-        value = 18057
         self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
 # gmap data from pbsmrtpipe is not yet available for testing, this class needs to be updated
@@ -384,42 +336,18 @@ class TestMappingStatsGmapReport(unittest.TestCase):
         value = 14150
         self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_mapped_full_subread_readlength_mean(self):
-        id_ = 'mapped_full_subread_readlength_mean'
-        value = 0
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_mean_first_subread_readlength(self):
-        id_ = 'mean_first_subread_readlength'
-        value = 1528
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_pct_first_subreads_ts_lt_50(self):
-        id_ = 'pct_first_subreads_ts_lt_50'
-        value = 13.84
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_pct_first_subreads_ts_lt_100(self):
-        id_ = 'pct_first_subreads_ts_lt_100'
-        value = 14.27
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-
+@skip_if_data_dir_not_present
 class TestMappingStatsCCSReport(unittest.TestCase):
     EXPECTED_VALUES = {
-        Constants.A_SUBREAD_ACCURACY: 0.996,
+        Constants.A_READ_ACCURACY: 0.996,
         Constants.A_NREADS: 743,
-        Constants.A_NSUBREADS: 743,
         Constants.A_NBASES: 715295,
-        Constants.A_SUBREAD_NBASES: 715295,
         Constants.A_READLENGTH: 963,
-        Constants.A_SUBREAD_LENGTH: 963,
         Constants.A_READLENGTH_MAX: 3343,
         Constants.A_READLENGTH_Q95: 1890,
+        "number_of_plot_groups": 2,
+        "number_of_attributes": 7,
     }
 
     @classmethod
@@ -432,7 +360,9 @@ class TestMappingStatsCCSReport(unittest.TestCase):
             delete=False, suffix="mapping_report.json")
         t.close()
         cls.report_json = t.name
-        cls.report = to_report(cls.aligned_reads_xml, cls.output_dir)
+        cls.report = mapping_stats_ccs.to_report(cls.aligned_reads_xml,
+            cls.output_dir)
+        cls.report.write_json(cls.report_json)
 
         if isinstance(cls.report, Report):
             log.info(pprint.pformat(cls.report.to_dict()))
@@ -449,47 +379,32 @@ class TestMappingStatsCCSReport(unittest.TestCase):
             return a.value
 
     def test_number_of_attributes(self):
-        value = _TOTAL_NUMBER_OF_ATTRIBUTES
+        value = self.EXPECTED_VALUES["number_of_attributes"]
         self.assertEqual(len(self.report.attributes), value)
 
     def test_number_of_plot_groups(self):
-        value = _TOTAL_NUMBER_OF_PLOT_GROUPS
+        value = self.EXPECTED_VALUES["number_of_plot_groups"]
         self.assertEqual(len(self.report.plotGroups), value)
 
     def test_number_of_tables(self):
         value = 1
         self.assertEqual(len(self.report.tables), value)
 
-    @unittest.skip("Filter metrics should be pulled from Filter Stats report.")
-    def test_post_filter_reads_n(self):
-        id_ = 'post_filter_reads_n'
-        value = 0
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
     def _compare_metric_values(self, metric_id):
         value = self.EXPECTED_VALUES[metric_id]
         self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
 
-    def test_mapped_subread_accuracy_mean(self):
-        self._compare_metric_values(Constants.A_SUBREAD_ACCURACY)
+    def test_mapped_read_accuracy_mean(self):
+        self._compare_metric_values(Constants.A_READ_ACCURACY)
 
     def test_mapped_reads_n(self):
         self._compare_metric_values(Constants.A_NREADS)
 
-    def test_mapped_subreads_n(self):
-        self._compare_metric_values(Constants.A_NSUBREADS)
-
     def test_mapped_bases_n(self):
         self._compare_metric_values(Constants.A_NBASES)
 
-    def test_mapped_subread_bases_n(self):
-        self._compare_metric_values(Constants.A_SUBREAD_NBASES)
-
     def test_mapped_readlength_mean(self):
         self._compare_metric_values(Constants.A_READLENGTH)
-
-    def test_mapped_subread_readlength_mean(self):
-        self._compare_metric_values(Constants.A_SUBREAD_LENGTH)
 
     def test_mapped_readlength_max(self):
         self._compare_metric_values(Constants.A_READLENGTH_MAX)
@@ -500,33 +415,3 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         value = self.EXPECTED_VALUES[id_]
         self.assertTrue(
             _almost_value(value, self._get_attribute_value_by_id(id_), _Q95_DELTA))
-
-    @unittest.skip("Hot start metrics are not supported in streaming mode.")
-    def test_mean_max_subread_readlength(self):
-        id_ = 'mean_max_subread_readlength'
-        value = 837
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_mapped_full_subread_readlength_mean(self):
-        id_ = 'mapped_full_subread_readlength_mean'
-        value = 0
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_mean_first_subread_readlength(self):
-        id_ = 'mean_first_subread_readlength'
-        value = 837
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_pct_first_subreads_ts_lt_50(self):
-        id_ = 'pct_first_subreads_ts_lt_50'
-        value = 0.74
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
-    @unittest.skip("Deprecated metric from when adapter info used to be included.")
-    def test_pct_first_subreads_ts_lt_100(self):
-        id_ = 'pct_first_subreads_ts_lt_100'
-        value = 0.75
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)

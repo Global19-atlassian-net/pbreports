@@ -48,46 +48,53 @@ class Constants(object):
     R_ID = "mapping_stats"
 
     # Column ids
-    C_MOVIE = 'movie'
+    C_MOVIE = "movie"
     C_READS = "mapped_reads"
-    C_READLENGTH = 'mapped_polymerase_read_length'
-    C_READLENGTH_N50 = 'mapped_polymerase_read_length_n50'
-    C_SUBREADS = 'mapped_subreads'
-    C_SUBREAD_NBASES = 'mapped_subread_base'
-    C_SUBREAD_LENGTH = 'mapped_subread_length'
-    C_SUBREAD_ACCURACY = 'mapped_subread_accuracy'
+    C_READLENGTH = "mapped_polymerase_read_length"
+    C_READLENGTH_N50 = "mapped_polymerase_read_length_n50"
+    C_SUBREADS = "mapped_subreads"
+    C_SUBREAD_NBASES = "mapped_subread_base"
+    C_SUBREAD_LENGTH = "mapped_subread_length"
+    C_SUBREAD_ACCURACY = "mapped_subread_accuracy"
 
     # Table id
     #
-    T_STATS = 'mapping_stats_table'
+    T_STATS = "mapping_stats_table"
 
     # Attribute Ids
-    A_NALIGNMENTS = 'number_of_aligned_reads'
-    A_NBASES = 'mapped_bases_n'
-    A_NREADS = 'mapped_reads_n'
-    A_READLENGTH = 'mapped_readlength_mean'
-    A_READLENGTH_Q95 = 'mapped_readlength_q95'
-    A_READLENGTH_MAX = 'mapped_readlength_max'
-    A_READLENGTH_N50 = 'mapped_readlength_n50'
+    A_NALIGNMENTS = "number_of_aligned_reads"
+    A_NBASES = "mapped_bases_n"
+    A_NREADS = "mapped_reads_n"
+    A_READLENGTH = "mapped_readlength_mean"
+    A_READLENGTH_Q95 = "mapped_readlength_q95"
+    A_READLENGTH_MAX = "mapped_readlength_max"
+    A_READLENGTH_N50 = "mapped_readlength_n50"
 
-    A_FILTERED_READS = 'post_filter_reads_n'
+    A_FILTERED_READS = "post_filter_reads_n"
 
-    A_NSUBREADS = 'mapped_subreads_n'
-    A_SUBREAD_NBASES = 'mapped_subread_bases_n'
-    A_SUBREAD_ACCURACY = 'mapped_subread_accuracy_mean'
-    A_SUBREAD_QUALITY = 'mapped_subread_read_quality_mean'
-    A_SUBREAD_LENGTH = 'mapped_subread_readlength_mean'
-    A_SUBREAD_LENGTH_N50 = 'mapped_subreadlength_n50'
+    A_NSUBREADS = "mapped_subreads_n"
+    A_SUBREAD_NBASES = "mapped_subread_bases_n"
+    A_SUBREAD_ACCURACY = "mapped_subread_accuracy_mean"
+    A_SUBREAD_QUALITY = "mapped_subread_read_quality_mean"
+    A_SUBREAD_LENGTH = "mapped_subread_readlength_mean"
+    A_SUBREAD_LENGTH_N50 = "mapped_subreadlength_n50"
 
     # Plot Group ids
-    PG_SUBREAD_ACCURACY = 'subread_accuracy_group'
-    PG_SUBREAD_LENGTH = 'subreadlength_plot'
-    PG_READLENGTH = 'readlength_plot'
+    PG_SUBREAD_ACCURACY = "subread_accuracy_group"
+    PG_SUBREAD_LENGTH = "subreadlength_plot"
+    PG_READLENGTH = "readlength_plot"
 
     # Plot ids
-    P_SUBREAD_ACCURACY = 'subread_accuracy_group_accuracy_plot'
-    P_SUBREAD_LENGTH = 'subreadlength_plot'
-    P_READLENGTH = 'readlength_plot'
+    P_SUBREAD_ACCURACY = "subread_accuracy_group_accuracy_plot"
+    P_SUBREAD_LENGTH = "subreadlength_plot"
+    P_READLENGTH = "readlength_plot"
+
+    # XXX for CCS report - easier to put it here
+    A_READ_ACCURACY = "mapped_read_accuracy_mean"
+    C_READ_ACCURACY = "mapped_read_accuracy"
+    P_READ_ACCURACY = "read_accuracy_group_accuracy_plot"
+    PG_READ_ACCURACY = "read_accuracy_group"
+    C_READ_NBASES = "mapped_bases"
 
 
 def _validate_file_or_none(arg):
@@ -523,72 +530,36 @@ class MappedReadLengthQ95(ReadLengthHistogram, AttributeAble):
         return "<{k} q95:{a} dx:{d} nbins:{n} min:{i} max:{x} >".format(**_d)
 
 
-def _get_resquencing_display():
-    """Change display text to show CCS Read instead of Subread,
-    if read type is CCS
+class StatisticsModel(object):
 
-    This creates a lot of instance vars that are tuples of (display name, id)
+    def __init__(self, aggregators, filter_func=None):
+        """Core container class used to apply subreads, reads
+
+        the filter func operates on a region_file
+
+        if the filter_func returns True, the aggregator.apply will be called
+
+        """
+        self.aggregators = aggregators
+        self.filter_func = filter_func
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  n=len(self.aggregators))
+        return "<{k} naggregators:{n} >".format(**_d)
 
 
-    Order is important here, since this dictates how attributes are displayed in portal
+# various utility functions
+def _is_sam_or_bam_file(file_name):
+    exts = {".sam", ".bam"}
+    return any(file_name.endswith(ext) for ext in exts)
 
-    dict -> {id: display_name}
 
-    Dragging this over from the old code. This is used in the Attribute creation.
-    """
-
-    attrs = {}
-
-    # mappedPostFilterReads
-    attrs['post_filter_reads_n'] = 'Post-Filter Reads'
-
-    # mappedSubreadAccuracyMean
-    attrs['mapped_subread_accuracy_mean'] = 'Mapped Subread Accuracy'
-
-    #
-    attrs['mapped_subread_read_quality_mean'] = "Mapped Subread Read Quality"
-
-    # mappedReads
-    attrs['mapped_reads_n'] = 'Mapped Reads'
-
-    # mappedSubreadsN = (_subreadStrReplace('Mapped Subreads'),
-    # 'mapped_subreads_n')
-    attrs['mapped_subreads_n'] = "Mapped Subreads"
-
-    # mappedBasesN
-    attrs['mapped_bases_n'] = 'Mapped Polymerase Bases'
-
-    # mappedSubreadBases = (_subreadStrReplace('Mapped Subread Bases'),
-    # 'mapped_subread_bases_n')
-    attrs['mapped_subread_bases_n'] = "Mapped Subread Bases"
-
-    # mappedReadlengthMean = (_subreadStrReplace('Mapped Polymerase Read
-    # Length'), 'mapped_readlength_mean')
-    attrs['mapped_readlength_mean'] = 'Mapped Polymerase Read Length'
-
-    # mappedSubreadLengthMean = (_subreadStrReplace('Mapped Subread Length'),
-    # 'mapped_subread_readlength_mean')
-    attrs['mapped_subread_readlength_mean'] = 'Mapped Subread Length'
-
-    # mappedReadlengthQ95 = (_subreadStrReplace('Mapped Polymerase Read Length
-    # 95%'), 'mapped_readlength_q95')
-    attrs['mapped_readlength_q95'] = 'Mapped Polymerase Read Length 95%'
-
-    # mappedReadlengthMax = (_subreadStrReplace('Mapped Polymerase Read Length
-    # Max'), 'mapped_readlength_max')
-    attrs['mapped_readlength_max'] = 'Mapped Polymerase Read Length Max'
-
-    # mappedFullSubreadLengthMean = (_subreadStrReplace('Mapped Full Subread
-    # Length'), 'mapped_full_subread_readlength_mean')
-    attrs['mapped_full_subread_readlength_mean'] = 'Mapped Full Subread Length'
-
-    attrs['number_of_aligned_reads'] = "Number of Aligned Reads"
-
-    attrs['mapped_subreadlength_n50'] = "Mapped Subread N50"
-
-    attrs['mapped_readlength_n50'] = "Mapped N50"
-
-    return attrs
+def _movienames_from_bam(aligned_file):
+    movies = []
+    if _is_sam_or_bam_file(aligned_file):
+        movies = movies + list(openAlignmentFile(aligned_file).movieNames)
+    return movies
 
 
 def analyze_movie(movie, alignment_file, stats_models):
@@ -623,7 +594,7 @@ def analyze_movie(movie, alignment_file, stats_models):
 
     log.info("Movie")
     log.info(movie)
-    log.info(('Number or reads', len(reads)))
+    log.info(('Number of reads', len(reads)))
     log.info(('Number of subreads', len(subreads)))
 
     for model in stats_models:
@@ -651,25 +622,6 @@ def analyze_movies(movies, alignment_file_names, stats_models):
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
 
-class StatisticsModel(object):
-
-    def __init__(self, aggregators, filter_func=None):
-        """Core container class used to apply subreads, reads
-
-        the filter func operates on a region_file
-
-        if the filter_func returns True, the aggregator.apply will be called
-
-        """
-        self.aggregators = aggregators
-        self.filter_func = filter_func
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__,
-                  n=len(self.aggregators))
-        return "<{k} naggregators:{n} >".format(**_d)
-
-
 def get_attributes(aggregators_d, display_names_d):
 
     attributes = []
@@ -691,282 +643,291 @@ def get_attributes(aggregators_d, display_names_d):
     return attributes
 
 
-def _to_table(movie_datum):
+class MappingStatsCollector(object):
     """
-    Create a pbreports Table for each movie.
-
-    :param movie_datum: List of
-
-    [(
-    movie_name,
-    reads,
-    mean readlength,
-    polymerase readlength
-    number of subread bases
-    mean subread readlength
-    mean subread accuracy), ...]
-
+    Wrapper class for generating the report.  This allows us to re-use the
+    logic but override the content in the CCS version (mapping_stats_ccs.py).
     """
-    columns = [Column(Constants.C_MOVIE, header="Movie"),
-               Column(Constants.C_READS, header="Mapped Reads"),
-               Column(Constants.C_READLENGTH,
-                      header="Mapped Polymerase Read Length"),
-               Column(Constants.C_READLENGTH_N50,
-                      header="Mapped Polymerase Read Length n50"),
-               Column(Constants.C_SUBREADS, header="Mapped Subreads"),
-               Column(Constants.C_SUBREAD_NBASES,
-                      header="Mapped Subread Bases"),
-               Column(Constants.C_SUBREAD_LENGTH,
-                      header="Mapped Subread Length"),
-               Column(Constants.C_SUBREAD_ACCURACY, header="Mapped Subread Accuracy")]
+    COLUMN_ATTR = [
+        Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
+        Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
+        Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_ACCURACY
+    ]
+    ATTR_LABELS = {
+          Constants.A_FILTERED_READS: "Post-Filter Reads",
+          Constants.A_SUBREAD_ACCURACY: "Mapped Subread Accuracy",
+          Constants.A_NREADS : "Mapped Reads",
+          Constants.A_NSUBREADS: "Mapped Subreads",
+          Constants.A_NBASES: "Mapped Polymerase Bases",
+          Constants.A_SUBREAD_NBASES: "Mapped Subread Bases",
+          Constants.A_READLENGTH: "Mapped Polymerase Read Length",
+          Constants.A_SUBREAD_LENGTH: "Mapped Subread Length",
+          Constants.A_READLENGTH_Q95: "Mapped Polymerase Read Length 95%",
+          Constants.A_READLENGTH_MAX: "Mapped Polymerase Read Length Max",
+          Constants.A_NALIGNMENTS: "Number of Aligned Reads",
+          Constants.A_SUBREAD_LENGTH_N50: "Mapped Subread N50",
+          Constants.A_READLENGTH_N50: "Mapped N50",
+    }
+    HISTOGRAM_IDS = {
+        Constants.P_SUBREAD_ACCURACY: "subread_accuracy_histogram",
+        Constants.PG_SUBREAD_LENGTH: "subreadlength_histogram",
+        Constants.P_READLENGTH: "readlength_histogram",
+    }
+    COLUMNS = [
+        (Constants.C_MOVIE, "Movie"),
+        (Constants.C_READS, "Mapped Reads"),
+        (Constants.C_READLENGTH, "Mapped Polymerase Read Length"),
+        (Constants.C_READLENGTH_N50, "Mapped Polymerase Read Length n50"),
+        (Constants.C_SUBREADS, "Mapped Subreads"),
+        (Constants.C_SUBREAD_NBASES, "Mapped Subread Bases"),
+        (Constants.C_SUBREAD_LENGTH, "Mapped Subread Length"),
+        (Constants.C_SUBREAD_ACCURACY, "Mapped Subread Accuracy")
+    ]
+    COLUMN_AGGREGATOR_CLASSES = [
+        ReadCounterAggregator,
+        MeanReadLengthAggregator,
+        N50Aggreggator,
+        SubreadCounterAggregator,
+        NumberSubreadBasesAggregator,
+        MeanSubreadLengthAggregator,
+        MeanSubreadAccuracyAggregator
+    ]
 
-    table = Table(Constants.T_STATS,
-                  title="Mapping Statistics Summary",
-                  columns=columns)
+    def __init__(self, alignment_file):
+        self.alignment_file = alignment_file
+        self.dataset_uuids = []
+        if alignment_file.endswith('.xml'):
+            log.debug('Importing alignments from dataset XML')
+            alignment_set = openDataSet(alignment_file)
+            if not isinstance(alignment_set,
+                              (AlignmentSet, ConsensusAlignmentSet)):
+                raise TypeError("Dataset type %s not allowed here" %
+                    type(alignment_set).__name__)
+            self.alignment_file_list = alignment_set.toExternalFiles()
+            self.dataset_uuids.append(alignment_set.uuid)
+            movies = []
+            for x in self.alignment_file_list:
+                if not os.path.exists(x):
+                    raise IOError("Unable to find DataSet external resource {x}".format(x=x))
+                movies.extend(_movienames_from_bam(x))
+            self.movies = sorted(list(set(movies)))
+        elif _is_sam_or_bam_file(alignment_file):
+            self.alignment_file_list = [alignment_file]
+            self.movies = _movienames_from_bam(alignment_file)
+        else:
+            raise ValueError("Unsupported alignment file type '${x}'".format(
+                x=alignment_file))
 
-    for movie_data in movie_datum:
-        if len(movie_data) != len(columns):
-            log.error(movie_datum)
-            raise ValueError(
-                "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
+    def _get_plot_view_configs(self):
+        """
+        Any change to the 'raw' view of a report plot should be changed here.
+    
+        There's three histogram plots.
+    
+        1. Subread accuracy
+        2. Subread rendlength
+        3. Readlength
+    
+        """
+        _p = [
+            PlotViewProperties(
+                Constants.P_SUBREAD_ACCURACY,
+                Constants.PG_SUBREAD_ACCURACY,
+                generate_plot,
+                'mapped_subread_accuracy_histogram.png',
+                xlabel="Concordance",
+                ylabel="Subreads",
+                color=get_green(3),
+                edgecolor=get_green(2),
+                use_group_thumb=True,
+                plot_group_title="Mapped Subread Accuracy"),
+            PlotViewProperties(
+                Constants.P_SUBREAD_LENGTH,
+                Constants.PG_SUBREAD_LENGTH,
+                generate_plot,
+                'mapped_subreadlength_histogram.png',
+                xlabel="Subread Length",
+                ylabel="Subreads",
+                use_group_thumb=True,
+                color=get_blue(3),
+                edgecolor=get_blue(2),
+                plot_group_title="Mapped Subread Length"),
+            PlotViewProperties(
+                Constants.P_READLENGTH,
+                Constants.PG_READLENGTH,
+                generate_plot,
+                'mapped_readlength_histogram.png',
+                xlabel="Read Length",
+                ylabel="Reads",
+                color=get_blue(3),
+                edgecolor=get_blue(2),
+                use_group_thumb=True,
+                plot_group_title="Mapped Polymerase Read Length")
+        ]
+        return {v.plot_id: v for v in _p}
 
-        for value, c in zip(movie_data, columns):
-            table.add_data_by_column_id(c.id, value)
+    def _get_total_aggregators(self):
+        return {
+            Constants.A_NREADS: ReadCounterAggregator(),
+            Constants.A_NALIGNMENTS: ReadCounterAggregator(),
+            Constants.A_NSUBREADS: SubreadCounterAggregator(),
+            # not correct
+            Constants.A_SUBREAD_NBASES: SubreadNumberOfBasesAggregator(),
+            Constants.A_READLENGTH_MAX: MaxReadLengthAggregator(),
+            Constants.A_READLENGTH: MeanReadLengthAggregator(),
+            Constants.A_NBASES: NumberBasesAggregator(),
+            Constants.A_SUBREAD_ACCURACY: MeanSubreadAccuracyAggregator(),
+            #'mapped_subread_read_quality_mean': MeanSubreadQualityAggregator(),
+            Constants.A_SUBREAD_LENGTH: MeanSubreadLengthAggregator(),
+            "readlength_histogram": ReadLengthHistogram(),
+            "subreadlength_histogram": SubReadlengthHistogram(),
+            "subread_accuracy_histogram": SubReadAccuracyHistogram(dx=0.005, nbins=1001),
+            # the bin size is important here. The computed percentile is
+            # computed from the integral.
+            Constants.A_READLENGTH_Q95: MappedReadLengthQ95(dx=10, nbins=10000),
+            Constants.A_READLENGTH_N50: N50Aggreggator(),
+            Constants.A_SUBREAD_LENGTH_N50: SubreadN50Aggregator()}
 
-    log.debug(str(table))
-    print table
-    return table
+    def _to_table(self, movie_datum):
+        """
+        Create a pbreports Table for each movie.
 
+        :param movie_datum: List of
 
-def _plot_view_configs():
-    """
-    Any change to the 'raw' view of a report plot should be changed here.
+        [(
+        movie_name,
+        reads,
+        mean readlength,
+        polymerase readlength
+        number of subread bases
+        mean subread readlength
+        mean subread accuracy), ...]
+        """
+        columns = [Column(k, header=h) for k,h in self.COLUMNS]
+        table = Table(Constants.T_STATS,
+                      title="Mapping Statistics Summary",
+                      columns=columns)
 
-    There's three histogram plots.
+        for movie_data in movie_datum:
+            if len(movie_data) != len(columns):
+                log.error(movie_datum)
+                raise ValueError(
+                    "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
 
-    1. Subread accuracy
-    2. Subread rendlength
-    3. Readlength
+            for value, c in zip(movie_data, columns):
+                table.add_data_by_column_id(c.id, value)
 
-    """
+        log.debug(str(table))
+        print table
+        return table
 
-    _p = [PlotViewProperties(Constants.P_SUBREAD_ACCURACY,
-                             Constants.PG_SUBREAD_ACCURACY,
-                             generate_plot,
-                             'mapped_subread_accuracy_histogram.png',
-                             xlabel="Concordance",
-                             ylabel="Subreads",
-                             color=get_green(3),
-                             edgecolor=get_green(2),
-                             use_group_thumb=True,
-                             plot_group_title="Mapped Subread Accuracy"),
-          PlotViewProperties(Constants.P_SUBREAD_LENGTH,
-                             Constants.PG_SUBREAD_LENGTH,
-                             generate_plot,
-                             'mapped_subreadlength_histogram.png',
-                             xlabel="Subread Length",
-                             ylabel="Subreads",
-                             use_group_thumb=True,
-                             color=get_blue(3),
-                             edgecolor=get_blue(2),
-                             plot_group_title="Mapped Subread Length"),
-          PlotViewProperties(Constants.P_READLENGTH,
-                             Constants.PG_READLENGTH,
-                             generate_plot,
-                             'mapped_readlength_histogram.png',
-                             xlabel="Read Length",
-                             ylabel="Reads",
-                             color=get_blue(3),
-                             edgecolor=get_blue(2),
-                             use_group_thumb=True,
-                             plot_group_title="Mapped Polymerase Read Length")
-          ]
-
-    # make it easier to access
-    return {v.plot_id: v for v in _p}
-
-def _is_sam_or_bam_file(file_name):
-    exts = {".sam", ".bam"}
-    return any(file_name.endswith(ext) for ext in exts)
-
-
-def _to_alignment_file_list(alignment_filename):
-    """Handle parsing of a Alignment DataSet (.xml) or sam/bam file"""
-    dataset_uuids = []
-
-    if alignment_filename.endswith('.xml'):
-        log.debug('Importing alignments from dataset XML')
-        alignment_set = openDataSet(alignment_filename)
-        if not isinstance(alignment_set, (AlignmentSet, ConsensusAlignmentSet)):
-            raise TypeError("Dataset type %s not allowed here" %
-                type(alignment_set).__name__)
-        alignment_files = alignment_set.toExternalFiles()
-        dataset_uuids.append(alignment_set.uuid)
-        movies = []
-        for x in alignment_files:
-            if not os.path.exists(x):
-                raise IOError("Unable to find DataSet external resource {x}".format(x=x))
-            movies = movies + _movienames_from_bam(x)
-        movies = sorted(list(set(movies)))
-    elif _is_sam_or_bam_file(alignment_filename):
-        alignment_files = [alignment_filename]
-        movies = _movienames_from_bam(alignment_filename)
-    else:
-        raise ValueError("Unsupported alignment file type '${x}'".format(
-            x=alignment_filename))
-
-    return alignment_files, movies, dataset_uuids
-
-
-def _movienames_from_bam(aligned_file):
-    movies = []
-    if _is_sam_or_bam_file(aligned_file):
-        movies = movies + list(openAlignmentFile(aligned_file).movieNames)
-    return movies
+    def to_report(self, output_dir):
+        """
+        This needs to be cleaned up. Keeping the old interface for testing purposes.
+        """
+        started_at = time.time()
+    
+        log.info("Found {n} movies.".format(n=len(self.movies)))
+    
+        log.info("Working from {n} alignment file{s}: {f}".format(
+            n=len(self.alignment_file_list),
+            s='s' if len(self.alignment_file_list) > 1 else '',
+            f=self.alignment_file_list))
+    
+        # make this a dict {attribute_key_name:Aggreggator} so it's easy to
+        # access the instances after they've been computed.
+        # there's duplicated keys in the attributes?
+        # number_of_aligned_reads/mapped_reads_n
+        _total_aggregators = self._get_total_aggregators()
+        null_filter = lambda r: True
+        total_model = StatisticsModel(
+            _total_aggregators.values(), filter_func=null_filter)
+    
+        # need to create specific instances for a given movie. This is used to
+        # create the mapping reports stats table
+        movie_models = {}
+    
+        def _my_filter(movie_name1, movie_name2):
+            return movie_name1 == movie_name2
+    
+        for movie in self.movies:
+            ags = [k() for k in self.COLUMN_AGGREGATOR_CLASSES]
+            # Note this WILL NOT work because of how scope works in python
+            # filter_by_movie_func = lambda m_name: movie.name == m_name
+            _my_filter_func = functools.partial(_my_filter, movie)
+            model = StatisticsModel(ags, filter_func=_my_filter_func)
+            movie_models[movie] = model
+    
+        # The statistic models that will be run
+        all_models = [total_model] + movie_models.values()
+        log.debug(all_models)
+    
+        # Run all the analysis. Now the aggregators can be accessed
+    
+        analyze_movies(self.movies, self.alignment_file_list, all_models)
+    
+        # temp structure used to create the report table. The order is important
+    
+        # add total values
+        _to_a = lambda k: _total_aggregators[k].attribute
+        _row = [_to_a(n) for n in self.COLUMN_ATTR]
+        _row.insert(0, 'All Movies')
+        movie_datum = [_row]
+    
+        # Add each individual movie stats
+        for movie_name_, model_ in movie_models.iteritems():
+            _row = [movie_name_]
+            for a in model_.aggregators:
+                _row.append(a.attribute)
+            movie_datum.append(_row)
+        log.info(movie_datum)
+    
+        # create the Report table
+    
+        table = self._to_table(movie_datum)
+    
+        for movie_name, model in movie_models.iteritems():
+            log.info("Movie name {n}".format(n=movie_name))
+            for a in model.aggregators:
+                log.info(movie_name + " " + repr(a))
+    
+        log.info("")
+        log.info("Total models")
+        for a in total_model.aggregators:
+            log.info(a)
+    
+        attributes = get_attributes(_total_aggregators, self.ATTR_LABELS)
+    
+        log.info("Attributes from streaming mapping Report.")
+        for a in attributes:
+            log.info(a)
+    
+        plot_config_views = self._get_plot_view_configs()
+    
+        # keeping the ids independent requires a bit of dictionary madness
+        # {report_id:HistogramAggregator}
+        id_to_aggregators = {k:_total_aggregators[v]
+                             for k,v in self.HISTOGRAM_IDS.iteritems()}
+    
+        plot_groups = to_plot_groups(plot_config_views, output_dir,
+                                     id_to_aggregators)
+    
+        tables = [table]
+        report = Report(Constants.R_ID,
+                        attributes=attributes,
+                        plotgroups=plot_groups,
+                        tables=tables,
+                        dataset_uuids=self.dataset_uuids)
+    
+        log.debug(report)
+    
+        run_time = time.time() - started_at
+        log.info("Completed running in {s:.2f} sec.".format(s=run_time))
+        return report
 
 
 def to_report(alignment_file, output_dir):
-    """
-    This needs to be cleaned up. Keeping the old interface for testing purposes.
-    """
-    started_at = time.time()
-
-    alignment_file_list, movies, dataset_uuids = _to_alignment_file_list(alignment_file)
-
-    log.info("Found {n} movies.".format(n=len(movies)))
-
-    log.info("Working from {n} alignment file{s}: {f}".format(
-        n=len(alignment_file_list), s='s' if len(alignment_file_list) > 1 else '',
-        f=alignment_file_list))
-
-    # make this a dict {attribute_key_name:Aggreggator} so it's easy to
-    # access the instances after they've been computed.
-    # there's duplicated keys in the attributes?
-    # number_of_aligned_reads/mapped_reads_n
-
-    _total_aggregators = {'mapped_reads_n': ReadCounterAggregator(),
-                          'number_of_aligned_reads': ReadCounterAggregator(),
-                          'mapped_subreads_n': SubreadCounterAggregator(),
-                          # not correct
-                          'mapped_subread_bases_n': SubreadNumberOfBasesAggregator(),
-                          'mapped_readlength_max': MaxReadLengthAggregator(),
-                          'mapped_readlength_mean': MeanReadLengthAggregator(),
-                          'mapped_bases_n': NumberBasesAggregator(),
-                          'mapped_subread_accuracy_mean': MeanSubreadAccuracyAggregator(),
-                          'mapped_subread_read_quality_mean': MeanSubreadQualityAggregator(),
-                          'mapped_subread_readlength_mean': MeanSubreadLengthAggregator(),
-                          'readlength_histogram': ReadLengthHistogram(),
-                          'subreadlength_histogram': SubReadlengthHistogram(),
-                          'subread_accuracy_histogram': SubReadAccuracyHistogram(dx=0.005, nbins=1001),
-                          # the bin size is important here. The computed percentile is
-                          # computed from the integral.
-                          'mapped_readlength_q95': MappedReadLengthQ95(dx=10, nbins=10000),
-                          'mapped_readlength_n50': N50Aggreggator(),
-                          'mapped_subreadlength_n50': SubreadN50Aggregator()}
-
-    null_filter = lambda r: True
-    total_model = StatisticsModel(
-        _total_aggregators.values(), filter_func=null_filter)
-
-    # need to create specific instances for a given movie. This is used to create
-    # the mapping reports stats table
-    _movie_aggregator_klasses = [ReadCounterAggregator,
-                                 MeanReadLengthAggregator,
-                                 N50Aggreggator,
-                                 SubreadCounterAggregator,
-                                 NumberSubreadBasesAggregator,
-                                 MeanSubreadLengthAggregator,
-                                 MeanSubreadAccuracyAggregator]
-
-    movie_models = {}
-
-    def _my_filter(movie_name1, movie_name2):
-        return movie_name1 == movie_name2
-
-    for movie in movies:
-        ags = [k() for k in _movie_aggregator_klasses]
-        # Note this WILL NOT work because of how scope works in python
-        # filter_by_movie_func = lambda m_name: movie.name == m_name
-        _my_filter_func = functools.partial(_my_filter, movie)
-        model = StatisticsModel(ags, filter_func=_my_filter_func)
-        movie_models[movie] = model
-
-    # The statistic models that will be run
-    all_models = [total_model] + movie_models.values()
-    log.debug(all_models)
-
-    # Run all the analysis. Now the aggregators can be accessed
-
-    analyze_movies(movies, alignment_file_list, all_models)
-
-    # temp structure used to create the report table. The order is important
-
-    # add total values
-    _to_a = lambda k: _total_aggregators[k].attribute
-    _names = [
-        'mapped_reads_n', 'mapped_readlength_mean', 'mapped_readlength_n50',
-        'mapped_subreads_n', 'mapped_subread_bases_n',
-        'mapped_subread_readlength_mean', 'mapped_subread_accuracy_mean']
-
-    _row = [_to_a(n) for n in _names]
-    _row.insert(0, 'All Movies')
-    movie_datum = [_row]
-
-    # Add each individual movie stats
-    for movie_name_, model_ in movie_models.iteritems():
-        _row = [movie_name_]
-        for a in model_.aggregators:
-            _row.append(a.attribute)
-        movie_datum.append(_row)
-    log.info(movie_datum)
-
-    # create the Report table
-
-    table = _to_table(movie_datum)
-
-    for movie_name, model in movie_models.iteritems():
-        log.info("Movie name {n}".format(n=movie_name))
-        for a in model.aggregators:
-            log.info(movie_name + " " + repr(a))
-
-    log.info("")
-    log.info("Total models")
-    for a in total_model.aggregators:
-        log.info(a)
-
-    display_names = _get_resquencing_display()
-    attributes = get_attributes(_total_aggregators, display_names)
-
-    log.info("Attributes from streaming mapping Report.")
-    for a in attributes:
-        log.info(a)
-
-    plot_config_views = _plot_view_configs()
-
-    # keeping the ids independent requires a bit of dictionary madness
-    # {report_id:HistogramAggregator}
-    id_to_aggregators = {Constants.P_SUBREAD_ACCURACY:
-                             _total_aggregators['subread_accuracy_histogram'],
-                         Constants.PG_SUBREAD_LENGTH:
-                             _total_aggregators["subreadlength_histogram"],
-                         Constants.P_READLENGTH:
-                             _total_aggregators["readlength_histogram"]}
-
-    plot_groups = to_plot_groups(plot_config_views, output_dir,
-                                 id_to_aggregators)
-
-    tables = [table]
-    report = Report(Constants.R_ID,
-                    attributes=attributes,
-                    plotgroups=plot_groups,
-                    tables=tables,
-                    dataset_uuids=dataset_uuids)
-
-    log.debug(report)
-
-    run_time = time.time() - started_at
-    log.info("Completed running in {s:.2f} sec.".format(s=run_time))
-    return report
+    return MappingStatsCollector(alignment_file).to_report(output_dir)
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -978,27 +939,27 @@ def summarize_report(report_file, out=sys.stdout):
     report = load_report_from_json(report_file)
     attr = {a.id: a.value for a in report.attributes}
     W("%s:" % report_file)
-    W("  MEAN ACCURACY: {f}".format(f=attr["mapped_subread_accuracy_mean"]))
-    W("  NSUBREADS: {n}".format(n=attr["mapped_subreads_n"]))
-    W("  NREADS: {n}".format(n=attr["mapped_reads_n"]))
-    W("  NBASES: {n}".format(n=attr["mapped_subread_bases_n"]))
-    W("  READLENGTH_MEAN: {n}".format(n=attr["mapped_readlength_mean"]))
-    W("  SUBREADLENGTH_MEAN: {n}".format(n=attr["mapped_subread_readlength_mean"]))
+    W("  MEAN ACCURACY: {f}".format(f=attr[Constants.A_SUBREAD_ACCURACY]))
+    W("  NSUBREADS: {n}".format(n=attr[Constants.A_NSUBREADS]))
+    W("  NREADS: {n}".format(n=attr[Constants.A_NREADS]))
+    W("  NBASES: {n}".format(n=attr[Constants.A_SUBREAD_NBASES]))
+    W("  READLENGTH_MEAN: {n}".format(n=attr[Constants.A_READLENGTH]))
+    W("  SUBREADLENGTH_MEAN: {n}".format(n=attr[Constants.A_SUBREAD_LENGTH]))
 
 
-def _run_and_write_report(alignment_file, json_report):
+def run_and_write_report(alignment_file, json_report, report_func=to_report):
     output_dir = os.path.dirname(json_report)
-    report = to_report(alignment_file, output_dir)
+    report = report_func(alignment_file, output_dir)
     report.write_json(json_report)
     log.info("Wrote output to %s" % json_report)
     return 0
 
 
-def args_runner(args):
-    return _run_and_write_report(args.alignment_file, args.report_json)
+def _args_runner(args):
+    return run_and_write_report(args.alignment_file, args.report_json)
 
 
-def resolved_tool_contract_runner(resolved_contract):
+def _resolved_tool_contract_runner(resolved_contract):
     """
     Run the mapping report from a resolved tool contract.
 
@@ -1014,10 +975,10 @@ def resolved_tool_contract_runner(resolved_contract):
     # resolved values will always be absolute paths.
     output_report = resolved_contract.task.output_files[0]
 
-    return _run_and_write_report(alignment_path, output_report)
+    return run_and_write_report(alignment_path, output_report)
 
 
-def get_parser():
+def _get_parser():
     desc = "Create a Mapping Report from a Aligned BAM or Alignment DataSet"
     driver_exe = "python -m pbreports.report.mapping_stats --resolved-tool-contract "
     parser = get_pbparser(TOOL_ID, __version__, "Mapping Statistics", desc, driver_exe)
@@ -1028,12 +989,14 @@ def get_parser():
     return parser
 
 
-def main(argv=sys.argv, get_parser_func=get_parser):
+def main(argv=sys.argv, get_parser_func=_get_parser,
+         args_runner_func=_args_runner,
+         rtc_runner_func=_resolved_tool_contract_runner):
     mp = get_parser_func()
     return pbparser_runner(argv[1:],
                            mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           args_runner_func,
+                           rtc_runner_func,
                            log,
                            setup_log)
 

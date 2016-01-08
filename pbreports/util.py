@@ -5,6 +5,8 @@ import sys
 import logging
 import functools
 import time
+import math
+
 import numpy as np
 
 from pbcore.util.Process import backticks
@@ -20,6 +22,7 @@ log = logging.getLogger(__name__)
 class Constants(object):
     DPI_ID = "pbreports.task_options.dpi"
     DUMPDATA_ID = "pbreports.task_options.dumpdata"
+    LOG_10 = math.log(10)
 
 
 def setup_log(alog, file_name=None, level=logging.DEBUG, str_formatter=None):
@@ -199,6 +202,27 @@ def get_fasta_readlengths(fasta_file):
             lens.append(len(record.sequence))
     lens.sort()
     return lens
+
+
+def accuracy_as_phred_qv(accuracy, max_qv=70):
+    """
+    Convert fractional accuracy to Phred QV: 0.999 --> 30
+
+    returns: float or numpy array
+    """
+    if isinstance(accuracy, (float, int)):
+        assert 0 <= accuracy <= 1.0
+        if accuracy == 1:
+            return max_qv
+        return -10 * math.log(1 - accuracy) / Constants.LOG_10
+    else:
+        if isinstance(accuracy, (tuple, list)):
+            accuracy = np.array(accuracy)
+        error_rate = 1.0 - accuracy
+        min_error_rate = 10 ** (-max_qv/10.0)
+        zero_error = error_rate < min_error_rate
+        error_rate[zero_error] = min_error_rate
+        return -10 * np.log(error_rate) / Constants.LOG_10
 
 
 def compute_n50_from_file(fasta_file):

@@ -8,7 +8,8 @@ from base_test_case import BaseTestCase
 from pbreports.util import (validate_output_dir, validate_report,
                             movie_to_cell, get_fasta_readlengths,
                             compute_n50_from_file, compute_n50,
-                            validate_file, validate_nonempty_file)
+                            validate_file, validate_nonempty_file,
+                            accuracy_as_phred_qv)
 
 from base_test_case import ROOT_DATA_DIR
 
@@ -182,3 +183,12 @@ class TestUtil(BaseTestCase):
         fasta = os.path.join( ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
         l = get_fasta_readlengths(fasta)
         self.assertEqual( 33586, compute_n50(l) )
+
+    def test_accuracy_as_phred_qv(self):
+        qv = accuracy_as_phred_qv(0.999)
+        self.assertEquals(int(round(qv)), 30)
+        qv = accuracy_as_phred_qv(1.0, max_qv=60)
+        self.assertEquals(int(round(qv)), 60)
+        qv = accuracy_as_phred_qv([0.95, 1.0, 0.99999])
+        qvs = [ int(round(x)) for x in qv ]
+        self.assertEqual(qvs, [13, 70, 50])

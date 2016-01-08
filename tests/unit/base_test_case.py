@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 # log.setLevel(logging.DEBUG)
 
 _DIR_NAME = os.path.dirname(os.path.abspath(__file__))
+LOCAL_DATA = os.path.join(os.path.dirname(_DIR_NAME), "data")
 _NOSE_REPORT_CFG = os.path.join(_DIR_NAME, '..', 'nose.cfg')
 
 if os.path.exists(_NOSE_REPORT_CFG):
@@ -50,6 +51,8 @@ def _get_root_data_dir():
         KeyError(msg)
 
 ROOT_DATA_DIR = _get_root_data_dir()
+skip_if_data_dir_not_present = unittest.skipUnless(
+    os.path.isdir(ROOT_DATA_DIR), "{d} not found".format(d=ROOT_DATA_DIR))
 
 
 def run_backticks(cmd, expected=0):
@@ -73,13 +76,7 @@ def run_backticks(cmd, expected=0):
 
 
 def json_file_to_report(json_file):
-    """Convert a report json file to Report instance."""
-
-    # maybe this should be in the pbreports.serializers.dict_to_rpeport
-    with open(json_file, 'r') as f:
-        d = json.loads(f.read())
-    r = dict_to_report(d)
-    return r
+    return load_report_from_json(json_file)
 
 
 def __get_from_constant(prefix_str, contstants_klass):

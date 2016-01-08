@@ -8,7 +8,8 @@ import json
 import numpy as np
 import types
 
-from pbcore.io.BasH5IO import BasH5Reader, Zmw, ADAPTER_REGION
+from pbcore.io.BasH5IO import BasH5Reader, Zmw
+from pbcore.model import ADAPTER_REGION
 
 from pbreports.pbsystem_common.cmdline.core import main_runner_default
 from pbreports.pbsystem_common.validators import validate_fofn, bas_fofn_to_bas_files

@@ -1,5 +1,8 @@
+
 import json
 import os
+import os.path as op
+import shutil
 import logging
 import tempfile
 import unittest
@@ -7,20 +10,15 @@ import pprint
 import functools
 
 import pbcommand.testkit
+from pbcommand.pb_io.report import load_report_from_json
 from pbcore.io import ConsensusReadSet
+import pbcore.data
 
 from pbreports.model.model import Report
 from pbreports.report.ccs import to_report, Constants
-from base_test_case import run_backticks, _get_root_data_dir
-
-ROOT_DATA_DIR = _get_root_data_dir()
+from base_test_case import run_backticks
 
 log = logging.getLogger(__name__)
-
-_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'reads_of_insert')
-if not os.path.exists(_DATA_DIR):
-    raise IOError("Unable to find data directory {d}".format(d=_DATA_DIR))
-
 
 def __get_from_constant(prefix_str, c):
     names = [i for i in dir(c) if i.startswith(prefix_str)]
@@ -30,19 +28,41 @@ def __get_from_constant(prefix_str, c):
 _get_attribute_names = functools.partial(__get_from_constant, 'A_')
 _get_image_names = functools.partial(__get_from_constant, 'I_')
 
+EXPECTED_VALUES = {
+    Constants.A_TOTAL_BASES: 85803,
+    Constants.A_NREADS: 18,
+    Constants.A_MEAN_READLENGTH: 4766,
+    Constants.A_MEAN_ACCURACY: 0.947,
+    Constants.A_MEAN_NPASSES: 4,
+    Constants.A_MEAN_QV: 13
+}
 
-class TestCCSBasic(unittest.TestCase):
+
+class TestCCSBase(object):
+
+    @classmethod
+    def setUpData(cls):
+        cls.bam_file_name = pbcore.data.getCCSBAM()
+        cls.xml_file_name = tempfile.NamedTemporaryFile(
+            suffix=".consensusreadset.xml").name
+        ds = ConsensusReadSet(cls.bam_file_name)
+        ds.write(cls.xml_file_name)
+
+    @classmethod
+    def tearDownData(cls):
+        os.remove(cls.xml_file_name)
+
+
+class TestCCSCommand(unittest.TestCase, TestCCSBase):
 
     @classmethod
     def setUpClass(cls):
-        # One ccs.h5 file generated from bax files
-        cls.bam_file_name = os.path.join(_DATA_DIR, "file.ccsread.bam")
-        cls.xml_file_name = os.path.join(_DATA_DIR, "ccs.ccsreadset.xml")
-        if not os.path.exists(cls.xml_file_name):
-            msg = "Unable to file {f}".format(f=cls.xml_file_name)
-            log.error(msg)
-            print msg
+        cls.setUpData()
         cls.ccs_set = ConsensusReadSet(cls.xml_file_name)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tearDownData()
 
     def test_basic(self):
         """Basic smoke test"""
@@ -50,22 +70,6 @@ class TestCCSBasic(unittest.TestCase):
         report = to_report(self.ccs_set, output_dir)
         d = report.to_dict()
         self.assertIsNotNone(d)
-
-    def test_bam(self):
-        """Test .bam input"""
-        expected_values = {
-            "ccs.ccs_table.number_of_ccs_reads": [4],
-            "ccs.ccs_table.total_number_of_ccs_bases": [3340],
-            "ccs.ccs_table.mean_ccs_readlength": [835],
-            "ccs.ccs_table.mean_accuracy": [994],
-            "ccs.ccs_table.mean_ccs_num_passes": [11],
-        }
-        output_dir = tempfile.mkdtemp()
-        bam_file = os.path.join(_DATA_DIR, "file.ccsread.bam")
-        ccs_set = ConsensusReadSet(bam_file)
-        report = to_report(ccs_set, output_dir)
-        print output_dir
-        d = report.to_dict()
 
     def test_integration_bam(self):
         """Run cmdline tool with .bam input"""
@@ -82,46 +86,36 @@ class TestCCSBasic(unittest.TestCase):
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
         json_report_file_name = temp_file.name
         temp_file.close()
-
-        cmd = "{e} --debug --output-dir {o} {i} {r}".format(e=exe,
-                                                            i=file_name,
-                                                            r=json_report_file_name,
-                                                            o=output_dir)
+        cmd = "{e} --debug --output-dir {o} {i} {r}".format(
+            e=exe,
+            i=file_name,
+            r=json_report_file_name,
+            o=output_dir)
         rcode = run_backticks(cmd)
         self.assertEqual(0, rcode)
-
         with open(json_report_file_name, 'r') as f:
             s = json.load(f)
             log.info("JsonReport: ")
             log.info(pprint.pformat(s, indent=4))
-
         self.assertIsNotNone(s)
-
         # cleanup
         os.remove(json_report_file_name)
 
 
-class TestCCS(unittest.TestCase):
-    EXPECTED_VALUES = {
-        Constants.A_TOTAL_BASES: 3340,
-        Constants.A_NREADS: 4,
-        Constants.A_MEAN_READLENGTH: 835,
-        Constants.A_MEAN_ACCURACY: 994,
-        Constants.A_MEAN_NPASSES: 11,
-    }
+class TestCCSMetrics(unittest.TestCase, TestCCSBase):
 
     @classmethod
     def setUpClass(cls):
-        cls.bam_file_name = os.path.join(_DATA_DIR, "file.ccsread.bam")
-        cls.xml_file_name = os.path.join(_DATA_DIR, "ccs.ccsreadset.xml")
-        if not os.path.exists(cls.xml_file_name):
-            msg = "Unable to file {f}".format(f=cls.xml_file_name)
-            log.error(msg)
-            print msg
+        cls.setUpData()
         output_dir = tempfile.mkdtemp()
         cls.ccs_set = ConsensusReadSet(cls.xml_file_name)
         cls.report = to_report(cls.ccs_set, output_dir)
         cls.output_dir = output_dir
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tearDownData()
+        shutil.rmtree(cls.output_dir)
 
     def _get_attribute_value_by_id(self, i):
         """helper method to grab value from the report instance"""
@@ -133,7 +127,6 @@ class TestCCS(unittest.TestCase):
             return a.value
 
     def test_basic(self):
-        """Generate report instance from 3 ccs.h5 files"""
         self.assertTrue(isinstance(self.report, Report))
         log.info(pprint.pformat(self.report.to_dict()))
         self.assertEqual(len(self.report.tables), 1)
@@ -154,7 +147,7 @@ class TestCCS(unittest.TestCase):
             self.assertTrue(os.path.exists(p))
 
     def _compare_metric_values(self, metric_id):
-        value = self.EXPECTED_VALUES[metric_id]
+        value = EXPECTED_VALUES[metric_id]
         self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
 
     def test_total_number_of_ccs_bases(self):
@@ -167,7 +160,12 @@ class TestCCS(unittest.TestCase):
         self._compare_metric_values(Constants.A_MEAN_READLENGTH)
 
     def test_mean_accuracy(self):
-        self._compare_metric_values(Constants.A_MEAN_ACCURACY)
+        value = EXPECTED_VALUES[Constants.A_MEAN_ACCURACY]
+        actual = self._get_attribute_value_by_id(Constants.A_MEAN_ACCURACY)
+        self.assertEqual('%.3f' % value, '%.3f' % actual)
+
+    def test_mean_qv(self):
+        self._compare_metric_values(Constants.A_MEAN_QV)
 
     def test_mean_ccs_num_passes(self):
         self._compare_metric_values(Constants.A_MEAN_NPASSES)
@@ -175,4 +173,22 @@ class TestCCS(unittest.TestCase):
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.ccs"
-    INPUT_FILES = [os.path.join(_DATA_DIR, "ccs.ccsreadset.xml")]
+    INPUT_FILES = [
+        tempfile.NamedTemporaryFile(suffix=".consensusreadset.xml").name
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestToolContract, cls).setUpClass()
+        ds = ConsensusReadSet(pbcore.data.getCCSBAM(), strict=True)
+        ds.write(cls.INPUT_FILES[0])
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.INPUT_FILES[0])
+
+    def run_after(self, rtc, output_dir):
+        report = load_report_from_json(rtc.task.output_files[0])
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr[Constants.A_NREADS],
+                         EXPECTED_VALUES[Constants.A_NREADS])

@@ -60,8 +60,7 @@ class TestMetricsDocumenter(unittest.TestCase):
     def _get_version(self):
         import pbreports
         version = pbreports.get_version()
-        changelist = pbreports.get_changelist()
-        return '{v}.{c}'.format(v=version, c=changelist)
+        return '{v}'.format(v=version, c=changelist)
 
     def _current_time(self):
         from datetime import datetime

@@ -31,7 +31,7 @@ __version__ = '2.0'
 
 
 class Constants(object):
-    R_ID = 'kinetics'
+    R_ID = 'motifs'
 
     T_ID = "motif_records"
 

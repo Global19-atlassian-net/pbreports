@@ -103,7 +103,11 @@ class BaseVariantTableBuilder(object):
 
         log.debug('# columns {n}'.format(n=len(cols)))
 
-        self._table = Table(self._get_table_id(), title=None, columns=cols)
+        self._table = Table(self._get_table_id(), title=self._get_table_title(),
+            columns=cols)
+
+    def _get_table_title(self):
+        pass
 
     def _get_table_id(self):
         pass
@@ -134,6 +138,9 @@ class MinorVariantTableBuilder(BaseVariantTableBuilder):
         super(MinorVariantTableBuilder, self).__init__()
         self._table.columns.append(Column('frequency', 'Frequency'))
 
+    def _get_table_title(self):
+        return "Top minor variants"
+
     def _get_table_id(self):
         return 'top_minor_variants_table'
 
@@ -147,6 +154,9 @@ class VariantTableBuilder(BaseVariantTableBuilder):
     def __init__(self):
         super(VariantTableBuilder, self).__init__()
         self._table.columns.append(Column('genotype', 'Genotype'))
+
+    def _get_table_title(self):
+        return "Top variants"
 
     def _get_table_id(self):
         return 'top_variants_table'
