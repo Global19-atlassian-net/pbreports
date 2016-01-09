@@ -2,8 +2,9 @@ import os
 import logging
 import traceback
 import json
+
 from pbcore.util.Process import backticks
-from base_test_case import BaseTestCase
+
 from pbreports.model.model import Attribute
 from pbreports.util import bas_fofn_to_bas_files
 from pbreports.report.adapter import (make_adapter_report,
@@ -14,6 +15,7 @@ from pbreports.report.adapter import (make_adapter_report,
                                       _get_report_att, _get_zmw_records,
                                       _create_histograms, _create_histogram_figure)
 
+from base_test_case import BaseTestCase, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +79,7 @@ class DataCache(object):
         o.close()
 
 
+@skip_if_data_dir_not_present
 class TestAdapterRpt(BaseTestCase):
 
     @classmethod

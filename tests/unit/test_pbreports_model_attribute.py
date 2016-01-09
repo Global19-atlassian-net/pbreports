@@ -8,6 +8,10 @@ log = logging.getLogger(__name__)
 
 class TestAttribute(BaseTestCase):
 
+    @classmethod
+    def _check_data_dir(cls):
+        pass
+
     def test_attribute_null_id(self):
         """Can't create an attribute without an id."""
         def _test():

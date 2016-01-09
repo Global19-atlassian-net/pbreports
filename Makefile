@@ -24,7 +24,6 @@ clean:
 
 test:
 	nosetests --nocapture --nologcapture --verbose tests/unit/test*.py
-	cram tests/cram/*.t
 
 pip-install:
 	@which pip > /dev/null

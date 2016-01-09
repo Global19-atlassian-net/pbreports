@@ -5,21 +5,20 @@ import json
 import tempfile
 import unittest
 import shutil
-
-from pbcore.util.Process import backticks
 import sys
 
-from base_test_case import _get_root_data_dir
+from pbcore.util.Process import backticks
 
-from pbreports.serializers import dict_to_report
-
-from pbreports.model.model import PbReportError
 from pbreports.report.modifications import (make_modifications_report)
+from pbreports.serializers import dict_to_report
+from pbreports.model.model import PbReportError
 
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
 
+@skip_if_data_dir_not_present
 class TestModificationsRpt(unittest.TestCase):
 
     def setUp(self):

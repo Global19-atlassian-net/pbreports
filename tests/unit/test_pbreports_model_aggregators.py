@@ -2,6 +2,7 @@ import os
 import unittest
 import logging
 import random
+
 from pbreports.model.aggregators import (MaxAggregator, MinAggregator,
                                          MeanAggregator, CountAggregator,
                                          SumAggregator, HistogramAggregator)

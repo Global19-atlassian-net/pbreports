@@ -5,7 +5,8 @@ import tempfile
 
 import numpy as np
 
-from base_test_case import ROOT_DATA_DIR, run_backticks
+from base_test_case import ROOT_DATA_DIR, run_backticks, \
+    skip_if_data_dir_not_present
 
 from pbreports.util import bas_fofn_to_bas_files
 from pbreports.report.filter_subread_summary import run
@@ -14,7 +15,7 @@ _DATA_DIR_NAME = 'filter_subread_summary'
 
 log = logging.getLogger(__name__)
 
-
+@skip_if_data_dir_not_present
 class TestFilterSubreadSummaryReport(unittest.TestCase):
 
     def setUp(self):
@@ -45,6 +46,7 @@ class TestFilterSubreadSummaryReport(unittest.TestCase):
         os.remove(output_csv)
 
 
+@skip_if_data_dir_not_present
 class TestFilterSubreadSummaryIntegration(TestFilterSubreadSummaryReport):
 
     def test_basic(self):

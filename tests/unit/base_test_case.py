@@ -147,6 +147,10 @@ class BaseTestCase(unittest.TestCase):
         if d is None:
             raise KeyError("No test data root has been defined in nose.cfg.")
         if not os.path.exists(d):
+            # FIXME workaround for https://github.com/nose-devs/nose/issues/946
+            if "CIRCLE_SHA1" in os.environ:
+                raise unittest.SkipTest(
+                    "Test data root does not exist: {d}".format(d=d))
             raise IOError("Test data root does not exist: {d}".format(d=d))
 
     @classmethod

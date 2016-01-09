@@ -6,7 +6,7 @@ import unittest
 import logging
 import tempfile
 
-from base_test_case import ROOT_DATA_DIR, run_backticks
+from base_test_case import LOCAL_DATA, run_backticks
 
 import pbreports.report.motifs
 from pbreports.report.motifs import to_motifs_report
@@ -15,7 +15,7 @@ log = logging.getLogger()
 
 EXE = 'motifs_report'
 _DATA_NAME = 'kinetics'
-_DATA_DIR = os.path.join(ROOT_DATA_DIR, _DATA_NAME)
+_DATA_DIR = os.path.join(LOCAL_DATA, _DATA_NAME)
 
 _MOTIF_SUMMARY_CSV = os.path.join(_DATA_DIR, 'motif_summary.csv')
 _MOTIF_GFF = os.path.join(_DATA_DIR, 'motifs.gff.gz')

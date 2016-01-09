@@ -9,20 +9,21 @@ import shutil
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 
-from base_test_case import _get_root_data_dir, run_backticks
 from pbreports.serializers import dict_to_report
 
 from pbreports.model.model import PbReportError
 from pbreports.report.top_variants import (make_topvariants_report, VariantFinder,
                                            MinorVariantTableBuilder, VariantTableBuilder)
 
+from base_test_case import _get_root_data_dir, run_backticks, \
+    skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
 
 ECOLI = 'ecoliK12_pbi_March2013'
 
-
+@skip_if_data_dir_not_present
 class TestTopVariantsRpt(unittest.TestCase):
 
     DATA_DIR = None

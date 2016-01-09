@@ -8,7 +8,6 @@ import shutil
 
 from pbcore.util.Process import backticks
 
-from base_test_case import _get_root_data_dir
 from pbreports.serializers import dict_to_report
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 
@@ -22,6 +21,7 @@ from pbreports.report.control import (make_control_report, _get_control_reads,
                                       _get_attr_control_95_readlength, _get_attr_n50,
                                       _create_score_figure,_create_length_figure)
 
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -29,11 +29,13 @@ CONTROL_READS = 'control'
 FILTERED_READS = 'filtered'
 
 
+@skip_if_data_dir_not_present
 class TestControlRpt(unittest.TestCase):
 
     DATA_DIR = None
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         """
         Load data once.

@@ -8,12 +8,13 @@ import functools
 
 from pbreports.model.model import Report
 from pbreports.serializers import dict_to_report
-
-from base_test_case import ROOT_DATA_DIR, run_backticks
 from pbreports.report.filter_subread import (to_report,
                                              NoSubreadsFound,
                                              NoSubreadsPassedFilter,
                                              Constants)
+
+from base_test_case import ROOT_DATA_DIR, run_backticks, \
+    skip_if_data_dir_not_present
 
 _DATA_DIR_NAME = 'filter_subread'
 
@@ -28,9 +29,11 @@ _get_attribute_names = functools.partial(__get_from_constant, 'A_')
 _get_image_names = functools.partial(__get_from_constant, 'I_')
 
 
+@skip_if_data_dir_not_present
 class TestFilterSubreadSummaryReport(unittest.TestCase):
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         name = "filtered_subread_summary.csv"
         cls.filtered_subread_summary_csv = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
@@ -101,6 +104,7 @@ class TestFilterSubreadSummaryReport(unittest.TestCase):
 
 class TestFilterSubreadSummaryReportIntegration(TestFilterSubreadSummaryReport):
 
+    @skip_if_data_dir_not_present
     def test_basic(self):
         output_dir = tempfile.mkdtemp(suffix="filter_subread_")
         t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
@@ -129,6 +133,7 @@ class TestFilterSubreadSummaryReportIntegration(TestFilterSubreadSummaryReport):
         os.remove(report_json)
 
 
+@skip_if_data_dir_not_present
 class TestFilterSubreadReportNoSubreadsFound(unittest.TestCase):
     def test_basic(self):
         name = "filtered_subread_summary_empty.csv"
@@ -142,6 +147,7 @@ class TestFilterSubreadReportNoSubreadsFound(unittest.TestCase):
             log.info(report)
 
 
+@skip_if_data_dir_not_present
 class TestFilterSubreadReportNoSubreadsPassedFilterException(unittest.TestCase):
     def test_basic(self):
         name = "filtered_subread_summary_no_passed.csv"

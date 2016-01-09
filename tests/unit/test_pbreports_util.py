@@ -11,7 +11,7 @@ from pbreports.util import (validate_output_dir, validate_report,
                             validate_file, validate_nonempty_file,
                             accuracy_as_phred_qv)
 
-from base_test_case import ROOT_DATA_DIR
+from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
 
 _NAME = 'amplicon_analysis_consensus'
 _EMPTY = 'amplicon_analysis_consensus_empty'
@@ -68,6 +68,7 @@ class TestUtil(BaseTestCase):
             log.error(tb)
             raise
 
+    @skip_if_data_dir_not_present
     def test_validate_file(self):
         """
         Test: Return abspath if file found
@@ -82,6 +83,7 @@ class TestUtil(BaseTestCase):
         """
         validate_file( "this_file_doesn't_exist" )
 
+    @skip_if_data_dir_not_present
     def test_validate_nonempty_file(self):
         """
         Test: Return abspath if file found and not empty
@@ -89,6 +91,7 @@ class TestUtil(BaseTestCase):
         file_path = validate_nonempty_file( DATA_REL_PATH )
         self.assertEqual( file_path, DATA_ABS_PATH )
 
+    @skip_if_data_dir_not_present
     @nose.tools.raises(IOError)
     def test_validate_nonempty_file_fails(self):
         """
@@ -151,31 +154,32 @@ class TestUtil(BaseTestCase):
         except:
             log.error(traceback.format_exc())
             raise
-        
-        
+
+    @skip_if_data_dir_not_present
     def test_get_fasta_readlengths(self):
         """
         Test getting num reads and total readlength
         """
         with self.assertRaises(IOError):
             get_fasta_readlengths('what.ever')
-            
+
         fasta = os.path.join( ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
         l = get_fasta_readlengths(fasta)
         self.assertEqual( 2, len(l) )
         self.assertEqual( 47938, sum(l) )
-        
+
+    @skip_if_data_dir_not_present
     def test_compute_n50_from_file(self):
         """
         Test getting N50 from file
         """
         with self.assertRaises(IOError):
             get_fasta_readlengths('what.ever')
-            
+
         fasta = os.path.join( ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
         self.assertEqual( 33586, compute_n50_from_file(fasta) )
-        
-        
+
+    @skip_if_data_dir_not_present
     def test_compute_n50_from_readlenths(self):
         """
         Test getting N50 from length list

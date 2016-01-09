@@ -74,7 +74,8 @@ def to_report(stats_xml):
                       cn, vals)
                for cn, vals in zip(col_names, col_values)]
     tables = [Table("loading_xml_table", "Loading Statistics", columns)]
-    report = Report("loading_xml_report", tables, None, None)
+    report = Report("loading_xml_report", title="Loading Report",
+                    tables=tables, attributes=None, plotgroups=None)
     return report
 
 

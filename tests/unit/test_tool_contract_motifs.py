@@ -8,12 +8,11 @@ import os.path
 
 import pbcommand.testkit
 
-from base_test_case import _get_root_data_dir
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 
 ROOT_DIR = _get_root_data_dir()
 
-
-@unittest.skipUnless(os.path.isdir(ROOT_DIR), "%s not available" % ROOT_DIR)
+@skip_if_data_dir_not_present
 class TestPbreportMotifs(pbcommand.testkit.PbTestApp):
     DATA = os.path.join(ROOT_DIR, "kinetics")
     DRIVER_BASE = "python -m pbreports.report.motifs "

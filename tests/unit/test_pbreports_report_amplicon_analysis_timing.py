@@ -7,12 +7,12 @@ from pprint import pformat
 
 from pbreports.model.model import Report
 from pbreports.report.amplicon_analysis_timing import run_to_report
-from base_test_case import ROOT_DATA_DIR, run_backticks
+from base_test_case import LOCAL_DATA, run_backticks
 
 log = logging.getLogger(__name__)
 
 _NAME = 'amplicon_analysis_timing'
-DATA_DIR = os.path.join(ROOT_DATA_DIR, _NAME)
+DATA_DIR = os.path.join(LOCAL_DATA, _NAME)
 
 
 class TestAmpliconAnalysisTimingReport(unittest.TestCase):

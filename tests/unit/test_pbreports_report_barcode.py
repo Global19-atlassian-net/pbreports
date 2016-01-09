@@ -9,16 +9,15 @@ from pbcore.util.Process import backticks
 from pbreports.report.barcode import run_to_report, _to_tuple_list
 from pbreports.util import bas_fofn_to_bas_files
 
-from base_test_case import _get_root_data_dir
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 ROOT_DATA_DIR = _get_root_data_dir()
 
 log = logging.getLogger(__name__)
 
 _DATA_DIR = os.path.join(ROOT_DATA_DIR, 'barcode')
-if not os.path.exists(_DATA_DIR):
-    raise IOError("Unable to find data directory {d}".format(d=_DATA_DIR))
 
 
+@skip_if_data_dir_not_present
 class TestBarcodeFunctions(unittest.TestCase):
 
     def test_basic(self):
@@ -41,6 +40,7 @@ class TestBarcodeFunctions(unittest.TestCase):
             log.info(pformat(bas_barcode_list))
 
 
+@skip_if_data_dir_not_present
 class TestBarcodeReportBasic(unittest.TestCase):
 
     def setUp(self):
@@ -57,6 +57,7 @@ class TestBarcodeReportBasic(unittest.TestCase):
         log.info(str(report.tables[0]))
 
 
+@skip_if_data_dir_not_present
 class TestBarcodeIntegration(unittest.TestCase):
 
     def setUp(self):
@@ -95,6 +96,7 @@ class TestBarcodeIntegration(unittest.TestCase):
         os.remove(json_report_file_name)
 
 
+@skip_if_data_dir_not_present
 class TestReadsOfInsertBarcodeReportBasic(unittest.TestCase):
 
     def setUp(self):
@@ -113,6 +115,7 @@ class TestReadsOfInsertBarcodeReportBasic(unittest.TestCase):
         log.info(str(report.tables[0]))
 
 
+@skip_if_data_dir_not_present
 class TestReadsOfInsertBarcodeIntegration(TestBarcodeIntegration):
 
     def setUp(self):
