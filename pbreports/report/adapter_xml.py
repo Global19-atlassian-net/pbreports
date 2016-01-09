@@ -86,7 +86,8 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     tables = [Table("adapter_xml_table", "Adapter Statistics", columns)]
 
-    report = Report("adapter_xml_report", tables, None, plot_groups)
+    report = Report("adapter_xml_report", title="Adapter Report",
+                    tables=tables, attributes=None, plotgroups=plot_groups)
 
     return report
 
