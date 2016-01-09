@@ -5,15 +5,17 @@ import json
 import unittest
 import tempfile
 import shutil
-
-from pbcore.util.Process import backticks
 import sys
 
-from base_test_case import ROOT_DATA_DIR
+from pbcore.util.Process import backticks
+
 from pbreports.report.polished_assembly import (make_polished_assembly_report,
-                                                _get_att_max_contig_length, _get_att_n_50_contig_length,
+                                                _get_att_max_contig_length,
+                                                _get_att_n_50_contig_length,
                                                 _get_att_sum_contig_lengths)
 from pbreports.serializers import dict_to_report
+
+from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -40,6 +42,7 @@ class TestPolishedAssemblyRpt(unittest.TestCase):
         with self.assertRaises(IOError):
             make_polished_assembly_report('foo', 'bar', 'baz', self._output_dir)
 
+    @skip_if_data_dir_not_present
     def test_make_polished_assembly_report(self):
         """
         Test the attributes of the report
@@ -82,6 +85,7 @@ class TestPolishedAssemblyRpt(unittest.TestCase):
                 return a
         raise ValueError('Did not find expected attribute "{a}" in list'.format(a=id_))
 
+    @skip_if_data_dir_not_present
     def test_exit_code_0(self):
         """
         Like a cram test. Assert exits with 0.

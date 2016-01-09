@@ -4,7 +4,8 @@ import unittest
 import tempfile
 import shlex
 
-from base_test_case import ROOT_DATA_DIR, run_backticks
+from base_test_case import ROOT_DATA_DIR, run_backticks, \
+    skip_if_data_dir_not_present
 
 from pbreports.report.summarize_compare_by_movie import main
 
@@ -32,6 +33,7 @@ class TestHelp(unittest.TestCase):
         self.assertEqual(rcode, 0)
 
 
+@skip_if_data_dir_not_present
 class TestSummarizeCompareByMovie(unittest.TestCase):
     def test_basic(self):
         csv = _generate_tmp_file()
@@ -43,6 +45,7 @@ class TestSummarizeCompareByMovie(unittest.TestCase):
         self.assertEqual(rcode, 0)
 
 
+@skip_if_data_dir_not_present
 class TestIntegrationSummarizeCompareByMovie(unittest.TestCase):
 
     def test_basic(self):
