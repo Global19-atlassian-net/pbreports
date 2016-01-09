@@ -8,15 +8,14 @@ import logging
 import sys
 
 import numpy as np
-from pbcommand.utils import setup_log
-from pbcore.io import DataSet
+
+from pbcommand.models.report import Report, Table, Column, PlotGroup, Plot
+from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
+from pbcommand.utils import setup_log
+from pbcore.io import DataSet
 
-from pbcommand.common_options import add_debug_option
-
-from pbreports.model.model import (Report, Table, Column, PlotGroup,
-                                   Plot)
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
 
