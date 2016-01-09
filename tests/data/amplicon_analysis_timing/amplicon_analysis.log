@@ -1,0 +1,342 @@
+2014-09-10 17:44:28.3580|DEBUG|AmpliconAnalysis|Writing to existing results folder: '/home/UNIXHOME/bbowman/2014/09/HLA_NewSingleTest/ANRI_0007/test2/data'
+2014-09-10 17:44:31.8869|INFO|ParameterLoading|Used parameter file: '/home/UNIXHOME/bbowman/builds/localsmrt/analysis/etc/algorithm_parameters/2014-09/GenomicConsensus/QuiverParameters.ini'
+2014-09-10 17:44:32.0130|INFO|AmpliconAnalysis|No whitelist file specified, using all available subreads
+2014-09-10 17:44:32.6056|INFO|AmpliconAnalysis|Filtering from 103358 total subreads...
+2014-09-10 17:45:11.2836|INFO|AmpliconAnalysis|Sampling from 13555 post-filter subreads...
+2014-09-10 17:45:12.1613|INFO|AmpliconAnalysis|Coarse clustering 2000 subreads...
+2014-09-10 17:45:12.5316|DEBUG|CoarseClustering|Using Intel MKL Linear Algebra.
+2014-09-10 17:51:01.0299|INFO|AmpliconAnalysis|Fine clustering 1955 subreads...
+2014-09-10 17:51:57.2930|INFO|FineClustering|Barcode '0', Cluster 0 -- Phasing/Consensus of 500 reads
+2014-09-10 17:59:51.8252|INFO|FineClustering|Barcode '0', Cluster 0 -- Split into 6 haplotypes
+2014-09-10 18:02:26.1193|INFO|FineClustering|Barcode '0', Cluster 0 -- Consensus did not converge in 15 iterations
+2014-09-10 18:04:51.8085|INFO|FineClustering|Barcode '0', Cluster 1 -- Phasing/Consensus of 448 reads
+2014-09-10 18:11:50.5666|INFO|FineClustering|Barcode '0', Cluster 1 -- Split into 6 haplotypes
+2014-09-10 18:13:55.6123|INFO|FineClustering|Barcode '0', Cluster 1 -- Consensus did not converge in 15 iterations
+2014-09-10 18:16:07.0127|INFO|FineClustering|Barcode '0', Cluster 2 -- Phasing/Consensus of 410 reads
+2014-09-10 18:21:05.1675|INFO|FineClustering|Barcode '0', Cluster 2 -- Split into 6 haplotypes
+2014-09-10 18:22:47.7951|INFO|FineClustering|Barcode '0', Cluster 2 -- Consensus did not converge in 15 iterations
+2014-09-10 18:24:23.3541|INFO|FineClustering|Barcode '0', Cluster 3 -- Phasing/Consensus of 278 reads
+2014-09-10 18:27:06.7584|INFO|FineClustering|Barcode '0', Cluster 3 -- Split into 2 haplotypes
+2014-09-10 18:27:49.2656|INFO|FineClustering|Barcode '0', Cluster 3 -- Consensus converged in 1 iteration(s)
+2014-09-10 18:28:56.4115|INFO|FineClustering|Barcode '0', Cluster 4 -- Phasing/Consensus of 264 reads
+2014-09-10 18:32:02.2853|INFO|FineClustering|Barcode '0', Cluster 4 -- Split into 4 haplotypes
+2014-09-10 18:32:59.7993|INFO|FineClustering|Barcode '0', Cluster 4 -- Consensus did not converge in 15 iterations
+2014-09-10 18:33:37.6041|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster2_Phase0_NumReads293' is abundant, assumed real.
+2014-09-10 18:33:37.7841|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster0_Phase5_NumReads272' is abundant, assumed real.
+2014-09-10 18:33:38.4081|INFO|ChimeraDetector|Consensus Barcode0_Cluster1_Phase5_NumReads266 has crossover 3032, chimera score 0.132 (min: 1.000), appears real
+2014-09-10 18:33:38.4149|INFO|ChimeraDetector|Proposed parents Barcode0_Cluster0_Phase5_NumReads272 and Barcode0_Cluster2_Phase0_NumReads293
+2014-09-10 18:33:38.8854|INFO|ChimeraDetector|Consensus Barcode0_Cluster4_Phase1_NumReads190 has crossover 1309, chimera score 0.460 (min: 1.000), appears real
+2014-09-10 18:33:38.8863|INFO|ChimeraDetector|Proposed parents Barcode0_Cluster0_Phase5_NumReads272 and Barcode0_Cluster2_Phase0_NumReads293
+2014-09-10 18:33:39.2889|INFO|ChimeraDetector|Consensus Barcode0_Cluster3_Phase1_NumReads144 has crossover 1438, chimera score 0.052 (min: 1.000), appears real
+2014-09-10 18:33:39.2897|INFO|ChimeraDetector|Proposed parents Barcode0_Cluster1_Phase5_NumReads266 and Barcode0_Cluster2_Phase0_NumReads293
+2014-09-10 18:33:39.8769|INFO|ChimeraDetector|Consensus Barcode0_Cluster3_Phase0_NumReads134 has crossover 1241, chimera score 0.062 (min: 1.000), appears real
+2014-09-10 18:33:39.8776|INFO|ChimeraDetector|Proposed parents Barcode0_Cluster1_Phase5_NumReads266 and Barcode0_Cluster3_Phase1_NumReads144
+2014-09-10 18:33:40.9805|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster0_Phase4_NumReads73' has crossover 489, chimera score 14.906 (min: 1.000), proposed chimera
+2014-09-10 18:33:40.9815|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster1_Phase5_NumReads266' and 'Barcode0_Cluster0_Phase5_NumReads272'
+2014-09-10 18:33:41.6909|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster0_Phase0_NumReads56' has crossover 2626, chimera score 39.844 (min: 1.000), proposed chimera
+2014-09-10 18:33:41.6917|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster0_Phase5_NumReads272' and 'Barcode0_Cluster1_Phase5_NumReads266'
+2014-09-10 18:33:42.3965|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster1_Phase4_NumReads53' has crossover 489, chimera score 14.906 (min: 1.000), proposed chimera
+2014-09-10 18:33:42.3965|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster0_Phase5_NumReads272' and 'Barcode0_Cluster1_Phase5_NumReads266'
+2014-09-10 18:33:43.1076|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster1_Phase3_NumReads42' has crossover 2396, chimera score 43.750 (min: 1.000), proposed chimera
+2014-09-10 18:33:43.1089|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster1_Phase5_NumReads266' and 'Barcode0_Cluster0_Phase5_NumReads272'
+2014-09-10 18:33:43.9612|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster2_Phase1_NumReads39' has crossover 2414, chimera score 36.667 (min: 1.000), proposed chimera
+2014-09-10 18:33:43.9620|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster2_Phase0_NumReads293' and 'Barcode0_Cluster4_Phase1_NumReads190'
+2014-09-10 18:33:44.6752|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster0_Phase1_NumReads37' has crossover 2375, chimera score 20.606 (min: 1.000), proposed chimera
+2014-09-10 18:33:44.6762|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster0_Phase5_NumReads272' and 'Barcode0_Cluster1_Phase5_NumReads266'
+2014-09-10 18:33:45.6543|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster4_Phase0_NumReads36' has crossover 889, chimera score 36.667 (min: 1.000), proposed chimera
+2014-09-10 18:33:45.6551|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster2_Phase0_NumReads293' and 'Barcode0_Cluster4_Phase1_NumReads190'
+2014-09-10 18:33:46.5836|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster1_Phase2_NumReads35' has crossover 2845, chimera score 38.063 (min: 1.000), proposed chimera
+2014-09-10 18:33:46.5836|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster1_Phase5_NumReads266' and 'Barcode0_Cluster0_Phase5_NumReads272'
+2014-09-10 18:33:47.2888|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster0_Phase3_NumReads32' has crossover 2420, chimera score 6.002 (min: 1.000), proposed chimera
+2014-09-10 18:33:47.2895|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster0_Phase5_NumReads272' and 'Barcode0_Cluster1_Phase5_NumReads266'
+2014-09-10 18:33:48.0268|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster0_Phase2_NumReads30' has crossover 2870, chimera score 6.400 (min: 1.000), proposed chimera
+2014-09-10 18:33:48.0277|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster0_Phase5_NumReads272' and 'Barcode0_Cluster1_Phase5_NumReads266'
+2014-09-10 18:33:48.7487|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster1_Phase0_NumReads27' has crossover 2085, chimera score 29.778 (min: 1.000), proposed chimera
+2014-09-10 18:33:48.7495|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster1_Phase5_NumReads266' and 'Barcode0_Cluster0_Phase5_NumReads272'
+2014-09-10 18:33:49.6197|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster2_Phase4_NumReads26' has crossover 2099, chimera score 22.212 (min: 1.000), proposed chimera
+2014-09-10 18:33:49.6205|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster4_Phase1_NumReads190' and 'Barcode0_Cluster2_Phase0_NumReads293'
+2014-09-10 18:33:50.4553|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster1_Phase1_NumReads24' has crossover 2397, chimera score 5.522 (min: 1.000), proposed chimera
+2014-09-10 18:33:50.4574|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster1_Phase5_NumReads266' and 'Barcode0_Cluster0_Phase5_NumReads272'
+2014-09-10 18:33:51.2848|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster4_Phase2_NumReads24' has crossover 1525, chimera score 27.407 (min: 1.000), proposed chimera
+2014-09-10 18:33:51.2859|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster4_Phase1_NumReads190' and 'Barcode0_Cluster2_Phase0_NumReads293'
+2014-09-10 18:33:52.0929|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster2_Phase3_NumReads20' has crossover 1056, chimera score 2.696 (min: 1.000), proposed chimera
+2014-09-10 18:33:52.0936|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster4_Phase1_NumReads190' and 'Barcode0_Cluster2_Phase0_NumReads293'
+2014-09-10 18:33:52.8211|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster2_Phase5_NumReads19' has crossover 1380, chimera score 13.811 (min: 1.000), proposed chimera
+2014-09-10 18:33:52.8219|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster4_Phase1_NumReads190' and 'Barcode0_Cluster2_Phase0_NumReads293'
+2014-09-10 18:33:53.5683|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster4_Phase3_NumReads14' has crossover 2275, chimera score 3.333 (min: 1.000), proposed chimera
+2014-09-10 18:33:53.5691|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster4_Phase1_NumReads190' and 'Barcode0_Cluster2_Phase0_NumReads293'
+2014-09-10 18:33:54.3020|INFO|ChimeraDetector|Consensus 'Barcode0_Cluster2_Phase2_NumReads13' has crossover 2942, chimera score 3.938 (min: 1.000), proposed chimera
+2014-09-10 18:33:54.3029|INFO|ChimeraDetector|Proposed parents 'Barcode0_Cluster2_Phase0_NumReads293' and 'Barcode0_Cluster4_Phase1_NumReads190'
+2014-09-10 18:33:54.3128|INFO|AmpliconAnalysis|Writing results...
+2014-09-10 18:33:54.3136|INFO|AmpliconAnalysis|Writing 24 consensus sequences to FASTA and FASTQ...
+2014-09-10 18:33:54.3541|INFO|AmpliconAnalysis|Writing per-base results to CSV...
+2014-09-10 18:33:54.6273|INFO|AmpliconAnalysis|Writing per-read summary information to CSV...
+2014-09-10 18:33:54.6326|INFO|AmpliconAnalysis|Calculating per-subread mapping scores...
+2014-09-10 18:33:55.2484|INFO|AmpliconAnalysis|Writing per-subread mapping scores to CSV...
+2014-09-10 18:33:55.2805|INFO|AmpliconAnalysis|Calculating per-Zmw mapping scores...
+2014-09-10 18:33:55.3660|INFO|AmpliconAnalysis|Writing per-zmw mapping scores to CSV...
+2014-09-10 18:33:55.4077|INFO|ConsensusTools|Exiting with result: 0 -- Success
+[INFO] 2016-01-06 19:28:11,522Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-06 19:28:11,544Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-06 19:28:11,544Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-06 19:28:11,549Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-06 19:28:11,551Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-06 19:28:11,552Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.03 sec.
+[INFO] 2016-01-06 21:59:20,312Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-06 21:59:20,333Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-06 21:59:20,333Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-06 21:59:20,338Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-06 21:59:20,340Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-06 21:59:20,341Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.03 sec.
+[INFO] 2016-01-08 03:40:26,303Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-08 03:40:26,714Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-08 03:40:26,714Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-08 03:40:26,723Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-08 03:40:26,725Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-08 03:40:26,726Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.42 sec.
+[INFO] 2016-01-08 19:07:56,825Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-08 19:07:56,846Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-08 19:07:56,846Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-08 19:07:56,851Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-08 19:07:56,853Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-08 19:07:56,853Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.03 sec.
+[INFO] 2016-01-09 01:46:29,239Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-09 01:46:29,408Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-09 01:46:29,408Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/home/nechols/src/pbreports/tests/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-09 01:46:29,417Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-09 01:46:29,419Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-09 01:46:29,419Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.18 sec.
+[INFO] 2016-01-09 01:46:36,159Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-09 01:46:36,372Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-09 01:46:36,372Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/home/nechols/src/pbreports/tests/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-09 01:46:36,381Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-09 01:46:36,383Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-09 01:46:36,384Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.23 sec.
+[INFO] 2016-01-09 01:46:55,081Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-09 01:46:55,311Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-09 01:46:55,311Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/home/nechols/src/pbreports/tests/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-09 01:46:55,327Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-09 01:46:55,331Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-09 01:46:55,332Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.25 sec.
+[INFO] 2016-01-09 01:50:17,461Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 95] Using pbcommand v0.3.7
+[INFO] 2016-01-09 01:50:17,611Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 119] Running amplicon_analysis_timing.pyc v0.1.1.
+[INFO] 2016-01-09 01:50:17,611Z [pbreports.report.amplicon_analysis_timing run_to_report 105] Generating Timing report v0.1.1 from logfile '/home/nechols/src/pbreports/tests/data/amplicon_analysis_timing/amplicon_analysis.log'
+[INFO] 2016-01-09 01:50:17,620Z [pbreports.report.amplicon_analysis_timing create_table 99] 
+Table id:result_table
+-----------------------------------------------
+Sample   Hours  Minutes  Total Time (seconds)  
+-----------------------------------------------
+0         0       41        2462                  
+Average   0       20        1231                  
+Median    0       41        2462                  
+Total     0       49        2967                  
+[INFO] 2016-01-09 01:50:17,622Z [pbreports.report.amplicon_analysis_timing amplicon_analysis_timing 121] {'_changelist': 'UNKNOWN',
+ '_version': '0.3.7',
+ 'attributes': [],
+ 'dataset_uuids': [],
+ 'id': 'amplicon_analysis_timing',
+ 'plotGroups': [],
+ 'tables': [{'columns': [{'header': 'Sample',
+                          'id': 'amplicon_analysis_timing.result_table.barcode_col',
+                          'values': ['0', 'Average', 'Median', 'Total']},
+                         {'header': 'Hours',
+                          'id': 'amplicon_analysis_timing.result_table.hour_col',
+                          'values': [0, 0, 0, 0]},
+                         {'header': 'Minutes',
+                          'id': 'amplicon_analysis_timing.result_table.minute_col',
+                          'values': [41, 20, 41, 49]},
+                         {'header': 'Total Time (seconds)',
+                          'id': 'amplicon_analysis_timing.result_table.second_col',
+                          'values': [2462, 1231, 2462, 2967]}],
+             'id': 'amplicon_analysis_timing.result_table',
+             'title': 'Amplicon Analysis Timing Summary'}]}
+[INFO] 2016-01-09 01:50:17,623Z [pbreports.report.amplicon_analysis_timing _pacbio_main_runner 115] exiting with return code 0 in 0.16 sec.
