@@ -15,7 +15,7 @@ from pbreports.model.model import PbReportError
 from pbreports.report.top_variants import (make_topvariants_report, VariantFinder,
                                            MinorVariantTableBuilder, VariantTableBuilder)
 
-from base_test_case import _get_root_data_dir, run_backticks,
+from base_test_case import _get_root_data_dir, run_backticks, \
     skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)

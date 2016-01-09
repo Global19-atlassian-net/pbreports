@@ -2,12 +2,13 @@ import os
 import logging
 import traceback
 
-from base_test_case import BaseTestCase
+from base_test_case import BaseTestCase, skip_if_data_dir_not_present
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 
 log = logging.getLogger(__name__)
 
 
+@skip_if_data_dir_not_present
 class TestFilteredSummaryReader(BaseTestCase):
 
     @classmethod

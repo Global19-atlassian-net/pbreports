@@ -5,16 +5,15 @@ import pprint
 
 from pbreports.report.preassembly import to_report
 
-from base_test_case import _get_root_data_dir
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 
 ROOT_DATA_DIR = _get_root_data_dir()
+_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'preassembly')
+
 log = logging.getLogger(__name__)
 
-_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'preassembly')
-if not os.path.exists(_DATA_DIR):
-    raise IOError("Unable to find data directory {d}".format(d=_DATA_DIR))
 
-
+@skip_if_data_dir_not_present
 class TestPreassemblyReport(unittest.TestCase):
 
     def test_basic(self):

@@ -14,13 +14,12 @@ import pbreports.report.isoseq_cluster
 from base_test_case import (ROOT_DATA_DIR, run_backticks,
                             get_report_id_from_constants,
                             get_image_names_from_constants,
-                            get_plot_groups_from_constants)
+                            get_plot_groups_from_constants,
+                            skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
 
 _DATA_DIR = os.path.join(ROOT_DATA_DIR, 'isoseq')
-if not os.path.exists(_DATA_DIR):
-    raise IOError("Unable to find data directory {d}".format(d=_DATA_DIR))
 
 # This will keep the report results and skip the teardown classmethod
 _DEBUG = False
@@ -83,9 +82,12 @@ class _TestIsoSeqBase(unittest.TestCase):
                     shutil.rmtree(cls.results_dir)
 
 
+@skip_if_data_dir_not_present
 class TestIsoSeqClassify(_TestIsoSeqBase):
     pass
 
+
+@skip_if_data_dir_not_present
 class TestIsoSeqCluster(_TestIsoSeqBase):
 
     @classmethod
@@ -101,6 +103,7 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
         cls.code = run_backticks(cmd)
 
 
+@skip_if_data_dir_not_present
 class TestIsoSeqClassifyTCI(PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.isoseq_classify"
     INPUT_FILES = [
@@ -109,6 +112,7 @@ class TestIsoSeqClassifyTCI(PbTestApp):
     ]
 
 
+@skip_if_data_dir_not_present
 class TestIsoSeqClusterTCI(PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.isoseq_cluster"
     INPUT_FILES = [

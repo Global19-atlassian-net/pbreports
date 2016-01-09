@@ -1,3 +1,4 @@
+
 import os
 import logging
 import traceback
@@ -11,8 +12,8 @@ log = logging.getLogger(__name__)
 class TestCsvReader(BaseTestCase):
 
     @classmethod
-    def setUpClass(cls):
-        BaseTestCase.setUpClass()
+    def _check_data_dir(cls):
+        pass # XXX we don't actually need it for this test
 
     def setUp(self):
         """

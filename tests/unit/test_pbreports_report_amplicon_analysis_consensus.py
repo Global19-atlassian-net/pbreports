@@ -8,16 +8,16 @@ from pprint import pformat
 
 from pbreports.model.model import Report
 from pbreports.report.amplicon_analysis_consensus import run_to_report
-from base_test_case import ROOT_DATA_DIR, run_backticks
+from base_test_case import LOCAL_DATA, run_backticks
 
 log = logging.getLogger(__name__)
 
 _NAME = 'amplicon_analysis_consensus'
 _EMPTY = 'amplicon_analysis_consensus_empty'
 _SINGLE = 'amplicon_analysis_consensus_single'
-DATA_DIR = os.path.join(ROOT_DATA_DIR, _NAME)
-EMPTY_DIR = os.path.join(ROOT_DATA_DIR, _EMPTY)
-SINGLE_DIR = os.path.join(ROOT_DATA_DIR, _SINGLE)
+DATA_DIR = os.path.join(LOCAL_DATA, _NAME)
+EMPTY_DIR = os.path.join(LOCAL_DATA, _EMPTY)
+SINGLE_DIR = os.path.join(LOCAL_DATA, _SINGLE)
 
 
 class TestLongAmpliconAnalysisReport(unittest.TestCase):

@@ -9,6 +9,10 @@ log = logging.getLogger(__name__)
 
 class TestPlotGroup(BaseTestCase):
 
+    @classmethod
+    def _check_data_dir(cls):
+        pass
+
     def test_init(self):
         """Test constructor with kwargs"""
         plot = Plot('a_plot', 'path/to/image.png', caption="My Image")
