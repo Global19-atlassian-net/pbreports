@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<report>
+			<attributes>
+			</attributes>
+    			<title>Motifs</title>
+
+    			<table>
+    				<thead><tr>
+		  <th>Motif</th>
+		  <th>Modified Position</th>
+    	  <th>Modification Type</th>	
+		  <th>% Motifs Detected</th>
+		  <th># of Motifs Detected</th>
+		  <th># of Motifs in Genome</th>
+		  <th>Mean Modification QV</th>
+		  <th>Mean Motif Coverage</th>
+		  <th>Partner Motif</th>
+		</tr></thead>
+    				<tbody>
+    					<tr>
+		  <td>G<b>A</b>TC</td>
+		  <td>2</td>
+		  <td>m6A</td>
+		  <td>100.00</td>
+		  <td>322</td>
+		  <td>322</td>
+		  <td>147.4</td>
+		  <td>100.4</td>
+		  <td>GATC</td>
+	</tr><tr>
+		  <td>HNNNN<b>C</b>CNGSCNNASC</td>
+		  <td>6</td>
+		  <td>unknown</td>
+		  <td>100.00</td>
+		  <td>5</td>
+		  <td>5</td>
+		  <td>40.2</td>
+		  <td>85.6</td>
+		  <td></td>
+	</tr><tr>
+		  <td>WNN<b>C</b>NNCANGGMNA</td>
+		  <td>4</td>
+		  <td>unknown</td>
+		  <td>100.00</td>
+		  <td>5</td>
+		  <td>5</td>
+		  <td>36.8</td>
+		  <td>84.8</td>
+		  <td></td>
+	</tr><tr>
+		  <td><b>C</b>CAGGTANNNNNNNNNV</td>
+		  <td>1</td>
+		  <td>unknown</td>
+		  <td>90.91</td>
+		  <td>10</td>
+		  <td>11</td>
+		  <td>51.1</td>
+		  <td>102.7</td>
+		  <td></td>
+	</tr><tr>
+		  <td>DMANNC<b>C</b>WGGA</td>
+		  <td>7</td>
+		  <td>m4C</td>
+		  <td>83.33</td>
+		  <td>5</td>
+		  <td>6</td>
+		  <td>46.2</td>
+		  <td>107.0</td>
+		  <td></td>
+	</tr><tr>
+		  <td>VNNNVNNBNNNN<b>C</b>CTGGB</td>
+		  <td>13</td>
+		  <td>unknown</td>
+		  <td>65.00</td>
+		  <td>26</td>
+		  <td>40</td>
+		  <td>51.2</td>
+		  <td>104.7</td>
+		  <td></td>
+	</tr><tr>
+		  <td>WVRNNNNGNGNBC<b>C</b>W</td>
+		  <td>14</td>
+		  <td>unknown</td>
+		  <td>50.00</td>
+		  <td>5</td>
+		  <td>10</td>
+		  <td>38.0</td>
+		  <td>101.2</td>
+		  <td></td>
+	</tr><tr>
+		  <td>MNNNNNNYGNNRRA<b>G</b>TW</td>
+		  <td>15</td>
+		  <td>unknown</td>
+		  <td>50.00</td>
+		  <td>5</td>
+		  <td>10</td>
+		  <td>37.2</td>
+		  <td>105.6</td>
+		  <td></td>
+	</tr><tr>
+		  <td>WNRNNV<b>C</b>NTTANDNNNNA</td>
+		  <td>7</td>
+		  <td>unknown</td>
+		  <td>41.67</td>
+		  <td>5</td>
+		  <td>12</td>
+		  <td>35.0</td>
+		  <td>101.6</td>
+		  <td></td>
+	</tr>
+    					<tr>
+		  <td><i>Not Clustered</i></td>
+		  <td>0</td>
+		  <td></td>
+		  <td>0.23</td>
+		  <td>112</td>
+		  <td>49579</td>
+		  <td>40.1</td>
+		  <td>96.5</td>
+		  <td></td>
+	</tr>
+            </tbody>
+    			</table>
+			<graphGroup>
+			    <title>Modification QV Histogram By Motif</title>
+			    <graph>
+				    <title>Modification QV Histogram</title>
+				    <image>motifHistogram.png</image>
+            <caption>Motif and base modification type identification is dependent on sequence coverage, set threshold levels, degree of DNA methylation, and other factors. Results should be interpreted in consideration of these factors.</caption>
+			    </graph>
+			</graphGroup>
+    		</report>

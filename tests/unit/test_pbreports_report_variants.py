@@ -11,8 +11,6 @@ from pbcore.io import ReferenceSet
 
 from pbreports.util import openReference
 
-from base_test_case import _get_root_data_dir, run_backticks
-
 from pbreports.model.model import PbReportError
 from pbreports.util import get_top_contigs_from_ref_entry
 from pbreports.report.variants import (make_variants_report, _extract_alignment_summ_data,
@@ -22,6 +20,8 @@ from pbreports.report.variants import (make_variants_report, _extract_alignment_
                                        _ref_ids_ordered_by_len,
                                        _create_variants_plot_grp, _create_bars, _get_legend_file)
 
+from base_test_case import _get_root_data_dir, run_backticks, \
+    skip_if_data_dir_not_present
 
 VARIANTS_DATA = os.path.join(_get_root_data_dir(), 'variants')
 
@@ -30,6 +30,7 @@ DT='Desulfurobacterium_thermolithotrophum_DSM11699_gDNA'
 log = logging.getLogger(__name__)
 
 
+@skip_if_data_dir_not_present
 class TestVariantsRpt(unittest.TestCase):
 
     def setUp(self):
@@ -380,6 +381,8 @@ class TestVariantsRpt(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self._output_dir,
                                                     'rpt.json')))
 
+
+class TestVariansReportMisc(unittest.TestCase):
     def test_ref_ids_ordered_by_len(self):
         """
         Test the list of seq ids ordered by len
