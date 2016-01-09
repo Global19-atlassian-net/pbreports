@@ -142,7 +142,10 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     tables = [Table("filter_xml_table", "Filtering Statistics", columns)]
 
-    report = Report("filtering_stats_xml_report", tables, None,
+    report = Report("filtering_stats_xml_report",
+                    title="Filtering stats XML report",
+                    tables=tables,
+                    attributes=None,
                     plotgroups=plot_groups)
 
     return report

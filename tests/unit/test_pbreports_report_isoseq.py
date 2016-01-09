@@ -32,6 +32,7 @@ class _TestIsoSeqBase(unittest.TestCase):
     """
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.report_constants = pbreports.report.isoseq_classify.Constants
@@ -91,6 +92,7 @@ class TestIsoSeqClassify(_TestIsoSeqBase):
 class TestIsoSeqCluster(_TestIsoSeqBase):
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         cls.report_constants = pbreports.report.isoseq_cluster.Constants
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
