@@ -71,8 +71,8 @@ class TestBamLarge(TestBam):
         "ncolumns": 5,
     }
 
-    @skip_if_data_dir_not_present
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         super(TestBamLarge, cls).setUpClass()
 

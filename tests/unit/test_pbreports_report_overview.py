@@ -8,14 +8,15 @@ import logging
 import pbcommand.testkit
 
 import pbreports.report.overview as overview
-from base_test_case import _get_root_data_dir, run_backticks
+from base_test_case import _get_root_data_dir, run_backticks,\
+    skip_if_data_dir_not_present
 from pbreports.util import bas_fofn_to_bas_files
 
 log = logging.getLogger(__name__)
 
 ROOT_DATA_DIR = "/pbi/dept/secondary/siv/testdata/SA3-DS"
 
-@unittest.skipUnless(op.exists(ROOT_DATA_DIR), "%s missing"%ROOT_DATA_DIR)
+@skip_if_data_dir_not_present
 class TestOverViewReport(unittest.TestCase):
 
     def setUp(self):
@@ -43,6 +44,7 @@ class TestOverViewReport(unittest.TestCase):
         self.assertEqual(a.value, 2)
 
 
+@skip_if_data_dir_not_present
 class TestOverviewReportIntegration(unittest.TestCase):
     def setUp(self):
         self.input_file = op.join(ROOT_DATA_DIR, "dacetoxidans", "2530923",
@@ -59,6 +61,7 @@ class TestOverviewReportIntegration(unittest.TestCase):
         self.assertEqual(rcode, 0)
 
 
+@skip_if_data_dir_not_present
 class TestOverviewToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.overview"
     REQUIRES_PBCORE = True

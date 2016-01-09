@@ -33,6 +33,7 @@ _get_image_names = functools.partial(__get_from_constant, 'I_')
 class TestFilterSubreadSummaryReport(unittest.TestCase):
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         name = "filtered_subread_summary.csv"
         cls.filtered_subread_summary_csv = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
@@ -101,9 +102,9 @@ class TestFilterSubreadSummaryReport(unittest.TestCase):
         self.assertListEqual(ids, cids)
 
 
-@skip_if_data_dir_not_present
 class TestFilterSubreadSummaryReportIntegration(TestFilterSubreadSummaryReport):
 
+    @skip_if_data_dir_not_present
     def test_basic(self):
         output_dir = tempfile.mkdtemp(suffix="filter_subread_")
         t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")

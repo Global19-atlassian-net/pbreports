@@ -227,10 +227,12 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
     }
 
     @classmethod
+    @skip_if_data_dir_not_present
+    def setUpClass(cls):
+        super(TestMappingStatsReportLarge, cls).setUpClass()
+
+    @classmethod
     def _get_input_file(cls):
-        if not os.path.exists(cls.ALIGNMENTS):
-            raise unittest.SkipTest("{f} does not exist".format(
-                f=cls.ALIGNMENTS))
         return cls.ALIGNMENTS
 
     @unittest.skip("Hot start metrics are not supported in streaming model.")
@@ -358,6 +360,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     }
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         _to_p = lambda x: os.path.join(_CCS_DATA_DIR, x)
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")

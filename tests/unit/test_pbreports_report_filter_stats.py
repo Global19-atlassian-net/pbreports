@@ -34,6 +34,7 @@ _get_image_names = functools.partial(__get_from_constant, 'I_')
 class TestFilterStats(unittest.TestCase):
 
     @classmethod
+    @skip_if_data_dir_not_present
     def setUpClass(cls):
         name = "filtered_summary.csv"
         cls.file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
