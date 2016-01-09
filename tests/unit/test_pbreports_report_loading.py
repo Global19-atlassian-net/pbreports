@@ -3,17 +3,21 @@ import logging
 import traceback
 import json
 
-from pbcore.util.Process import backticks
 from numpy import ndarray
-from base_test_case import BaseTestCase
+
+from pbcore.util.Process import backticks
+
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading import (make_loading_report, _get_loading_table_and_attributes,
                                       _get_filtered_data, _get_counts_by_cell, _get_productivities,
                                       _get_column_labels, _get_columns)
 
+from base_test_case import BaseTestCase, skip_if_data_dir_not_present
+
 log = logging.getLogger(__name__)
 
 
+@skip_if_data_dir_not_present
 class TestLoadingRpt(BaseTestCase):
 
     @classmethod

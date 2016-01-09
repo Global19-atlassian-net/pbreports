@@ -226,6 +226,13 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
         Constants.A_READLENGTH_N50: 18057,
     }
 
+    @classmethod
+    def _get_input_file(cls):
+        if not os.path.exists(cls.ALIGNMENTS):
+            raise unittest.SkipTest("{f} does not exist".format(
+                f=cls.ALIGNMENTS))
+        return cls.ALIGNMENTS
+
     @unittest.skip("Hot start metrics are not supported in streaming model.")
     def test_mean_max_subread_readlength(self):
         id_ = Constants.A_SUBREAD_LENGTH_MAX_MEAN

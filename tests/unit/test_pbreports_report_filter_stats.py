@@ -6,15 +6,15 @@ import unittest
 import tempfile
 import functools
 
-from base_test_case import ROOT_DATA_DIR, run_backticks
 from pbreports.model.model import Report
-
+from pbreports.serializers import dict_to_report
 from pbreports.report.filter_stats import (to_report,
                                            NoPassedFilteredReadsError,
                                            NoFilteredReadsError,
                                            CsvParserError, Constants)
 
-from pbreports.serializers import dict_to_report
+from base_test_case import ROOT_DATA_DIR, run_backticks, \
+    skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ _get_attribute_names = functools.partial(__get_from_constant, 'A_')
 _get_image_names = functools.partial(__get_from_constant, 'I_')
 
 
+@skip_if_data_dir_not_present
 class TestFilterStats(unittest.TestCase):
 
     @classmethod
@@ -126,6 +127,7 @@ class TestFilterStats(unittest.TestCase):
         self._test_attribute('n50_read_length_post_filter', value)
 
 
+@skip_if_data_dir_not_present
 class TestFilterStatsNoFilteredReads(unittest.TestCase):
 
     def test_01(self):
@@ -141,6 +143,7 @@ class TestFilterStatsNoFilteredReads(unittest.TestCase):
             log.info(e)
 
 
+@skip_if_data_dir_not_present
 class TestFilterStatsNoReadsPassedFilter(unittest.TestCase):
 
     def test_01(self):
@@ -156,6 +159,7 @@ class TestFilterStatsNoReadsPassedFilter(unittest.TestCase):
             log.info(e)
 
 
+@skip_if_data_dir_not_present
 class TestFilterStatsCsvParserError(unittest.TestCase):
 
     def test_01(self):
@@ -170,6 +174,8 @@ class TestFilterStatsCsvParserError(unittest.TestCase):
             log.info(report)
             log.info(e)
 
+
+@skip_if_data_dir_not_present
 class TestFilterStatsAllQvsZero(unittest.TestCase):
     def test_01(self):
         name = "filtered_summary_with_all_qvs_zero.csv"
@@ -185,6 +191,7 @@ class TestFilterStatsAllQvsZero(unittest.TestCase):
         log.info(report.tables[0])
 
 
+@skip_if_data_dir_not_present
 class TestIntegrationFilterStats(unittest.TestCase):
 
     @classmethod
@@ -216,6 +223,7 @@ class TestIntegrationFilterStats(unittest.TestCase):
         os.remove(report_json)
 
 
+@skip_if_data_dir_not_present
 class TestFilterStatsWithOnlyZeroQvs(unittest.TestCase):
 
     def test_basic(self):

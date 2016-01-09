@@ -71,6 +71,11 @@ class TestBamLarge(TestBam):
         "ncolumns": 5,
     }
 
+    @skip_if_data_dir_not_present
+    @classmethod
+    def setUpClass(cls):
+        super(TestBamLarge, cls).setUpClass()
+
     def test_alignment_info_from_bam(self):
         datum, unrolled, max_subread, movie_names = alignment_info_from_bam(
             self.BAM_PATH, self.MOVIE)

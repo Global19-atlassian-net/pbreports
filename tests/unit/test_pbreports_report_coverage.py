@@ -5,12 +5,11 @@ import json
 import tempfile
 import unittest
 import shutil
+import sys
 
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
-import sys
 
-from base_test_case import _get_root_data_dir
 from pbreports.util import get_top_contigs
 from pbreports.model.model import PbReportError
 from pbreports.report.coverage import (make_coverage_report,
@@ -19,10 +18,12 @@ from pbreports.report.coverage import (make_coverage_report,
                                        _get_att_percent_missing, _create_histogram,
                                        _create_coverage_plot_grp, _create_coverage_histo_plot_grp)
 
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
 
+@skip_if_data_dir_not_present
 class TestCoverageRpt(unittest.TestCase):
 
     def setUp(self):
