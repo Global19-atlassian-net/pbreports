@@ -178,12 +178,18 @@ def get_parser():
 
 def main(argv=sys.argv):
     mp = get_parser()
+    logging.basicConfig(level=logging.INFO)
+    log.setLevel(logging.INFO)
     return pbparser_runner(argv[1:],
                            mp,
                            args_runner,
                            resolved_tool_contract_runner,
                            log,
-                           setup_log)
+                           # FIXME for some bizarre reason, calling setup_log
+                           # here results in the input log file being written
+                           # to when run in 'args' mode.  this has to be a bug
+                           # somewhere but it might be in the core library...
+                           lambda alog, **kw: alog)
 
 # for 'python -m pbreports.report.amplicon_analysis_timing ...'
 if __name__ == "__main__":

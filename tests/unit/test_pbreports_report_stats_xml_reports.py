@@ -4,6 +4,8 @@ import logging
 import traceback
 import json
 import unittest
+import tempfile
+import shutil
 
 from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
@@ -26,6 +28,9 @@ class TestXMLstatsRpts(BaseTestCase):
         """
         Before *every* test
         """
+        self.cwd = os.getcwd()
+        self.tmpdir = tempfile.mkdtemp()
+        os.chdir(self.tmpdir)
         try:
             BaseTestCase.setUp(self)
         except Exception as err:
@@ -39,6 +44,8 @@ class TestXMLstatsRpts(BaseTestCase):
         """
         After *every* test
         """
+        os.chdir(self.cwd)
+        shutil.rmtree(self.tmpdir)
         try:
             BaseTestCase.tearDown(self)
         except Exception as err:
@@ -83,6 +90,8 @@ class TestXMLstatsRpts(BaseTestCase):
 
     def test_filter_exit_code_0(self):
         log.info(TestXMLstatsRpts.test_filter_exit_code_0.__doc__)
+        tmpdir = tempfile.mkdtemp()
+        cwd = os.getcwd()
         sts_xml = data.getStats(0)
         cmd = 'filter_stats_xml {c} {r}'.format(
             r='foo.json',
