@@ -70,8 +70,6 @@ class Constants(object):
     A_READLENGTH_MAX = "mapped_readlength_max"
     A_READLENGTH_N50 = "mapped_readlength_n50"
 
-    A_FILTERED_READS = "post_filter_reads_n"
-
     A_NSUBREADS = "mapped_subreads_n"
     A_SUBREAD_NBASES = "mapped_subread_bases_n"
     A_SUBREAD_ACCURACY = "mapped_subread_accuracy_mean"
@@ -654,7 +652,6 @@ class MappingStatsCollector(object):
         Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_ACCURACY
     ]
     ATTR_LABELS = {
-          Constants.A_FILTERED_READS: "Post-Filter Reads",
           Constants.A_SUBREAD_ACCURACY: "Mapped Subread Accuracy",
           Constants.A_NREADS : "Mapped Reads",
           Constants.A_NSUBREADS: "Mapped Subreads",

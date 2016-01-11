@@ -12,29 +12,37 @@ import pbcore.data
 
 from pbreports.report.summarize_coverage import interval_tree, summarize_coverage
 
-from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
+from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present, \
+    LOCAL_DATA
 
 SC_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'summarize_coverage')
 
 log = logging.getLogger(__name__)
 
-@skip_if_data_dir_not_present
+
 class TestCompareToPbpy(unittest.TestCase):
 
     """Compare results from the pbreports summarize_coverage to an archived result from pbpy summarizeCoverage.
     """
 
+    def _get_readers(self):
+        ds_reader = AlignmentSet(self.aln_path, strict=True,
+            reference=self.ref_path)
+        return ds_reader, ds_reader.resourceReaders()
+
     def setUp(self):
-        self.cmph5_path = os.path.join(SC_DATA_DIR, 'aligned_reads.cmp.h5')
-        self.gff_path = os.path.join(SC_DATA_DIR, 'alignment_summary.gff')
+        self.aln_path = pbcore.data.getBamAndCmpH5()[0]
+        self.gff_path = os.path.join(LOCAL_DATA, "summarize_coverage",
+            "alignment_summary.gff")
+        self.ref_path = pbcore.data.getLambdaFasta()
         self.selected_reference = None
 
     def test_metadata(self):
         """Test that the metadata lines match those from the pbpy version of summarize_coverage.
         """
-        cmph5_reader = CmpH5Reader(self.cmph5_path)
+        ds_reader, bam_readers = self._get_readers()
         bfx_metadata_lines = summarize_coverage.get_metadata_lines(
-            [cmph5_reader], {})
+            bam_readers, {})
 
         pbpy_gff_reader = GffIO.GffReader(self.gff_path)
         pbpy_metadata_lines = pbpy_gff_reader.headers
@@ -89,15 +97,16 @@ class TestCompareToPbpy(unittest.TestCase):
             pbpy_gff_records[record_key] = record_val
 
         # Recapitulate the first few steps of summarize_coverage.main
-        cmph5_reader = CmpH5Reader(self.cmph5_path)
-        interval_lists = summarize_coverage.build_interval_lists([cmph5_reader])
+        #cmph5_reader = CmpH5Reader(self.cmph5_path)
+        ds_reader, readers = self._get_readers()
+        interval_lists = summarize_coverage.build_interval_lists(readers)
         get_region_size_frozen = functools.partial(
             summarize_coverage.get_region_size, num_refs=len(interval_lists),
             region_size=0, num_regions=500, force_num_regions=False)
 
         for ref_group_id in sorted(interval_lists):
             gff_generator = summarize_coverage.generate_gff_records(
-                interval_lists[ref_group_id], [cmph5_reader], ref_group_id,
+                interval_lists[ref_group_id], readers, ref_group_id,
                 get_region_size_frozen, {})
 
             for bfx_gff_record in gff_generator:
@@ -131,14 +140,19 @@ class TestCompareToPbpy(unittest.TestCase):
         self.assertEqual(len(remaining_pbpy_records), 0)
 
 
+# FIXME this needs to use AlignmentSet/BAM input
 @skip_if_data_dir_not_present
 class TestCompareToPbpyBigGenome(TestCompareToPbpy):
 
     """Compare results from the pbreports summarize_coverage to an archived result from pbpy summarizeCoverage. Same as TestCompareToPbpy, but applied to the human genome.
     """
 
+    def _get_readers(self):
+        cmph5 = CmpH5Reader(self.aln_path)
+        return cmph5, [cmph5]
+
     def setUp(self):
-        self.cmph5_path = os.path.join(SC_DATA_DIR, 'aligned_reads_human_chr2.cmp.h5')
+        self.aln_path = os.path.join(SC_DATA_DIR, 'aligned_reads_human_chr2.cmp.h5')
         self.gff_path = os.path.join(SC_DATA_DIR, 'alignment_summary_human_chr2.gff')
         self.selected_reference = 'chr2'
     
@@ -155,24 +169,26 @@ class TestBuildIntervalLists(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.bam_path = pbcore.data.getBamAndCmpH5()[0]
-        cls.bam_reader = IndexedBamReader(cls.bam_path)
+        cls.ds_reader = AlignmentSet(cls.bam_path, strict=True,
+            reference=pbcore.data.getLambdaFasta())
+        cls.bam_readers = cls.ds_reader.resourceReaders()
         cls.interval_lists = summarize_coverage.build_interval_lists(
-            [cls.bam_reader])
+            cls.bam_readers)
 
     def test_total_alignments(self):
         """Test that all alignments end up in the list."""
         total_ilist_alns = sum(len(v)
                                for v in self.interval_lists.itervalues())
-        total_bam_alns = len(self.bam_reader)
+        total_bam_alns = sum([len(b) for b in self.bam_readers])
         self.assertEqual(total_ilist_alns, total_bam_alns)
 
     def test_keys(self):
         """Test that alignments for each refGroupID in the BAM match the interval_list."""
-        for record in self.bam_reader.referenceInfoTable:
+        for record in self.ds_reader.referenceInfoTable:
             ref_id = record.ID
             ref_length = record.Length
-            n_alns = len(self.bam_reader.readsInRange(ref_id, 0, ref_length,
-                                                        True))
+            n_alns = len(list(self.ds_reader.readsInRange(ref_id, 0, ref_length,
+                                                        True)))
             if n_alns:
                 self.assertEqual(len(self.interval_lists[ref_id]), n_alns)
 
@@ -387,48 +403,6 @@ class TestGaps(unittest.TestCase):
 
             self.assertEqual(n_gaps, exp_n_gaps)
             self.assertEqual(tot_gaps, exp_tot_gaps)
-
-
-@unittest.skip("Test disabled - see ticket 28667")
-class TestUntruncator(unittest.TestCase):
-
-    """Test the code that converts truncated to full reference names."""
-
-    def setUp(self):
-        """Set up paths to the reference repo and BAM file."""
-
-        #self.repo_path = os.path.join(SC_DATA_DIR, 'ecoli_split_1000')
-        self.bad_repo_path = os.path.join(SC_DATA_DIR, 'bad_reference')
-        self.repo_path = ('/pbi/dept/secondary/siv/testdata/SA3-DS/'
-                          'saureus.referenceset.xml')
-        self.bam_path = ('/pbi/dept/secondary/siv/testdata/SA3-RS/saureus/'
-                         '2590946/0001/Alignment_Results/m140911_0008'
-                         '48_42139_c100702240480000001823141103261594'
-                         '_s1_p0.1.aligned.bam')
-
-    def test_truncated_sam_records(self):
-        """Test that the truncated header reference names in a SAM file
-        correspond to those in the untruncator dictionary.
-        """
-
-        sam_file = AlignmentSet(self.bam_path).resourceReaders()[0]
-        untruncator = summarize_coverage.get_name_untruncator(self.repo_path)
-
-        self.assertEqual(len(sam_file.referenceInfoTable),
-                         len(untruncator))
-
-        for ref in sam_file.referenceInfoTable:
-            self.assertIn(ref.FullName, untruncator)
-            long_name = untruncator[ref.FullName]
-            self.assertTrue(long_name.startswith(ref.FullName))
-            self.assertGreater(len(long_name), len(ref.FullName))
-
-    def test_fails_on_bad_truncation(self):
-        """Test the get_name_untruncator fails if multiple contigs names truncate to the same name.
-        """
-
-        with self.assertRaises(summarize_coverage.ReferenceTruncationError):
-            summarize_coverage.get_name_untruncator(self.bad_repo_path)
 
 
 class TestSummarizeCoverage(pbcommand.testkit.PbTestApp):

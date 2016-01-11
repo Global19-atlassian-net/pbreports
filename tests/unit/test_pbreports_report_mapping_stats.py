@@ -235,12 +235,6 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
     def _get_input_file(cls):
         return cls.ALIGNMENTS
 
-    @unittest.skip("Hot start metrics are not supported in streaming model.")
-    def test_mean_max_subread_readlength(self):
-        id_ = Constants.A_SUBREAD_LENGTH_MAX_MEAN
-        value = 2684
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
 # gmap data from pbsmrtpipe is not yet available for testing, this class needs to be updated
 # with fresh data
 
@@ -286,12 +280,6 @@ class TestMappingStatsGmapReport(unittest.TestCase):
         value = 1
         self.assertEqual(len(self.report.tables), value)
 
-    @unittest.skip("Filter stats are pulled from the Filter Stat report.")
-    def test_post_filter_reads_n(self):
-        id_ = 'post_filter_reads_n'
-        value = 809
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
     def test_mapped_subread_accuracy_mean(self):
         id_ = Constants.A_SUBREAD_ACCURACY
         value = 0.8465
@@ -333,12 +321,6 @@ class TestMappingStatsGmapReport(unittest.TestCase):
         value = 5900
         self.assertTrue(
             _almost_value(value, self._get_attribute_value_by_id(id_), _Q95_DELTA))
-
-    @unittest.skip("Hot start metrics are not supported in streaming model.")
-    def test_mean_max_subread_readlength(self):
-        id_ = 'mean_max_subread_readlength'
-        value = 1585
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
     def test_mapped_readlength_max(self):
         id_ = Constants.A_READLENGTH_MAX
@@ -421,7 +403,6 @@ class TestMappingStatsCCSReport(unittest.TestCase):
 
     def test_mapped_readlength_q95(self):
         id_ = Constants.A_READLENGTH_Q95
-        print "VALUE IS", self._get_attribute_value_by_id(id_)
         value = self.EXPECTED_VALUES[id_]
         self.assertTrue(
             _almost_value(value, self._get_attribute_value_by_id(id_), _Q95_DELTA))
