@@ -1,11 +1,13 @@
-import argparse
-import glob
-import os
-import sys
-import logging
+
 import functools
+import warnings
+import argparse
+import logging
+import glob
 import time
 import math
+import os
+import sys
 
 import numpy as np
 
@@ -351,3 +353,41 @@ def openReference(fname):
         fname = options[0]
     ref = ReferenceSet(fname)
     return ref
+
+
+# FIXME can this be combined with compute_n50?
+def compute_n50_from_bins(bins):
+    """
+    Compute n50 from the numpy array when the index is the length
+    and the value is the number of items which have that length (i.e.,
+    a histogram with the bin widths set to 1).
+
+    :note: Bin width is assumed to be 1
+
+    """
+    total = 0
+    for i, j in enumerate(bins):
+        for _ in xrange(int(j)):
+            total += i
+    half_total = total / 2.0
+    n50 = 0
+    # initialize n50 by finding the first bin that != 0
+    for i, bin_value in enumerate(bins):
+        if bin_value != 0:
+            n50 = i
+            break
+    rtotal = 0
+    for i, bin_value in enumerate(bins):
+        if bin_value != 0:
+            for _ in xrange(int(bin_value)):
+                if rtotal < half_total:
+                    n50 = i
+                    rtotal += i
+                    #log.debug(("N50", n50, rtotal, half_total, total))
+                else:
+                    return n50
+    msg = "Unable to compute n50 from {n} bins with sum {x}".format(
+        n=len(bins), x=total)
+    warnings.warn(msg)
+    log.warn(msg)
+    return 0
