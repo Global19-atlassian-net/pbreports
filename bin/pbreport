@@ -6,8 +6,6 @@ import logging
 from pbreports.pbsystem_common.cmdline.core import main_runner_default
 
 import pbreports
-import pbreports.report.adapter
-import pbreports.report.loading
 import pbreports.report.coverage
 import pbreports.report.control
 import pbreports.report.top_variants
@@ -24,8 +22,6 @@ __version__ = pbreports.get_version()
 
 def get_subparsers():
     sps = [
-        ('loading', pbreports.report.loading.add_options_to_parser),
-        ('adapter', pbreports.report.adapter.add_options_to_parser),
         ('coverage', pbreports.report.coverage.add_options_to_parser),
         ('control', pbreports.report.control.add_options_to_parser),
         ('topvariants', pbreports.report.top_variants.add_options_to_parser),

@@ -1,4 +1,4 @@
-VERSION = (3, 0, 3)
+VERSION = (3, 0, 4)
 
 def get_version():
     """Return the version as a string. "O.7"
