@@ -10,10 +10,9 @@ import numpy as np
 
 from pbreports.pbsystem_common.cmdline.core import main_runner_default
 from pbreports.pbsystem_common.validators import validate_dir, validate_file
-
 from pbreports.model.model import Report, Attribute, Table, Column
 from pbreports.plot.helper import get_green, get_blue
-
+from pbreports.util import compute_n50_from_bins
 from pbreports.model.aggregators import (CountAggregator, MeanAggregator,
                                          SumAggregator, HistogramAggregator,
                                          MinAggregator, MaxAggregator,
@@ -95,46 +94,6 @@ class CountBases(SumAggregator):
         self.total += getattr(record, self.record_field)
 
 
-def _compute_n50_from_bins(bins):
-    """
-    Compute n50 from the numpy array when the index is the length
-    and the value is the number of items which have that length (i.e.,
-    a histogram with the bin widths set to 1).
-
-    :note: Bin width is assumed to be 1
-
-    """
-    total = 0
-
-    for i, j in enumerate(bins):
-        for _ in xrange(int(j)):
-            total += i
-
-    half_total = total / 2.0
-    n50 = 0
-    # initialize n50 by finding the first bin that != 0
-    for i, bin_value in enumerate(bins):
-        if bin_value != 0:
-            n50 = i
-            break
-
-    rtotal = 0
-    for i, bin_value in enumerate(bins):
-        if bin_value != 0:
-            for _ in xrange(int(bin_value)):
-                if rtotal < half_total:
-                    n50 = i
-                    rtotal += i
-                    #log.debug(("N50", n50, rtotal, half_total, total))
-                else:
-                    return n50
-
-    msg = "Unable to compute n50 from {n} bins with sum {x}".format(n=len(bins), x=total)
-    warnings.warn(msg)
-    log.warn(msg)
-    return 0
-
-
 class N50Aggregator(BaseAggregator):
 
     def __init__(self, record_field, max_bins=1000):
@@ -163,7 +122,7 @@ class N50Aggregator(BaseAggregator):
             # No values? Probably should raise an exception?
             return 0.0
 
-        return _compute_n50_from_bins(self.bins)
+        return compute_n50_from_bins(self.bins)
 
 
 class _BaseFilterException(Exception):

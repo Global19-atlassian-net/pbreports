@@ -25,12 +25,12 @@ from pbcore.io import openAlignmentFile, openDataSet
 from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 
 from pbreports.plot.helper import get_blue, get_green
+from pbreports.util import compute_n50_from_bins
 from pbreports.io.align import (from_alignment_file, CrunchedAlignments)
 from pbreports.model.model import (Attribute, Report, Table, Column)
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
-from pbreports.report.filter_stats import _compute_n50_from_bins
 
 log = logging.getLogger(__name__)
 
@@ -341,7 +341,7 @@ class N50Aggreggator(BaseAggregator, AttributeAble):
 
     @property
     def attribute(self):
-        return _compute_n50_from_bins(self.bins)
+        return compute_n50_from_bins(self.bins)
 
 
 class SubreadN50Aggregator(BaseAggregator, AttributeAble):
@@ -358,7 +358,7 @@ class SubreadN50Aggregator(BaseAggregator, AttributeAble):
 
     @property
     def attribute(self):
-        return _compute_n50_from_bins(self.bins)
+        return compute_n50_from_bins(self.bins)
 
 
 # Subread Aggregator Classes
