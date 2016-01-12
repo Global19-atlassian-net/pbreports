@@ -520,7 +520,7 @@ def to_table(motif_records):
                   'mean_ipd_ratio',
                   'group_tag', 'objective_score']
 
-    table = Table(Constants.T_ID, columns=columns)
+    table = Table(Constants.T_ID, title="Motifs", columns=columns)
 
     for record in motif_records:
         for attr_name, column in zip(attr_names, columns):
