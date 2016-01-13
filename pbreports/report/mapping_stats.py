@@ -18,6 +18,7 @@ import logging
 
 import numpy as np
 
+from pbcommand.models.report import (Attribute, Report, Table, Column)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -27,7 +28,6 @@ from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 from pbreports.plot.helper import get_blue, get_green
 from pbreports.util import compute_n50_from_bins
 from pbreports.io.align import (from_alignment_file, CrunchedAlignments)
-from pbreports.model.model import (Attribute, Report, Table, Column)
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)

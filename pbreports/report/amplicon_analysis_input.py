@@ -7,12 +7,12 @@ import argparse
 from pprint import pformat
 from collections import defaultdict
 
+from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
-from pbreports.model.model import Report, Table, Column
 
 log = logging.getLogger(__name__)
 

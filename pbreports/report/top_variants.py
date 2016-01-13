@@ -9,11 +9,11 @@ import logging
 import os
 import sys
 
+from pbcommand.models.report import Table, Column, Report, PbReportError
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-from pbreports.model.model import Table, Column, Report, PbReportError
 from pbcore.io.GffIO import GffReader
 
 from pbreports.util import add_base_options, openReference
@@ -156,7 +156,7 @@ class VariantTableBuilder(BaseVariantTableBuilder):
         self._table.columns.append(Column('genotype', 'Genotype'))
 
     def _get_table_title(self):
-        return "Top variants"
+        return "Top Variants"
 
     def _get_table_id(self):
         return 'top_variants_table'

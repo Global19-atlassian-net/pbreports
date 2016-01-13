@@ -6,12 +6,11 @@ import tempfile
 import unittest
 import shutil
 
+from pbcommand.pb_io.report import dict_to_report
+from pbcommand.models.report import PbReportError
 from pbcore.util.Process import backticks
 
-from pbreports.serializers import dict_to_report
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
-
-from pbreports.model.model import PbReportError
 from pbreports.report.control import (make_control_report, _get_control_reads,
                                       _get_filtered_reads, _process_reads,
                                       CSV_COLUMN_MAP, _get_attr_n_control_reads,

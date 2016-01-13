@@ -9,12 +9,12 @@ import unittest
 import pprint
 import functools
 
+from pbcommand.models.report import Report
 import pbcommand.testkit
 from pbcommand.pb_io.report import load_report_from_json
 from pbcore.io import ConsensusReadSet
 import pbcore.data
 
-from pbreports.model.model import Report
 from pbreports.report.ccs import to_report, Constants
 from base_test_case import run_backticks
 

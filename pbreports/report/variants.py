@@ -13,6 +13,8 @@ import hashlib
 
 import numpy as np
 
+from pbcommand.models.report import (Table, Column, Attribute, Report,
+                                     PlotGroup, Plot, PbReportError)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -23,8 +25,6 @@ from pbreports.util import (openReference,
                             add_base_options_pbcommand,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
-from pbreports.model.model import (Table, Column, Attribute, Report, PlotGroup,
-                                   Plot, PbReportError)
 
 log = logging.getLogger(__name__)
 

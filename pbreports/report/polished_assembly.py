@@ -7,12 +7,13 @@ import logging
 
 from pbcore.io import FastqReader, GffReader
 
+from pbcommand.models.report import (Attribute, Report, Plot, PlotGroup,
+                                     PbReportError)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcommand.common_options import add_debug_option
-from pbreports.model.model import (Attribute, Report, Plot, PlotGroup,
-                                   PbReportError)
+
 from pbreports.util import compute_n50
 import pbreports.plot.helper as PH
 from pbreports.report.coverage import ContigCoverage

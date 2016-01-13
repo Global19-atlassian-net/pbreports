@@ -8,7 +8,8 @@ import logging
 import functools
 import types
 
-from pbreports.model.model import Plot, PlotGroup
+from pbcommand.models.report import Plot, PlotGroup
+
 from pbreports.plot.helper import get_fig_axes_lpr, get_blue, get_green
 
 log = logging.getLogger(__name__)

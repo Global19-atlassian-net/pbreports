@@ -8,12 +8,12 @@ import array
 
 import matplotlib.patches as mp
 
+from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
 from pbcore.io import CmpH5Reader
+
 from pbreports.pbsystem_common.cmdline.validators import validate_dir
 from pbreports.pbsystem_common.validators import validate_file
-
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
-from pbreports.model.model import Attribute, Report, PlotGroup, Plot, PbReportError
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail,
                                    set_tick_label_font_size, set_axis_label_font_size)

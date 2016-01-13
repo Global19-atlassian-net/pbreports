@@ -12,6 +12,8 @@ import argparse
 
 import numpy as np
 
+from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
+                                     PlotGroup)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
@@ -21,8 +23,6 @@ from pbcore.io import ContigSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue)
-from pbreports.model.model import (Report, Table, Column, Attribute, Plot,
-                                   PlotGroup)
 from pprint import pformat
 
 log = logging.getLogger(__name__)

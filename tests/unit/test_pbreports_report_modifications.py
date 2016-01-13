@@ -7,11 +7,11 @@ import unittest
 import shutil
 import sys
 
+from pbcommand.models.report import PbReportError
+from pbcommand.pb_io.report import dict_to_report
 from pbcore.util.Process import backticks
 
 from pbreports.report.modifications import (make_modifications_report)
-from pbreports.serializers import dict_to_report
-from pbreports.model.model import PbReportError
 
 from base_test_case import LOCAL_DATA
 

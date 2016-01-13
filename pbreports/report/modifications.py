@@ -20,12 +20,12 @@ import sys
 from pylab import legend, arange
 import numpy as np
 
+from pbcommand.models.report import Report, PlotGroup, Plot
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
-from pbreports.model.model import Report, PlotGroup, Plot
 import pbreports.plot.helper as PH
 from pbreports.util import (add_base_and_plot_options,
                             add_base_options_pbcommand)

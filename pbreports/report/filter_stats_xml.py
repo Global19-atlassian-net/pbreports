@@ -13,16 +13,15 @@ import sys
 import numpy as np
 from pbcommand.utils import setup_log
 
-from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail, get_green)
-
+from pbcommand.models.report import (Report, Table, Column, Plot,
+                                     PlotGroup)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
-
-from pbreports.model.model import (Report, Table, Column, Plot,
-                                   PlotGroup)
 from pbcore.io import DataSet
+
+from pbreports.plot.helper import (get_fig_axes_lpr,
+                                   save_figure_with_thumbnail, get_green)
 
 __version__ = '0.1.0'
 

@@ -6,11 +6,11 @@ import logging
 import tempfile
 import sys
 
+from pbcommand.pb_io.report import dict_to_report
+from pbcommand.models.report import Report
 from pbcore.io import AlignmentSet
 import pbcore.data
 
-from pbreports.model.model import Report
-from pbreports.serializers import dict_to_report
 from pbreports.report import mapping_stats_ccs
 from pbreports.report.mapping_stats import to_report, Constants
 

@@ -9,7 +9,8 @@ import ConfigParser
 from pprint import pformat
 from jinja2 import Environment, FileSystemLoader
 
-from pbreports.serializers import dict_to_report
+from pbcommand.pb_io.report import dict_to_report
+
 from base_test_case import _NOSE_REPORT_CFG, ROOT_DATA_DIR, BaseTestCase
 
 log = logging.getLogger(__name__)

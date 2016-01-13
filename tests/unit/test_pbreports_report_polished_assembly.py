@@ -7,13 +7,13 @@ import tempfile
 import shutil
 import sys
 
+from pbcommand.pb_io.report import dict_to_report
 from pbcore.util.Process import backticks
 
 from pbreports.report.polished_assembly import (make_polished_assembly_report,
                                                 _get_att_max_contig_length,
                                                 _get_att_n_50_contig_length,
                                                 _get_att_sum_contig_lengths)
-from pbreports.serializers import dict_to_report
 
 from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
 

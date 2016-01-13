@@ -7,22 +7,21 @@ summarizeCoverage.py in pbpy/bin.
 import functools
 import logging
 import math
-import numpy
 import os
 import re
 import sys
 import time
 
+import numpy
 
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-from pbreports.util import openReference
-
 from pbcore.io import GffIO, AlignmentSet
 
 import pbreports.report.summarize_coverage.interval_tree as interval_tree
+from pbreports.util import openReference
 
 
 log = logging.getLogger(__name__)

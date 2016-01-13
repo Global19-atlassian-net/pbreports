@@ -6,7 +6,8 @@ import json
 import nose
 from pprint import pformat
 
-from pbreports.model.model import Report
+from pbcommand.models.report import Report
+
 from pbreports.report.amplicon_analysis_consensus import run_to_report
 from base_test_case import LOCAL_DATA, run_backticks
 

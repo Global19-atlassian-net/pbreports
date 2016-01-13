@@ -9,8 +9,8 @@ import shutil
 import traceback
 import inspect
 
+from pbcommand.pb_io.report import dict_to_report
 from pbcore.util.Process import backticks
-from pbreports.serializers import dict_to_report
 
 
 log = logging.getLogger(__name__)
@@ -73,10 +73,6 @@ def run_backticks(cmd, expected=0):
         sys.stderr.write(str(emsg) + "\n")
 
     return rcode
-
-
-def json_file_to_report(json_file):
-    return load_report_from_json(json_file)
 
 
 def __get_from_constant(prefix_str, contstants_klass):

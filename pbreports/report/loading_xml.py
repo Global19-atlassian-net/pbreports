@@ -8,12 +8,11 @@ import logging
 import sys
 import numpy as np
 
+from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-
-from pbreports.model.model import Report, Table, Column
 from pbcore.io import DataSet
 
 __version__ = '0.1.0'

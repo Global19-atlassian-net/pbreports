@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 """Amplicon Analysis Timing Report"""
+
+from collections import defaultdict
+from pprint import pformat
+import datetime
+import logging
 import os
 import re
 import sys
-import datetime
-import logging
 
 from numpy import median
-from pprint import pformat
-from collections import defaultdict
 
+from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -17,7 +19,6 @@ from pbcommand.utils import setup_log
 
 from pbreports.util import validate_nonempty_file
 
-from pbreports.model.model import Report, Table, Column
 
 log = logging.getLogger(__name__)
 

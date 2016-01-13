@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+
+# FIXME deprecated, remove
+
 import abc
 import logging
 import json

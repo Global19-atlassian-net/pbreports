@@ -6,15 +6,15 @@ import hashlib
 
 import numpy as np
 
-from pbreports.pbsystem_common.validators import validate_file, validate_dir
+from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
+from pbcore.io.GffIO import GffReader
 
+from pbreports.pbsystem_common.validators import validate_file, validate_dir
 from pbreports.util import get_top_contigs, add_base_and_plot_options
-from pbreports.model.model import Attribute, Report, PlotGroup, Plot, PbReportError
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data,
                                    apply_line_fill_data, apply_histogram_data,
                                    LineFill, save_figure_with_thumbnail)
 
-from pbcore.io.GffIO import GffReader
 
 log = logging.getLogger(__name__)
 

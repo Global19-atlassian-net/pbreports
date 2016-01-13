@@ -10,17 +10,15 @@ import json
 import os
 import sys
 
+from pbcommand.models.report import Attribute, Report, PbReportError
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
-from pbcommand.pb_io.report import load_report_from_json
-
-from pbcommand.cli import pbparser_runner
+from pbcommand.pb_io.report import load_report_from_json, dict_to_report
 from pbcommand.common_options import add_debug_option
+from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import AlignmentSet
 
-from pbreports.model.model import Attribute, Report, PbReportError
 from pbreports.util import movie_to_cell, add_base_options_pbcommand
-from pbreports.serializers import dict_to_report
 
 log = logging.getLogger(__name__)
 
@@ -89,7 +87,7 @@ def _get_variants_data(variants_rpt_file):
     :param variants_rpt_file: (str) path to the variants report
     :return dict: coverage and accuracy
     """
-    rpt = _deserialize_report(variants_rpt_file)
+    rpt = load_report_from_json(variants_rpt_file)
     coverage = rpt.get_attribute_by_id('weighted_mean_bases_called').value
     accuracy = rpt.get_attribute_by_id('weighted_mean_concordance').value
     return {'coverage':coverage, 'accuracy':accuracy}
@@ -100,20 +98,9 @@ def _get_mapping_stats_data(mapping_stats_rpt_file):
     :param mapping_stats_rpt_file: (str) path to the mapping stats report
     :return dict: mean mapped read length
     """
-    rpt = _deserialize_report(mapping_stats_rpt_file)
+    rpt = load_report_from_json(mapping_stats_rpt_file)
     rl = rpt.get_attribute_by_id('mapped_readlength_mean').value
     return {'mapped_readlength_mean':rl}
-
-
-def _deserialize_report(rptfile):
-    """
-    Read json report from file, return pbreports.model.Report
-    """
-    s = None
-    with open(os.path.join(rptfile), 'r') as f:
-        s = json.load(f)
-
-    return dict_to_report(s)
 
 
 def _get_read_hole_data(reads_by_cell, instrument):

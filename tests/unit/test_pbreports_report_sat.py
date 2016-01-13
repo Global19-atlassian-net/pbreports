@@ -9,16 +9,17 @@ import tempfile
 import unittest
 import shutil
 
+from pbcommand.models.report import PbReportError
 import pbcommand.testkit
+from pbcommand.pb_io.report import load_report_from_json
 from pbcore.util.Process import backticks
 from pbcore.io import AlignmentSet
 import pbcore.data
 
-from pbreports.model.model import PbReportError
 from pbreports.util import get_top_contigs_from_ref_entry, movie_to_cell
 from pbreports.report.sat import (_validate_inputs, _get_read_hole_data,
                                   _cell_2_inst, _get_variants_data,
-                                  _get_mapping_stats_data, _deserialize_report,
+                                  _get_mapping_stats_data,
                                   _get_reads_info, summarize_report)
 
 from base_test_case import LOCAL_DATA
@@ -112,7 +113,7 @@ class TestSatRpt(unittest.TestCase):
             print(m)
         self.assertEquals(0, c)
         rpt_file = os.path.join(self._output_dir, 'rpt.json')
-        rpt = _deserialize_report(rpt_file)
+        rpt = load_report_from_json(rpt_file)
         self.assertEqual('sidney', rpt.get_attribute_by_id('instrument').value)
         self.assertEqual(1, rpt.get_attribute_by_id('coverage').value)
         self.assertEqual(1, rpt.get_attribute_by_id('accuracy').value)
