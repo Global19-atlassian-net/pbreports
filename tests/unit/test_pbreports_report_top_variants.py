@@ -6,12 +6,11 @@ import tempfile
 import unittest
 import shutil
 
+from pbcommand.models.report import PbReportError
+from pbcommand.pb_io.report import dict_to_report
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 
-from pbreports.serializers import dict_to_report
-
-from pbreports.model.model import PbReportError
 from pbreports.report.top_variants import (make_topvariants_report, VariantFinder,
                                            MinorVariantTableBuilder, VariantTableBuilder)
 

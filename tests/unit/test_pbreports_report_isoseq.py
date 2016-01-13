@@ -4,10 +4,10 @@ import shutil
 import unittest
 import tempfile
 
+from pbcommand.models.report import Report
+from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.testkit import PbTestApp
 
-from pbreports.model.model import Report
-from pbreports.serializers import json_file_to_report
 import pbreports.report.isoseq_classify
 import pbreports.report.isoseq_cluster
 
@@ -48,7 +48,7 @@ class _TestIsoSeqBase(unittest.TestCase):
         self.assertEqual(0, self.code)
 
     def _to_report(self):
-        return json_file_to_report(self.report_json)
+        return load_report_from_json(self.report_json)
 
     def test_validate_report(self):
         r = self._to_report()

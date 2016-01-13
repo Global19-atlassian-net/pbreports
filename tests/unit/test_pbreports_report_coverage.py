@@ -7,11 +7,11 @@ import unittest
 import shutil
 import sys
 
+from pbcommand.models.report import PbReportError
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 
 from pbreports.util import get_top_contigs
-from pbreports.model.model import PbReportError
 from pbreports.report.coverage import (make_coverage_report,
                                        _get_contigs_to_plot, _create_contig_plot,
                                        _get_reference_coverage_stats, _get_att_mean_coverage,

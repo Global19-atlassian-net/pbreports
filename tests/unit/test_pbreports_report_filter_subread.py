@@ -6,8 +6,9 @@ import logging
 import tempfile
 import functools
 
-from pbreports.model.model import Report
-from pbreports.serializers import dict_to_report
+from pbcommand.pb_io.report import dict_to_report
+from pbcommand.models.report import Report
+
 from pbreports.report.filter_subread import (to_report,
                                              NoSubreadsFound,
                                              NoSubreadsPassedFilter,

@@ -27,11 +27,12 @@ import sys
 import os
 import logging
 
+from pbcommand.models.report import Report, Attribute
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcommand.common_options import add_debug_option
-from pbreports.model.model import Report, Attribute
+
 from pbreports.util import get_fasta_readlengths, \
                         compute_n50_from_file
 

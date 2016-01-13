@@ -13,6 +13,8 @@ from pprint import pformat
 
 import numpy as np
 
+from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
+                                     PlotGroup)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -20,8 +22,6 @@ from pbcore.io import ConsensusReadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue, get_green, Line, apply_line_data)
-from pbreports.model.model import (Report, Table, Column, Attribute, Plot,
-                                   PlotGroup)
 from pbreports.util import accuracy_as_phred_qv
 
 __version__ = '0.44'

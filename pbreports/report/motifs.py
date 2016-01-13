@@ -17,6 +17,7 @@ import operator
 import numpy as np
 import matplotlib.pyplot as plt
 
+from pbcommand.models.report import Report, PlotGroup, Plot, Table, Column
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -25,7 +26,6 @@ from pbcore.io.GffIO import GffReader
 
 import pbreports.plot.helper as PH
 from pbreports.report.preassembly import _validate_file
-from pbreports.model.model import Report, PlotGroup, Plot, Table, Column
 
 __version__ = '2.0'
 

@@ -6,12 +6,11 @@ import tempfile
 import unittest
 import shutil
 
+from pbcommand.models.report import PbReportError
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 
 from pbreports.util import openReference
-
-from pbreports.model.model import PbReportError
 from pbreports.util import get_top_contigs_from_ref_entry
 from pbreports.report.variants import (make_variants_report, _extract_alignment_summ_data,
                                        LENGTH, GAPS, ERR, COV,

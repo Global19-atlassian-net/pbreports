@@ -8,14 +8,15 @@ from pprint import pformat
 
 import numpy as np
 
+from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
+
 from pbreports.util import recfromcsv
 from pbreports.util import validate_nonempty_file
 
-from pbreports.model.model import Report, Table, Column
 
 log = logging.getLogger(__name__)
 

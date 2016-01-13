@@ -4,7 +4,8 @@ import unittest
 
 from jsonschema import ValidationError
 
-from pbreports.model.model import Attribute, Plot, PlotGroup, Column, Table
+from pbcommand.models.report import Attribute, Plot, PlotGroup, Column, Table
+
 from pbreports.model.validators import (validate_attribute, validate_plot,
                                         validate_plot_group, validate_column,
                                         validate_table)

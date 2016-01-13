@@ -19,7 +19,7 @@ clean:
 	find . -name "*.egg-info" | xargs rm -rf;\
 	find . -name "*.pyc" | xargs rm -f;\
 	find . -name "*.err" | xargs rm -f;\
-	find . -name "*.log" | xargs rm -f;\
+	find . -name "*.log" | grep -v amplicon_analysis | xargs rm -f;\
 	rm -rf dist/
 
 test:

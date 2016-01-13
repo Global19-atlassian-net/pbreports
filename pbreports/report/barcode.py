@@ -6,13 +6,13 @@ import argparse
 import re
 from pprint import pformat
 
+from pbcommand.models.report import Report, Table, Column
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
 
 from pbreports.pbsystem_common.cmdline.core import main_runner_default
 from pbreports.pbsystem_common.validators import bas_fofn_to_bas_files, validate_fofn
 
-from pbreports.model.model import Report, Table, Column
 
 log = logging.getLogger(__name__)
 

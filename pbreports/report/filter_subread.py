@@ -45,16 +45,15 @@ import math
 
 import numpy as np
 
+from pbcommand.models.report import Report, Attribute
+
 from pbreports.pbsystem_common.cmdline.core import main_runner_default
 from pbreports.pbsystem_common.validators import validate_dir, validate_file
-
-from pbreports.model.model import Report, Attribute
 from pbreports.plot.helper import get_green
+from pbreports.util import compute_n50
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups,
                                               custom_subread_length_histogram)
-
-from pbreports.util import compute_n50
 from pbreports.model.aggregators import (BaseAggregator, SumAggregator,
                                          HistogramAggregator,
                                          MaxAggregator, MeanAggregator,

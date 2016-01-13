@@ -8,13 +8,13 @@ import sys
 import argparse
 import logging
 
+from pbcommand.models.report import Report, Attribute
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BamReader
 
 from pbreports.util import movie_to_cell, path_to_movie
-from pbreports.model.model import Report, Attribute
 
 log = logging.getLogger(__name__)
 
