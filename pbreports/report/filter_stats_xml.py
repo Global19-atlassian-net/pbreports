@@ -76,6 +76,13 @@ def to_report(stats_xml, output_dir, dpi=72):
                                            rqualdist.binWidth)
         readscorenumber += sum(rqualdist.bins)
 
+
+    readlen = 0
+    if nreads != 0:
+        readlen = np.round(nbases/nreads, decimals=2)
+    readQuality = 0
+    if readscorenumber != 0:
+        readQuality = np.round(readscoretotal/readscorenumber, decimals=2)
     row_names = ["Polymerase Read Bases",
                  "Polymerase Reads",
                  "Polymerase Read N50",
@@ -84,8 +91,8 @@ def to_report(stats_xml, output_dir, dpi=72):
     _pre_filter = [np.round(nbases, decimals=2),
                    nreads,
                    n50,
-                   np.round(nbases/nreads, decimals=2),
-                   np.round(readscoretotal/readscorenumber, decimals=2)]
+                   readlen,
+                   readQuality]
 
     plots = []
 
