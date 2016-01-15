@@ -7,10 +7,11 @@ import unittest
 import tempfile
 import shutil
 
+from numpy import ndarray
+
 from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
-from numpy import ndarray
-from base_test_case import BaseTestCase, ROOT_DATA_DIR
+
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
@@ -18,27 +19,20 @@ from pbreports.report.adapter_xml import to_report as make_adapter_report
 
 log = logging.getLogger(__name__)
 
-class TestXMLstatsRpts(BaseTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        BaseTestCase.setUpClass()
+class TestXMLstatsRpts(unittest.TestCase):
 
     def setUp(self):
         """
         Before *every* test
         """
+        super(TestXMLstatsRpts, self).setUp()
         self.cwd = os.getcwd()
         self.tmpdir = tempfile.mkdtemp()
         os.chdir(self.tmpdir)
-        try:
-            BaseTestCase.setUp(self)
-        except Exception as err:
-            log.error(err)
-            tb = traceback.format_exc()
-            log.error(tb)
-            raise
-        log.debug("In setUp()")
+
+    def get_output_dir(self):
+        return self.tmpdir
 
     def tearDown(self):
         """
@@ -46,13 +40,7 @@ class TestXMLstatsRpts(BaseTestCase):
         """
         os.chdir(self.cwd)
         shutil.rmtree(self.tmpdir)
-        try:
-            BaseTestCase.tearDown(self)
-        except Exception as err:
-            log.error(err)
-            tb = traceback.format_exc()
-            log.error(tb)
-            raise
+        super(TestXMLstatsRpts, self).tearDown()
 
     def test_loading_exit_code_0(self):
         log.info(TestXMLstatsRpts.test_loading_exit_code_0.__doc__)
@@ -396,7 +384,3 @@ class TestXMLstatsRpts(BaseTestCase):
         except:
             log.error(traceback.format_exc())
             raise
-
-
-
-
