@@ -223,7 +223,7 @@ class TestCoverageRpt(unittest.TestCase):
         ref = os.path.join(self._data_dir, 'references', 'lambda')
         gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
         r = 'rpt.json'
-        cmd = 'pbreport coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
                                                             r=r,
                                                             c=ref, g=gff)
 
@@ -248,7 +248,7 @@ class TestCoverageRpt(unittest.TestCase):
                            'lambda.fasta')
         gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
         r = 'rpt.json'
-        cmd = 'pbreport coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
                                                             r=r,
                                                             c=ref, g=gff)
 
@@ -277,7 +277,7 @@ class TestCoverageRpt(unittest.TestCase):
         ref = ref_name
         gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
         r = 'rpt.json'
-        cmd = 'pbreport coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
                                                             r=r,
                                                             c=ref, g=gff)
 
@@ -301,7 +301,7 @@ class TestCoverageRpt(unittest.TestCase):
         ref = os.path.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC')
         gff = os.path.join(self._data_dir, 'tiny_alignment_summary.gff')
         r = 'rpt.json'
-        cmd = 'pbreport coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
                                                             r=r,
                                                             c=ref, g=gff)
 

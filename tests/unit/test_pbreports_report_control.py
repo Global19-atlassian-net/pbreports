@@ -247,7 +247,7 @@ class TestControlRpt(unittest.TestCase):
 
         cmph5 = os.path.join(self.DATA_DIR, 'control_reads.cmp.h5')
         csv = os.path.join(self.DATA_DIR, 'filtered_summary.csv')
-        cmd = 'pbreport control {o} {r} {c} {g}'.format(o=self._output_dir,
+        cmd = 'python -m pbreports.report.control {o} {r} {c} {g}'.format(o=self._output_dir,
                                                            r='rpt.json',
                                                            c=cmph5, g=csv)
 

@@ -24,7 +24,6 @@ setup(
     author='pbiDevNet',
     author_email='pbiDevNet@pacificbiosciences.com',
     license='LICENSE.txt',
-    scripts=['bin/pbreport'],
     packages=find_packages(),
     zip_safe=False,
     install_requires=_get_requirements(_get_local_file(_REQUIREMENTS_FILE)),

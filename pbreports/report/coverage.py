@@ -3,13 +3,17 @@ import argparse
 import logging
 import os
 import hashlib
+import sys
 
 import numpy as np
 
 from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
+from pbcommand.cli import pacbio_args_runner, \
+    get_default_argparser_with_base_opts
+from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 
-from pbreports.pbsystem_common.validators import validate_file, validate_dir
+from pbreports.io.validators import validate_file, validate_dir
 from pbreports.util import get_top_contigs, add_base_and_plot_options
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data,
                                    apply_line_fill_data, apply_histogram_data,
@@ -429,3 +433,17 @@ def get_parser():
     p = argparse.ArgumentParser(version=__version__)
     p = add_options_to_parser(p)
     return p
+
+
+def main(argv=sys.argv[1:]):
+    """Main point of Entry"""
+    return pacbio_args_runner(
+        argv=argv,
+        parser=get_parser(),
+        args_runner_func=args_runner,
+        alog=log,
+        setup_log_func=setup_log)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

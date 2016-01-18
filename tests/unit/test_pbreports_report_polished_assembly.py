@@ -93,7 +93,7 @@ class TestPolishedAssemblyRpt(unittest.TestCase):
         fastq = os.path.join(ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fastq.gz')
         gff = os.path.join(ROOT_DATA_DIR, 'polished_assembly', 'alignment_summary.gff')
         r = os.path.join(self._output_dir, 'rpt.json')
-        cmd = 'pbreport polished-assembly {g} {f} {r}'.format(g=gff, f=fastq, r=r)
+        cmd = 'python -m pbreports.report.polished_assembly {g} {f} {r}'.format(g=gff, f=fastq, r=r)
         log.info(cmd)
 
         o, c, m = backticks(cmd)

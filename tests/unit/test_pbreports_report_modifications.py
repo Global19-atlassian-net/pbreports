@@ -75,9 +75,10 @@ class TestModificationsRpt(unittest.TestCase):
         """
 
         csv = os.path.join(self._data_dir, 'modifications.csv.gz')
-        cmd = 'pbreport modifications {o} {r} {c}'.format(o=self._output_dir,
-                                                          r='rpt.json',
-                                                          c=csv)
+        cmd = 'python -m pbreports.report.modifications {c} {o} {r}'.format(
+            o=self._output_dir,
+            r='rpt.json',
+            c=csv)
 
         o, c, m = backticks(cmd)
         log.info(cmd)

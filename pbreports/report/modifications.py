@@ -206,7 +206,7 @@ def _args_runner(args):
     return 0
 
 def add_options_to_parser(p):
-    from pbreports.pbsystem_common.cmdline.validators import validate_file
+    from pbreports.io.validators import validate_file
     p.description = __doc__ # FIXME which is probably wrong
     p.version = __version__
     p = add_base_and_plot_options(p)
@@ -220,7 +220,7 @@ def args_runner(args):
     return make_modifications_report(
         modifications_csv=args.csv,
         report=os.path.basename(args.report),
-        output_dir=os.path.dirname(args.report))
+        output_dir=args.output)
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract

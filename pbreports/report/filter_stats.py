@@ -9,9 +9,11 @@ import warnings
 import numpy as np
 
 from pbcommand.models.report import Report, Attribute, Table, Column
+from pbcommand.cli import pacbio_args_runner, \
+    get_default_argparser_with_base_opts
+from pbcommand.utils import setup_log
 
-from pbreports.pbsystem_common.cmdline.core import main_runner_default
-from pbreports.pbsystem_common.validators import validate_dir, validate_file
+from pbreports.io.validators import validate_dir, validate_file
 from pbreports.plot.helper import get_green, get_blue
 from pbreports.util import compute_n50_from_bins
 from pbreports.model.aggregators import (CountAggregator, MeanAggregator,
@@ -555,7 +557,8 @@ def args_runner(args):
 
 def get_parser():
     desc = ""
-    parser = argparse.ArgumentParser(version=__version__, description=desc)
+    parser = get_default_argparser_with_base_opts(
+        version=__version__, description=__doc__)
     parser.add_argument('filter_summary_csv', type=validate_file,
                         help="Filter CSV file.")
     parser.add_argument(
@@ -565,15 +568,17 @@ def get_parser():
                         help='Path of JSON report.')
     parser.add_argument("--dpi", default=60, type=int,
                         help="dots/inch")
-    parser.add_argument('--debug', action='store_true',
-                        help="Enable debug mode to stdout.")
-
-    parser.set_defaults(func=args_runner)
     return parser
 
 
-def main(argv=sys.argv):
+def main(argv=sys.argv[1:]):
     """Main point of Entry"""
-    log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
-    return main_runner_default(argv[1:], get_parser(), log)
+    return pacbio_args_runner(
+        argv=argv,
+        parser=get_parser(),
+        args_runner_func=args_runner,
+        alog=log,
+        setup_log_func=setup_log)
 
+if __name__ == "__main__":
+    sys.exit(main())

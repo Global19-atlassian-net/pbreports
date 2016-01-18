@@ -16,7 +16,6 @@ from pbcore.io import FastaReader, ReferenceSet
 from pbcommand.models import FileTypes
 from pbcommand import common_options
 
-from pbreports.pbsystem_common.utils import compose
 
 log = logging.getLogger(__name__)
 
@@ -311,10 +310,20 @@ def add_base_options_pbcommand(parser):
         type=validate_output_dir,
         help="Output directory for associated files")
     parser.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
-        description="Filename of JSON output report. Should be name only, "+
-                    "and will be written to output dir",
+        description="Filename of JSON output report",
         default_name="report.json")
     return parser 
+
+
+def compose(*funcs):
+    """Functional composition
+    [f, g, h] will be f(g(h(x)))
+    """
+    def compose_two(f, g):
+        def c(x):
+            return f(g(x))
+        return c
+    return functools.reduce(compose_two, funcs)
 
 add_base_and_plot_options = compose(add_base_options, add_plot_options)
 

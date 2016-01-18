@@ -12,11 +12,11 @@ import sys
 from pbcommand.models.report import Table, Column, Report, PbReportError
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 
-from pbreports.util import add_base_options, openReference
+from pbreports.util import add_base_options, openReference, \
+    add_base_options_pbcommand
 
 log = logging.getLogger(__name__)
 
@@ -326,7 +326,7 @@ def get_contract_parser():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-
+    add_base_options_pbcommand(p)
     p.add_input_file_type(FileTypes.GFF,
                           file_id="gff",
                           name="GFF file",
@@ -335,8 +335,8 @@ def get_contract_parser():
                           file_id="reference",
                           name="Reference dataset",
                           description="ReferenceSet or FASTA")
-    p.add_output_file_type(FileTypes.REPORT, "report",
-                           "JSON report", "JSON report", "report.json")
+    #p.add_output_file_type(FileTypes.REPORT, "report",
+    #                       "JSON report", "JSON report", "report.json")
     p.add_int(Constants.HOW_MANY_ID, "how_many",
               default=Constants.HOW_MANY_DEFAULT,
               name="Number of variants",

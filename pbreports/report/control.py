@@ -3,20 +3,26 @@ import argparse
 import logging
 import os
 import math
-import numpy as np
 import array
+import sys
 
 import matplotlib.patches as mp
+import numpy as np
 
-from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
+from pbcommand.models.report import (Attribute, Report, PlotGroup, Plot,
+    PbReportError)
+from pbcommand.cli import (pacbio_args_runner,
+    get_default_argparser_with_base_opts)
+from pbcommand.utils import setup_log
 from pbcore.io import CmpH5Reader
 
-from pbreports.pbsystem_common.cmdline.validators import validate_dir
-from pbreports.pbsystem_common.validators import validate_file
+from pbreports.io.validators import validate_dir
+from pbreports.io.validators import validate_file
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail,
-                                   set_tick_label_font_size, set_axis_label_font_size)
+                                   set_tick_label_font_size,
+                                   set_axis_label_font_size)
 
 from pbreports.util import add_base_and_plot_options
 
@@ -388,3 +394,16 @@ def get_parser():
     p = argparse.ArgumentParser(version=__version__)
     p = add_options_to_parser(p)
     return p
+
+def main(argv=sys.argv[1:]):
+    """Main point of Entry"""
+    return pacbio_args_runner(
+        argv=argv,
+        parser=get_parser(),
+        args_runner_func=args_runner,
+        alog=log,
+        setup_log_func=setup_log)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
