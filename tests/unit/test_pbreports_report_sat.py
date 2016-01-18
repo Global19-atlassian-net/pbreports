@@ -100,7 +100,7 @@ class TestSatRpt(unittest.TestCase):
         bam = self.getAlignmentSet()
         var_rpt = os.path.join(DATA, 'variants_report.json')
         mapping_rpt = os.path.join(DATA, 'mapping_stats_report.json')
-        cmd = 'pbreport sat {o} {r} {c} {a} {v}'.format(o=self._output_dir,
+        cmd = 'python -m pbreports.report.sat {o} {r} {c} {a} {v}'.format(o=self._output_dir,
                                                                 r='rpt.json',
                                                                 c=bam,
                                                                 a=var_rpt,

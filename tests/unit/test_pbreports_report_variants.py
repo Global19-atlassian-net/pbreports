@@ -330,10 +330,11 @@ class TestVariantsRpt(unittest.TestCase):
         als = os.path.join(self._data_dir, 'alignment_summary.gff')
         variants = os.path.join(self._data_dir, 'variants.gff.gz')
         ref = os.path.join(self._data_dir, 'ecoliK12_pbi_March2013')
-        cmd = 'pbreport variants {o} {r} {c} {a} {v}'.format(o=self._output_dir,
-                                                                r='rpt.json',
-                                                                c=ref, a=als,
-                                                                v=variants)
+        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
+            o=self._output_dir,
+            r='rpt.json',
+            c=ref, a=als,
+            v=variants)
 
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
@@ -350,7 +351,7 @@ class TestVariantsRpt(unittest.TestCase):
         ref = os.path.join(self._data_dir, 'ecoliK12_pbi_March2013',
                            'sequence',
                            'ecoliK12_pbi_March2013.fasta')
-        cmd = 'pbreport variants {o} {r} {c} {a} {v}'.format(
+        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
             o=self._output_dir, r='rpt.json', c=ref, a=als, v=variants)
 
         rcode = run_backticks(cmd)
@@ -372,7 +373,7 @@ class TestVariantsRpt(unittest.TestCase):
         refset = ReferenceSet(ref)
         refset.write(ref_name)
         ref = ref_name
-        cmd = 'pbreport variants {o} {r} {c} {a} {v}'.format(
+        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
             o=self._output_dir, r='rpt.json', c=ref, a=als, v=variants)
 
         rcode = run_backticks(cmd)

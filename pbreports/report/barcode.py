@@ -6,12 +6,14 @@ import argparse
 import re
 from pprint import pformat
 
+from pbcommand.cli import pacbio_args_runner, \
+    get_default_argparser_with_base_opts
 from pbcommand.models.report import Report, Table, Column
+from pbcommand.utils import setup_log
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
 
-from pbreports.pbsystem_common.cmdline.core import main_runner_default
-from pbreports.pbsystem_common.validators import bas_fofn_to_bas_files, validate_fofn
+from pbreports.io.validators import bas_fofn_to_bas_files, validate_fofn
 
 
 log = logging.getLogger(__name__)
@@ -128,11 +130,10 @@ def run_to_report(bas_barcode_tuple_list, subreads=True):
 
 
 def args_runner(args):
+    log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
     # generate list of tuples
     bas_barcode_tuple_list = _to_tuple_list(args.bas_fofn, args.barcode_fofn)
-
     use_subreads = not args.ccs
-
     report = run_to_report(bas_barcode_tuple_list, subreads=use_subreads)
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
@@ -140,28 +141,27 @@ def args_runner(args):
 
 
 def get_parser():
-    p = argparse.ArgumentParser(version=__version__)
-
+    p = get_default_argparser_with_base_opts(
+        version=__version__, description=__doc__)
     p.add_argument('bas_fofn', help="Bas h5 FOFN.", type=validate_fofn)
     p.add_argument('barcode_fofn', type=validate_fofn, help="Barcode h5 FOFN.")
-
     p.add_argument('report_json',
                    help="Path to write Report json output.")
-    p.add_argument('--debug', action='store_true',
-                   help='Flag to debug to stdout.')
     # this is necessary for BasH5Reader to handle the differences between the
     # .ccs.h5 files and .bas.h5 files.
     p.add_argument('--ccs', action='store_true',
                    help='Use consensus reads instead of subreads.')
-
-    p.set_defaults(func=args_runner)
     return p
 
 
-def main(argv=sys.argv):
+def main(argv=sys.argv[1:]):
     """Main point of Entry"""
-    log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
-    return main_runner_default(argv[1:], get_parser(), log)
+    return pacbio_args_runner(
+        argv=argv,
+        parser=get_parser(),
+        args_runner_func=args_runner,
+        alog=log,
+        setup_log_func=setup_log)
 
 
 if __name__ == '__main__':

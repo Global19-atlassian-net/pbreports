@@ -1,5 +1,5 @@
-""" Streaming Subreading Filtering Report
-
+"""
+Streaming Subreading Filtering Report
 
 CSV file format is:
 
@@ -31,8 +31,6 @@ Attributes
                           name="Mean Subread length")
 
     attr_n50 = Attribute('filter_subread_n50', n50, name="N50")
-
-
 """
 
 import os
@@ -46,9 +44,11 @@ import math
 import numpy as np
 
 from pbcommand.models.report import Report, Attribute
+from pbcommand.cli import pacbio_args_runner, \
+    get_default_argparser_with_base_opts
+from pbcommand.utils import setup_log
 
-from pbreports.pbsystem_common.cmdline.core import main_runner_default
-from pbreports.pbsystem_common.validators import validate_dir, validate_file
+from pbreports.io.validators import validate_dir, validate_file
 from pbreports.plot.helper import get_green
 from pbreports.util import compute_n50
 from pbreports.report.streaming_utils import (PlotViewProperties,
@@ -396,8 +396,8 @@ def get_parser():
     filtered_subread_summary.csv
     """
     desc = ""
-    parser = argparse.ArgumentParser(version=__version__, description=desc)
-
+    parser = get_default_argparser_with_base_opts(
+        version=__version__, description=__doc__)
     parser.add_argument("filter_summary_csv",
                         help="Path to Filter Subread Summary CSV file.",
                         type=validate_file)
@@ -408,15 +408,17 @@ def get_parser():
                         help="dpi (dots/inch) for plots that were generated.")
     parser.add_argument('-r', '--report', dest='report', default=None,
                         help="Write the Json report to disk.")
-    parser.add_argument('--debug', action='store_true',
-                        help="Print debug to stdout.")
-
-    parser.set_defaults(func=args_runner)
-
     return parser
 
 
-def main(argv=sys.argv):
+def main(argv=sys.argv[1:]):
     """Main point of Entry"""
-    log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
-    return main_runner_default(argv[1:], get_parser(), log)
+    return pacbio_args_runner(
+        argv=argv,
+        parser=get_parser(),
+        args_runner_func=args_runner,
+        alog=log,
+        setup_log_func=setup_log)
+
+if __name__ == "__main__":
+    sys.exit(main())
