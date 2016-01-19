@@ -107,7 +107,7 @@ def alignment_info_from_bam(bam_file_name, movie_name):
             last_zmw_id = zmw_id
         
             if subread_id in datum:
-                warnings.warn("Duplicate subread %s" % subread_id)
+                warnings.warn("Duplicate subread %s" % str(subread_id))
 
             # No Z-score
             datum[subread_id] = tuple(this_a)

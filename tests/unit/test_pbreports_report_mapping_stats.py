@@ -1,9 +1,12 @@
-import json
-import os
-import pprint
+
+import warnings
+import tempfile
 import unittest
 import logging
-import tempfile
+import shutil
+import pprint
+import json
+import os
 import sys
 
 from pbcommand.pb_io.report import dict_to_report
@@ -15,7 +18,7 @@ from pbreports.report import mapping_stats_ccs
 from pbreports.report.mapping_stats import to_report, Constants
 
 from base_test_case import ROOT_DATA_DIR, run_backticks, \
-    skip_if_data_dir_not_present
+    skip_if_data_dir_not_present, LOCAL_DATA
 
 log = logging.getLogger(__name__)
 
@@ -234,6 +237,22 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
     @classmethod
     def _get_input_file(cls):
         return cls.ALIGNMENTS
+
+
+class TestMappingStatsMisc(unittest.TestCase):
+
+    def setUp(self):
+        self.bam_file = os.path.join(LOCAL_DATA, "mapping_stats",
+            "duplicate.subreads.bam")
+
+    def test_duplicate_subreads(self):
+        """Test that report doesn't crash on duplicate subreads"""
+        output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
+        with warnings.catch_warnings(record=True) as w:
+            report = to_report(self.bam_file, output_dir)
+            shutil.rmtree(output_dir)
+            self.assertTrue(w >= 4)
+
 
 # gmap data from pbsmrtpipe is not yet available for testing, this class needs to be updated
 # with fresh data
