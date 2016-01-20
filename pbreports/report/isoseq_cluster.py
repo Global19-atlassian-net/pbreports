@@ -267,7 +267,7 @@ def get_contract_parser():
     p.add_input_file_type(FileTypes.DS_CONTIG, "inReadsFN", "Fasta reads",
         description="Reads in FASTA format, usually are consensus, " + \
                     "isoforms produced by IsoSeq Cluster.")
-    p.add_input_file_type(FileTypes.REPORT, "inSummaryFN", "Summary text",
+    p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary text",
         description="A summary produced by IsoSeq Cluster, e.g. " + \
                     "cluster_summary.txt")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "Output JSON",
