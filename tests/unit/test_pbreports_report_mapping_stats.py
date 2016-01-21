@@ -29,7 +29,7 @@ _GMAP_DATA_DIR = os.path.join(
     ROOT_DATA_DIR, 'mapping_stats', 'gmap_2850031_0011')
 _LAMBDA_DATA_DIR = os.path.join(
     ROOT_DATA_DIR, 'mapping_stats', "lambda_2372215_0007_tiny")
-_CCS_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'mapping_stats', 'ccs')
+_CCS_DATA_DIR = os.path.join(LOCAL_DATA, 'mapping_stats_ccs')
 
 _TOTAL_NUMBER_OF_ATTRIBUTES = 12
 _TOTAL_NUMBER_OF_PLOT_GROUPS = 3
@@ -347,26 +347,23 @@ class TestMappingStatsGmapReport(unittest.TestCase):
         self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
 
-@skip_if_data_dir_not_present
 class TestMappingStatsCCSReport(unittest.TestCase):
     EXPECTED_VALUES = {
-        Constants.A_READ_ACCURACY: 0.996,
-        Constants.A_NREADS: 743,
-        Constants.A_NBASES: 715295,
-        Constants.A_READLENGTH: 963,
-        Constants.A_READLENGTH_MAX: 3343,
+        Constants.A_READ_ACCURACY: 0.999,
+        Constants.A_NREADS: 10,
+        Constants.A_NBASES: 11229,
+        Constants.A_READLENGTH: 1123,
+        Constants.A_READLENGTH_MAX: 1866,
         Constants.A_READLENGTH_Q95: 1890,
         "number_of_plot_groups": 2,
         "number_of_attributes": 7,
     }
 
     @classmethod
-    @skip_if_data_dir_not_present
     def setUpClass(cls):
-        _to_p = lambda x: os.path.join(_CCS_DATA_DIR, x)
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
-        cls.input_fofn = _to_p('input.fofn')
-        cls.aligned_reads_xml = _to_p('aligned.consensusalignmentset.xml')
+        cls.aligned_reads_xml = os.path.join(_CCS_DATA_DIR,
+            'aligned.consensusalignmentset.xml')
         t = tempfile.NamedTemporaryFile(
             delete=False, suffix="mapping_report.json")
         t.close()
