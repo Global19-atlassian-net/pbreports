@@ -8,9 +8,8 @@ import os.path
 
 import pbcommand.testkit
 
-from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
+from base_test_case import LOCAL_DATA
 
-ROOT_DIR = _get_root_data_dir()
 EXPECTED_FILES = [
     'kinetic_histogram_thumb.png',
     'kinetic_detections.png',
@@ -18,16 +17,13 @@ EXPECTED_FILES = [
     'kinetic_histogram.png',
 ]
 
-@skip_if_data_dir_not_present
 class TestPbreportModifications(pbcommand.testkit.PbTestApp):
-    DATA = os.path.join(ROOT_DIR, "modifications")
+    DATA = os.path.join(LOCAL_DATA, "modifications")
     DRIVER_BASE = "python -m pbreports.report.modifications "
     DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
-    INPUT_FILES = [
-        os.path.join(DATA, "modifications.csv.gz"),
-    ]
+    INPUT_FILES = [os.path.join(DATA, "modifications.csv.gz")]
     TASK_OPTIONS = {
         "pbreports.task_options.dpi": 60,
         "pbreports.task_options.dumpdata": True,
