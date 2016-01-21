@@ -24,6 +24,7 @@ from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue, get_green, Line, apply_line_data)
 from pbreports.util import accuracy_as_phred_qv
 
+log = logging.getLogger(__name__)
 __version__ = '0.44'
 
 
@@ -247,14 +248,14 @@ def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
 
     rax = ax.twinx()
 
-    logging.debug(
+    log.debug(
         "Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
 
     cdf = to_cdf(zip(bin_edges[:-1], bins))
     max_cdf = max(cdf)
     sdf = [max_cdf - i for i in cdf]
 
-    logging.debug((len(bin_edges), len(sdf)))
+    log.debug((len(bin_edges), len(sdf)))
 
     # Plot the data
     rax.plot(bin_edges[:-1], sdf, 'k')
@@ -273,7 +274,7 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, datum, axis_labels, nbins,
 
     rax = ax.twinx()
 
-    logging.debug(
+    log.debug(
         "Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
 
     cdf = to_cdf(zip(bin_edges[:-1], bins))
@@ -288,7 +289,7 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, datum, axis_labels, nbins,
 
     sdf = [max_cdf - i for i in cdf]
 
-    logging.debug((len(bin_edges), len(sdf)))
+    log.debug((len(bin_edges), len(sdf)))
 
     # Plot the data
     rax.plot(bin_edges[:-1], sdf, 'k')
@@ -335,17 +336,17 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barco
     try:
         fig.tight_layout()
     except AttributeError as e:  # FIXME bug 25872
-        logging.warn("figure.tight_layout() not available")
-        logging.warn(str(e))
+        log.warn("figure.tight_layout() not available")
+        log.warn(str(e))
     except ValueError as e:
-        logging.error(str(e))
+        log.error(str(e))
     fig.savefig(path, dpi=dpi)
-    logging.debug("Saved plot with id {i} to {p}".format(p=path, i=plot_id))
+    log.debug("Saved plot with id {i} to {p}".format(p=path, i=plot_id))
     thumbnail = plot_name.replace(".png", "_thumb.png")
 
     to_b = lambda x: os.path.basename(x)
     fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
-    logging.debug("Saved plot to {p}".format(p=thumbnail))
+    log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, to_b(plot_name), thumbnail=to_b(thumbnail))
 
     return plot
@@ -377,11 +378,11 @@ create_scatter_plot = functools.partial(__create_plot,
 
 def to_report(ccs_subread_set, output_dir):
     bam_files = list(ccs_subread_set.toExternalFiles())
-    logging.info("Generating report from files: {f}".format(f=bam_files))
+    log.info("Generating report from files: {f}".format(f=bam_files))
     movie_results = []
     for fn in bam_files:
         movie_results.extend(_bam_file_to_movie_results(fn))
-    logging.debug("\n" + pformat(movie_results))
+    log.debug("\n" + pformat(movie_results))
 
     rs = [m.read_lengths for m in movie_results]
     readlengths = np.concatenate(rs)
@@ -414,7 +415,7 @@ def to_report(ccs_subread_set, output_dir):
 
 
     table = _movie_results_to_table(movie_results)
-    logging.info(str(table))
+    log.info(str(table))
 
     attributes = _movie_results_to_attributes(movie_results)
 
@@ -429,12 +430,12 @@ def run_report(
         input_file,
         report_json,
         output_dir):
-    logging.info("Running {f} v{v}.".format(
+    log.info("Running {f} v{v}.".format(
         f=os.path.basename(__file__), v=__version__))
     report = None
     ds = ConsensusReadSet(input_file)
     report = to_report(ds, output_dir)
-    logging.info(pformat(report.to_dict()))
+    log.info(pformat(report.to_dict()))
     report.write_json(report_json)
     return 0
 
@@ -480,10 +481,6 @@ def get_parser():
 
 def main(argv=sys.argv):
     """Main point of Entry"""
-    logging.basicConfig(level=logging.WARN)
-    log = logging.getLogger()
-    log.info("Starting {f} version {v} report generation".format(
-        f=__file__, v=__version__))
     return pbparser_runner(
         argv=argv[1:],
         parser=get_parser(),

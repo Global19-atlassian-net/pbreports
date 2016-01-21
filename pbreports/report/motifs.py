@@ -29,6 +29,8 @@ from pbreports.report.preassembly import _validate_file
 
 __version__ = '2.0'
 
+log = logging.getLogger()
+
 
 class Constants(object):
     R_ID = 'motifs'
@@ -54,9 +56,6 @@ class Constants(object):
     # XXX TCI stuff
     TOOL_ID = "pbreports.tasks.motifs_report"
     DRIVER_EXE = "python -m pbreports.report.motifs --resolved-tool-contract"
-
-
-log = logging.getLogger()
 
 
 class MotifRecord(object):
