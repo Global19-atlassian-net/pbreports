@@ -1,0 +1,20 @@
+{
+    "_changelist": "UNKNOWN", 
+    "_version": "0.2.14", 
+    "attributes": [
+        {
+            "id": "isoseq_cluster.isoseq_numconsensusisoforms", 
+            "name": "numConsensusIsoforms", 
+            "value": 9
+        }, 
+        {
+            "id": "isoseq_cluster.isoseq_numtotalbases", 
+            "name": "numTotalBases", 
+            "value": 35563
+        }
+    ], 
+    "dataset_uuids": [], 
+    "id": "isoseq_cluster", 
+    "plotGroups": [], 
+    "tables": []
+}
