@@ -9,6 +9,8 @@ import os.path
 import pbcommand.testkit
 import pbcore.data
 
+from base_test_case import LOCAL_DATA
+
 
 class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats "
@@ -17,10 +19,12 @@ class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
     TASK_OPTIONS = {}
 
 
-@unittest.skip("PLEASE MAKE TEST DATA")
 class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats_ccs "
-    INPUT_FILES = [] # FIXME pending blasr bug fix
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [os.path.join(LOCAL_DATA, "mapping_stats_ccs",
+        "aligned.consensusalignmentset.xml")]
+    TASK_OPTIONS = {}
 
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
+
+# TODO(nechols)(2016-01-21): test actual output
+
 import os
 import logging
 import shutil
@@ -11,15 +14,14 @@ from pbcommand.testkit import PbTestApp
 import pbreports.report.isoseq_classify
 import pbreports.report.isoseq_cluster
 
-from base_test_case import (ROOT_DATA_DIR, run_backticks,
+from base_test_case import (LOCAL_DATA, run_backticks,
                             get_report_id_from_constants,
                             get_image_names_from_constants,
-                            get_plot_groups_from_constants,
-                            skip_if_data_dir_not_present)
+                            get_plot_groups_from_constants)
 
 log = logging.getLogger(__name__)
 
-_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'isoseq')
+_DATA_DIR = os.path.join(LOCAL_DATA, 'isoseq')
 
 # This will keep the report results and skip the teardown classmethod
 _DEBUG = False
@@ -32,7 +34,6 @@ class _TestIsoSeqBase(unittest.TestCase):
     """
 
     @classmethod
-    @skip_if_data_dir_not_present
     def setUpClass(cls):
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.report_constants = pbreports.report.isoseq_classify.Constants
@@ -41,7 +42,6 @@ class _TestIsoSeqBase(unittest.TestCase):
         cls.report_json = os.path.join(cls.results_dir, "isoseq_classify.json")
         _d = dict(o=cls.results_dir, f=cls.input_fasta, s=cls.output_summary_txt, j=cls.report_json)
         cmd = 'isoseq_classify_report --debug {f} {s} {j}'.format(**_d)
-
         cls.code = run_backticks(cmd)
 
     def test_exit_code(self):
@@ -83,16 +83,13 @@ class _TestIsoSeqBase(unittest.TestCase):
                     shutil.rmtree(cls.results_dir)
 
 
-@skip_if_data_dir_not_present
 class TestIsoSeqClassify(_TestIsoSeqBase):
     pass
 
 
-@skip_if_data_dir_not_present
 class TestIsoSeqCluster(_TestIsoSeqBase):
 
     @classmethod
-    @skip_if_data_dir_not_present
     def setUpClass(cls):
         cls.report_constants = pbreports.report.isoseq_cluster.Constants
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
@@ -101,11 +98,9 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
         cls.report_json = os.path.join(cls.results_dir, "isoseq_cluster.json")
         _d = dict(o=cls.results_dir, f=cls.input_fasta, s=cls.output_summary_txt, j=cls.report_json)
         cmd = 'isoseq_cluster_report --debug {f} {s} {j}'.format(**_d)
-
         cls.code = run_backticks(cmd)
 
 
-@skip_if_data_dir_not_present
 class TestIsoSeqClassifyTCI(PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.isoseq_classify"
     INPUT_FILES = [
@@ -114,7 +109,6 @@ class TestIsoSeqClassifyTCI(PbTestApp):
     ]
 
 
-@skip_if_data_dir_not_present
 class TestIsoSeqClusterTCI(PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.isoseq_cluster"
     INPUT_FILES = [

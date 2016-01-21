@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<pbds:ContigSet CreatedAt="2015-09-03T18:17:13" MetaType="PacBio.DataSet.ContigSet" Name="" Tags="" TimeStampedName="PacBio.DataSet.ContigSet-150904_011713" UniqueId="ed77fa65-19d4-3cc1-30d1-7640e92ed3ef" Version="3.0.0" xmlns="http://pacificbiosciences.com/PacBioDataModel.xsd" xmlns:pbbase="http://pacificbiosciences.com/PacBioBaseDataModel.xsd" xmlns:pbds="http://pacificbiosciences.com/PacBioDatasets.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pacificbiosciences.com/PacBioDataModel.xsd">
+	<pbbase:ExternalResources>
+		<pbbase:ExternalResource MetaType="PacBio.ContigFile.ContigFastaFile" ResourceId="consensus_isoforms.fasta" TimeStampedName="PacBio.ContigFile.ContigFastaFile-150904_011713" UniqueId="753a2d20-e9e7-44c7-8865-0300a46aaf7a">
+			<pbbase:FileIndices>
+				<pbbase:FileIndex MetaType="PacBio.Index.SamIndex" ResourceId="consensus_isoforms.fasta.fai" TimeStampedName="PacBio.Index.SamIndex-150904_011713" UniqueId="141cf3b4-bb83-4902-b792-62f1d5754acf"/>
+			</pbbase:FileIndices>
+		</pbbase:ExternalResource>
+	</pbbase:ExternalResources>
+	<pbds:DataSetMetadata>
+		<pbds:TotalLength>35563</pbds:TotalLength>
+		<pbds:NumRecords>9</pbds:NumRecords>
+		<pbds:Organism/>
+		<pbds:Ploidy/>
+		<pbds:Contigs>
+			<pbds:Contig Description="isoform=c0;full_length_coverage=1;isoform_length=3950" Digest="DEPRECATED" Length="3950" Name="c0/1/3950"/>
+			<pbds:Contig Description="isoform=c1;full_length_coverage=1;isoform_length=3569" Digest="DEPRECATED" Length="3569" Name="c1/1/3569"/>
+			<pbds:Contig Description="isoform=c2;full_length_coverage=1;isoform_length=4409" Digest="DEPRECATED" Length="4409" Name="c2/1/4409"/>
+			<pbds:Contig Description="isoform=c3;full_length_coverage=1;isoform_length=3784" Digest="DEPRECATED" Length="3784" Name="c3/1/3784"/>
+			<pbds:Contig Description="isoform=c4;full_length_coverage=1;isoform_length=4194" Digest="DEPRECATED" Length="4194" Name="c4/1/4194"/>
+			<pbds:Contig Description="isoform=c5;full_length_coverage=1;isoform_length=3924" Digest="DEPRECATED" Length="3924" Name="c5/1/3924"/>
+			<pbds:Contig Description="isoform=c6;full_length_coverage=1;isoform_length=3889" Digest="DEPRECATED" Length="3889" Name="c6/1/3889"/>
+			<pbds:Contig Description="isoform=c7;full_length_coverage=1;isoform_length=4106" Digest="DEPRECATED" Length="4106" Name="c7/1/4106"/>
+			<pbds:Contig Description="isoform=c8;full_length_coverage=1;isoform_length=3738" Digest="DEPRECATED" Length="3738" Name="c8/1/3738"/>
+		</pbds:Contigs>
+	</pbds:DataSetMetadata>
+</pbds:ContigSet>

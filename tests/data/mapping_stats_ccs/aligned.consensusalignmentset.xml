@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConsensusAlignmentSet CreatedAt="2016-01-21T12:25:35" MetaType="PacBio.DataSet.ConsensusAlignmentSet" Name="pacbio_dataset_consensusalignmentset-160121_202535452" Tags="" TimeStampedName="pacbio_dataset_consensusalignmentset-160121_202535452" UniqueId="80b104b7-0161-b028-ca55-a2b4f857e748" Version="3.0.1" xmlns="http://pacificbiosciences.com/PacBioDatasets.xsd" xmlns:pbbase="http://pacificbiosciences.com/PacBioBaseDataModel.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pacificbiosciences.com/PacBioDataModel.xsd">
+	<pbbase:ExternalResources>
+		<pbbase:ExternalResource MetaType="PacBio.ConsensusReadFile.ConsensusReadBamFile" ResourceId="aligned.ccs.bam" TimeStampedName="pacbio_consensusreadfile_consensusreadbamfile-160121_202535451" UniqueId="e503d92a-ec62-43a3-8614-d0c94afcc2e3">
+			<pbbase:FileIndices>
+				<pbbase:FileIndex MetaType="PacBio.Index.PacBioIndex" ResourceId="aligned.ccs.bam.pbi" TimeStampedName="pacbio_index_pacbioindex-160121_202535451" UniqueId="10527e3f-73e0-4843-8197-ed577a954a6f"/>
+			</pbbase:FileIndices>
+		</pbbase:ExternalResource>
+	</pbbase:ExternalResources>
+	<DataSetMetadata>
+		<TotalLength>11229</TotalLength>
+		<NumRecords>10</NumRecords>
+	</DataSetMetadata>
+</ConsensusAlignmentSet>

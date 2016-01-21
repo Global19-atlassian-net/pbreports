@@ -8,13 +8,11 @@ import os.path
 
 import pbcommand.testkit
 
-from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
+from base_test_case import LOCAL_DATA
 
-ROOT_DIR = _get_root_data_dir()
 
-@skip_if_data_dir_not_present
 class TestPbreportMotifs(pbcommand.testkit.PbTestApp):
-    DATA = os.path.join(ROOT_DIR, "kinetics")
+    DATA = os.path.join(LOCAL_DATA, "kinetics")
     DRIVER_BASE = "python -m pbreports.report.motifs "
     DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
