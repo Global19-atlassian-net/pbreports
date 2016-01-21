@@ -228,8 +228,6 @@ class TestRegionSize(unittest.TestCase):
         r_size = summarize_coverage.get_region_size(50000, 10000, 0, 100, True)
         self.assertEqual(r_size, 500)
 
-
-    @skip_if_data_dir_not_present
     def test_exit_code_0(self):
         """
         Like a cram test. Assert exits with 0, even though region size is 0 See

@@ -1,4 +1,6 @@
 
+# TODO(nechols)(2016-01-21): test output
+
 """
 Tests for end-to-end tool contract support in pbreports.report.isoseq_*
 """
@@ -8,14 +10,11 @@ import os.path
 
 import pbcommand.testkit
 
-from base_test_case import _get_root_data_dir
+from base_test_case import LOCAL_DATA
 
-ROOT_DIR = _get_root_data_dir()
+DATA = os.path.join(LOCAL_DATA, "isoseq")
 
-
-@unittest.skipUnless(os.path.isdir(ROOT_DIR), "%s not available" % ROOT_DIR)
 class TestPbreportIsoseqClassify(pbcommand.testkit.PbTestApp):
-    DATA = os.path.join(ROOT_DIR, "isoseq")
     DRIVER_BASE = "python -m pbreports.report.isoseq_classify "
     DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
@@ -27,9 +26,7 @@ class TestPbreportIsoseqClassify(pbcommand.testkit.PbTestApp):
     TASK_OPTIONS = {}
 
 
-@unittest.skipUnless(os.path.isdir(ROOT_DIR), "%s not available" % ROOT_DIR)
 class TestPbreportIsoseqCluster(pbcommand.testkit.PbTestApp):
-    DATA = os.path.join(ROOT_DIR, "isoseq")
     DRIVER_BASE = "python -m pbreports.report.isoseq_cluster "
     DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
@@ -43,4 +40,3 @@ class TestPbreportIsoseqCluster(pbcommand.testkit.PbTestApp):
 
 if __name__ == "__main__":
     unittest.main()
-
