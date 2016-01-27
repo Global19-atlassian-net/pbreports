@@ -222,7 +222,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
 
     # A report is consist of ID, tables, attributes, and plotgroups.
     report = Report(Constants.R_ID,
-                    tables=[table],
+                    title="Transcript Clustering",
                     attributes=attributes,
                     plotgroups=[readlength_group])
 
