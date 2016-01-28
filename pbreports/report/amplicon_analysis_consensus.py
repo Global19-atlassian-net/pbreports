@@ -104,7 +104,7 @@ def _add_options_to_parser(p):
         name="ConsensusReportCSV",
         description="Consensus Report CSV")
     p.add_output_file_type(
-        FileTypes.JSON,
+        FileTypes.REPORT,
         file_id="report_json",
         name="ConsensusReportJSON",
         description="Consensus Report JSON",
