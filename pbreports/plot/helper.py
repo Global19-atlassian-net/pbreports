@@ -79,8 +79,7 @@ class Bar(object):
 
 
 def get_bar_plot_legend_fig(bars, figsize=(2, 2)):
-    ax = get_fig_axes_lpr()[1]
-    fig = plt.figure(figsize=figsize)
+    fig, ax = get_fig_axes_lpr(dims=figsize)
     barMeta = []
     for barModel in bars:
         # nonsense bar with bogus values - all we want is the color
