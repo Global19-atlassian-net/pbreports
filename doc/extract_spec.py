@@ -25,7 +25,7 @@ Mapping Statistics
             f.write("\n**pbreports.report.{m}**:\n\n".format(
                 m=klass.__module__))
             table = []
-            for attr in klass.COLUMN_ATTR:
+            for attr, label in klass.ATTR_LABELS.iteritems():
                 table.append((attr, klass.ATTR_LABELS[attr],
                               klass.ATTR_DESCRIPTIONS[attr]))
             f.write(tabulate(table, HEADERS, tablefmt="rst"))

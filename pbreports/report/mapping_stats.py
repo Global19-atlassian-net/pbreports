@@ -9,6 +9,8 @@ The inheritance model is a bit convoluted. Not easy to compositionally build a m
 
 
 """
+
+from collections import OrderedDict
 import sys
 import os
 import math
@@ -650,26 +652,25 @@ class MappingStatsCollector(object):
         Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
         Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_ACCURACY
     ]
-    ATTR_LABELS = {
-          Constants.A_SUBREAD_ACCURACY: "Mapped Subread Accuracy",
-          Constants.A_NREADS : "Mapped Reads",
-          Constants.A_NSUBREADS: "Mapped Subreads",
-          Constants.A_NBASES: "Mapped Polymerase Bases",
-          Constants.A_SUBREAD_NBASES: "Mapped Subread Bases",
-          Constants.A_READLENGTH: "Mapped Polymerase Read Length",
-          Constants.A_SUBREAD_LENGTH: "Mapped Subread Length",
-          Constants.A_READLENGTH_Q95: "Mapped Polymerase Read Length 95%",
-          Constants.A_READLENGTH_MAX: "Mapped Polymerase Read Length Max",
-          Constants.A_SUBREAD_LENGTH_N50: "Mapped Subread N50",
-          Constants.A_READLENGTH_N50: "Mapped N50",
-    }
+    ATTR_LABELS = OrderedDict([
+          (Constants.A_NREADS , "Mapped Reads"),
+          (Constants.A_NSUBREADS, "Mapped Subreads"),
+          (Constants.A_NBASES, "Mapped Polymerase Bases"),
+          (Constants.A_SUBREAD_NBASES, "Mapped Subread Bases"),
+          (Constants.A_READLENGTH, "Mapped Polymerase Read Length"),
+          (Constants.A_SUBREAD_LENGTH, "Mapped Subread Length"),
+          (Constants.A_READLENGTH_Q95, "Mapped Polymerase Read Length 95%"),
+          (Constants.A_READLENGTH_MAX, "Mapped Polymerase Read Length Max"),
+          (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
+          (Constants.A_READLENGTH_N50, "Mapped Read N50"),
+    ])
     ATTR_DESCRIPTIONS = {
           Constants.A_SUBREAD_ACCURACY: "The mean concordance of subreads that mapped to the reference sequence",
           Constants.A_NREADS : "The number of polymerase reads mapped to the reference sequence",
           Constants.A_NSUBREADS: "The number of subreads mapped to the reference sequence",
           Constants.A_NBASES: "The number of polymerase bases spanning all mapped subreads (including adapters and other unmapped regions)",
           Constants.A_SUBREAD_NBASES: "The number of subread bases mapped to the reference sequence",
-          Constants.A_READLENGTH: "The mean length of polymerase reads that mapped to the reference sequence, including adapters",
+          Constants.A_READLENGTH: "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
           Constants.A_SUBREAD_LENGTH: "The mean length of subreads that mapped to the reference sequence",
           Constants.A_READLENGTH_Q95: "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
           Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
