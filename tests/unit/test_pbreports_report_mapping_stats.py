@@ -31,7 +31,7 @@ _LAMBDA_DATA_DIR = os.path.join(
     ROOT_DATA_DIR, 'mapping_stats', "lambda_2372215_0007_tiny")
 _CCS_DATA_DIR = os.path.join(LOCAL_DATA, 'mapping_stats_ccs')
 
-_TOTAL_NUMBER_OF_ATTRIBUTES = 12
+_TOTAL_NUMBER_OF_ATTRIBUTES = 11
 _TOTAL_NUMBER_OF_PLOT_GROUPS = 3
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
@@ -103,7 +103,6 @@ class TestMappingStatsReport(unittest.TestCase):
         Constants.A_SUBREAD_LENGTH: 540,
         Constants.A_READLENGTH_Q95: 5900,
         Constants.A_READLENGTH_MAX: 6765,
-        Constants.A_NALIGNMENTS: 48,
         Constants.A_SUBREAD_LENGTH_N50: 632,
         Constants.A_READLENGTH_N50: 2151,
     }
@@ -171,9 +170,6 @@ class TestMappingStatsReport(unittest.TestCase):
     def test_number_of_mapped_subreads(self):
         self._compare_metric_values(Constants.A_NSUBREADS)
 
-    def test_number_of_aligned_reads(self):
-        self._compare_metric_values(Constants.A_NALIGNMENTS)
-
     def test_mapped_readlength_mean(self):
         self._compare_metric_values(Constants.A_READLENGTH)
 
@@ -224,7 +220,6 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
         Constants.A_SUBREAD_LENGTH: 767,
         Constants.A_READLENGTH_Q95: 23470,
         Constants.A_READLENGTH_MAX: 28619,
-        Constants.A_NALIGNMENTS: 1491,
         Constants.A_SUBREAD_LENGTH_N50: 841,
         Constants.A_READLENGTH_N50: 18057,
     }
