@@ -31,7 +31,7 @@ _LAMBDA_DATA_DIR = os.path.join(
     ROOT_DATA_DIR, 'mapping_stats', "lambda_2372215_0007_tiny")
 _CCS_DATA_DIR = os.path.join(LOCAL_DATA, 'mapping_stats_ccs')
 
-_TOTAL_NUMBER_OF_ATTRIBUTES = 12
+_TOTAL_NUMBER_OF_ATTRIBUTES = 11
 _TOTAL_NUMBER_OF_PLOT_GROUPS = 3
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
