@@ -1,7 +1,6 @@
 """
-Generate a report for a IsoSeq Classify run, given both
-primer-trimmed, non-chimeric, full-length reads and a
-classify summary.
+Generate a report for a IsoSeq Classify run, given both primer-trimmed,
+non-chimeric, full-length reads and a classify summary.
 """
 import functools
 import os
@@ -46,6 +45,7 @@ class Constants(object):
 def _summary_to_attributes(summary_txt):
     """Extract attributes from inSummaryFN."""
     attributes = []
+        
     with open(summary_txt, 'r') as f:
         for line in f.readlines():
             # six attributes:

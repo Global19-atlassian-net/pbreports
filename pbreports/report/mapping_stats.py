@@ -1,13 +1,7 @@
+
 """
-General Model.
-
-An alignments file generate a reads (np.array) and a subreads (recarray)
-
-Aggregator classes must inherit from SubreadAggregator, ReadAggregator
-
-The inheritance model is a bit convoluted. Not easy to compositionally build a model.
-
-
+Generates a report of statistics for subreads mapped to a reference genome with
+Blasr/pbalign.
 """
 
 from collections import OrderedDict

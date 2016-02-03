@@ -1,6 +1,7 @@
 
 """
-Create a Mapping Report from a Aligned CCS BAM or ConsensusAlignment DataSet
+Generates a report of statistics for CCS reads mapped to a reference genome
+with Blasr/pbalign.
 """
 
 from collections import OrderedDict

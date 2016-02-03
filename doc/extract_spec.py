@@ -1,11 +1,28 @@
 #!/usr/bin/env python
 
+# XXX it would be better if we were generating code from a spec instead of
+# vice-versa, but this allows us to see what is currently reported
+
+"""
+Script to automatically generate tables of attribute names and descriptions
+in RST format from a collection of report modules.
+"""
+
+import logging
 import os.path as op
 import sys
 
 from tabulate import tabulate
 
-from pbreports.report import mapping_stats, mapping_stats_ccs
+from pbreports.report import (mapping_stats, mapping_stats_ccs, ccs, sat,
+    variants)
+
+try:
+    from pbtranscript.io import Summary
+except ImportError:
+    Summary = None
+
+log = logging.getLogger(__name__)
 
 TARGET = op.join(op.dirname(__file__), "report_specifications.rst")
 HEADERS = ["Attribute ID", "Name", "Description"]
@@ -17,18 +34,31 @@ def run(args=()):
 pbreports specifications (automatically generated)
 ==================================================
 
-Mapping Statistics
-------------------
 """)
-        for klass in [mapping_stats.MappingStatsCollector,
-                      mapping_stats_ccs.CCSMappingStatsCollector]:
-            f.write("\n**pbreports.report.{m}**:\n\n".format(
-                m=klass.__module__))
+        def _write_report_info(k, m, n):
+            f.write("\n\n\n")
+            f.write("**{n}**:\n\n".format(n=n))
+            f.write("{d}\n".format(d=m.__doc__))
             table = []
-            for attr, label in klass.ATTR_LABELS.iteritems():
-                table.append((attr, klass.ATTR_LABELS[attr],
-                              klass.ATTR_DESCRIPTIONS[attr]))
+            for attr, label in k.ATTR_LABELS.iteritems():
+                table.append((attr, k.ATTR_LABELS[attr],
+                              k.ATTR_DESCRIPTIONS[attr]))
             f.write(tabulate(table, HEADERS, tablefmt="rst"))
+
+        for m,c in [(mapping_stats, "MappingStatsCollector"),
+                    (mapping_stats_ccs, "CCSMappingStatsCollector"),
+                    (variants, "Constants"),
+                    (sat, "Constants"),
+                    (ccs, "Constants")]:
+            klass = getattr(m, c)
+            _write_report_info(klass, m, m.__name__)
+        if Summary is not None:
+            for m,c,n in [(Summary, "ClassifySummary", "isoseq_classify"),
+                          (Summary, "ClusterSummary", "isoseq_cluster")]:
+                klass = getattr(m, c)
+                _write_report_info(klass, m, "pbreports.report.{n}".format(n=n))
+        else:
+            log.warn("Skipping IsoSeq reports")
     return 0
 
 if __name__ == "__main__":
