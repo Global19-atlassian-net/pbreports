@@ -1,8 +1,9 @@
 
 """
-Generate CCS report.
+Generate a report summarizing Circular Consensus Read (CCS) results.
 """
 
+from collections import OrderedDict
 import functools
 import os
 import sys
@@ -73,6 +74,22 @@ class Constants(object):
     C_MEAN_QV = 'mean_ccs_qv'
     C_MEAN_NPASSES = 'mean_ccs_num_passes'
 
+    ATTR_LABELS = OrderedDict([
+        (A_NREADS, "Consensus (CCS) reads"),
+        (A_TOTAL_BASES, "Number of consensus bases"),
+        (A_MEAN_READLENGTH, "Mean Consensus Read Length"),
+        (A_MEAN_ACCURACY, "Mean Consensus Predicted Accuracy"),
+        (A_MEAN_QV, "Mean Consensus Predicted QV"),
+        (A_MEAN_NPASSES, "Mean Number of Passes")
+    ])
+    ATTR_DESCRIPTIONS = {
+        A_NREADS: "The number of CCS reads",
+        A_TOTAL_BASES: "Total number of consensus bases in all CCS reads",
+        A_MEAN_READLENGTH: "Mean length of CCS reads",
+        A_MEAN_ACCURACY: "Mean predicted accuracy of CCS reads",
+        A_MEAN_QV: "Phred log-scale QV, equivalent to mean accuracy",
+        A_MEAN_NPASSES: "Mean number of complete subreads per CCS read, rounded to the nearest integer"
+    }
 
 class MovieResult(object):
 
@@ -143,18 +160,19 @@ def _movie_results_to_attributes(movie_results):
     m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
     n_reads_at = Attribute(
-        Constants.A_NREADS, read_lengths.shape[0], name="Consensus (CCS) reads")
+        Constants.A_NREADS, read_lengths.shape[0], name=Constants.ATTR_LABELS[
+Constants.A_NREADS])
     t_bases_at = Attribute(
-        Constants.A_TOTAL_BASES, read_lengths.sum(), name="Number of consensus bases")
+        Constants.A_TOTAL_BASES, read_lengths.sum(), name=Constants.ATTR_LABELS[Constants.A_TOTAL_BASES])
     m_readlength_at = Attribute(
-        Constants.A_MEAN_READLENGTH, m_readlength, name="Mean Consensus Read Length")
+        Constants.A_MEAN_READLENGTH, m_readlength, name=Constants.ATTR_LABELS[Constants.A_MEAN_READLENGTH])
     m_accuracy_at = Attribute(
-        Constants.A_MEAN_ACCURACY, m_accuracy, name="Mean Consensus Predicted Accuracy")
+        Constants.A_MEAN_ACCURACY, m_accuracy, name=Constants.ATTR_LABELS[Constants.A_MEAN_ACCURACY])
     m_qv = Attribute(
-        Constants.A_MEAN_QV, m_qv, name="Mean Consensus Predicted QV")
+        Constants.A_MEAN_QV, m_qv, name=Constants.ATTR_LABELS[Constants.A_MEAN_QV])
 
     m_npasses_at = Attribute(
-        Constants.A_MEAN_NPASSES, m_npasses, name="Mean Number of Passes")
+        Constants.A_MEAN_NPASSES, m_npasses, name=Constants.ATTR_LABELS[Constants.A_MEAN_NPASSES])
 
     attributes = [n_reads_at, t_bases_at,
                   m_readlength_at, m_accuracy_at, m_qv, m_npasses_at]

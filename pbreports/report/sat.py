@@ -4,7 +4,7 @@
 Generates the SAT metric performance attributes
 """
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import logging
 import json
 import os
@@ -24,6 +24,22 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 TOOL_ID = "pbreports.tasks.sat_report"
+
+class Constants(object):
+    ATTR_LABELS = OrderedDict([
+        ("instrument", "Instrument ID"),
+        ("coverage", "Genome Coverage"),
+        ("accuracy", "Consensus Accuracy"),
+        ("mapped_readlength_mean", "Mean Mapped Read Length"),
+        ("reads_in_cell", "Reads in cell")
+    ])
+    ATTR_DESCRIPTIONS = {
+        "instrument": "ID of the Sequel or RSII instrument on which the data were collected",
+        "coverage": "Percentage of the genome for which consensus bases were called",
+        "accuracy": "Percent accuracy of the consensus sequence versus the reference",
+        "mapped_readlength_mean": "Mean length of polymerase reads mapped to the reference genome, including adapters",
+        "reads_in_cell": "Number of polymerase reads that could be mapped to the reference genome"
+    }
 
 
 def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, report, output_dir):
@@ -45,11 +61,14 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     d_var = _get_variants_data(variants_report)
 
     rpt = Report('sat')
-    rpt.add_attribute(Attribute('instrument', d_bam['instrument'], 'Instrument'))
-    rpt.add_attribute(Attribute('coverage', d_var['coverage'], 'Genome Covered'))
-    rpt.add_attribute(Attribute('accuracy', d_var['accuracy'], 'Consensus Accuracy'))
-    rpt.add_attribute(Attribute('mapped_readlength_mean', d_map['mapped_readlength_mean'], 'Mean Mapped Read Length'))
-    rpt.add_attribute(Attribute('reads_in_cell', d_bam['reads_in_cell'], 'Reads in Cell'))
+    rpt.add_attribute(Attribute('instrument', d_bam['instrument'],
+        Constants.ATTR_LABELS["instrument"]))
+    rpt.add_attribute(Attribute('coverage', d_var['coverage'],
+        Constants.ATTR_LABELS["coverage"]))
+    rpt.add_attribute(Attribute('accuracy', d_var['accuracy'],
+        Constants.ATTR_LABELS["accuracy"]))
+    rpt.add_attribute(Attribute('mapped_readlength_mean', d_map['mapped_readlength_mean'], Constants.ATTR_LABELS["mapped_readlength_mean"]))
+    rpt.add_attribute(Attribute('reads_in_cell', d_bam['reads_in_cell'], Constants.ATTR_LABELS["reads_in_cell"]))
 
     rpt.write_json(os.path.join(output_dir, report))
 
