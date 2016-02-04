@@ -35,10 +35,12 @@ pbreports specifications (automatically generated)
 ==================================================
 
 """)
-        def _write_report_info(k, m, n):
+        def _write_report_info(k, m, n, doc=None):
+            if doc is None:
+                doc = m.__doc__
             f.write("\n\n\n")
             f.write("**{n}**:\n\n".format(n=n))
-            f.write("{d}\n".format(d=m.__doc__))
+            f.write("{d}\n\n".format(d=doc))
             table = []
             for attr, label in k.ATTR_LABELS.iteritems():
                 table.append((attr, k.ATTR_LABELS[attr],
@@ -56,7 +58,8 @@ pbreports specifications (automatically generated)
             for m,c,n in [(Summary, "ClassifySummary", "isoseq_classify"),
                           (Summary, "ClusterSummary", "isoseq_cluster")]:
                 klass = getattr(m, c)
-                _write_report_info(klass, m, "pbreports.report.{n}".format(n=n))
+                _write_report_info(klass, m, "pbreports.report.{n}".format(n=n),
+                    doc="IsoSeq {r} report".format(r=c[:-7]))
         else:
             log.warn("Skipping IsoSeq reports")
     return 0
