@@ -781,7 +781,7 @@ class MappingStatsCollector(object):
             Constants.A_SUBREAD_ACCURACY: MeanSubreadAccuracyAggregator(),
             #'mapped_subread_read_quality_mean': MeanSubreadQualityAggregator(),
             Constants.A_SUBREAD_LENGTH: MeanSubreadLengthAggregator(),
-            "readlength_histogram": ReadLengthHistogram(),
+            "readlength_histogram": ReadLengthHistogram(dx=500),
             "subreadlength_histogram": SubReadlengthHistogram(),
             "subread_accuracy_histogram": SubReadAccuracyHistogram(dx=0.005, nbins=1001),
             # the bin size is important here. The computed percentile is
