@@ -11,6 +11,7 @@ pbreports specifications (automatically generated)
 Generates a report of statistics for subreads mapped to a reference genome with
 Blasr/pbalign.
 
+
 ==============================  =================================  =====================================================================================================================================
 Attribute ID                    Name                               Description
 ==============================  =================================  =====================================================================================================================================
@@ -33,6 +34,7 @@ mapped_readlength_n50           Mapped Read N50                    50% of polyme
 Generates a report of statistics for CCS reads mapped to a reference genome
 with Blasr/pbalign.
 
+
 =========================  ================================  ================================================================================
 Attribute ID               Name                              Description
 =========================  ================================  ================================================================================
@@ -52,6 +54,7 @@ mapped_readlength_n50      Mapped N50                        50% of CCS reads th
 Generates a table showing consensus stats and a report showing variants plots
 for the top 25 contigs of the supplied reference.
 
+
 ==========================  =======================================  ======================================================================================
 Attribute ID                Name                                     Description
 ==========================  =======================================  ======================================================================================
@@ -67,6 +70,7 @@ longest_contig_name         Longest Reference Contig                 The FASTA h
 
 
 Generates the SAT metric performance attributes
+
 
 ======================  =======================  ==================================================================================
 Attribute ID            Name                     Description
@@ -84,6 +88,7 @@ reads_in_cell           Reads in cell            Number of polymerase reads that
 
 Generate a report summarizing Circular Consensus Read (CCS) results.
 
+
 =========================  =================================  =============================================================================
 Attribute ID               Name                               Description
 =========================  =================================  =============================================================================
@@ -98,7 +103,8 @@ mean_ccs_num_passes        Mean Number of Passes              Mean number of com
 
 **pbreports.report.isoseq_classify**:
 
-Define ClassifySummary and ClusterSummary.
+IsoSeq Classify report
+
 ========================  ============================================  =====================================================================================================================
 Attribute ID              Name                                          Description
 ========================  ============================================  =====================================================================================================================
@@ -119,7 +125,8 @@ num_flnc_bases            Number of full-length non-chimeric bases      Total nu
 
 **pbreports.report.isoseq_cluster**:
 
-Define ClassifySummary and ClusterSummary.
+IsoSeq Cluster report
+
 ============================  ======================================================  ==========================================================================================================
 Attribute ID                  Name                                                    Description
 ============================  ======================================================  ==========================================================================================================
