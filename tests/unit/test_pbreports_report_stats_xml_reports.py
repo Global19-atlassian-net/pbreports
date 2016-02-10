@@ -321,7 +321,7 @@ class TestXMLstatsRpts(unittest.TestCase):
                              'filter_stats_column', c1['id'])
             self.assertEqual(4464266.29, c1['values'][0])
             self.assertEqual(901, c1['values'][1])
-            self.assertEqual(0, c1['values'][2])
+            self.assertEqual(6570, c1['values'][2])
             self.assertEqual(4954.79, c1['values'][3])
             self.assertEqual(0.83, c1['values'][4])
             self.assertTrue(os.path.exists(os.path.join(
@@ -365,7 +365,7 @@ class TestXMLstatsRpts(unittest.TestCase):
                              'filter_stats_column', c1['id'])
             self.assertEqual(393167212.65, c1['values'][0])
             self.assertEqual(25123, c1['values'][1])
-            self.assertEqual(0, c1['values'][2])
+            self.assertEqual(21884, c1['values'][2])
             self.assertEqual(15649.69, c1['values'][3])
             self.assertEqual(0.86, c1['values'][4])
             self.assertTrue(os.path.exists(os.path.join(

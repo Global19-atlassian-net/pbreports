@@ -38,6 +38,8 @@ def to_report(stats_xml):
     dset = DataSet(stats_xml)
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
+    if not dset.metadata.summaryStats.prodDist:
+        raise RuntimeError("No Pipeline Summary Stats (sts.xml) found")
 
     dsets = [dset]
     for subdset in dset.subdatasets:

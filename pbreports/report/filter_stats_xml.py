@@ -22,6 +22,7 @@ from pbcore.io import DataSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
+from pbreports.util import compute_n50
 
 __version__ = '0.1.0'
 
@@ -40,6 +41,7 @@ def _total_from_bins(bins, min_val, bin_width):
     bin_totals = [count * mean for count, mean in zip(bins, bin_means)]
     return sum(bin_totals)
 
+
 def to_report(stats_xml, output_dir, dpi=72):
     """Main point of entry
 
@@ -55,6 +57,8 @@ def to_report(stats_xml, output_dir, dpi=72):
     # but if it isn't, no problem:
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
+    if not dset.metadata.summaryStats.readLenDists:
+        raise RuntimeError("No Pipeline Summary Stats (sts.xml) found")
 
     # Build the stats table:
     nbases = 0
@@ -62,6 +66,7 @@ def to_report(stats_xml, output_dir, dpi=72):
     n50 = 0
     readscoretotal = 0
     readscorenumber = 0
+    approx_read_lens = []
 
     # if a merge failed there may be more than one dist:
     for rlendist in dset.metadata.summaryStats.readLenDists:
@@ -69,6 +74,24 @@ def to_report(stats_xml, output_dir, dpi=72):
                                    rlendist.minBinValue,
                                    rlendist.binWidth)
         nreads += sum(rlendist.bins)
+
+        # N50:
+        for i, lbin in enumerate(rlendist.bins):
+            # use the average, except for the last bin
+            if i != len(rlendist.bins) - 1:
+                value = ((i * rlendist.binWidth) + rlendist.minBinValue +
+                         rlendist.binWidth/2)
+            # for the last bin, just use the value
+            else:
+                value = (i * rlendist.binWidth) + rlendist.minBinValue
+            approx_read_lens.extend([value] * lbin)
+            # TODO(mdsmith)(2016-02-09) make sure maxOutlierValue is updated
+            # during a merge /todo
+            # but pop off that last value and replace it with the
+            # maxOutlierValue:
+            # approx_read_lens.pop()
+            # approx_read_lens.append(rlendist.maxBinValue)
+    n50 = np.round(compute_n50(approx_read_lens))
 
     for rqualdist in dset.metadata.summaryStats.readQualDists:
         readscoretotal += _total_from_bins(rqualdist.bins,
