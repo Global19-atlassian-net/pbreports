@@ -9,6 +9,7 @@ import shutil
 
 from numpy import ndarray
 
+from pbcore.io.dataset.DataSetIO import InvalidDataSetIOError
 from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
 
@@ -104,7 +105,7 @@ class TestXMLstatsRpts(unittest.TestCase):
         def _test_ioerror():
             make_loading_report('foo')
 
-        self.assertRaises(IOError, _test_ioerror)
+        self.assertRaises((InvalidDataSetIOError, IOError), _test_ioerror)
 
     def test_make_loading_report_with_sts_xml(self):
         """
