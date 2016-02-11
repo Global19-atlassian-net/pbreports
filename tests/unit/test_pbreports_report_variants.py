@@ -12,6 +12,7 @@ import json
 import os.path as op
 
 from pbcommand.models.report import PbReportError
+import pbcommand.testkit
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 import pbcore.data
@@ -358,3 +359,21 @@ class TestVariantsReportMisc(unittest.TestCase):
         self.assertEqual('3', o[0])
         self.assertEqual('2', o[1])
         self.assertEqual('1', o[2])
+
+
+class TestToolContract(pbcommand.testkit.PbTestApp):
+    DATA_DIR = op.join(LOCAL_DATA, "variants")
+    DRIVER_BASE = "python -m pbreports.report.variants"
+    DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
+    DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [
+        pbcore.data.getLambdaFasta(),
+        op.join(DATA_DIR, "alignment_summary.gff"),
+        op.join(DATA_DIR, "variants.gff.gz"),
+    ]
+    TASK_OPTIONS = {
+        "pbreports.task_options.max_contigs": 25,
+        "pbreports.task_options.dpi": 60,
+        "pbreports.task_options.dumpdata": True,
+    }
