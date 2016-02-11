@@ -1,4 +1,8 @@
 
+# TODO(nechols)(2016-02-10): refactor so this doesn't need to generate the
+# report every time (which slows down the test with large data)
+
+from unittest import SkipTest
 import traceback
 import tempfile
 import unittest
@@ -10,6 +14,7 @@ import os.path as op
 from pbcommand.models.report import PbReportError
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
+import pbcore.data
 
 from pbreports.util import openReference
 from pbreports.util import get_top_contigs_from_ref_entry
@@ -21,7 +26,7 @@ from pbreports.report.variants import (make_variants_report, _extract_alignment_
                                        _create_variants_plot_grp, _create_bars, _get_legend_file)
 
 from base_test_case import _get_root_data_dir, run_backticks, \
-    skip_if_data_dir_not_present
+    skip_if_data_dir_not_present, LOCAL_DATA
 
 VARIANTS_DATA = op.join(_get_root_data_dir(), 'variants')
 
@@ -30,13 +35,7 @@ DT='Desulfurobacterium_thermolithotrophum_DSM11699_gDNA'
 log = logging.getLogger(__name__)
 
 
-@skip_if_data_dir_not_present
-class TestVariantsRpt(unittest.TestCase):
-    CONTIG_ID = "ecoliK12_pbi_March2013"
-    DATA_DIR = VARIANTS_DATA
-    REFERENCE = op.join(DATA_DIR, 'ecoliK12_pbi_March2013')
-    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary.gff")
-    VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
+class BaseTestCase(object):
 
     def setUp(self):
         """
@@ -50,6 +49,12 @@ class TestVariantsRpt(unittest.TestCase):
         """
         if op.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
+
+    def _get_reference_entry(self):
+        return openReference(self.REFERENCE)
+
+    def _get_reference_fasta(self):
+        return self.REFERENCE
 
     def test_make_variants_report_invalid_input_files(self):
         """
@@ -74,14 +79,6 @@ class TestVariantsRpt(unittest.TestCase):
         with self.assertRaises(IOError):
             make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF, 'foo', 'foo.json', 1, self._output_dir, '1', False)
 
-    def test_top_contigs(self):
-        """
-        Test top contigs from ref
-        """
-        #ref_entry = ReferenceEntry.from_ref_dir(ref)
-        ref_entry = openReference(self.REFERENCE)
-        self.assertEqual(1, len(get_top_contigs_from_ref_entry(ref_entry, 2)))
-
     def test_extract_alignment_summ_data(self):
         """
         Test the dicts returned from parsing the alignment_summary gff
@@ -94,56 +91,10 @@ class TestVariantsRpt(unittest.TestCase):
         self.assertEqual(1, len(ref_data))
 
         results = ref_data[self.CONTIG_ID]
-        self.assertEqual(4642522, results[LENGTH])
+        self.assertEqual(self.TEST_VALUES["contig_len"], results[LENGTH])
         self.assertEqual(0, results[ERR])
 
         self.assertEqual(1, len(contig_variants))
-
-    def test_append_variants_gff_data(self):
-        """
-        Test that ERR information gets added to the ref_data dict
-        """
-#        top_contigs = get_top_contigs(ref, 2)
-
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
-
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
-        self.assertEqual(1, len(ref_data))
-
-        results = ref_data['ecoliK12_pbi_March2013']
-        self.assertEqual(4642522, results[LENGTH])
-        self.assertEqual(0, results[ERR])
-
-        _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
-        self.assertEqual(4642522, results[LENGTH])
-        self.assertEqual(9, results[ERR])
-
-    def _get_reference_entry(self):
-        return openReference(self.REFERENCE)
-        #return ReferenceEntry.from_ref_dir(ref)
-
-    def test_get_consensus_table(self):
-        """
-        Test the data in the table object and the attributes
-        """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
-
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
-        self.assertEqual(1, len(ref_data))
-
-        results = ref_data[self.CONTIG_ID]
-        self.assertEqual(4642522, results[LENGTH])
-        self.assertEqual(0, results[ERR])
-
-        _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
-
-        table, attributes = _get_consensus_table_and_attributes(ref_data, self._get_reference_entry())
-        self.assertEqual(5, len(table.columns))
-        self.assertEqual(self.CONTIG_ID, table.columns[0].values[0])
-        self.assertEqual(4642522, table.columns[1].values[0])
-        self.assertEqual(1, table.columns[2].values[0])
-        self.assertAlmostEqual(.99999, table.columns[3].values[0], places=4)
-        self.assertAlmostEqual(16.43, table.columns[4].values[0], places=2)
 
     def test_get_consensus_attributes(self):
         """
@@ -155,7 +106,7 @@ class TestVariantsRpt(unittest.TestCase):
         self.assertEqual(1, len(ref_data))
 
         results = ref_data[self.CONTIG_ID]
-        self.assertEqual(4642522, results[LENGTH])
+        self.assertEqual(self.TEST_VALUES["contig_len"], results[LENGTH])
         self.assertEqual(0, results[ERR])
 
         _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
@@ -168,15 +119,16 @@ class TestVariantsRpt(unittest.TestCase):
                 if a.id == _id:
                     return a.value
 
-        self.assertEqual(4642522, __get_att_val('mean_contig_length',
-                                                attributes))
-        self.assertEqual(1, __get_att_val('weighted_mean_bases_called',
-                                          attributes))
-        self.assertAlmostEqual(0.99999,
+        self.assertEqual(self.TEST_VALUES["contig_len"],
+                         __get_att_val('mean_contig_length', attributes))
+        self.assertAlmostEqual(self.TEST_VALUES["bases_called"],
+                         __get_att_val('weighted_mean_bases_called',
+                                       attributes), places=4)
+        self.assertAlmostEqual(self.TEST_VALUES["concordance"],
                                __get_att_val('weighted_mean_concordance',
                                              attributes),
                                places=4)
-        self.assertAlmostEqual(16.43,
+        self.assertAlmostEqual(self.TEST_VALUES["coverage"],
                                __get_att_val('weighted_mean_coverage',
                                              attributes),
                                places=2)
@@ -184,6 +136,77 @@ class TestVariantsRpt(unittest.TestCase):
                          __get_att_val('longest_contig_name',
                                        attributes))
 
+
+class TestVariantsReport(BaseTestCase, unittest.TestCase):
+    """
+    Base test case using local lambda data.
+    """
+    CONTIG_ID = "lambda_NEB3011"
+    DATA_DIR = op.join(LOCAL_DATA, "variants")
+    REFERENCE = pbcore.data.getLambdaFasta()
+    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary.gff")
+    VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
+    TEST_VALUES = {
+        "contig_len": 48502,
+        "bases_called": 1.0,
+        "concordance": 0.999897,
+        "coverage": 282.88,
+        "n_gff_err_1": 0,
+        "n_gff_err_2": 5,
+    }
+
+    def test_append_variants_gff_data(self):
+        """
+        Test that ERR information gets added to the ref_data dict
+        """
+#        top_contigs = get_top_contigs(ref, 2)
+
+        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
+
+        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
+        self.assertEqual(1, len(ref_data))
+
+        results = ref_data[self.CONTIG_ID]
+        self.assertEqual(self.TEST_VALUES["contig_len"], results[LENGTH])
+        self.assertEqual(self.TEST_VALUES["n_gff_err_1"], results[ERR])
+
+        _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
+        self.assertEqual(self.TEST_VALUES["contig_len"], results[LENGTH])
+        self.assertEqual(self.TEST_VALUES["n_gff_err_2"], results[ERR])
+
+    def test_get_consensus_table(self):
+        """
+        Test the data in the table object and the attributes
+        """
+        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
+
+        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
+        self.assertEqual(1, len(ref_data))
+
+        results = ref_data[self.CONTIG_ID]
+        self.assertEqual(self.TEST_VALUES["contig_len"], results[LENGTH])
+        self.assertEqual(0, results[ERR])
+
+        _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
+
+        table, attributes = _get_consensus_table_and_attributes(ref_data, self._get_reference_entry())
+        self.assertEqual(5, len(table.columns))
+        self.assertEqual(self.CONTIG_ID, table.columns[0].values[0])
+        self.assertEqual(self.TEST_VALUES["contig_len"],
+                         table.columns[1].values[0])
+        self.assertEqual(1, table.columns[2].values[0])
+        self.assertAlmostEqual(self.TEST_VALUES["concordance"],
+                               table.columns[3].values[0], places=4)
+        self.assertAlmostEqual(self.TEST_VALUES["coverage"],
+                               table.columns[4].values[0], places=2)
+
+    def test_top_contigs(self):
+        """
+        Test top contigs from ref
+        """
+        #ref_entry = ReferenceEntry.from_ref_dir(ref)
+        ref_entry = openReference(self.REFERENCE)
+        self.assertEqual(1, len(get_top_contigs_from_ref_entry(ref_entry, 2)))
 
     def test_create_variants_plot_grp(self):
         """
@@ -229,13 +252,11 @@ class TestVariantsRpt(unittest.TestCase):
         """
         Create a report object, do assertions on its properties, then assert that it gets written
         """
-
         report = make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF, self.REFERENCE, 25, 'rpt.json', self._output_dir, 60, False)
         self.assertEqual(5, len(report.attributes))
         self.assertEqual(1, len(report.tables))
         self.assertEqual(1, len(report.plotGroups))
         self.assertIsNotNone(report.plotGroups[0].legend)
-
         self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
 
     def test_exit_code_0(self):
@@ -248,23 +269,6 @@ class TestVariantsRpt(unittest.TestCase):
             c=self.REFERENCE,
             a=self.ALIGNMENT_SUMMARY,
             v=self.VARIANTS_GFF)
-
-        rcode = run_backticks(cmd)
-        self.assertEquals(0, rcode)
-        self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
-
-
-    def test_exit_code_0_fasta(self):
-        """
-        Like a cram test. Assert exits with 0 with fasta.
-        """
-        ref = op.join(self.DATA_DIR, 'ecoliK12_pbi_March2013',
-                           'sequence',
-                           'ecoliK12_pbi_March2013.fasta')
-        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
-            o=self._output_dir, r='rpt.json', c=ref, a=self.ALIGNMENT_SUMMARY,
-            v=self.VARIANTS_GFF)
-
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
         self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
@@ -274,91 +278,74 @@ class TestVariantsRpt(unittest.TestCase):
         """
         Like a cram test. Assert exits with 0 with ReferenceSet XML
         """
-        ref = op.join(self.DATA_DIR, 'ecoliK12_pbi_March2013',
-                           'sequence',
-                           'ecoliK12_pbi_March2013.fasta')
         ref_name = op.join(self._output_dir, "refset.xml")
-        refset = ReferenceSet(ref)
+        refset = ReferenceSet(self._get_reference_fasta())
         refset.write(ref_name)
         ref = ref_name
         cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
             o=self._output_dir, r='rpt.json', c=ref, a=self.ALIGNMENT_SUMMARY,
             v=self.VARIANTS_GFF)
-
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
-        self.assertTrue(op.exists(op.join(self._output_dir,
-                                                    'rpt.json')))
+        self.assertTrue(op.exists(op.join(self._output_dir, "rpt.json")))
 
 
 @skip_if_data_dir_not_present
-class TestVariantsReportDtherm(unittest.TestCase):
+class TestVariantsReportEcoli(TestVariantsReport):
+    CONTIG_ID = "ecoliK12_pbi_March2013"
     DATA_DIR = VARIANTS_DATA
-    REFERENCE = op.join(DATA_DIR, 'dt', DT)
-    ALIGNMENT_SUMMARY = op.join(DATA_DIR, 'dt', 'alignment_summary.gff')
-    VARIANTS_GFF = op.join(DATA_DIR, 'dt', 'variants.gff.gz')
+    REFERENCE = op.join(DATA_DIR, 'ecoliK12_pbi_March2013')
+    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary.gff")
+    VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
+    TEST_VALUES = {
+        "contig_len": 4642522,
+        "concordance": 0.99999,
+        "coverage": 16.43,
+        "bases_called": 1,
+        "n_gff_err_1": 0,
+        "n_gff_err_2": 9,
+    }
 
-    def _get_reference_entry(self):
-        return openReference(self.REFERENCE)
+    def _get_reference_fasta(self):
+        return op.join(self.REFERENCE, 'sequence',
+                       'ecoliK12_pbi_March2013.fasta')
 
-    def test_get_consensus_table_dt(self):
+    # XXX we don't need this in the parent class because the input is a FASTA
+    # file to begin with - but in this test it's an old-style reference dir
+    def test_exit_code_0_fasta(self):
         """
-        Test the data in the table object and the attributes
+        Like a cram test. Assert exits with 0 with fasta.
         """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
-
-        log.info( str(ref_data) )
-        self.assertEqual(1, len(ref_data))
-        results = ref_data['gi|325064654|gb|CP002543.1|']
-        self.assertEqual(1541968, results[LENGTH])
-        self.assertEqual(0, results[ERR])
-
-        _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
-
-        table, attributes = _get_consensus_table_and_attributes(ref_data, self._get_reference_entry())
-        self.assertEqual(5, len(table.columns))
-        # There is no longer the concept of display name, which would remove
-        # 'DSM 11699, complete genome'. Bummer
-        self.assertEqual('gi|325064654|gb|CP002543.1| Desulfurobacterium '
-                         'thermolithotrophum DSM 11699, complete genome',
-                         table.columns[0].values[0])
-        self.assertEqual(1541968, table.columns[1].values[0])
-        self.assertAlmostEqual(.0049, table.columns[2].values[0], places=2)
-        self.assertAlmostEqual(.986630, table.columns[3].values[0], places=4)
-        self.assertAlmostEqual(.08, table.columns[4].values[0], places=2)
-
-    def test_get_consensus_attributes_dt(self):
-        """
-        Test the data in the table object and the attributes for the dt reference
-        """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
-
-        log.info( str(ref_data) )
-        self.assertEqual(1, len(ref_data))
-        results = ref_data['gi|325064654|gb|CP002543.1|']
-        self.assertEqual(1541968, results[LENGTH])
-        self.assertEqual(0, results[ERR])
-
-        variants = op.join(self.DATA_DIR, 'dt', 'variants.gff.gz')
-        _append_variants_gff_data(ref_data, variants)
-
-        table, attributes = _get_consensus_table_and_attributes(ref_data, self._get_reference_entry())
-        self.assertEqual(5, len(attributes))
-
-        def __get_att_val(_id, atts):
-            for a in atts:
-                if a.id == _id:
-                    return a.value
-
-        self.assertEqual(1541968, __get_att_val('mean_contig_length', attributes))
-        self.assertAlmostEqual(.0049, __get_att_val('weighted_mean_bases_called', attributes), places=2)
-        self.assertAlmostEqual(.986630, __get_att_val('weighted_mean_concordance', attributes), places=4)
-        self.assertAlmostEqual(.08, __get_att_val('weighted_mean_coverage', attributes), places=2)
+        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
+            o=self._output_dir, r='rpt.json', c=self._get_reference_fasta(),
+            a=self.ALIGNMENT_SUMMARY,
+            v=self.VARIANTS_GFF)
+        rcode = run_backticks(cmd)
+        self.assertEquals(0, rcode)
+        self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
 
 
-class TestVariansReportMisc(unittest.TestCase):
+@skip_if_data_dir_not_present
+class TestVariantsReportLarge(BaseTestCase, unittest.TestCase):
+    CONTIG_ID = "chr1"
+    DATA_DIR = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/summarizeConsensus"
+    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary_variants_big_chr.gff")
+    VARIANTS_GFF = op.join(DATA_DIR, "variants_big_chr.gff")
+    REFERENCE = "/pbi/dept/secondary/siv/references/hg19_M_sorted"
+    TEST_VALUES = {
+        "contig_len": 200000000,
+        "concordance": 0.9995,
+        "coverage": 20.142,
+        "bases_called": 1,
+        "n_gff_err_1": 0,
+        "n_gff_err_2": 100000,
+    }
+
+    def _get_reference_fasta(self):
+        return op.join(self.REFERENCE, "sequence", "hg19_M_sorted.fasta")
+
+
+class TestVariantsReportMisc(unittest.TestCase):
     def test_ref_ids_ordered_by_len(self):
         """
         Test the list of seq ids ordered by len
