@@ -1,57 +1,40 @@
-import os
-import logging
+
+from unittest import SkipTest
 import traceback
-import json
 import tempfile
 import unittest
+import logging
 import shutil
+import json
+import os.path as op
+import os
 
 from pbcommand.models.report import PbReportError
 from pbcommand.pb_io.report import dict_to_report
+import pbcommand.testkit
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
+import pbcore.data
 
 from pbreports.report.top_variants import (make_topvariants_report, VariantFinder,
                                            MinorVariantTableBuilder, VariantTableBuilder)
 
 from base_test_case import _get_root_data_dir, run_backticks, \
-    skip_if_data_dir_not_present
+    skip_if_data_dir_not_present, LOCAL_DATA
 
 log = logging.getLogger(__name__)
 
 
-ECOLI = 'ecoliK12_pbi_March2013'
-
-@skip_if_data_dir_not_present
-class TestTopVariantsRpt(unittest.TestCase):
-
-    DATA_DIR = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        Load data once.
-        """
-        try:
-            if cls.DATA_DIR is not None:
-                log.info('data has already been loaded')
-                return
-
-            cls.DATA_DIR = os.path.join(_get_root_data_dir(), 'topvariants')
-
-#            cmph5 = os.path.join(cls.DATA_DIR, 'control_reads.cmp.h5')
-#            csv = os.path.join(cls.DATA_DIR, 'filtered_summary.csv')
-#
-#            log.info('Loading data 1 time from {c} and {f}'.format(c=cmph5, f=csv))
-
-#            cls._data = {}
-#            cls._data[CONTROL_READS] = _get_control_reads(cmph5)
-#            cls._data[FILTERED_READS] = _get_filtered_reads(csv)
-        except:
-            tb = traceback.format_exc()
-            log.error(tb)
-            print(tb)
-            raise
+class TestTopVariantsReport(unittest.TestCase):
+    CONTIG_ID = "lambda_NEB3011"
+    DATA_DIR = op.join(LOCAL_DATA, "topvariants")
+    REFERENCE = pbcore.data.getLambdaFasta()
+    VARIANTS_GFF = op.join(LOCAL_DATA, "variants", "variants.gff.gz")
+    RARE_VARIANTS_GFF = op.join(DATA_DIR, "rare_variants.gff.gz")
+    N_TOP_VARIANTS = 5
+    TABLE_ROW_FIRST = [CONTIG_ID, 19183L, "19183delT", 'DEL', 20, 48, "haploid"]
+    TABLE_ROW_LAST = [CONTIG_ID, 24872L, "24872_24873insT", "INS", 17, 41,
+                      "haploid"]
 
     def setUp(self):
         """
@@ -66,12 +49,15 @@ class TestTopVariantsRpt(unittest.TestCase):
         if os.path.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
+    def _get_reference_fasta(self):
+        return self.REFERENCE
+
     def test_make_topvariants_report_input_files(self):
         """
         input gff and ref must be non-null and exist
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
 
         # test gff
         with self.assertRaises(PbReportError):
@@ -91,8 +77,8 @@ class TestTopVariantsRpt(unittest.TestCase):
         """
         in inputs
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
         # test how_many
         with self.assertRaises(ValueError):
             make_topvariants_report(gff, ref, 'foo.json', None, 10, self._output_dir)
@@ -102,11 +88,11 @@ class TestTopVariantsRpt(unittest.TestCase):
             make_topvariants_report(gff, ref, 'foo.json', 1, None, self._output_dir)
 
     def test_variant_finder(self):
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
         vf = VariantFinder(gff, ref, 100, 10000)
         top = vf.find_top()
-        self.assertEqual(9, len(top))
+        self.assertEqual(self.N_TOP_VARIANTS, len(top))
 
     def test_variant_table_builder(self):
         """
@@ -126,8 +112,8 @@ class TestTopVariantsRpt(unittest.TestCase):
         self.assertEqual('Confidence', columns[5].header)
         self.assertEqual('Genotype', columns[6].header)
 
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
         vf = VariantFinder(gff, ref, 100, 10000)
         top = vf.find_top()
 
@@ -137,21 +123,11 @@ class TestTopVariantsRpt(unittest.TestCase):
         columns = tb.table.columns
 
         # This tests the first row
-        self.assertEqual('ecoliK12_pbi_March2013', columns[0].values[0])
-        self.assertEqual(1849183L, columns[1].values[0])
-        self.assertEqual('1849183_1849184insT', columns[2].values[0])
-        self.assertEqual('INS', columns[3].values[0])
-        self.assertEqual(20, columns[4].values[0])
-        self.assertEqual(48, columns[5].values[0])
-        self.assertEqual('haploid', columns[6].values[0])
+        for i in range(7):
+            self.assertEqual(self.TABLE_ROW_FIRST[i], columns[i].values[0])
 
-        self.assertEqual('ecoliK12_pbi_March2013', columns[0].values[8])
-        self.assertEqual(3785544L, columns[1].values[8])
-        self.assertEqual('3785544_3785545insA', columns[2].values[8])
-        self.assertEqual('INS', columns[3].values[8])
-        self.assertEqual(18, columns[4].values[8])
-        self.assertEqual(40, columns[5].values[8])
-        self.assertEqual('haploid', columns[6].values[8])
+        for i in range(7):
+            self.assertEqual(self.TABLE_ROW_LAST[i], columns[i].values[-1])
 
     def test_minor_variant_table_builder(self):
         """
@@ -172,14 +148,14 @@ class TestTopVariantsRpt(unittest.TestCase):
         self.assertEqual('Confidence', columns[5].header)
         self.assertEqual('Frequency', columns[6].header)
 
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'rare_variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.RARE_VARIANTS_GFF
         vf = VariantFinder(gff, ref, 100, 10000)
         v = vf.find_top()[0]
 
         tb.add_variant(v)
         columns = tb.table.columns
-        self.assertEqual('lambda_NEB3011', columns[0].values[0])
+        self.assertEqual(self.CONTIG_ID, columns[0].values[0])
         self.assertEqual(35782L, columns[1].values[0])
         self.assertEqual('35782G>T', columns[2].values[0])
         self.assertEqual('SUB', columns[3].values[0])
@@ -191,8 +167,8 @@ class TestTopVariantsRpt(unittest.TestCase):
         """
         Call the main report generation method. Deserialize report, check content.
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
         make_topvariants_report(gff, ref, 100, 10000, 'rpt.json', self._output_dir)
 
         # deserialize report
@@ -207,8 +183,8 @@ class TestTopVariantsRpt(unittest.TestCase):
         """
         Call the main report generation method with minor kwarg==True. Deserialize report, check content.
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'rare_variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.RARE_VARIANTS_GFF
         make_topvariants_report(gff, ref, 100, 10000, 'rpt.json', self._output_dir, is_minor_variants_rpt=True)
 
         # deserialize report
@@ -223,8 +199,8 @@ class TestTopVariantsRpt(unittest.TestCase):
         """
         Like a cram test. Assert exits with 0.
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
         j = 'rpt.json'
         cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(
             o=self._output_dir, g=gff, r=ref, j=j)
@@ -233,38 +209,19 @@ class TestTopVariantsRpt(unittest.TestCase):
         self.assertEquals(0, rcode)
         self.assertTrue(os.path.exists(os.path.join(self._output_dir, j)))
 
-    def test_exit_code_0_fasta(self):
-        """
-        Like a cram test. Assert exits with 0 with fasta
-        """
-        ref = os.path.join(self.DATA_DIR, ECOLI,
-                           'sequence',
-                           'ecoliK12_pbi_March2013.fasta')
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
-        j = 'rpt.json'
-        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(o=self._output_dir,
-                                                                    g=gff, r=ref, j=j)
-        log.info(cmd)
-
-        rcode = run_backticks(cmd)
-        self.assertEquals(0, rcode)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, j)))
-
     def test_exit_code_0_referenceset(self):
         """
         Like a cram test. Assert exits with 0 with ReferenceSet XML
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI,
-                           'sequence',
-                           'ecoliK12_pbi_March2013.fasta')
+        ref = self._get_reference_fasta()
         ref_name = os.path.join(self._output_dir, "refset.xml")
         refset = ReferenceSet(ref)
         refset.write(ref_name)
         ref = ref_name
-        gff = os.path.join(self.DATA_DIR, 'variants.gff.gz')
         j = 'rpt.json'
-        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(o=self._output_dir,
-                                                                    g=gff, r=ref, j=j)
+        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(
+            o=self._output_dir,
+            g=self.VARIANTS_GFF, r=ref, j=j)
         log.info(cmd)
 
         rcode = run_backticks(cmd)
@@ -277,10 +234,9 @@ class TestTopVariantsRpt(unittest.TestCase):
         which is exactly the same as the top variants reports, except that table
         columns in the smrtportal have been renamed. This is accomplished via the rules.
         """
-        ref = os.path.join(self.DATA_DIR, 'reference')
-        gff = os.path.join(self.DATA_DIR, 'corrections.gff')
-        cmd = 'python -m pbreports.report.top_variants {o} rpt.json {g} {r}'.format(o=self._output_dir,
-                                                                    g=gff, r=ref)
+        ref = self.REFERENCE
+        gff = self.VARIANTS_GFF
+        cmd = 'python -m pbreports.report.top_variants {o} rpt.json {g} {r}'.format(o=self._output_dir, g=self.VARIANTS_GFF, r=ref)
         log.info(cmd)
         o, c, m = backticks(cmd)
 
@@ -296,8 +252,8 @@ class TestTopVariantsRpt(unittest.TestCase):
         """
         Like a cram test. Create the minor report in a subprocess. Assert that the report is correct.
         """
-        ref = os.path.join(self.DATA_DIR, ECOLI)
-        gff = os.path.join(self.DATA_DIR, 'rare_variants.gff.gz')
+        ref = self.REFERENCE
+        gff = self.RARE_VARIANTS_GFF
         cmd = 'pbreport minor-topvariants {o} rpt.json {g} {r}'.format(o=self._output_dir,
                                                                           g=gff, r=ref)
         log.info(cmd)
@@ -314,3 +270,69 @@ class TestTopVariantsRpt(unittest.TestCase):
 
         report = dict_to_report(s)
         self.assertEqual('Frequency', report.tables[0].columns[6].header)
+
+
+@skip_if_data_dir_not_present
+class TestTopVariantsReportEcoli(TestTopVariantsReport):
+    CONTIG_ID = "ecoliK12_pbi_March2013"
+    DATA_DIR = op.join(_get_root_data_dir(), "topvariants")
+    REFERENCE = op.join(DATA_DIR, CONTIG_ID)
+    VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
+    RARE_VARIANTS_GFF = op.join(DATA_DIR, "rare_variants.gff.gz")
+    N_TOP_VARIANTS = 9
+    TABLE_ROW_FIRST = [
+        CONTIG_ID,
+        1849183L,
+        '1849183_1849184insT',
+        'INS',
+        20,
+        48,
+        'haploid',
+    ]
+    TABLE_ROW_LAST = [
+        CONTIG_ID,
+        3785544L,
+        '3785544_3785545insA',
+        'INS',
+        18,
+        40,
+        'haploid',
+    ]
+
+    def _get_reference_fasta(self):
+        return op.join(self.REFERENCE, "sequence",
+                       "ecoliK12_pbi_March2013.fasta")
+
+    def test_exit_code_0_fasta(self):
+        """
+        Like a cram test. Assert exits with 0 with fasta
+        """
+        ref = self._get_reference_fasta()
+        gff = self.VARIANTS_GFF
+        j = 'rpt.json'
+        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(o=self._output_dir,
+                                                                    g=gff, r=ref, j=j)
+        log.info(cmd)
+
+        rcode = run_backticks(cmd)
+        self.assertEquals(0, rcode)
+        self.assertTrue(os.path.exists(os.path.join(self._output_dir, j)))
+
+    def test_minor_variant_table_builder(self):
+        raise SkipTest("IGNORE")
+
+
+class TestPbreportTopVariants(pbcommand.testkit.PbTestApp):
+    from pbreports.report.top_variants import Constants
+    DRIVER_BASE = "python -m pbreports.report.top_variants "
+    DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
+    DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [
+        os.path.join(LOCAL_DATA, "variants", "variants.gff.gz"),
+        pbcore.data.getLambdaFasta(),
+    ]
+    TASK_OPTIONS = {
+        Constants.HOW_MANY_ID: Constants.HOW_MANY_DEFAULT,
+        Constants.BATCH_SORT_SIZE_ID: Constants.BATCH_SORT_SIZE_DEFAULT,
+    }
