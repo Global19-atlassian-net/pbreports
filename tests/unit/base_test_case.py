@@ -211,3 +211,15 @@ class BaseTestCase(unittest.TestCase):
             return cls.nosecfg.get(section, option)
         except ConfigParser.NoOptionError:
             return default
+
+
+class AttributesTestBase(object):
+    TEST_VALUES = {}
+
+    def _test_attribute(self, id_, decimals=None):
+        a = self.report.get_attribute_by_id(id_)
+        correct_value = self.TEST_VALUES[id_]
+        if decimals is None:
+            self.assertEqual(a.value, correct_value)
+        else:
+            self.assertAlmostEqual(a.value, correct_value, decimals)
