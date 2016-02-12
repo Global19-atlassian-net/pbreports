@@ -1,10 +1,12 @@
-import json
-import os
-import logging
-import pprint
+
+from unittest import SkipTest
+import functools
 import unittest
 import tempfile
-import functools
+import logging
+import pprint
+import json
+import os
 
 from pbcommand.pb_io.report import dict_to_report
 from pbcommand.models.report import Report
@@ -15,7 +17,7 @@ from pbreports.report.filter_stats import (to_report,
                                            CsvParserError, Constants)
 
 from base_test_case import ROOT_DATA_DIR, run_backticks, \
-    skip_if_data_dir_not_present
+    skip_if_data_dir_not_present, AttributesTestBase, LOCAL_DATA
 
 log = logging.getLogger(__name__)
 
@@ -31,19 +33,32 @@ _get_attribute_names = functools.partial(__get_from_constant, 'A_')
 _get_image_names = functools.partial(__get_from_constant, 'I_')
 
 
-@skip_if_data_dir_not_present
-class TestFilterStats(unittest.TestCase):
+class TestFilterStats(unittest.TestCase, AttributesTestBase):
+    CSV_FILE = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, "filtered_summary.csv")
+    TEST_VALUES = {
+        "reads_n_pre_filter": 49,
+        "reads_n_post_filter": 19,
+        "mean_read_score_pre_filter": 0.33447,
+        "mean_read_score_post_filter": 0.86258,
+        "mean_read_length_post_filter": 2067,
+        "base_n_pre_filter": 39278,
+        "base_n_post_filter": 39278,
+        # this is 730 from the XML report, perhaps due to
+        # sloppy rounding?
+        "mean_read_length_pre_filter": 801,
+        "n50_read_length_pre_filter": 3315,
+        "n50_read_length_post_filter": 3315,
+    }
 
     @classmethod
-    @skip_if_data_dir_not_present
     def setUpClass(cls):
-        name = "filtered_summary.csv"
-        cls.file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        if not os.path.exists(cls.CSV_FILE):
+            raise SkipTest("File {f} not found".format(f=cls.CSV_FILE))
         cls.output_dir = tempfile.mkdtemp(suffix="filter_stats_")
         t = tempfile.NamedTemporaryFile(dir=cls.output_dir, delete=False)
         t.close()
         cls.report_json = t.name
-        cls.report = to_report(cls.file_name, cls.output_dir, cls.report_json)
+        cls.report = to_report(cls.CSV_FILE, cls.output_dir, cls.report_json)
 
     def test_basic(self):
         self.assertIsNotNone(self.report)
@@ -79,62 +94,61 @@ class TestFilterStats(unittest.TestCase):
                 log.error("Unable fot find image {p}".format(p=p))
             self.assertTrue(os.path.exists(p))
 
-    def _test_attribute(self, id_, correct_value, decimals=None):
-        a = self.report.get_attribute_by_id(id_)
-        if decimals is None:
-            self.assertEqual(a.value, correct_value)
-        else:
-            self.assertAlmostEqual(a.value, correct_value, decimals)
-
     def test_attribute_reads_n_pre_filter(self):
-        value = 300584
-        self._test_attribute('reads_n_pre_filter', value)
+        self._test_attribute('reads_n_pre_filter')
 
     def test_attribute_reads_n_post_filter(self):
-        value = 93408
-        self._test_attribute('reads_n_post_filter', value)
+        self._test_attribute('reads_n_post_filter')
 
     def test_attribute_mean_read_score_pre_filter(self):
-        value = 0.2680
-        self._test_attribute('mean_read_score_pre_filter', value, decimals=3)
+        self._test_attribute('mean_read_score_pre_filter', decimals=3)
 
     def test_attribute_mean_read_score_post_filter(self):
-        value = 0.856
-        self._test_attribute('mean_read_score_post_filter', value, decimals=3)
+        self._test_attribute('mean_read_score_post_filter', decimals=3)
 
     def test_attribute_mean_read_length_post_filter(self):
-        value = 2285
-        self._test_attribute('mean_read_length_post_filter', value)
+        self._test_attribute('mean_read_length_post_filter')
 
     def test_attribute_pre_filter_nbases(self):
-        value = 219279027
-        self._test_attribute('base_n_pre_filter', value)
+        self._test_attribute('base_n_pre_filter')
 
     def test_attribute_post_filter_nbases(self):
-        value = 213483772
-        self._test_attribute('base_n_post_filter', value)
+        self._test_attribute('base_n_post_filter')
 
     def test_attribute_pre_filter_mean_readlength(self):
-        # this is 730 from the XML report, perhaps due to
-        # sloppy rounding?
-        value = 729
-        self._test_attribute('mean_read_length_pre_filter', value)
+        self._test_attribute('mean_read_length_pre_filter')
 
     def test_attribute_n50_read_length_pre_filter(self):
-        value = 3449
-        self._test_attribute('n50_read_length_pre_filter', value)
+        self._test_attribute('n50_read_length_pre_filter')
 
     def test_attribute_n50_read_length_post_filter(self):
-        value = 3451
-        self._test_attribute('n50_read_length_post_filter', value)
+        self._test_attribute('n50_read_length_post_filter')
 
 
 @skip_if_data_dir_not_present
+class TestFilterStatsLarge(unittest.TestCase, AttributesTestBase):
+    CSV_FILE = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, "filtered_summary.csv")
+    TEST_VALUES = {
+        "reads_n_pre_filter": 300584,
+        "reads_n_post_filter": 93408,
+        "mean_read_score_pre_filter": 0.2680,
+        "mean_read_score_post_filter": 0.856,
+        "mean_read_length_post_filter": 2285,
+        "base_n_pre_filter": 219279027,
+        "base_n_post_filter": 213483772,
+        # this is 730 from the XML report, perhaps due to
+        # sloppy rounding?
+        "mean_read_length_pre_filter": 729,
+        "n50_read_length_pre_filter": 3449,
+        "n50_read_length_post_filter": 3451,
+    }
+
+
 class TestFilterStatsNoFilteredReads(unittest.TestCase):
 
     def test_01(self):
         name = "filtered_summary_with_no_reads.csv"
-        file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        file_name = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, name)
         output_dir = tempfile.mkdtemp(suffix="filter_stats_")
         t = tempfile.NamedTemporaryFile(dir=output_dir, delete=False)
         t.close()
@@ -145,12 +159,11 @@ class TestFilterStatsNoFilteredReads(unittest.TestCase):
             log.info(e)
 
 
-@skip_if_data_dir_not_present
 class TestFilterStatsNoReadsPassedFilter(unittest.TestCase):
 
     def test_01(self):
         name = "filtered_summary_with_no_passed_filter.csv"
-        file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        file_name = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, name)
         output_dir = tempfile.mkdtemp(suffix="filter_stats_")
         t = tempfile.NamedTemporaryFile(dir=output_dir, delete=False)
         t.close()
@@ -161,12 +174,11 @@ class TestFilterStatsNoReadsPassedFilter(unittest.TestCase):
             log.info(e)
 
 
-@skip_if_data_dir_not_present
 class TestFilterStatsCsvParserError(unittest.TestCase):
 
     def test_01(self):
         name = "filtered_summary_with_missing_header_field.csv"
-        file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        file_name = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, name)
         output_dir = tempfile.mkdtemp(suffix="filter_stats_")
         t = tempfile.NamedTemporaryFile(dir=output_dir, delete=False)
         t.close()
@@ -177,11 +189,10 @@ class TestFilterStatsCsvParserError(unittest.TestCase):
             log.info(e)
 
 
-@skip_if_data_dir_not_present
 class TestFilterStatsAllQvsZero(unittest.TestCase):
     def test_01(self):
         name = "filtered_summary_with_all_qvs_zero.csv"
-        file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        file_name = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, name)
         output_dir = tempfile.mkdtemp(suffix="filter_stats_")
         t = tempfile.NamedTemporaryFile(dir=output_dir, delete=False)
         t.close()
@@ -193,13 +204,8 @@ class TestFilterStatsAllQvsZero(unittest.TestCase):
         log.info(report.tables[0])
 
 
-@skip_if_data_dir_not_present
 class TestIntegrationFilterStats(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        name = "filtered_summary.csv"
-        cls.file_name = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+    CSV_FILE = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, "filtered_summary.csv")
 
     def test_basic(self):
         output_dir = tempfile.mkdtemp(suffix="filter_stats_integration_")
@@ -210,7 +216,7 @@ class TestIntegrationFilterStats(unittest.TestCase):
         exe = "filter_stats"
         cmd = "{e} --debug -o {o} -r {r} {csv}".format(e=exe, o=output_dir,
                                                        r=report_json,
-                                                       csv=self.file_name)
+                                                       csv=self.CSV_FILE)
         rcode = run_backticks(cmd)
         self.assertEqual(rcode, 0)
 

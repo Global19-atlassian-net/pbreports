@@ -6,6 +6,8 @@ import unittest
 import logging
 import tempfile
 
+import pbcommand.testkit
+
 from base_test_case import LOCAL_DATA, run_backticks
 
 import pbreports.report.motifs
@@ -83,3 +85,16 @@ class TestKineticsMotifsMain(unittest.TestCase):
         report = pbreports.report.motifs.main(cmd)
 
         self.assertIsNotNone(report)
+
+
+class TestToolContract(pbcommand.testkit.PbTestApp):
+    DATA = os.path.join(LOCAL_DATA, "kinetics")
+    DRIVER_BASE = "python -m pbreports.report.motifs "
+    DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
+    DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [
+        os.path.join(DATA, "motifs.gff.gz"),
+        os.path.join(DATA, "motif_summary.csv"),
+    ]
+    TASK_OPTIONS = {}
