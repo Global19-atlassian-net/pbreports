@@ -80,8 +80,8 @@ def _get_contigs(fastq):
     contigs = {}
     fqr = FastqReader(fastq)
     for rec in fqr:
-        # remove quiver appended string, otherwise we can't cross reference the
-        # name in the gff
+        # remove quiver/arrow appended string, otherwise we can't cross
+        # reference the name in the gff
         cinf = ContigInfo(rec)
         contigs[cinf.name] = cinf
 
@@ -199,7 +199,10 @@ class ContigInfo(object):
     def __init__(self, rec):
         """Constructs a new object with the given fastq record"""
         # strip quiver appendage from name
-        self._name = rec.name[:rec.name.index('|quiver')]
+        if rec.name.endswith("|quiver"):
+            self._name = rec.name[:rec.name.index('|quiver')]
+        else:
+            self._name = rec.name[:rec.name.index('|arrow')]
         self._qv = np.average(rec.quality)
         self._len = len(rec.sequence)
         self._cov = ContigCoverage(self._name)
