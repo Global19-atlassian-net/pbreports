@@ -657,6 +657,7 @@ class MappingStatsCollector(object):
           (Constants.A_READLENGTH_MAX, "Mapped Polymerase Read Length Max"),
           (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
           (Constants.A_READLENGTH_N50, "Mapped Read N50"),
+          (Constants.A_SUBREAD_ACCURACY, "Mapped Subread Mean Accuracy"),
     ])
     ATTR_DESCRIPTIONS = {
           Constants.A_SUBREAD_ACCURACY: "The mean concordance of subreads that mapped to the reference sequence",
