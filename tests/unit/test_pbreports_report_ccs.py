@@ -16,7 +16,7 @@ from pbcore.io import ConsensusReadSet
 import pbcore.data
 
 from pbreports.report.ccs import to_report, Constants
-from base_test_case import run_backticks
+from base_test_case import run_backticks, LOCAL_DATA
 
 log = logging.getLogger(__name__)
 
@@ -192,3 +192,15 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr[Constants.A_NREADS],
                          EXPECTED_VALUES[Constants.A_NREADS])
+
+
+class TestCCSMultipleMovies(unittest.TestCase):
+    CCS_BAM = op.join(LOCAL_DATA, "ccs", "ccs_mixed.bam")
+
+    def test_ccs_mulitple_movies_single_bam(self):
+        """
+        Check that the report doesn't crash when a single BAM file contains
+        reads from multiple movies
+        """
+        ds = ConsensusReadSet(self.CCS_BAM)
+        r = to_report(ds, tempfile.mkdtemp())
