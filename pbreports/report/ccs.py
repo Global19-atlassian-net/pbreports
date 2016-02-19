@@ -113,6 +113,7 @@ class MovieResult(object):
         return "<" + str(self) + " > "
 
 
+# FIXME(nechols)(2016-02-18): this is very inefficient
 def _bam_file_to_movie_results(file_name):
     """
     Read what is assumed to be a single BAM file (as a ConsensusReadSet).
@@ -135,12 +136,17 @@ def _bam_file_to_movie_results(file_name):
                     if r.movieName == movie_name:
                         yield r.numPasses
 
+            def _accuracy():
+                for r in bam:
+                    if r.movieName == movie_name:
+                        yield r.readScore
+
             read_lengths = np.fromiter(_base_calls(), dtype=np.int64, count=-1)
             num_passes = np.fromiter(_num_passes(), dtype=np.int64, count=-1)
+            accuracy = np.fromiter(_accuracy(), dtype=np.float, count=-1)
 
             results.append(MovieResult(
-                file_name, movie_name, read_lengths, bam.readQual.copy(),
-                    num_passes))
+                file_name, movie_name, read_lengths, accuracy, num_passes))
         return results
 
 
