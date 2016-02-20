@@ -72,13 +72,13 @@ def to_report(stats_xml, output_dir, dpi=72):
 
         # build the report:
         plots.append(Plot("adapter_xml_plot_{i}".format(i=i),
-                          os.path.relpath(png_base),
-                          thumbnail=os.path.relpath(thumbnail_base)))
+                          os.path.relpath(png_base, output_dir),
+                          thumbnail=os.path.relpath(thumbnail_base, output_dir)))
 
     plot_groups = [PlotGroup("adapter_xml_plot_group",
                              title="Observed Insert Length Distribution",
                              plots=plots,
-                             thumbnail=os.path.relpath(thumbnail_base))]
+                             thumbnail=os.path.relpath(thumbnail_base, output_dir))]
 
     columns = [Column("adaper_xml_conditions", None,
                       ('Adapter Dimers (0-10bp)',

@@ -132,13 +132,13 @@ def to_report(stats_xml, output_dir, dpi=72):
                                                               dpi=dpi)
 
         plots.append(Plot("filter_len_xml_plot_{i}".format(i=i),
-                          os.path.relpath(png_base),
-                          thumbnail=os.path.relpath(thumbnail_base)))
+                          os.path.relpath(png_base, output_dir),
+                          thumbnail=os.path.relpath(thumbnail_base, output_dir)))
 
     plot_groups = [PlotGroup("filter_len_xml_plot_group",
                              title="Polymerase Read Length",
                              plots=plots,
-                             thumbnail=os.path.relpath(thumbnail_base))]
+                             thumbnail=os.path.relpath(thumbnail_base, output_dir))]
 
     plots = []
 
@@ -156,8 +156,8 @@ def to_report(stats_xml, output_dir, dpi=72):
                                                               dpi=dpi)
 
         plots.append(Plot("filter_qual_xml_plot_{i}".format(i=i),
-                          os.path.relpath(png_base),
-                          thumbnail=os.path.relpath(thumbnail_base)))
+                          os.path.relpath(png_base, output_dir),
+                          thumbnail=os.path.relpath(thumbnail_base, output_dir)))
 
     plot_groups.append(PlotGroup("filter_qual_xml_plot_group",
                                  title="Polymerase Read Quality",
