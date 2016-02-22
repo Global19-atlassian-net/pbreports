@@ -1,10 +1,12 @@
-import os
-import logging
+
 import traceback
-import json
 import tempfile
 import unittest
+import logging
 import shutil
+import json
+import os.path as op
+import os
 import sys
 
 from pbcommand.models.report import PbReportError
@@ -30,63 +32,64 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Before *every* test
         """
-        self._data_dir = os.path.join(_get_root_data_dir(), 'coverage')
+        self._data_dir = op.join(_get_root_data_dir(), 'coverage')
         self._output_dir = tempfile.mkdtemp(suffix="coverage")
+        log.setLevel(logging.INFO)
 
     def tearDown(self):
         """
         After *every* test
         """
-        if os.path.exists(self._output_dir):
+        if op.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
     def test_make_coverage_report_none_gff(self):
         """
         Gff cannot be null
         """
-        ref = os.path.join(self._data_dir, 'lambda')
+        ref = op.join(self._data_dir, 'lambda')
         with self.assertRaises(PbReportError):
-            make_coverage_report(None, ref, 'foo.json', 1, self._output_dir, '1', False)
+            make_coverage_report(None, ref, 'foo.json', 1, self._output_dir)
 
     def test_make_coverage_report_no_gff(self):
         """
         Gff exists
         """
-        ref = os.path.join(self._data_dir, 'lambda')
+        ref = op.join(self._data_dir, 'lambda')
         with self.assertRaises(IOError):
-            make_coverage_report('foo', ref, 'foo.json', 1, self._output_dir, '1', False)
+            make_coverage_report('foo', ref, 'foo.json', 1, self._output_dir)
 
     def test_make_coverage_report_none_reference(self):
         """
         Reference cannot be null
         """
-        gff = os.path.join(self._data_dir, 'alignment_summary.gff')
+        gff = op.join(self._data_dir, 'alignment_summary.gff')
         with self.assertRaises(PbReportError):
-            make_coverage_report(gff, None, 'foo.json', 1, self._output_dir, '1', False)
+            make_coverage_report(gff, None, 'foo.json', 1, self._output_dir)
 
     def test_make_coverage_report_no_reference(self):
         """
         Reference must exist
         """
-        gff = os.path.join(self._data_dir, 'alignment_summary.gff')
+        gff = op.join(self._data_dir, 'alignment_summary.gff')
         with self.assertRaises(IOError):
-            make_coverage_report(gff, 'foo', 'foo.json', 1, self._output_dir, '1', False)
+            make_coverage_report(gff, 'foo', 'foo.json', 1, self._output_dir)
 
     def test_top_contigs(self):
         """
         Test top contigs from ref
         """
-        ref = os.path.join(self._data_dir, 'references', 'simple3')
+        ref = op.join(self._data_dir, 'references', 'simple3')
         self.assertEqual(2, len(get_top_contigs(ref, 2)))
 
     def test_contigs_to_plot(self):
         """
         Test top contigs from ref
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
         self.assertEqual(1, len(tcs))
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
         self.assertEqual(len(pls), len(tcs))
         contig = tcs[0]
@@ -99,9 +102,9 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Simple non-null test of single contig fig,ax
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
         contig = tcs[0]
         c_cov = pls[contig.header]
@@ -114,9 +117,9 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Test the coverage stats object (needs more)
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
         contig = tcs[0]
         c_cov = pls[contig.header]
@@ -127,9 +130,9 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Test that attribute values match expected
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
         contig = tcs[0]
         c_cov = pls[contig.header]
@@ -147,9 +150,9 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Simple (non null) test of histogram
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
 
         stats = _get_reference_coverage_stats(pls.values())
@@ -162,9 +165,9 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Test that plotGroup of coverage plots is created as expected
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
         plot_group = _create_coverage_plot_grp(tcs, pls, self._output_dir)
 
@@ -181,9 +184,9 @@ class TestCoverageRpt(unittest.TestCase):
         Test that plotGroup of the histogram is created as expected
         """
 
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
+        ref = op.join(self._data_dir, 'references', 'lambda')
         tcs = get_top_contigs(ref, 25)
-        als = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = op.join(self._data_dir, 'alignment_summary.lambda.gff')
         pls = _get_contigs_to_plot(als, tcs)
         stats = _get_reference_coverage_stats(pls.values())
 
@@ -198,32 +201,32 @@ class TestCoverageRpt(unittest.TestCase):
 
     def _assert_image_file(self, filename):
         # Should we add validation to model.report that forces the filename to be relative?
-        self.assertFalse(os.path.isabs(filename))
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, filename)))
+        self.assertFalse(op.isabs(filename))
+        self.assertTrue(op.exists(op.join(self._output_dir, filename)))
 
     def test_make_coverage_report(self):
         """
         Create a report object, do assertions on its properties, then assert that it gets written
         """
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
-        gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
+        ref = op.join(self._data_dir, 'references', 'lambda')
+        gff = op.join(self._data_dir, 'alignment_summary.lambda.gff')
 
-        report = make_coverage_report(gff, ref, 25, 'rpt.json', self._output_dir, 60, False)
+        report = make_coverage_report(gff, ref, 25, 'rpt.json', self._output_dir)
         self.assertEqual(2, len(report.attributes))
         self.assertEqual(0, len(report.tables))
         self.assertEqual(2, len(report.plotGroups))
 
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, 'rpt.json')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
 
     def test_exit_code_0(self):
         """
         Like a cram test. Assert exits with 0.
         """
 
-        ref = os.path.join(self._data_dir, 'references', 'lambda')
-        gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
-        r = 'rpt.json'
-        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        ref = op.join(self._data_dir, 'references', 'lambda')
+        gff = op.join(self._data_dir, 'alignment_summary.lambda.gff')
+        r = op.join(self._output_dir, 'rpt.json')
+        cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(
                                                             r=r,
                                                             c=ref, g=gff)
 
@@ -236,7 +239,7 @@ class TestCoverageRpt(unittest.TestCase):
             sys.stderr.write(str(m) + "\n")
 
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, r)))
+        self.assertTrue(op.exists(r))
 
 
     def test_exit_code_0_fasta(self):
@@ -244,24 +247,20 @@ class TestCoverageRpt(unittest.TestCase):
         Like a cram test. Assert exits with 0 with fasta
         """
 
-        ref = os.path.join(self._data_dir, 'references', 'lambda', 'sequence',
+        ref = op.join(self._data_dir, 'references', 'lambda', 'sequence',
                            'lambda.fasta')
-        gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
-        r = 'rpt.json'
-        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
-                                                            r=r,
-                                                            c=ref, g=gff)
-
+        gff = op.join(self._data_dir, 'alignment_summary.lambda.gff')
+        r = op.join(self._output_dir, 'rpt.json')
+        cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(
+            r=r, c=ref, g=gff)
         log.info(cmd)
         o, c, m = backticks(cmd)
-
         if c is not 0:
             log.error(m)
             log.error(o)
             sys.stderr.write(str(m) + "\n")
-
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, r)))
+        self.assertTrue(op.exists(r))
 
 
     def test_exit_code_0_referenceset(self):
@@ -269,15 +268,15 @@ class TestCoverageRpt(unittest.TestCase):
         Like a cram test. Assert exits with 0 with ReferenceSet XML
         """
 
-        ref = os.path.join(self._data_dir, 'references', 'lambda', 'sequence',
+        ref = op.join(self._data_dir, 'references', 'lambda', 'sequence',
                            'lambda.fasta')
-        ref_name = os.path.join(self._output_dir, "refset.xml")
+        ref_name = op.join(self._output_dir, "refset.xml")
         refset = ReferenceSet(ref)
         refset.write(ref_name)
         ref = ref_name
-        gff = os.path.join(self._data_dir, 'alignment_summary.lambda.gff')
-        r = 'rpt.json'
-        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        gff = op.join(self._data_dir, 'alignment_summary.lambda.gff')
+        r = op.join(self._output_dir, 'rpt.json')
+        cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(
                                                             r=r,
                                                             c=ref, g=gff)
 
@@ -290,7 +289,7 @@ class TestCoverageRpt(unittest.TestCase):
             sys.stderr.write(str(m) + "\n")
 
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, r)))
+        self.assertTrue(op.exists(r))
 
 
     def test_exit_code_0_div_by_0_bug(self):
@@ -298,10 +297,10 @@ class TestCoverageRpt(unittest.TestCase):
         Like a cram test. Assert exits with 0, even though totalNumContigs is 0.
         """
 
-        ref = os.path.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC')
-        gff = os.path.join(self._data_dir, 'tiny_alignment_summary.gff')
-        r = 'rpt.json'
-        cmd = 'python -m pbreports.report.coverage {o} {r} {c} {g}'.format(o=self._output_dir,
+        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC')
+        gff = op.join(self._data_dir, 'tiny_alignment_summary.gff')
+        r = op.join(self._output_dir, 'rpt.json')
+        cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(
                                                             r=r,
                                                             c=ref, g=gff)
 
@@ -313,5 +312,4 @@ class TestCoverageRpt(unittest.TestCase):
             print(m)
 
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, r)))
-
+        self.assertTrue(op.exists(r))
