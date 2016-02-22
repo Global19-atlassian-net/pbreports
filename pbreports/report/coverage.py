@@ -1,15 +1,23 @@
 #!/usr/bin/env python
+
+"""
+Generates a report showing coverage plots for the top 25 contigs of the
+supplied reference.
+"""
+
+
 import argparse
-import logging
-import os
 import hashlib
+import logging
+import os.path as op
+import os
 import sys
 
 import numpy as np
 
 from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
-from pbcommand.cli import pacbio_args_runner, \
-    get_default_argparser_with_base_opts
+from pbcommand.models import FileTypes, get_pbparser
+from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 
@@ -24,49 +32,14 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
-COLOR_STEEL_BLUE_DARK = '#226F96'
-COLOR_STEEL_BLUE_LIGHT = '#2B8CBE'
+class Constants(object):
+    TOOL_ID = "pbreports.tasks.coverage_report"
+    DRIVER_EXE = "python -m pbreports.report.coverage "
+    MAX_CONTIGS_ID = "pbreports.task_options.max_contigs"
+    MAX_CONTIGS_DEFAULT = 25
 
-
-def make_coverage_report(gff, reference, max_contigs_to_plot, report, output_dir, dpi, dumpdata):
-    """
-    Entry to report.
-    :param gff: (str) path to alignment_summary.gff
-    :param reference: (str) path to reference_dir
-    :param max_contigs_to_plot: (int) max number of contigs to plot
-    """
-    _validate_inputs(gff, reference)
-    top_contigs = get_top_contigs(reference, max_contigs_to_plot)
-    cov_map = _get_contigs_to_plot(gff, top_contigs)
-    
-    #stats may be None
-    stats = _get_reference_coverage_stats(cov_map.values())
-    
-    a1 = _get_att_mean_coverage(stats)
-    a2 = _get_att_percent_missing(stats)
-
-    plot_grp_coverage = _create_coverage_plot_grp(top_contigs, cov_map, output_dir)
-    
-    plot_grp_histogram = None
-    if stats is not None:
-        plot_grp_histogram = _create_coverage_histo_plot_grp(stats, output_dir)
-
-    plotgroups = []
-    # Don't add the Plot Group if no plots are added
-    if plot_grp_coverage.plots:
-        plotgroups.append(plot_grp_coverage)
-
-    if plot_grp_histogram is not None:
-        # Don't add the Plot Group if no plots are added
-        if plot_grp_histogram.plots:
-            plotgroups.append(plot_grp_histogram)
-        
-    rpt = Report('coverage',
-                 plotgroups=plotgroups,
-                 attributes=[a1, a2])
-
-    rpt.write_json(os.path.join(output_dir, report))
-    return rpt
+    COLOR_STEEL_BLUE_DARK = '#226F96'
+    COLOR_STEEL_BLUE_LIGHT = '#2B8CBE'
 
 
 def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
@@ -180,11 +153,11 @@ def _create_contig_plot(contig_coverage):
     npXData = np.array(contig_coverage.xData)
     line_fill = LineFill(xData=npXData,
                          yData=np.array(contig_coverage.yDataMean),
-                         linecolor=COLOR_STEEL_BLUE_DARK, alpha=0.6,
+                         linecolor=Constants.COLOR_STEEL_BLUE_DARK, alpha=0.6,
                          yDataMin=np.array(contig_coverage.yDataStdevMinus),
                          yDataMax=np.array(contig_coverage.yDataStdevPlus),
-                         edgecolor=COLOR_STEEL_BLUE_LIGHT,
-                         facecolor=COLOR_STEEL_BLUE_LIGHT)
+                         edgecolor=Constants.COLOR_STEEL_BLUE_LIGHT,
+                         facecolor=Constants.COLOR_STEEL_BLUE_LIGHT)
     lines_fills = [line_fill]
     fig, ax = get_fig_axes_lpr()
     apply_line_data(ax, lines_fills, ('Reference Start Position', 'Coverage'))
@@ -206,7 +179,7 @@ def _create_histogram(stats):
     fig, ax = get_fig_axes_lpr()
     apply_histogram_data(ax, stats.means, bins,
                          ('Coverage', 'Reference Regions'),
-                         barcolor=COLOR_STEEL_BLUE_DARK,
+                         barcolor=Constants.COLOR_STEEL_BLUE_DARK,
                          showEdges=False)
     return fig, ax
 
@@ -407,42 +380,102 @@ class ContigCoverage(object):
         return self._numBases
 
 
+def make_coverage_report(gff, reference, max_contigs_to_plot, report,
+                         output_dir):
+    """
+    Entry to report.
+    :param gff: (str) path to alignment_summary.gff
+    :param reference: (str) path to reference_dir
+    :param max_contigs_to_plot: (int) max number of contigs to plot
+    """
+    _validate_inputs(gff, reference)
+    top_contigs = get_top_contigs(reference, max_contigs_to_plot)
+    cov_map = _get_contigs_to_plot(gff, top_contigs)
+
+    #stats may be None
+    stats = _get_reference_coverage_stats(cov_map.values())
+
+    a1 = _get_att_mean_coverage(stats)
+    a2 = _get_att_percent_missing(stats)
+
+    plot_grp_coverage = _create_coverage_plot_grp(top_contigs, cov_map, output_dir)
+
+    plot_grp_histogram = None
+    if stats is not None:
+        plot_grp_histogram = _create_coverage_histo_plot_grp(stats, output_dir)
+
+    plotgroups = []
+    # Don't add the Plot Group if no plots are added
+    if plot_grp_coverage.plots:
+        plotgroups.append(plot_grp_coverage)
+
+    if plot_grp_histogram is not None:
+        # Don't add the Plot Group if no plots are added
+        if plot_grp_histogram.plots:
+            plotgroups.append(plot_grp_histogram)
+
+    rpt = Report('coverage',
+                 plotgroups=plotgroups,
+                 attributes=[a1, a2])
+
+    rpt.write_json(os.path.join(output_dir, report))
+    return rpt
+
+
 def args_runner(args):
     rpt = make_coverage_report(args.gff, args.reference, args.maxContigs,
-                                 args.report, args.output, args.dpi, args.dumpdata)
+                               args.report_json, op.dirname(args.report_json))
     log.info(rpt)
     return 0
 
 
-def add_options_to_parser(p):
-    desc = 'Generates a report showing coverage plots for the top 25 contigs of the supplied reference.'
-    p.description = desc
-    p.version = __version__
-    p = add_base_and_plot_options(p)
-    p.add_argument("reference", help="reference file or directory", type=str)
-    p.add_argument("gff", help="alignment_summary.gff", type=validate_file)
-    p.add_argument("--maxContigs", action="store", default=25,
-                   help="Max number of contigs to plot. Defaults to 25.")
-
-    p.set_defaults(func=args_runner)
-    return p
+def resolved_tool_contract_runner(rtc):
+    rpt = make_coverage_report(
+        gff=rtc.task.input_files[1],
+        reference=rtc.task.input_files[0],
+        max_contigs_to_plot=rtc.task.options[Constants.MAX_CONTIGS_ID],
+        report=rtc.task.output_files[0],
+        output_dir=op.dirname(rtc.task.output_files[0]))
+    log.info(rpt)
+    return 0
 
 
 def get_parser():
-    # for standalone exe
-    p = argparse.ArgumentParser(version=__version__)
-    p = add_options_to_parser(p)
+    p = get_pbparser(
+        tool_id=Constants.TOOL_ID,
+        version=__version__,
+        name="Coverage",
+        description=__doc__,
+        driver_exe=Constants.DRIVER_EXE,
+        is_distributed=True)
+    ap = p.arg_parser.parser
+    p.add_input_file_type(FileTypes.DS_REF, "reference",
+        name="Reference DataSet",
+        description="Reference DataSet XML or FASTA file")
+    p.add_input_file_type(FileTypes.GFF, "gff",
+        name="Alignment Summary GFF",
+        description="Alignment Summary GFF")
+    p.add_output_file_type(FileTypes.REPORT, "report_json",
+        name="JSON report",
+        description="Path to write report JSON output",
+        default_name="coverage_report.json")
+    p.add_int(
+        option_id=Constants.MAX_CONTIGS_ID,
+        option_str="maxContigs",
+        default=Constants.MAX_CONTIGS_DEFAULT,
+        name="Maximum number of contigs to plot",
+        description="Maximum number of contigs to plot in coverage report")
     return p
 
 
 def main(argv=sys.argv[1:]):
     """Main point of Entry"""
-    return pacbio_args_runner(
-        argv=argv,
-        parser=get_parser(),
-        args_runner_func=args_runner,
-        alog=log,
-        setup_log_func=setup_log)
+    return pbparser_runner(argv,
+                           get_parser(),
+                           args_runner,
+                           resolved_tool_contract_runner,
+                           log,
+                           setup_log)
 
 
 if __name__ == '__main__':
