@@ -34,7 +34,7 @@ __version__ = '0.1'
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.coverage_report"
-    DRIVER_EXE = "python -m pbreports.report.coverage "
+    DRIVER_EXE = "python -m pbreports.report.coverage --resolved-tool-contract "
     MAX_CONTIGS_ID = "pbreports.task_options.max_contigs"
     MAX_CONTIGS_DEFAULT = 25
 
@@ -415,6 +415,7 @@ def make_coverage_report(gff, reference, max_contigs_to_plot, report,
             plotgroups.append(plot_grp_histogram)
 
     rpt = Report('coverage',
+                 title="Coverage",
                  plotgroups=plotgroups,
                  attributes=[a1, a2])
 
