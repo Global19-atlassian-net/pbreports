@@ -10,6 +10,7 @@ import os
 import sys
 
 from pbcommand.models.report import PbReportError
+import pbcommand.testkit.core
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 import pbcore.data
@@ -263,3 +264,13 @@ class TestCoverageRpt(unittest.TestCase):
             print(m)
         self.assertEquals(0, c)
         self.assertTrue(op.exists(r))
+
+
+class TestToolContract(pbcommand.testkit.core.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.coverage"
+    INPUT_FILES = [
+        pbcore.data.getLambdaFasta(),
+        op.join(LOCAL_DATA, "summarize_coverage", "alignment_summary.gff")
+    ]
+    IS_DISTRIBUTED = True
+    RESOLVED_IS_DISTRIBUTED = True
