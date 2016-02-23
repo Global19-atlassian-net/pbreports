@@ -32,7 +32,7 @@ _LAMBDA_DATA_DIR = os.path.join(
 _CCS_DATA_DIR = os.path.join(LOCAL_DATA, 'mapping_stats_ccs')
 
 _TOTAL_NUMBER_OF_ATTRIBUTES = 11
-_TOTAL_NUMBER_OF_PLOT_GROUPS = 3
+_TOTAL_NUMBER_OF_PLOT_GROUPS = 4
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
 
@@ -350,7 +350,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         Constants.A_READLENGTH: 1123,
         Constants.A_READLENGTH_MAX: 1866,
         Constants.A_READLENGTH_Q95: 1890,
-        "number_of_plot_groups": 2,
+        "number_of_plot_groups": 3,
         "number_of_attributes": 7,
     }
 
