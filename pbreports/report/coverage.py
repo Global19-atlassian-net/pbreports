@@ -90,7 +90,8 @@ def _create_coverage_histo_plot_grp(stats, output_dir):
     fig, ax = _create_histogram(stats)
     fname, thumb = [os.path.basename(f) for f in save_figure_with_thumbnail(fig, os.path.join(output_dir, 'coverage_histogram.png'))]
     plot = Plot('coverage_histogram', fname, 'Depth of coverage distribution ')
-    plot_group = PlotGroup('coverage_histogram_plot_group', title='Depth of Coverage',
+    plot_group = PlotGroup('coverage_histogram_plot_group',
+                           title='Depth of Coverage',
                            thumbnail=thumb, plots=[plot])
     return plot_group
 

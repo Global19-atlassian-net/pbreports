@@ -14,13 +14,15 @@ import logging
 
 import numpy as np
 
-from pbcommand.models.report import (Attribute, Report, Table, Column)
+from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
+    PlotGroup)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import openAlignmentFile, openDataSet
 from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 
+from pbreports.plot.rainbow import make_rainbow_plot
 from pbreports.plot.helper import get_blue, get_green
 from pbreports.util import compute_n50_from_bins
 from pbreports.io.align import (from_alignment_file, CrunchedAlignments)
@@ -76,11 +78,13 @@ class Constants(object):
     PG_SUBREAD_ACCURACY = "subread_accuracy_group"
     PG_SUBREAD_LENGTH = "subreadlength_plot"
     PG_READLENGTH = "readlength_plot"
+    PG_RAINBOW = "rainbow_plot"
 
     # Plot ids
     P_SUBREAD_ACCURACY = "subread_accuracy_group_accuracy_plot"
     P_SUBREAD_LENGTH = "subreadlength_plot"
     P_READLENGTH = "readlength_plot"
+    P_RAINBOW = "rainbow_plot"
 
     # XXX for CCS report - easier to put it here
     A_READ_ACCURACY = "mapped_read_accuracy_mean"
@@ -766,7 +770,7 @@ class MappingStatsCollector(object):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Polymerase Read Length")
+                plot_group_title="Mapped Polymerase Read Length"),
         ]
         return {v.plot_id: v for v in _p}
 
@@ -914,6 +918,14 @@ class MappingStatsCollector(object):
     
         plot_groups = to_plot_groups(plot_config_views, output_dir,
                                      id_to_aggregators)
+        rb_pg = PlotGroup(Constants.PG_RAINBOW,
+            title="Mapped Accuracy vs. Read Length")
+        rb_png = "mapped_accuracy_vs_read_length.png"
+        make_rainbow_plot(self.alignment_file, rb_png)
+        rb_plt = Plot(Constants.P_RAINBOW, rb_png,
+            caption="Mapped Accuracy vs. Read Length")
+        rb_pg.add_plot(rb_plt)
+        plot_groups.append(rb_pg)
     
         tables = [table]
         report = Report(Constants.R_ID,
