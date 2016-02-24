@@ -15,7 +15,7 @@ import sys
 from tabulate import tabulate
 
 from pbreports.report import (mapping_stats, mapping_stats_ccs, ccs, sat,
-    variants)
+    variants, polished_assembly, coverage)
 
 try:
     from pbtranscript.io import Summary
@@ -49,9 +49,11 @@ pbreports specifications (automatically generated)
 
         for m,c in [(mapping_stats, "MappingStatsCollector"),
                     (mapping_stats_ccs, "CCSMappingStatsCollector"),
+                    (coverage, "Constants"),
                     (variants, "Constants"),
                     (sat, "Constants"),
-                    (ccs, "Constants")]:
+                    (ccs, "Constants"),
+                    (polished_assembly, "Constants")]:
             klass = getattr(m, c)
             _write_report_info(klass, m, m.__name__)
         if Summary is not None:

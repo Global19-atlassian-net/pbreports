@@ -1,3 +1,4 @@
+
 """
 Generate a report for a IsoSeq Classify run, given both primer-trimmed,
 non-chimeric, full-length reads and a classify summary.
@@ -80,7 +81,7 @@ def _attributes_to_table(attributes):
     columns = [Column(x.id, header=x.name) for x in attributes]
 
     table = Table('isoseq_classify_table',
-                  title="IsoSeq Classify",
+                  title="IsoSeq Transcript Classification",
                   columns=columns)
 
     for x in attributes:

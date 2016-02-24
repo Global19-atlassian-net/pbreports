@@ -1,22 +1,26 @@
 #!/usr/bin/env python
-"""Generate a report based on the polished assembly"""
-import os, sys
-import csv
-import numpy as np
-import logging
 
-from pbcore.io import FastqReader, GffReader
+"""Generate a report based on the polished assembly"""
+
+from collections import OrderedDict
+import logging
+import csv
+import os
+import sys
+
+import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, Plot, PlotGroup,
                                      PbReportError)
+from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcommand.common_options import add_debug_option
+from pbcore.io import FastqReader, GffReader
 
+from pbreports.report.coverage import ContigCoverage
 from pbreports.util import compute_n50
 import pbreports.plot.helper as PH
-from pbreports.report.coverage import ContigCoverage
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +31,23 @@ __all__ = ['make_polished_assembly_report', 'ContigInfo',
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.polished_assembly"
+    A_N_CONTIGS = "polished_contigs"
+    A_MAX_LEN = "max_contig_length"
+    A_N50_LEN = "n_50_contig_length"
+    A_SUM_LEN = "sum_contig_lengths"
+
+    ATTR_LABELS = OrderedDict([
+        (A_N_CONTIGS, "Polished Contigs"),
+        (A_MAX_LEN, "Maximum Contig Length"),
+        (A_N50_LEN, "N50 Contig Length"),
+        (A_SUM_LEN, "Sum of Contig Lengths")
+    ])
+    ATTR_DESCRIPTIONS = {
+        A_N_CONTIGS: "Number of assembled contigs",
+        A_MAX_LEN: "Length of longest contig",
+        A_N50_LEN: "50% of contigs are longer than this value",
+        A_SUM_LEN: "Total length of all contigs"
+    }
 
 
 def make_polished_assembly_report(report, gff, fastq, output_dir):
@@ -57,7 +78,8 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
 
     rep = Report('polished_assembly')
     rep.add_attribute(
-        Attribute('polished_contigs', len(contigs), 'Polished Contigs'))
+        Attribute(Constants.A_N_CONTIGS, len(contigs),
+                  Constants.ATTR_LABELS[Constants.A_N_CONTIGS]))
     read_lengths = [c.length for c in contigs.values()]
     read_lengths.sort()
     rep.add_attribute(_get_att_max_contig_length(read_lengths))
@@ -146,7 +168,8 @@ def _get_att_max_contig_length(read_lengths):
         val = 0
     else:
         val = read_lengths[l - 1]
-    return Attribute('max_contig_length', val, 'Max Contig Length')
+    return Attribute(Constants.A_MAX_LEN, val,
+                     Constants.ATTR_LABELS[Constants.A_MAX_LEN])
 
 
 def _get_att_sum_contig_lengths(read_lengths):
@@ -154,7 +177,8 @@ def _get_att_sum_contig_lengths(read_lengths):
     Return the last member of the sorted list. 0 if read_lengths is empty.
     :param read_lengths: sorted list
     """
-    return Attribute('sum_contig_lengths', sum(read_lengths), 'Sum of Contig Lengths')
+    return Attribute(Constants.A_SUM_LEN, sum(read_lengths),
+                     Constants.ATTR_LABELS[Constants.A_SUM_LEN])
 
 
 def _get_att_n_50_contig_length(read_lengths):
@@ -163,7 +187,8 @@ def _get_att_n_50_contig_length(read_lengths):
     :param read_lengths: sorted list
     """
     n50 = compute_n50(read_lengths)
-    return Attribute('n_50_contig_length', n50, 'N50 Contig Length')
+    return Attribute(Constants.A_N50_LEN, n50,
+                     Constants.ATTR_LABELS[Constants.A_N50_LEN])
 
 
 def _validate_inputs(infile, desc="input file"):

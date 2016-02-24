@@ -5,7 +5,7 @@ Generates a report showing coverage plots for the top 25 contigs of the
 supplied reference.
 """
 
-
+from collections import OrderedDict
 import argparse
 import hashlib
 import logging
@@ -41,6 +41,18 @@ class Constants(object):
     COLOR_STEEL_BLUE_DARK = '#226F96'
     COLOR_STEEL_BLUE_LIGHT = '#2B8CBE'
 
+    A_COVERAGE = "depth_coverage_mean"
+    A_MISSING = "missing_bases_pct"
+
+    ATTR_LABELS = OrderedDict([
+        (A_COVERAGE, "Mean Coverage"),
+        (A_MISSING, "Missing Bases (%)")
+    ])
+
+    ATTR_DESCRIPTIONS = {
+        A_COVERAGE: "Mean depth of coverage over entire reference",
+        A_MISSING: "Percent of reference bases without coverage"
+    }
 
 def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
     """
@@ -194,7 +206,8 @@ def _get_att_mean_coverage(stats):
         v = 'NA'
     else:
         v = stats.mean_depth_of_coverage
-    a = Attribute('depth_coverage_mean', v, name='Coverage')
+    a = Attribute(Constants.A_COVERAGE, v,
+                  name=Constants.ATTR_LABELS[Constants.A_COVERAGE])
     return a
 
 
@@ -207,7 +220,8 @@ def _get_att_percent_missing(stats):
         v = 'NA'
     else:
         v = stats.perc_missing_bases
-    a = Attribute('missing_bases_pct', v, name='Missing Bases (%)')
+    a = Attribute(Constants.A_MISSING, v,
+                  name=Constants.ATTR_LABELS[Constants.A_MISSING])
     return a
 
 

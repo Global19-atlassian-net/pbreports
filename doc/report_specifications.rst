@@ -25,6 +25,7 @@ mapped_readlength_q95           Mapped Polymerase Read Length 95%  The 95th perc
 mapped_readlength_max           Mapped Polymerase Read Length Max  The maximum length of polymerase reads that mapped to the reference sequence
 mapped_subreadlength_n50        Mapped Subread N50                 50% of full subreads that mapped to the reference sequence are longer than this value
 mapped_readlength_n50           Mapped Read N50                    50% of polymerase reads that mapped to the reference sequence are longer than this value
+mapped_subread_accuracy_mean    Mapped Subread Mean Accuracy       The mean concordance of subreads that mapped to the reference sequence
 ==============================  =================================  =====================================================================================================================================
 
 
@@ -46,6 +47,21 @@ mapped_readlength_q95      Mapped Consensus Read Length 95%  The 95th percentile
 mapped_readlength_max      Mapped Consensus Read Length Max  The maximum length of CCS reads that mapped to the reference sequence
 mapped_readlength_n50      Mapped N50                        50% of CCS reads that mapped to the reference sequence are longer than this
 =========================  ================================  ================================================================================
+
+
+**pbreports.report.coverage**:
+
+
+Generates a report showing coverage plots for the top 25 contigs of the
+supplied reference.
+
+
+===================  =================  ============================================
+Attribute ID         Name               Description
+===================  =================  ============================================
+depth_coverage_mean  Mean Coverage      Mean depth of coverage over entire reference
+missing_bases_pct    Missing Bases (%)  Percent of reference bases without coverage
+===================  =================  ============================================
 
 
 **pbreports.report.variants**:
@@ -99,6 +115,20 @@ mean_accuracy              Mean Consensus Predicted Accuracy  Mean predicted acc
 mean_qv                    Mean Consensus Predicted QV        Phred log-scale QV, equivalent to mean accuracy
 mean_ccs_num_passes        Mean Number of Passes              Mean number of complete subreads per CCS read, rounded to the nearest integer
 =========================  =================================  =============================================================================
+
+
+**pbreports.report.polished_assembly**:
+
+Generate a report based on the polished assembly
+
+==================  =====================  =========================================
+Attribute ID        Name                   Description
+==================  =====================  =========================================
+polished_contigs    Polished Contigs       Number of assembled contigs
+max_contig_length   Maximum Contig Length  Length of longest contig
+n_50_contig_length  N50 Contig Length      50% of contigs are longer than this value
+sum_contig_lengths  Sum of Contig Lengths  Total length of all contigs
+==================  =====================  =========================================
 
 
 **pbreports.report.isoseq_classify**:
