@@ -26,7 +26,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         (Constants.A_READ_ACCURACY, "Mapped Consensus Read Accuracy"),
         (Constants.A_NREADS, "Mapped Consensus Reads"),
         (Constants.A_NBASES, "Mapped Consensus Bases"),
-        (Constants.A_READLENGTH, "Mapped Consensus Read Length"),
+        (Constants.A_READLENGTH, "Mapped Consensus Read Length Mean"),
         (Constants.A_READLENGTH_Q95, "Mapped Consensus Read Length 95%"),
         (Constants.A_READLENGTH_MAX, "Mapped Consensus Read Length Max"),
         (Constants.A_READLENGTH_N50, "Mapped N50"),
