@@ -72,7 +72,9 @@ class Constants(object):
     A_SUBREAD_ACCURACY = "mapped_subread_accuracy_mean"
     A_SUBREAD_QUALITY = "mapped_subread_read_quality_mean"
     A_SUBREAD_LENGTH = "mapped_subread_readlength_mean"
+    A_SUBREAD_LENGTH_MAX = "mapped_subread_readlength_max"
     A_SUBREAD_LENGTH_N50 = "mapped_subreadlength_n50"
+    A_SUBREAD_LENGTH_Q95 = "mapped_subreadlength_q95"
 
     # Plot Group ids
     PG_SUBREAD_ACCURACY = "subread_accuracy_group"
@@ -379,7 +381,7 @@ class SubreadNumberOfBasesAggregator(_BaseTotalAggregator):
         return int(np.round(self.value))
 
 
-class MaxSubreadlengthAggregator(_BaseTotalAggregator):
+class MaxSubreadLengthAggregator(_BaseTotalAggregator):
     DATA_TYPE = SUBREAD_TYPE
 
     def apply(self, crunched_npa):
@@ -527,6 +529,15 @@ class MappedReadLengthQ95(ReadLengthHistogram, AttributeAble):
         return "<{k} q95:{a} dx:{d} nbins:{n} min:{i} max:{x} >".format(**_d)
 
 
+class MappedSubreadLengthQ95(SubReadlengthHistogram, AttributeAble):
+
+    @property
+    def attribute(self):
+        percentile = 95
+        value = get_percentile(self.bins, self.bin_edges, percentile)
+        return value
+
+
 class StatisticsModel(object):
 
     def __init__(self, aggregators, filter_func=None):
@@ -651,30 +662,30 @@ class MappingStatsCollector(object):
         Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_ACCURACY
     ]
     ATTR_LABELS = OrderedDict([
-          (Constants.A_NREADS , "Mapped Reads"),
+          (Constants.A_SUBREAD_ACCURACY, "Mean Mapped Concordance"),
           (Constants.A_NSUBREADS, "Mapped Subreads"),
-          (Constants.A_NBASES, "Mapped Polymerase Bases"),
+          (Constants.A_SUBREAD_LENGTH, "Mean Mapped Subread Length"),
           (Constants.A_SUBREAD_NBASES, "Mapped Subread Bases"),
-          (Constants.A_READLENGTH, "Mapped Polymerase Read Length"),
-          (Constants.A_SUBREAD_LENGTH, "Mapped Subread Length"),
+          (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
+          (Constants.A_SUBREAD_LENGTH_Q95, "Mapped Subread Length 95%"),
+          (Constants.A_NREADS , "Mapped Polymerase Reads"),
+          (Constants.A_READLENGTH, "Mean Mapped Polymerase Read Length"),
+          (Constants.A_READLENGTH_N50, "Mapped Polymerase Read N50"),
           (Constants.A_READLENGTH_Q95, "Mapped Polymerase Read Length 95%"),
           (Constants.A_READLENGTH_MAX, "Mapped Polymerase Read Length Max"),
-          (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
-          (Constants.A_READLENGTH_N50, "Mapped Read N50"),
-          (Constants.A_SUBREAD_ACCURACY, "Mapped Subread Mean Accuracy"),
     ])
     ATTR_DESCRIPTIONS = {
           Constants.A_SUBREAD_ACCURACY: "The mean concordance of subreads that mapped to the reference sequence",
           Constants.A_NREADS : "The number of polymerase reads mapped to the reference sequence",
           Constants.A_NSUBREADS: "The number of subreads mapped to the reference sequence",
-          Constants.A_NBASES: "The number of polymerase bases spanning all mapped subreads (including adapters and other unmapped regions)",
           Constants.A_SUBREAD_NBASES: "The number of subread bases mapped to the reference sequence",
           Constants.A_READLENGTH: "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
           Constants.A_SUBREAD_LENGTH: "The mean length of subreads that mapped to the reference sequence",
           Constants.A_READLENGTH_Q95: "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
+          Constants.A_SUBREAD_LENGTH_Q95: "The 95th percentile of length of subreads that mapped to the reference sequence",
           Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
-          Constants.A_SUBREAD_LENGTH_N50: "50% of full subreads that mapped to the reference sequence are longer than this value",
-          Constants.A_READLENGTH_N50: "50% of polymerase reads that mapped to the reference sequence are longer than this value",
+          Constants.A_SUBREAD_LENGTH_N50: "50% of bases that mapped to the reference sequence are in subreads longer than this value",
+          Constants.A_READLENGTH_N50: "50% of bases that mapped to the reference sequence are in polymerase reads longer than this value",
     }
     HISTOGRAM_IDS = {
         Constants.P_SUBREAD_ACCURACY: "subread_accuracy_histogram",
@@ -775,25 +786,28 @@ class MappingStatsCollector(object):
         return {v.plot_id: v for v in _p}
 
     def _get_total_aggregators(self):
-        return {
-            Constants.A_NREADS: ReadCounterAggregator(),
-            Constants.A_NSUBREADS: SubreadCounterAggregator(),
-            # not correct
-            Constants.A_SUBREAD_NBASES: SubreadNumberOfBasesAggregator(),
-            Constants.A_READLENGTH_MAX: MaxReadLengthAggregator(),
-            Constants.A_READLENGTH: MeanReadLengthAggregator(),
-            Constants.A_NBASES: NumberBasesAggregator(),
-            Constants.A_SUBREAD_ACCURACY: MeanSubreadAccuracyAggregator(),
-            #'mapped_subread_read_quality_mean': MeanSubreadQualityAggregator(),
-            Constants.A_SUBREAD_LENGTH: MeanSubreadLengthAggregator(),
-            "readlength_histogram": ReadLengthHistogram(dx=500),
-            "subreadlength_histogram": SubReadlengthHistogram(),
-            "subread_accuracy_histogram": SubReadAccuracyHistogram(dx=0.005, nbins=1001),
+        return OrderedDict([ 
+            (Constants.A_SUBREAD_ACCURACY, MeanSubreadAccuracyAggregator()),
+            (Constants.A_NSUBREADS, SubreadCounterAggregator()),
+            (Constants.A_SUBREAD_LENGTH, MeanSubreadLengthAggregator()),
+            (Constants.A_SUBREAD_LENGTH_N50, SubreadN50Aggregator()),
+            (Constants.A_SUBREAD_LENGTH_Q95, MappedSubreadLengthQ95(dx=10,
+                                                                  nbins=10000)),
+            (Constants.A_SUBREAD_LENGTH_MAX, MaxSubreadLengthAggregator()),
+            (Constants.A_SUBREAD_NBASES, SubreadNumberOfBasesAggregator()),
+            (Constants.A_NREADS, ReadCounterAggregator()),
+            (Constants.A_READLENGTH, MeanReadLengthAggregator()),
+            (Constants.A_READLENGTH_N50, N50Aggreggator()),
             # the bin size is important here. The computed percentile is
             # computed from the integral.
-            Constants.A_READLENGTH_Q95: MappedReadLengthQ95(dx=10, nbins=10000),
-            Constants.A_READLENGTH_N50: N50Aggreggator(),
-            Constants.A_SUBREAD_LENGTH_N50: SubreadN50Aggregator()}
+            (Constants.A_READLENGTH_Q95, MappedReadLengthQ95(dx=10, nbins=10000)),
+            (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
+            #'mapped_subread_read_quality_mean', MeanSubreadQualityAggregator()),
+            ("readlength_histogram", ReadLengthHistogram(dx=500)),
+            ("subreadlength_histogram", SubReadlengthHistogram()),
+            ("subread_accuracy_histogram", SubReadAccuracyHistogram(dx=0.005,
+                nbins=1001))
+        ])
 
     def _to_table(self, movie_datum):
         """

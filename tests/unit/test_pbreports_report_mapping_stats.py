@@ -31,7 +31,7 @@ _LAMBDA_DATA_DIR = os.path.join(
     ROOT_DATA_DIR, 'mapping_stats', "lambda_2372215_0007_tiny")
 _CCS_DATA_DIR = os.path.join(LOCAL_DATA, 'mapping_stats_ccs')
 
-_TOTAL_NUMBER_OF_ATTRIBUTES = 11
+_TOTAL_NUMBER_OF_ATTRIBUTES = 12
 _TOTAL_NUMBER_OF_PLOT_GROUPS = 4
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
@@ -97,7 +97,6 @@ class TestMappingStatsReport(unittest.TestCase):
         Constants.A_SUBREAD_ACCURACY: 0.9283,
         Constants.A_NREADS: 48,
         Constants.A_NSUBREADS: 112,
-        Constants.A_NBASES: 63746,
         Constants.A_SUBREAD_NBASES: 60467,
         Constants.A_READLENGTH: 1328,
         Constants.A_SUBREAD_LENGTH: 540,
@@ -155,9 +154,6 @@ class TestMappingStatsReport(unittest.TestCase):
         value = self.EXPECTED_VALUES[metric_id]
         self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
 
-    def test_mapped_bases_n(self):
-        self._compare_metric_values(Constants.A_NBASES)
-
     def test_mapped_subread_bases_n(self):
         self._compare_metric_values(Constants.A_SUBREAD_NBASES)
 
@@ -207,6 +203,24 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
         return ds_xml
 
 
+    def test_attributes_order(self):
+        attribute_ids = [a.id for a in self.report.attributes]
+        self.assertEqual(attribute_ids, [
+            Constants.A_SUBREAD_ACCURACY,
+            Constants.A_NSUBREADS,
+            Constants.A_SUBREAD_LENGTH,
+            Constants.A_SUBREAD_LENGTH_N50,
+            Constants.A_SUBREAD_LENGTH_Q95,
+            Constants.A_SUBREAD_LENGTH_MAX,
+            Constants.A_SUBREAD_NBASES,
+            Constants.A_NREADS,
+            Constants.A_READLENGTH,
+            Constants.A_READLENGTH_N50,
+            Constants.A_READLENGTH_Q95,
+            Constants.A_READLENGTH_MAX,
+        ])
+
+
 @skip_if_data_dir_not_present
 class TestMappingStatsReportLarge(TestMappingStatsReport):
     ALIGNMENTS = os.path.join(_IO_DATA_DIR, "lambda_aligned.xml")
@@ -214,7 +228,6 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
         Constants.A_SUBREAD_ACCURACY: 0.8723,
         Constants.A_NREADS: 1491,
         Constants.A_NSUBREADS: 18768,
-        Constants.A_NBASES: 16555228,
         Constants.A_SUBREAD_NBASES: 14398098,
         Constants.A_READLENGTH: 11103,
         Constants.A_SUBREAD_LENGTH: 767,
@@ -310,11 +323,6 @@ class TestMappingStatsGmapReport(unittest.TestCase):
         value = 874
         self.assertEqual(self._get_attribute_value_by_id(id_), value)
 
-    def test_mapped_bases_n(self):
-        id_ = Constants.A_NBASES
-        value = 1387289
-        self.assertEqual(self._get_attribute_value_by_id(id_), value)
-
     def test_mapped_subread_bases_n(self):
         id_ = Constants.A_SUBREAD_NBASES
         value = 1345765
@@ -346,7 +354,6 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     EXPECTED_VALUES = {
         Constants.A_READ_ACCURACY: 0.999,
         Constants.A_NREADS: 10,
-        Constants.A_NBASES: 11229,
         Constants.A_READLENGTH: 1123,
         Constants.A_READLENGTH_MAX: 1866,
         Constants.A_READLENGTH_Q95: 1890,
@@ -403,9 +410,6 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     def test_mapped_reads_n(self):
         self._compare_metric_values(Constants.A_NREADS)
 
-    def test_mapped_bases_n(self):
-        self._compare_metric_values(Constants.A_NBASES)
-
     def test_mapped_readlength_mean(self):
         self._compare_metric_values(Constants.A_READLENGTH)
 
@@ -417,3 +421,15 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         value = self.EXPECTED_VALUES[id_]
         self.assertTrue(
             _almost_value(value, self._get_attribute_value_by_id(id_), _Q95_DELTA))
+
+    def test_attributes_order(self):
+        attribute_ids = [a.id for a in self.report.attributes]
+        self.assertEqual(attribute_ids, [
+            Constants.A_READ_ACCURACY,
+            Constants.A_NREADS,
+            Constants.A_READLENGTH,
+            Constants.A_READLENGTH_MAX,
+            Constants.A_READLENGTH_Q95,
+            Constants.A_READLENGTH_N50,
+            Constants.A_NBASES,
+        ])

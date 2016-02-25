@@ -38,7 +38,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         Constants.A_READLENGTH: "The mean length of CCS reads that mapped to the reference sequence",
         Constants.A_READLENGTH_Q95: "The 95th percentile of length of CCS reads that mapped to the reference sequence",
         Constants.A_READLENGTH_MAX: "The maximum length of CCS reads that mapped to the reference sequence",
-        Constants.A_READLENGTH_N50: "50% of CCS reads that mapped to the reference sequence are longer than this"
+        Constants.A_READLENGTH_N50: "50% of bases that mapped to the reference sequence are in contigs at least this long"
     }
     HISTOGRAM_IDS = {
         Constants.P_READ_ACCURACY: "read_accuracy_histogram",
@@ -102,18 +102,19 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         return {v.plot_id: v for v in _p}
 
     def _get_total_aggregators(self):
-        return {
-            Constants.A_NREADS: ReadCounterAggregator(),
-            Constants.A_READLENGTH_MAX: MaxReadLengthAggregator(),
-            Constants.A_READLENGTH: MeanReadLengthAggregator(),
-            Constants.A_NBASES: NumberBasesAggregator(),
-            Constants.A_READ_ACCURACY: MeanSubreadAccuracyAggregator(),
-            "readlength_histogram": ReadLengthHistogram(),
-            "read_accuracy_histogram": SubReadAccuracyHistogram(dx=0.005, nbins=1001),
-            # the bin size is important here. The computed percentile is
-            # computed from the integral.
-            Constants.A_READLENGTH_Q95: MappedReadLengthQ95(dx=10, nbins=10000),
-            Constants.A_READLENGTH_N50: N50Aggreggator()}
+        return OrderedDict([
+            (Constants.A_READ_ACCURACY, MeanSubreadAccuracyAggregator()),
+            (Constants.A_NREADS, ReadCounterAggregator()),
+            (Constants.A_READLENGTH, MeanReadLengthAggregator()),
+            (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
+            (Constants.A_READLENGTH_Q95, MappedReadLengthQ95(dx=10,
+                                                             nbins=10000)),
+            (Constants.A_READLENGTH_N50, N50Aggreggator()),
+            (Constants.A_NBASES, NumberBasesAggregator()),
+            ("readlength_histogram", ReadLengthHistogram()),
+            ("read_accuracy_histogram", SubReadAccuracyHistogram(dx=0.005,
+                                                                 nbins=1001)),
+        ])
 
 
 def to_report(alignment_file, output_dir):
