@@ -20,6 +20,7 @@ mapped_subreads_n               Mapped Subreads                     The number o
 mapped_subread_readlength_mean  Mapped Subread Length Mean          The mean length of subreads that mapped to the reference sequence
 mapped_subreadlength_n50        Mapped Subread N50                  50% of bases that mapped to the reference sequence are in subreads longer than this value
 mapped_subreadlength_q95        Mapped Subread Length 95%           The 95th percentile of length of subreads that mapped to the reference sequence
+mapped_subread_readlength_max   Mapped Subread Length Max           The maximum length of subreads that mapped to the reference sequence
 mapped_subread_bases_n          Mapped Subread Bases                The number of subread bases mapped to the reference sequence
 mapped_reads_n                  Mapped Polymerase Reads             The number of polymerase reads mapped to the reference sequence
 mapped_readlength_mean          Mapped Polymerase Read Length Mean  The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)

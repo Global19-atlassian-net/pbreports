@@ -667,6 +667,7 @@ class MappingStatsCollector(object):
           (Constants.A_SUBREAD_LENGTH, "Mapped Subread Length Mean"),
           (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
           (Constants.A_SUBREAD_LENGTH_Q95, "Mapped Subread Length 95%"),
+          (Constants.A_SUBREAD_LENGTH_MAX, "Mapped Subread Length Max"),
           (Constants.A_SUBREAD_NBASES, "Mapped Subread Bases"),
           (Constants.A_NREADS , "Mapped Polymerase Reads"),
           (Constants.A_READLENGTH, "Mapped Polymerase Read Length Mean"),
@@ -684,6 +685,7 @@ class MappingStatsCollector(object):
           Constants.A_READLENGTH_Q95: "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
           Constants.A_SUBREAD_LENGTH_Q95: "The 95th percentile of length of subreads that mapped to the reference sequence",
           Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
+          Constants.A_SUBREAD_LENGTH_MAX: "The maximum length of subreads that mapped to the reference sequence",
           Constants.A_SUBREAD_LENGTH_N50: "50% of bases that mapped to the reference sequence are in subreads longer than this value",
           Constants.A_READLENGTH_N50: "50% of bases that mapped to the reference sequence are in polymerase reads longer than this value",
     }
