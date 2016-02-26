@@ -687,7 +687,6 @@ class MappingStatsCollector(object):
           Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
           Constants.A_SUBREAD_LENGTH_MAX: "The maximum length of subreads that mapped to the reference sequence",
           Constants.A_SUBREAD_LENGTH_N50: "50% of bases that mapped to the reference sequence are in subreads longer than this value",
-          Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
           Constants.A_READLENGTH_N50: "50% of bases that mapped to the reference sequence are in polymerase reads longer than this value",
     }
     HISTOGRAM_IDS = {
