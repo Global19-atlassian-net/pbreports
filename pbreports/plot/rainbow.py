@@ -16,7 +16,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pbcore.io import openIndexedAlignmentFile, DataSet
+from pbcore.io import openDataFile, DataSet, CmpH5Reader
 from pbcommand.models.report import Report, PlotGroup, Plot
 
 from pbreports.plot.helper import save_figure_with_thumbnail
@@ -47,12 +47,14 @@ def _read_in_file(in_fn, reference=None):
     Returns:
         A 2D array of lengths, percent accuracy and color by MapQV
     """
+    def _openAlignments():
+        if in_fn.endswith(".cmp.h5"):
+            return CmpH5Reader(in_fn)
+        else:
+            return openDataFile(in_fn)
     lengths, percent_accs, map_qvs = [], [], []
-    names = DataSet(in_fn).externalResources.resourceIds
-    for name in names:
-        name = name.split(':')[-1]
-        infile = openIndexedAlignmentFile(name)
-        for row in infile:
+    with _openAlignments() as alignments:
+        for row in alignments:
             if reference == None or row.referenceName == reference:
                 try:
                     length = row.aEnd - row.aStart
