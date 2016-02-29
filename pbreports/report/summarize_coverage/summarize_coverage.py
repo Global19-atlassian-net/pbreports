@@ -27,6 +27,7 @@ from pbreports.util import openReference
 log = logging.getLogger(__name__)
 __version__ = '0.3.0'
 
+
 class Constants(object):
     NUM_REGIONS = 1000
     NUM_REGIONS_ID = "pbreports.task_options.num_regions"
@@ -71,7 +72,8 @@ def get_metadata_lines(readers, untruncator):
 
             ref_key = (reference.FullName, reference.Length)
             if ref_key not in references:
-                full_name = untruncator.get(reference.FullName, reference.FullName)
+                full_name = untruncator.get(
+                    reference.FullName, reference.FullName)
                 metadata_lines.append(
                     "##{k} {i} {n}".format(k="sequence-header",
                                            i=full_name,
@@ -86,6 +88,7 @@ def get_metadata_lines(readers, untruncator):
                 n=ref_length))
 
     return metadata_lines
+
 
 def get_region_size(ref_length, num_refs, region_size, num_regions,
                     force_num_regions):
@@ -197,7 +200,7 @@ def get_gaps_from_coverage(coverage_arr):
 
     zero_pos_arr = numpy.array(coverage_arr == 0, dtype='i')
     n_gaps = ((numpy.sum(numpy.abs(numpy.diff(zero_pos_arr))) +
-              zero_pos_arr[0] + zero_pos_arr[-1]) / 2)
+               zero_pos_arr[0] + zero_pos_arr[-1]) / 2)
     tot_gaps = numpy.sum(zero_pos_arr)
 
     return n_gaps, tot_gaps
@@ -284,7 +287,6 @@ def generate_gff_records(interval_list, readers, ref_id,
     log.debug("Chosen region size for reference {i} is {r}"
               .format(i=ref_id, r=region_size))
 
-
     log.debug("reference {i} has full name {n} and length {L}"
               .format(i=ref_id, n=ref_full_name, L=ref_length))
 
@@ -316,7 +318,7 @@ def generate_gff_records(interval_list, readers, ref_id,
             if ref_length - region_size <= batch_end:
                 batch_end = ref_length
             log.debug("Processing batch ({s}, {e})".format(s=batch_start,
-                                                       e=batch_end))
+                                                           e=batch_end))
 
             overlapping_intervals = []
             itree.find_overlapping(batch_start, batch_end,
@@ -334,7 +336,7 @@ def generate_gff_records(interval_list, readers, ref_id,
         # Note the region_start + 1. GFF is 1-based and used closed intervals
         # XXX using truncated name (identifier field), see ticket 28667
         gff_record = GffIO.Gff3Record(
-            short_name, #untruncator.get(ref_full_name, ref_full_name),
+            short_name,  # untruncator.get(ref_full_name, ref_full_name),
             region_start + 1, region_end, "region",
             score='0.00', strand='+',
             attributes=gff_attributes)
@@ -347,6 +349,7 @@ class ReferenceTruncationError(Exception):
     reference names.
     """
     pass
+
 
 def get_name_untruncator(repo_path, truncation_regex='\s'):
     """Return a dictionary that maps truncated reference names to full
@@ -438,11 +441,13 @@ def summarize_coverage(aln_set, aln_summ_gff, ref_set=None,
         except ValueError as e:
             log.warn(e)
 
+
 def args_runner(args):
     summarize_coverage(args.aln_set, args.aln_summ_gff, args.ref_set,
                        args.num_regions, args.region_size,
                        args.force_num_regions)
     return 0
+
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
@@ -454,6 +459,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         region_size=rtc.task.options[Constants.REGION_SIZE_ID],
         force_num_regions=rtc.task.options[Constants.FORCE_NUM_REGIONS_ID])
     return 0
+
 
 def _add_options_to_parser(p):
     p.add_input_file_type(
@@ -477,8 +483,8 @@ def _add_options_to_parser(p):
         option_str="num_regions",
         default=Constants.NUM_REGIONS,
         name="Number of regions",
-        description=("Desired number of genome regions in the summary "+
-                     "statistics (used for guidance, not strict). Defaults "+
+        description=("Desired number of genome regions in the summary " +
+                     "statistics (used for guidance, not strict). Defaults " +
                      "to 1000"))
     p.add_int(
         option_id=Constants.REGION_SIZE_ID,
@@ -497,6 +503,7 @@ def _add_options_to_parser(p):
             "will optimize the number of regions in the case of many "
             "references.  Not compatible with a fixed region size."))
 
+
 def add_options_to_parser(p):
     """
     API function for extending main pbreport arg parser (independently of
@@ -510,6 +517,7 @@ def add_options_to_parser(p):
     p.set_defaults(func=args_runner)
     return p
 
+
 def _get_parser_core():
     driver_exe = ("python -m "
                   "pbreports.report.summarize_coverage.summarize_coverage "
@@ -521,6 +529,7 @@ def _get_parser_core():
         __doc__,
         driver_exe)
     return p
+
 
 def get_parser():
     p = _get_parser_core()

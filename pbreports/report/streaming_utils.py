@@ -20,6 +20,7 @@ class PlotViewProperties(object):
     This is essentially a container for *all* view related config.
     The idea is to isolate all the config to a single layer
     """
+
     def __init__(self, plot_id,
                  plot_group_id,
                  plot_func,
@@ -39,7 +40,8 @@ class PlotViewProperties(object):
         """
         if not isinstance(plot_func, (types.FunctionType, functools.partial)):
             _d = dict(t=type(plot_func), f=plot_func)
-            raise TypeError("plot_func requies a function, Got type {t} for {f}".format(**_d))
+            raise TypeError(
+                "plot_func requies a function, Got type {t} for {f}".format(**_d))
 
         # This plotting function must have the signature (aggregator, plot_view, output_dir)
         # and must return a fig, ax tuple
@@ -61,7 +63,6 @@ class PlotViewProperties(object):
 
         # Used for the plot group
         self.plot_group_title = plot_group_title
-
 
     @property
     def thumb(self):
@@ -113,7 +114,7 @@ def plot_aggregator_histogram(a, plot_view, output_dir):
             first_index = i
             break
 
-    last_index = len(a.bins) -1
+    last_index = len(a.bins) - 1
     for i, v in enumerate(a.bins[::-1]):
         if v != 0:
             last_index = i
@@ -211,7 +212,8 @@ def _generate_plot(f, aggregator, plot_view, output_dir):
     return fig, ax
 
 generate_plot = functools.partial(_generate_plot, plot_aggregator_histogram)
-generate_plot_with_cdf = functools.partial(_generate_plot, plot_aggregator_histogram_with_cdf)
+generate_plot_with_cdf = functools.partial(
+    _generate_plot, plot_aggregator_histogram_with_cdf)
 
 
 def _custom_histogram_with_cdf(custom_rlabel, cdf_max_threshold, aggregator, plot_view, output_dir):
@@ -281,15 +283,19 @@ def _custom_histogram_with_cdf(custom_rlabel, cdf_max_threshold, aggregator, plo
         if use_custom_label:
             rax.set_ylabel(custom_rlabel)
         else:
-            log.debug("CDF max threshold execeeded ({t}) Setting custom label to '{r}'".format(r=custom_rlabel, t=cdf_max_threshold))
+            log.debug("CDF max threshold execeeded ({t}) Setting custom label to '{r}'".format(
+                r=custom_rlabel, t=cdf_max_threshold))
             rax.set_ylabel(plot_view.rlabel)
 
     return fig, ax
 
 
-custom_read_length_histogram = functools.partial(_custom_histogram_with_cdf, 'Mb > Read Length', 1000000)
-custom_read_accuracy_histogram = functools.partial(_custom_histogram_with_cdf, 'Mb > Read Quality', 1000000)
-custom_subread_length_histogram = functools.partial(_custom_histogram_with_cdf, 'Mb > Subread Length', 1000000)
+custom_read_length_histogram = functools.partial(
+    _custom_histogram_with_cdf, 'Mb > Read Length', 1000000)
+custom_read_accuracy_histogram = functools.partial(
+    _custom_histogram_with_cdf, 'Mb > Read Quality', 1000000)
+custom_subread_length_histogram = functools.partial(
+    _custom_histogram_with_cdf, 'Mb > Subread Length', 1000000)
 
 
 def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
@@ -310,8 +316,8 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
     # this is the plot_id
     for id_, aggregator in id_to_aggregators.iteritems():
         plot_view = view_config_d[id_]
-        #log.debug(plot_view)
-        #log.debug(pformat(plot_view.__dict__))
+        # log.debug(plot_view)
+        # log.debug(pformat(plot_view.__dict__))
 
         log.info("creating plot with func {f}".format(f=plot_view.plot_func))
         fig, ax = plot_view.plot_func(aggregator, plot_view, output_dir)
@@ -319,7 +325,7 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
         log.debug("Saving image to {i}".format(i=plot_view.image_name))
         try:
             fig.tight_layout()
-        except AttributeError as e: # FIXME bug 25872
+        except AttributeError as e:  # FIXME bug 25872
             log.warn("figure.tight_layout() not available")
             log.warn(str(e))
         except ValueError as e:
@@ -345,7 +351,8 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
             plot_group_id_to_thumb[plot_view.plot_group_id] = plot_view.thumb
 
         if plot_view.plot_group_title is not None:
-            plot_group_id_to_title[plot_view.plot_group_id] = plot_view.plot_group_title
+            plot_group_id_to_title[
+                plot_view.plot_group_id] = plot_view.plot_group_title
 
     plot_groups = []
     for plot_group_id, plots in plots_by_group_id.iteritems():
@@ -384,7 +391,7 @@ def get_percentile(h, bin_edges, percentile):
         v = x * dx
         total += v
         if total >= max_integral:
-            #return x, y, max_integral
+            # return x, y, max_integral
             return y
 
     # should never get here

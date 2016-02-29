@@ -48,14 +48,14 @@ class Constants(object):
         (MEAN_BASES_CALLED, "Average Reference Bases Called"),
         (MEAN_CONCORDANCE, "Average Reference Consensus Concordance"),
         (MEAN_COVERAGE, "Average Reference Coverage"),
-        (LONGEST_CONTIG,"Longest Reference Contig")
+        (LONGEST_CONTIG, "Longest Reference Contig")
     ])
     ATTR_DESCRIPTIONS = {
         MEAN_CONTIG_LENGTH: "Average length of reference sequence contigs",
         MEAN_BASES_CALLED: "Percentage of the reference sequence for which consensus bases were called",
         MEAN_CONCORDANCE: "The percent accuracy (concordance) of the consensus sequence compared to the reference",
         MEAN_COVERAGE: "The mean depth of coverage across the reference sequence",
-        LONGEST_CONTIG: "The FASTA header ID of the longest reference contig", 
+        LONGEST_CONTIG: "The FASTA header ID of the longest reference contig",
     }
 
 
@@ -330,12 +330,12 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     mean_coverage = mean_coverage / sum_lengths
 
     attributes = [Attribute(id_, val, Constants.ATTR_LABELS[id_])
-        for id_, val in [
-            (Constants.MEAN_CONTIG_LENGTH, mean_contig_length),
-            (Constants.MEAN_BASES_CALLED, mean_bases_called),
-            (Constants.MEAN_CONCORDANCE, mean_concord),
-            (Constants.MEAN_COVERAGE, mean_coverage),
-            (Constants.LONGEST_CONTIG, ordered_ids[0])]]
+                  for id_, val in [
+        (Constants.MEAN_CONTIG_LENGTH, mean_contig_length),
+        (Constants.MEAN_BASES_CALLED, mean_bases_called),
+        (Constants.MEAN_CONCORDANCE, mean_concord),
+        (Constants.MEAN_COVERAGE, mean_coverage),
+        (Constants.LONGEST_CONTIG, ordered_ids[0])]]
 
     return table, attributes
 

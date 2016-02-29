@@ -69,7 +69,8 @@ def validate_report(report_file_name):
     Raise ValueError if report contains path seps
     """
     if not os.path.basename(report_file_name) == report_file_name:
-        raise ValueError("Path separators are not allowed: {r}".format(r=report_file_name))
+        raise ValueError(
+            "Path separators are not allowed: {r}".format(r=report_file_name))
     return report_file_name
 
 
@@ -84,7 +85,8 @@ def validate_fofn(fofn):
 
     if os.path.isfile(fofn):
         file_names = bas_fofn_to_bas_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(n=len(file_names), f=fofn))
+        log.debug("Found {n} files in FOFN {f}.".format(
+            n=len(file_names), f=fofn))
         return os.path.abspath(fofn)
     else:
         raise IOError("Unable to find {f}".format(f=fofn))
@@ -105,7 +107,8 @@ def fofn_to_files(fofn):
                 # performing an NFS refresh
                 found = trigger_nfs_refresh(bas_file)
                 if not found:
-                    raise IOError("Unable to find bas/bax file '{f}'".format(f=bas_file))
+                    raise IOError(
+                        "Unable to find bas/bax file '{f}'".format(f=bas_file))
 
         return list(bas_files)
     else:

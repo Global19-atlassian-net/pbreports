@@ -83,10 +83,12 @@ def get_bar_plot_legend_fig(bars, figsize=(2, 2)):
     barMeta = []
     for barModel in bars:
         # nonsense bar with bogus values - all we want is the color
-        aBar = ax.bar([1], [1], color=barModel.color, edgecolor=barModel.color)[0]
+        aBar = ax.bar([1], [1], color=barModel.color,
+                      edgecolor=barModel.color)[0]
         barMeta.append((aBar, barModel.label))
 
-    fig.legend([bar[0] for bar in barMeta], [bar[1] for bar in barMeta], loc=10, frameon=False)
+    fig.legend([bar[0] for bar in barMeta], [bar[1]
+                                             for bar in barMeta], loc=10, frameon=False)
     return fig
 
 
@@ -122,7 +124,8 @@ def apply_line_data(ax, line_models,
     """
 
     for line in line_models:
-        ax.plot(line.xData, line.yData, line.style, color=line.color, linewidth=line.width)
+        ax.plot(line.xData, line.yData, line.style,
+                color=line.color, linewidth=line.width)
 
     ax.set_xlabel(axis_labels[0])
     ax.set_ylabel(axis_labels[1])
@@ -148,7 +151,8 @@ def apply_bar_data(ax, bars, labels, axis_labels=('', ''), data_file=None):
             return -1
 
     for barModel in bars:
-        ax.bar(labels, barModel.data, color=barModel.color, edgecolor=barModel.color)
+        ax.bar(labels, barModel.data, color=barModel.color,
+               edgecolor=barModel.color)
 
     # Here, we reorder the N bars PER X position. They must be rendered so highest is in back,
     # shorter bars are in the foreground
@@ -228,7 +232,7 @@ def apply_histogram_data(ax, data, bins, axis_labels=('', ''),
         edgeColor = barcolor
 
     if len(data) > 0:
-        ax.hist(data, bins=bins, ec=edgeColor, fc=barcolor, log=log_scale, 
+        ax.hist(data, bins=bins, ec=edgeColor, fc=barcolor, log=log_scale,
                 weights=weights)
     else:
         # Perhaps this should be an exception.
@@ -251,7 +255,8 @@ def apply_histogram_data(ax, data, bins, axis_labels=('', ''),
             dump.addData("data", data)
             dump.write()
     except Exception as err:
-        log.error('Unable to dump chart data to {f}: {e}'.format(f=data_file, e=err))
+        log.error('Unable to dump chart data to {f}: {e}'.format(
+            f=data_file, e=err))
 
 
 def set_tick_label_font_size(ax, minor, major):

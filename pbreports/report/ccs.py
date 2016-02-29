@@ -91,6 +91,7 @@ class Constants(object):
         A_MEAN_NPASSES: "Mean number of complete subreads per CCS read, rounded to the nearest integer"
     }
 
+
 class MovieResult(object):
 
     """Simple container class to hold the results of Movie (bax)"""
@@ -167,7 +168,7 @@ def _movie_results_to_attributes(movie_results):
 
     n_reads_at = Attribute(
         Constants.A_NREADS, read_lengths.shape[0], name=Constants.ATTR_LABELS[
-Constants.A_NREADS])
+            Constants.A_NREADS])
     t_bases_at = Attribute(
         Constants.A_TOTAL_BASES, read_lengths.sum(), name=Constants.ATTR_LABELS[Constants.A_TOTAL_BASES])
     m_readlength_at = Attribute(
@@ -330,16 +331,17 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, datum, axis_labels, nbins,
 
 
 def scatter_plot_accuracy_vs_numpasses(data,
-        axis_labels=("Number of passes", "Predicted accuracy (Phred QV)"),
-        nbins=None, barcolor=None):
+                                       axis_labels=(
+                                           "Number of passes", "Predicted accuracy (Phred QV)"),
+                                       nbins=None, barcolor=None):
     """
     """
     npasses, accuracy = data
     qvs = accuracy_as_phred_qv(accuracy)
     fig, ax = get_fig_axes_lpr()
     data = [Line(xData=npasses,
-                yData=qvs,
-                style='o')]
+                 yData=qvs,
+                 style='o')]
     apply_line_data(
         ax=ax,
         line_models=data,
@@ -394,10 +396,10 @@ create_npasses_plot = functools.partial(__create_plot, _make_histogram, Constant
                                         ("Number of Passes", "Reads"), 80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
 
 create_scatter_plot = functools.partial(__create_plot,
-    scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
-     ("Number of passes", "Predicted accuracy (Phred QV)"), None,
-    Constants.I_CCS_SCATTER_PLOT, get_blue(3))
-
+                                        scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
+                                        ("Number of passes",
+                                         "Predicted accuracy (Phred QV)"), None,
+                                        Constants.I_CCS_SCATTER_PLOT, get_blue(3))
 
 
 def to_report(ccs_subread_set, output_dir):
@@ -419,7 +421,6 @@ def to_report(ccs_subread_set, output_dir):
     accuracy_plot = create_accuracy_plot(accuracies, output_dir)
     npasses_plot = create_npasses_plot(num_passes, output_dir)
     scatter_plot = create_scatter_plot((num_passes, accuracies), output_dir)
-    
 
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
                                  title="Consensus Read Length",
@@ -436,7 +437,6 @@ def to_report(ccs_subread_set, output_dir):
     scatter_group = PlotGroup(Constants.P_SCATTER, plots=[scatter_plot],
                               thumbnail=scatter_plot.thumbnail,
                               title="Number of Passes vs. Predicted Accuracy")
-
 
     table = _movie_results_to_table(movie_results)
     log.info(str(table))

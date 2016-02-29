@@ -104,7 +104,7 @@ class BaseVariantTableBuilder(object):
         log.debug('# columns {n}'.format(n=len(cols)))
 
         self._table = Table(self._get_table_id(), title=self._get_table_title(),
-            columns=cols)
+                            columns=cols)
 
     def _get_table_title(self):
         pass
@@ -335,7 +335,7 @@ def get_contract_parser():
                           file_id="reference",
                           name="Reference dataset",
                           description="ReferenceSet or FASTA")
-    #p.add_output_file_type(FileTypes.REPORT, "report",
+    # p.add_output_file_type(FileTypes.REPORT, "report",
     #                       "JSON report", "JSON report", "report.json")
     p.add_int(Constants.HOW_MANY_ID, "how_many",
               default=Constants.HOW_MANY_DEFAULT,

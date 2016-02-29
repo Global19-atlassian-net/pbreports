@@ -44,7 +44,6 @@ class Constants(object):
     # Plot IDs
     P_MOD_HISTOGRAM = "motifs"
 
-
     # Images
     I_MOTIFS_QMOD = 'motif_histogram.png'
     I_MOTIFS_QMOD_THUMB = 'motif_histogram_thumb.png'
@@ -59,6 +58,7 @@ class Constants(object):
 
 
 class MotifRecord(object):
+
     def __init__(self, motif_str, center_position, modification_type, fraction,
                  ndetected, genome, group_tag, partner_motif_str, mean_score,
                  mean_ipd_ratio, mean_coverage, objective_score):
@@ -80,11 +80,12 @@ class MotifRecord(object):
         """Create a new record from the raw CSV header dict"""
         f = lambda x: operator.getitem(d, x)
         r = MotifRecord(f('motifString'), f('centerPos'), f('modificationType'),
-                    f('fraction'), f('nDetected'), f('nGenome'), f('groupTag'),
-                    f('partnerMotifString'), f('meanScore'), f('meanIpdRatio'),
-                    f('meanCoverage'), f('objectiveScore'))
+                        f('fraction'), f('nDetected'), f(
+                            'nGenome'), f('groupTag'),
+                        f('partnerMotifString'), f(
+                            'meanScore'), f('meanIpdRatio'),
+                        f('meanCoverage'), f('objectiveScore'))
         return r
-
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__,
@@ -131,7 +132,8 @@ def _motif_csv_to_records(csv_file):
             items = line.strip().split(',')
             if len(items) != len(column_names):
                 _d = dict(n=len(column_names), x=len(items), l=line)
-                raise ValueError("Expected {n} items, found {x}. Unable to process line {l}".format(**_d))
+                raise ValueError(
+                    "Expected {n} items, found {x}. Unable to process line {l}".format(**_d))
 
             values_d = {}
             for column_name, value in zip(column_names, items):
@@ -146,7 +148,8 @@ def _motif_csv_to_records(csv_file):
             record = MotifRecord.from_dict(values_d)
             records.append(record)
 
-    log.info("Found {n} motif records from {f}".format(n=len(records), f=csv_file))
+    log.info("Found {n} motif records from {f}".format(
+        n=len(records), f=csv_file))
     return records
 
 
@@ -157,19 +160,20 @@ def _validate_file_or_none(path):
         return _validate_file(path)
 
 
-def setTickLabelFontSize( ax, minorTickLabelSize, majorTickLabelSize ):
-     """Convenience function for changing font size of major and minor ticks"""
-     for tick in ax.xaxis.get_major_ticks() + ax.yaxis.get_major_ticks():
-         tick.label1.set_fontsize( majorTickLabelSize )
-     for tick in ax.xaxis.get_minor_ticks() + ax.yaxis.get_minor_ticks():
-         tick.label1.set_fontsize( minorTickLabelSize )
+def setTickLabelFontSize(ax, minorTickLabelSize, majorTickLabelSize):
+    """Convenience function for changing font size of major and minor ticks"""
+    for tick in ax.xaxis.get_major_ticks() + ax.yaxis.get_major_ticks():
+        tick.label1.set_fontsize(majorTickLabelSize)
+    for tick in ax.xaxis.get_minor_ticks() + ax.yaxis.get_minor_ticks():
+        tick.label1.set_fontsize(minorTickLabelSize)
 
-def setAxisLabelFontSize( ax, labelSize ):
-     """Convenience function for changing font size of x- and y-axis labels."""
-     t = ax.get_xaxis().get_label()
-     t.set_fontsize( labelSize )
-     t = ax.get_yaxis().get_label()
-     t.set_fontsize( labelSize )
+
+def setAxisLabelFontSize(ax, labelSize):
+    """Convenience function for changing font size of x- and y-axis labels."""
+    t = ax.get_xaxis().get_label()
+    t.set_fontsize(labelSize)
+    t = ax.get_yaxis().get_label()
+    t.set_fontsize(labelSize)
 
 
 def _createFigTemplate(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
@@ -206,14 +210,15 @@ def readModificationCsvGz(fn):
     n = 0
     kinHit = collections.namedtuple("kinHit", "base coverage score")
     for row, record in enumerate(reader):
-            if int(record[colMap['score']]) > 20:
-                tupleRec = kinHit(base = record[colMap['base']], coverage=int(record[colMap['coverage']]), score=int(record[colMap['score']]))
-                records.append(tupleRec)
-                n += 1
-
+        if int(record[colMap['score']]) > 20:
+            tupleRec = kinHit(base=record[colMap['base']], coverage=int(
+                record[colMap['coverage']]), score=int(record[colMap['score']]))
+            records.append(tupleRec)
+            n += 1
 
     # convert to recarray
-    kinRec = [('base', '|S1'), ('coverage', '>i4'), ('score', '>i4'), ('color', 'b')]
+    kinRec = [('base', '|S1'), ('coverage', '>i4'),
+              ('score', '>i4'), ('color', 'b')]
     kinArr = np.zeros(len(records), dtype=kinRec)
     idx = 0
     for rec in records:
@@ -224,23 +229,28 @@ def readModificationCsvGz(fn):
 
     return kinArr
 
+
 def plotKineticsScatter(kinArr, outputFileName):
 
     handles = []
     colors = ['red', 'green', 'blue', 'magenta']
     bases = ['A', 'C', 'G', 'T']
 
-    fig, ax = _createFigTemplate(dims=(10,8))
+    fig, ax = _createFigTemplate(dims=(10, 8))
 
     for i in xrange(4):
         baseHits = kinArr[kinArr['base'] == bases[i]]
 
         if baseHits.shape[0] > 0:
-            # Add a bit of scatter to avoid ugly aliasing in plot due to integer quantization
-            cov = baseHits['coverage'] + 0.25*np.random.randn(baseHits.shape[0])
-            score = baseHits['score'] + 0.25*np.random.randn(baseHits.shape[0])
+            # Add a bit of scatter to avoid ugly aliasing in plot due to
+            # integer quantization
+            cov = baseHits['coverage'] + 0.25 * \
+                np.random.randn(baseHits.shape[0])
+            score = baseHits['score'] + 0.25 * \
+                np.random.randn(baseHits.shape[0])
 
-            pl = ax.scatter(cov, score, c=colors[i], label=bases[i], lw=0, alpha=0.3, s=12)
+            pl = ax.scatter(cov, score, c=colors[i], label=bases[
+                            i], lw=0, alpha=0.3, s=12)
             handles.append(pl)
 
     ax.set_xlabel('Per-Strand Coverage')
@@ -248,7 +258,7 @@ def plotKineticsScatter(kinArr, outputFileName):
     plt.legend(handles, bases, loc='upper left')
 
     if kinArr.shape[0] > 0:
-        ax.set_xlim(0, np.percentile(kinArr['coverage'], 95.0)*1.4)
+        ax.set_xlim(0, np.percentile(kinArr['coverage'], 95.0) * 1.4)
         ax.set_ylim(0, np.percentile(kinArr['score'], 99.9) * 1.3)
 
     fig.savefig(outputFileName, dpi=72)
@@ -259,7 +269,7 @@ def plotKineticsHist(kinArr, outputFileName):
     colors = ['red', 'green', 'blue', 'magenta']
     bases = ['A', 'C', 'G', 'T']
 
-    fig, ax = _createFigTemplate(dims=(10,8))
+    fig, ax = _createFigTemplate(dims=(10, 8))
 
     # Check for empty or peculiar modifications report:
     d = kinArr['score']
@@ -268,15 +278,16 @@ def plotKineticsHist(kinArr, outputFileName):
     elif np.isnan(np.sum(d)):
         binLim = np.nanmax(d)
     else:
-        binLim = np.percentile(d, 99.9)*1.2
+        binLim = np.percentile(d, 99.9) * 1.2
 
     ax.set_xlim(0, binLim)
-    bins = np.arange(0, binLim, step=binLim/75)
+    bins = np.arange(0, binLim, step=binLim / 75)
 
     for i in xrange(4):
         baseHits = kinArr[kinArr['base'] == bases[i]]
         if baseHits.shape[0] > 0:
-            _ = ax.hist(baseHits['score'], color=colors[i], label=bases[i], bins=bins, histtype="step", log=True)
+            _ = ax.hist(baseHits['score'], color=colors[i], label=bases[
+                        i], bins=bins, histtype="step", log=True)
 
     ax.set_ylabel('Bases')
     ax.set_xlabel('Modification QV')
@@ -285,7 +296,6 @@ def plotKineticsHist(kinArr, outputFileName):
         ax.legend(loc='upper right')
 
     fig.savefig(outputFileName, dpi=72)
-
 
 
 def addQmodPlot(kinData, outputFolder):
@@ -300,7 +310,7 @@ def addQmodPlot(kinData, outputFolder):
     p = Plot('mod_qv_coverage', image=chartPng)
     #graph = GraphItem()
     #graph.title = 'Modification QV vs. Coverage'
-    #graph.addImage(chartPng)
+    # graph.addImage(chartPng)
     return p
 
 
@@ -318,7 +328,7 @@ def addQmodHist(kinData, outputFolder):
     p = Plot('qmod_hist', image=chartPng)
 
     #graph.title = 'Modification QVs'
-    #graph.addImage(chartPng)
+    # graph.addImage(chartPng)
     return p
 
 
@@ -328,7 +338,7 @@ def readMotifFiles(gffFile):
 
     # Read in the existing motifs.gff
     motReader = GffReader(gffFile)
-    y = [ { "score": x.score, "attributes": x.attributes } for x in motReader ]
+    y = [{"score": x.score, "attributes": x.attributes} for x in motReader]
 
     # Convert to a recarray
     idx = 0
@@ -348,7 +358,7 @@ def readMotifFiles(gffFile):
 
 # used by excludeSparseRegions to locate sparse regions in histogram
 
-def findNextSparseRegion( hist, numBins ):
+def findNextSparseRegion(hist, numBins):
 
     # find first non-empty bin in histogram:
     for start in range(numBins, -1, -1):
@@ -356,7 +366,7 @@ def findNextSparseRegion( hist, numBins ):
             break
 
     # find the distance to the next nonzero:
-    for i in range(start-1, -1, -1):
+    for i in range(start - 1, -1, -1):
         if hist[i] > 0:
             break
 
@@ -367,40 +377,40 @@ def findNextSparseRegion( hist, numBins ):
 
 # find an upper limit for the x-axis that excludes sparse regions
 
-def excludeSparseRegions( data ):
+def excludeSparseRegions(data):
 
     # Try to catch empty motifs:
     if data.size == 0:
         return 1
 
-    maxBins = int( np.max(data) )
+    maxBins = int(np.max(data))
 
     if data.size < 10:
         return maxBins
 
-    # If there are at least five ten points, try to identify possible outlier(s):
+    # If there are at least five ten points, try to identify possible
+    # outlier(s):
 
     # compute histogram
-    hist, binEdges = np.histogram( data, bins = maxBins )
+    hist, binEdges = np.histogram(data, bins=maxBins)
 
     # create a dictionary of sparse regions in histogram
     d = {}
     ell = len(hist) - 1
     while ell > 1:
-        start, dist = findNextSparseRegion( hist, ell )
-        d[ start ] = dist
+        start, dist = findNextSparseRegion(hist, ell)
+        d[start] = dist
         ell = ell - dist
-
 
     # find the first big gap that we can safely exclude
     foundOKcutoff = False
-    F = float( np.sum(hist) )
+    F = float(np.sum(hist))
     for key in sorted(d.iterkeys()):
 
         if d[key] >= 10:
             start = key
             # don't exclude more than top 10% of the data
-            s = np.sum(hist[(start+1):])/F
+            s = np.sum(hist[(start + 1):]) / F
             if s < 0.1:
                 foundOKcutoff = True
                 break
@@ -409,7 +419,6 @@ def excludeSparseRegions( data ):
         start = maxBins
 
     return start
-
 
 
 def plotMotifHist(csvFile, kinArr):
@@ -424,8 +433,7 @@ def plotMotifHist(csvFile, kinArr):
         reader = csv.reader(f, delimiter=',')
         reader.next()
         for row in reader:
-            motifs.append( row[0] )
-
+            motifs.append(row[0])
 
     # Check to make sure there exists a 'Not Clustered' site in kinArr:
     if 'Not Clustered' in kinArr['motif']:
@@ -436,31 +444,31 @@ def plotMotifHist(csvFile, kinArr):
     # Generate a unique color (RGBA tuple) for each motif
     colors = []
     cm = plt.get_cmap('hsv')
-    for i in range(numMotifs-1):
-        colors.append( cm(1.*i/(numMotifs-1)) )
+    for i in range(numMotifs - 1):
+        colors.append(cm(1. * i / (numMotifs - 1)))
     colors.append('0.75')
 
-
-    # Try to find an acceptable QV upper bound for each motif and take the maximum of those
+    # Try to find an acceptable QV upper bound for each motif and take the
+    # maximum of those
     binLim = 1
     for i in xrange(numMotifs):
         baseHits = kinArr[kinArr['motif'] == motifs[i]]
         # Try to locate sparse regions in the histogram for exclusion:
-        b = excludeSparseRegions( baseHits['score'] )
-        binLim = max( binLim, b ) + 1
-
+        b = excludeSparseRegions(baseHits['score'])
+        binLim = max(binLim, b) + 1
 
     # Try integer bin boundaries to avoid empty bins:
     bins = range(0, binLim, 1)
 
     # Plot all histograms on the same plot for now:
-    fig, ax = _createFigTemplate(dims=(10,8))
+    fig, ax = _createFigTemplate(dims=(10, 8))
     ax.set_xlim(0, binLim)
 
     for i in xrange(numMotifs):
         baseHits = kinArr[kinArr['motif'] == motifs[i]]
         if baseHits.shape[0] > 0:
-            pl = ax.hist(baseHits['score'], color=colors[i], label=motifs[i], bins=bins, histtype="step", log=True)
+            pl = ax.hist(baseHits['score'], color=colors[i], label=motifs[
+                         i], bins=bins, histtype="step", log=True)
 
     ax.set_ylabel('Motif Sites')
     ax.set_xlabel('Modification QV')
@@ -472,10 +480,10 @@ def plotMotifHist(csvFile, kinArr):
     return fig, ax
 
 
-
 def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72):
 
-    # Apart from passing in motif_summary.csv file name, nearly identical to addQmodHist
+    # Apart from passing in motif_summary.csv file name, nearly identical to
+    # addQmodHist
 
     image_name = os.path.join(outputFolder, Constants.I_MOTIFS_QMOD)
 
@@ -500,7 +508,8 @@ def to_table(motif_records):
     columns = [Column('motif_id', header="Motif"),
                Column('modified_position', header="Modified Position"),
                Column('modification_type', header="Motification Type"),
-               Column('percent_motifs_detected', header="% of Motifs Detected"),
+               Column('percent_motifs_detected',
+                      header="% of Motifs Detected"),
                Column('ndetected_motifs', header="# of Motifs Detected"),
                Column('nmotifs_in_genome', header="# of Motifs in Genome"),
                Column('mean_readscore', header='Mean QV'),
@@ -532,7 +541,8 @@ def to_table(motif_records):
 def to_motifs_report(gff_file, motif_summary_csv, output_dir):
 
     _d = dict(g=gff_file, c=motif_summary_csv, o=output_dir)
-    log.info("starting Motif report generations with: \nGFF:{g}\nCSV:{c}\ndir:{o}".format(**_d))
+    log.info(
+        "starting Motif report generations with: \nGFF:{g}\nCSV:{c}\ndir:{o}".format(**_d))
 
     # Generate a histogram with lines corresponding to motifs
     kinData = readMotifFiles(gff_file)
@@ -566,6 +576,7 @@ def to_mod_report(motif_summary_csv, output_dir):
 
     return r
 
+
 def _write_report(r, json_file):
     with open(json_file, 'w') as f:
         f.write(r.to_json())
@@ -582,10 +593,12 @@ def _to_motif_report(
     # the json report supplied as the basename,
     return _write_report(report, os.path.join(output, report_json))
 
+
 def _to_mod_report(args):
     log.debug(args)
     report = to_mod_report(args.motif_summary_csv, args.output)
     return _write_report(report, args.report_json)
+
 
 def args_runner(args):
     return _to_motif_report(
@@ -593,6 +606,7 @@ def args_runner(args):
         motif_summary_csv=args.motif_summary_csv,
         output=os.path.dirname(args.report_json),
         report_json=os.path.basename(args.report_json))
+
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     report_json = resolved_tool_contract.task.output_files[0]
@@ -612,13 +626,13 @@ def get_parser():
         Constants.DRIVER_EXE)
 
     p.add_input_file_type(FileTypes.GFF, 'gff_file',
-        "GFF file", "Path to motifs.gff.gz")
+                          "GFF file", "Path to motifs.gff.gz")
     p.add_input_file_type(FileTypes.CSV, 'motif_summary_csv',
-        "CSV file", 'Path to Motif summary CSV')
+                          "CSV file", 'Path to Motif summary CSV')
     p.add_output_file_type(FileTypes.REPORT, 'report_json',
-        name="JSON report",
-        description="Path of output JSON report",
-        default_name="motifs_report.json")
+                           name="JSON report",
+                           description="Path of output JSON report",
+                           default_name="motifs_report.json")
     return p
 
 

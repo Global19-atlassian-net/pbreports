@@ -50,22 +50,29 @@ NAME_PARSER = re.compile(r'x([-0-9]+)_y([-0-9]+)_(\d+)-(\d\d\d\d)_([^|]+)')
 MOVIE_PARSER = re.compile(r'm\d+_\d+_([^_]+)_([^_]+)_')
 
 # Use to Validate the pls/bas/bax/rgn name.
-MOVIE_NAME2 = re.compile(r'(m\d{6}_\d{6}_.+_c[0-9]{32}[0-7]_s(1|2)_(p|X)0).(pls|bas|rgn).h5')
+MOVIE_NAME2 = re.compile(
+    r'(m\d{6}_\d{6}_.+_c[0-9]{32}[0-7]_s(1|2)_(p|X)0).(pls|bas|rgn).h5')
 
-MOVIE_NAME3 = re.compile(r'(m\d{6}_\d{6}_.+_c[0-9]{32}[0-7]_s(1|2)_(p|X)0).(1|2|3).(pls|bax|bas|rgn).h5')
+MOVIE_NAME3 = re.compile(
+    r'(m\d{6}_\d{6}_.+_c[0-9]{32}[0-7]_s(1|2)_(p|X)0).(1|2|3).(pls|bax|bas|rgn).h5')
 
 # This will include the Movie part id.
-MOVIE_PART_NAME = re.compile(r'(m\d{6}_\d{6}_.+_c[0-9]{32}[0-7]_s(1|2)_(p|X)0.(1|2|3)).(pls|bax|bas|rgn).h5')
+MOVIE_PART_NAME = re.compile(
+    r'(m\d{6}_\d{6}_.+_c[0-9]{32}[0-7]_s(1|2)_(p|X)0.(1|2|3)).(pls|bax|bas|rgn).h5')
 
 # Old pre multi-part files
-MOVIE_PARSER2 = re.compile(r'm(\d{6}_\d{6})_(.+)_c([0-9]{32})([0-7])_s(1|2)_(p|X)0.(pls|bas|rgn).h5')
+MOVIE_PARSER2 = re.compile(
+    r'm(\d{6}_\d{6})_(.+)_c([0-9]{32})([0-7])_s(1|2)_(p|X)0.(pls|bas|rgn).h5')
 # Multi-part bax era files
-MOVIE_PARSER3 = re.compile(r'm(\d{6}_\d{6})_(.+)_c([0-9]{32})([0-7])_s(1|2)_(p|X)0.(1|2|3).(pls|bax|bas|rgn).h5')
+MOVIE_PARSER3 = re.compile(
+    r'm(\d{6}_\d{6})_(.+)_c([0-9]{32})([0-7])_s(1|2)_(p|X)0.(1|2|3).(pls|bax|bas|rgn).h5')
 
 # FROM MJ
-MOVIE_ASTRO_NAME = re.compile(r'(m\d{6}_\d{6}_[A-Z,a-z]{3}_p(\d|\d{2})_b(\d{2}|\d)).(pls|bas|rgn).h5')
+MOVIE_ASTRO_NAME = re.compile(
+    r'(m\d{6}_\d{6}_[A-Z,a-z]{3}_p(\d|\d{2})_b(\d{2}|\d)).(pls|bas|rgn).h5')
 
-MOVIE_ASTRO_PARSER = re.compile(r'(m\d{6}_\d{6})_[A-Z,a-z]{3}_p(\d|\d{2})_b(\d{2}|\d).(pls|bas|rgn).h5')
+MOVIE_ASTRO_PARSER = re.compile(
+    r'(m\d{6}_\d{6})_[A-Z,a-z]{3}_p(\d|\d{2})_b(\d{2}|\d).(pls|bas|rgn).h5')
 
 
 PSEUDO_PARSER = re.compile(r'(_F[^|]+)|(\.f[^|]+)$')
@@ -112,9 +119,11 @@ def setup_log(alog, file_name=None, level=logging.DEBUG, str_formatter=None):
     alog.addHandler(handler)
     alog.setLevel(level)
 
+
 def _log_warn_once_per_movie():
     """If the zScore isn't found, only emit a single message per Movie"""
     movies = set()
+
     def _log_once(movie, message):
         if movie not in movies:
             log.warn(message)
@@ -159,7 +168,8 @@ def fofn_to_files(fofn):
                 # performing an NFS refresh
                 found = _nfs_exists_check(bas_file)
                 if not found:
-                    raise IOError("Unable to find bas/bax file '{f}'".format(f=bas_file))
+                    raise IOError(
+                        "Unable to find bas/bax file '{f}'".format(f=bas_file))
 
         return list(bas_files)
     else:
@@ -177,7 +187,8 @@ def validate_fofn(fofn):
     """
     if os.path.isfile(fofn):
         file_names = fofn_to_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(n=len(file_names), f=fofn))
+        log.debug("Found {n} files in FOFN {f}.".format(
+            n=len(file_names), f=fofn))
         return os.path.abspath(fofn)
     else:
         raise IOError("Unable to find {f}".format(f=fofn))
@@ -200,7 +211,8 @@ def get_parser():
     p.add_argument('cmp_h5', type=validate_file,
                    help="Path to compare file CMP.H5 alignment file.")
     p.add_argument('output_csv', type=str, help="Output CSV file path.")
-    p.add_argument('--fofn', help="FOFN of bas|bax files.", required=True, type=validate_fofn)
+    p.add_argument('--fofn', help="FOFN of bas|bax files.",
+                   required=True, type=validate_fofn)
     p.add_argument('--external', action='store_true',
                    help="Only output PacBio-external metrics")
     p.add_argument('--debug', action='store_true',
@@ -214,6 +226,7 @@ class MovieParseException(Exception):
 
 
 class ReadStats(object):
+
     def __init__(self):
         self.lengths = []
         self.zs = []
@@ -276,14 +289,15 @@ class ReadStats(object):
             return 0.0
         n = len(v)
         nq = int(round(quantile * float(n)))
-        if nq > n - 1: nq = n - 1
+        if nq > n - 1:
+            nq = n - 1
         v.sort()
         return v[nq]
 
     def _accFromZ(self, z):
         """derive accuracy from Z"""
         a = Z_S * z * math.sqrt(Z_A * Z_A + 1.0)
-        y = math.exp(a - Z_C - Z_A / ( FIXED_LENGTH + 20.0 ))
+        y = math.exp(a - Z_C - Z_A / (FIXED_LENGTH + 20.0))
         acc = y / (1.0 + y)
         return acc
 
@@ -292,23 +306,24 @@ class ReadStats(object):
             if not self.reportAccuracy:
                 if self.n == 0:
                     return '0,0.0,0.0,0'
-                return '%d,%.2f,%.2f,%.0f' % ( self.n, self.zscore, self.accuray, self.length)
+                return '%d,%.2f,%.2f,%.0f' % (self.n, self.zscore, self.accuray, self.length)
 
             if self.n == 0:
                 return '0,0.0,0.0,0.0,0.0,0.0,0'
             zs = np.array(self.zs)
             z50 = np.median(zs)
             z95 = self._quantile(zs, 0.95)
-            return '%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.0f' % ( self.n, z50, 100.0 * self._accFromZ(z50), z95, 100.0 * self._accFromZ(z95), self.accuracy, self.length)
+            return '%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.0f' % (self.n, z50, 100.0 * self._accFromZ(z50), z95, 100.0 * self._accFromZ(z95), self.accuracy, self.length)
         else:
             if self.n == 0:
                 return '0,0.00,0.0'
             meanAcc = np.mean(np.array(self.accs))
             meanRl = np.mean(np.array(self.lengths))
-            return '%d,%.2f,%.1f' % ( self.n, meanAcc, meanRl )
+            return '%d,%.2f,%.1f' % (self.n, meanAcc, meanRl)
 
 
 class MovieStats(object):
+
     def __init__(self, expt, chip, movie, inst, movieType='', setId='', partId='', cellId='', date='', time=''):
         """
         Container for all the movie statistics
@@ -383,10 +398,11 @@ class MovieStats(object):
         except ValueError:
             # probably want to disable this
             movie = hit.movieInfo[1]
-            msg = "unable to get zScore from alignment ID {a} from movie".format(a=hit.AlnID, m=movie)
+            msg = "unable to get zScore from alignment ID {a} from movie".format(
+                a=hit.AlnID, m=movie)
             log_warn_once_per_movie(movie, msg)
 
-        #if not hit.hasPulseInfo:
+        # if not hit.hasPulseInfo:
         #    return
 
         for qv in hit.QualityValue():
@@ -412,18 +428,18 @@ class MovieStats(object):
         qvString = ','.join([str(c) for c in self.nHighQVs])
         if not external:
             date = self.movie.split('_')[0][1:]
-            runCode = '%s-%s' % ( self.expt, self.chip )
+            runCode = '%s-%s' % (self.expt, self.chip)
             return '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' % \
-                   ( date, self.movie, runCode, self.expt,
-                     self.chip, self.inst, self.movieType,
-                     self.allStats.tostring(external),
-                     self.highZStats.tostring(external),
-                     qvString, self.code )
+                   (date, self.movie, runCode, self.expt,
+                    self.chip, self.inst, self.movieType,
+                    self.allStats.tostring(external),
+                    self.highZStats.tostring(external),
+                    qvString, self.code)
         else:
             return '%s,%s,%s,%s,%s,%s,%s,%s,%s' % \
-                   ( self.date, self.movie, self.inst, self.cellId,
-                     self.setId, self.partId, self.allStats.tostring(external),
-                     qvString, self.code )
+                   (self.date, self.movie, self.inst, self.cellId,
+                    self.setId, self.partId, self.allStats.tostring(external),
+                    qvString, self.code)
 
 
 def _parse_read_name(readName):
@@ -522,13 +538,13 @@ def _get_movie_stats_from_movie_files(movie_files):
 
 def _get_internal_csv_header(z_threshold, qv_header):
     x = 'date,movie,runCode,expt,chip,inst,movieType,nReads,medianZ,medianAcc,medianLength,nReadsAboveZ%(z).0f,medianZaboveZ%(z).0f,AZ50,Z95,AZ95,medianAccAboveZ%(z).0f,medianLengthAboveZ%(''z).0f,%(q)s,CODE' % {
-            'z': z_threshold, 'q': qv_header}
+        'z': z_threshold, 'q': qv_header}
     return x
 
 
 def _get_external_csv_header(qv_header):
     x = 'date,movie,inst,cellId,setId,strobeId,nReads,meanAcc,' \
-                  'meanLength,%(q)s,CODE' % {
+        'meanLength,%(q)s,CODE' % {
             'q': qv_header}
     return x
 
@@ -564,11 +580,13 @@ def __movie_bax_name_to_movie_stat(file_name):
 
             # bax.(1|2|3)
             movie_part_id = g[6]
-            m = MovieStats(exp, runcode, movie_name, inst, cellId=cellId, setId=setId, partId=partId, date=date, time=dtime)
+            m = MovieStats(exp, runcode, movie_name, inst, cellId=cellId,
+                           setId=setId, partId=partId, date=date, time=dtime)
             return m
         else:
             _d = dict(f=file_name, p=MOVIE_PARSER3.pattern)
-            raise MovieParseException("Unable to parse {f} with {p}".format(**_d))
+            raise MovieParseException(
+                "Unable to parse {f} with {p}".format(**_d))
 
     else:
         _d = dict(f=file_name, p=MOVIE_PARSER3.pattern)
@@ -603,11 +621,13 @@ def __movie_bas_name_to_movie_stat(file_name):
             # p0 or X0
             partId = g[5] + '0'
 
-            m = MovieStats(exp, runcode, movie_name, inst, cellId=cellId, setId=setId, partId=partId, date=date, time=dtime)
+            m = MovieStats(exp, runcode, movie_name, inst, cellId=cellId,
+                           setId=setId, partId=partId, date=date, time=dtime)
             return m
         else:
             _d = dict(f=file_name, p=MOVIE_PARSER2.pattern)
-            raise MovieParseException("Unable to parse {f} with {p}".format(**_d))
+            raise MovieParseException(
+                "Unable to parse {f} with {p}".format(**_d))
 
     else:
         _d = dict(f=file_name, p=MOVIE_NAME2.pattern)
@@ -631,12 +651,14 @@ def __movie_astro_name_to_movie_stat(file_name):
             partId = "p1"
             date, dtime = date_time.split('_')
 
-            m = MovieStats(exp, runcode, movie_name, inst, cellId=cellId, setId="s1", date=date, time=dtime)
+            m = MovieStats(exp, runcode, movie_name, inst,
+                           cellId=cellId, setId="s1", date=date, time=dtime)
             return m
 
         else:
             _d = dict(f=file_name, p=MOVIE_ASTRO_NAME.pattern)
-            raise MovieParseException("Unable to parse {f} with {p}".format(**_d))
+            raise MovieParseException(
+                "Unable to parse {f} with {p}".format(**_d))
     else:
         _d = dict(f=file_name, p=MOVIE_ASTRO_NAME.pattern)
         raise MovieParseException("Unable to parse {f} with {p}".format(**_d))
@@ -668,8 +690,8 @@ def _movie_file_name_to_movie_stat(file_name):
 def _log_summary(movie_stats):
     for movie_stat in movie_stats:
         log.info(movie_stat)
-        #log.info(movie_stat.allStats)
-        #log.info(movie_stat.highZStats)
+        # log.info(movie_stat.allStats)
+        # log.info(movie_stat.highZStats)
 
 
 def run(cmp_h5, movie_files, output_csv, external_mode=False):
@@ -714,7 +736,8 @@ def run(cmp_h5, movie_files, output_csv, external_mode=False):
 
         for movie in allMovieNames:
             if movie in postMappingMovies:
-                f.write(postMappingMovies[movie].tostring(external_mode) + "\n")
+                f.write(postMappingMovies[movie].tostring(
+                    external_mode) + "\n")
             else:
                 stats = allMovies[movie]
                 stats.code = 'PREFILTER'
@@ -744,7 +767,8 @@ def main(argv=sys.argv):
     log.debug(args)
     started_at = time.time()
     try:
-        rcode = run(cmp_h5, movie_files, output_csv, external_mode=external_mode)
+        rcode = run(cmp_h5, movie_files, output_csv,
+                    external_mode=external_mode)
     except Exception as e:
         rcode = -1
         log.error(e, exc_info=True)
@@ -753,5 +777,6 @@ def main(argv=sys.argv):
     run_time = time.time() - started_at
 
     _d = dict(f=os.path.basename(__file__), x=rcode, s=run_time, v=__version__)
-    log.info("completed {f} v{v} with exit code {x} in {s:.2f} sec.".format(**_d))
+    log.info(
+        "completed {f} v{v} with exit code {x} in {s:.2f} sec.".format(**_d))
     return rcode

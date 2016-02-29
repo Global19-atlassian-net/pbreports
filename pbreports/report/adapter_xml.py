@@ -21,6 +21,7 @@ from pbreports.plot.helper import (get_fig_axes_lpr,
 
 __version__ = '0.1.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.adapter_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.adapter_xml "
@@ -29,8 +30,9 @@ class Constants(object):
 
 log = logging.getLogger(__name__)
 
+
 def to_report(stats_xml, output_dir, dpi=72):
-    #TODO: make dpi matter
+    # TODO: make dpi matter
     """Main point of entry
 
     :type stats_xml: str
@@ -102,6 +104,7 @@ def args_runner(args):
     report.write_json(args.report)
     return 0
 
+
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
@@ -111,13 +114,14 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     report.write_json(rtc.task.output_files[0])
     return 0
 
+
 def _add_options_to_parser(p):
     p.add_input_file_type(
         FileTypes.DS_SUBREADS, "subread_set", "SubreadSet", "PacBio SubreadSet XML File")
     p.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
-        description=("Filename of JSON output report. Should be name only, "
-                     "and will be written to output dir"),
-        default_name="report.json")
+                           description=("Filename of JSON output report. Should be name only, "
+                                        "and will be written to output dir"),
+                           default_name="report.json")
 
 
 def add_options_to_parser(p):

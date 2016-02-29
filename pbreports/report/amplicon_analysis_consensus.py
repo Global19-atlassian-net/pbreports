@@ -22,8 +22,10 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.3.1'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_consensus"
+
 
 def create_table(d, barcode):
     """Long Amplicon Analysis results table"""
@@ -45,14 +47,15 @@ def create_table(d, barcode):
     for fastaname in sorted(d.fastaname):
         row = d[d.fastaname == fastaname]
         for column in columns:
-            #if column.id == "predictedaccuracy":
+            # if column.id == "predictedaccuracy":
             #    accuracy = round(100 * row[column.id][0], 2)
             #    t.add_data_by_column_id(column.id, accuracy)
-            #else:
+            # else:
             t.add_data_by_column_id(column.id, row[column.id][0])
 
     log.info(str(t))
     return t
+
 
 def run_to_report(summary_file):
     log.info("Generating report v{v} from file: {f}".format(f=summary_file,
@@ -79,23 +82,28 @@ def run_to_report(summary_file):
 
     return r
 
+
 def amplicon_analysis_consensus(incsv, outjson):
-    log.info("Running {f} v{v}.".format(f=os.path.basename(__file__), v=__version__))
+    log.info("Running {f} v{v}.".format(
+        f=os.path.basename(__file__), v=__version__))
     report = run_to_report(incsv)
     log.info(pformat(report.to_dict()))
     report.write_json(outjson)
     return 0
+
 
 def args_runner(args):
     validate_nonempty_file(args.report_csv)
     amplicon_analysis_consensus(args.report_csv, args.report_json)
     return 0
 
+
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     amplicon_analysis_consensus(rtc.task.input_files[0],
                                 rtc.task.output_files[0])
     return 0
+
 
 def _add_options_to_parser(p):
     p.add_input_file_type(
@@ -110,6 +118,7 @@ def _add_options_to_parser(p):
         description="Consensus Report JSON",
         default_name="consensus_report.json")
 
+
 def add_options_to_parser(p):
     """
     API function for extending main pbreport arg parser (independently of
@@ -123,6 +132,7 @@ def add_options_to_parser(p):
     p.set_defaults(func=args_runner)
     return p
 
+
 def _get_parser_core():
     driver_exe = ("python -m "
                   "pbreports.report.amplicon_analysis_consensus "
@@ -135,10 +145,12 @@ def _get_parser_core():
         driver_exe)
     return p
 
+
 def get_parser():
     p = _get_parser_core()
     _add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv):
     mp = get_parser()

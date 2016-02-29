@@ -30,6 +30,7 @@ registered_subparser_classes = {}
 
 
 class _RegisterParserMetaKlass(type):
+
     def __new__(cls, name, parent, dct):
         """Validate the config class
 
@@ -39,26 +40,32 @@ class _RegisterParserMetaKlass(type):
         2. add_args(self, subparser) method
 
         """
-        _EXCLUDE_BASE_CLASSES = ('SubParserHelper', 'PlotParserHelper', 'RegisterParser')
+        _EXCLUDE_BASE_CLASSES = (
+            'SubParserHelper', 'PlotParserHelper', 'RegisterParser')
         _REQUIRED_CLASS_VARS = ('SUBCOMMAND', 'help', 'run_report')
 
         if name not in _EXCLUDE_BASE_CLASSES:
             # validation
             for var in _REQUIRED_CLASS_VARS:
                 if var not in dct:
-                    raise KeyError("Class {n} must define {v}.".format(n=name, v=var))
+                    raise KeyError(
+                        "Class {n} must define {v}.".format(n=name, v=var))
 
             subcommand = dct['SUBCOMMAND']
-            # keep backward compatibility with the property. FIXME. Remove This.
+            # keep backward compatibility with the property. FIXME. Remove
+            # This.
             dct['subcommand'] = subcommand
             if subcommand in registered_subparser_classes:
-                raise KeyError("Duplicated subparser {n} with subcommand {s}.".format(n=name, s=subcommand))
+                raise KeyError("Duplicated subparser {n} with subcommand {s}.".format(
+                    n=name, s=subcommand))
             else:
-                klass = super(_RegisterParserMetaKlass, cls).__new__(cls, name, parent, dct)
+                klass = super(_RegisterParserMetaKlass, cls).__new__(
+                    cls, name, parent, dct)
                 registered_subparser_classes[subcommand] = klass
         else:
             # excluded subclasses
-            klass = super(_RegisterParserMetaKlass, cls).__new__(cls, name, parent, dct)
+            klass = super(_RegisterParserMetaKlass, cls).__new__(
+                cls, name, parent, dct)
 
         return klass
 
@@ -120,7 +127,8 @@ class LoadingParserHelper(SubParserHelper):
 
     def add_args(self, subparser):
         SubParserHelper.add_args(self, subparser)
-        subparser.add_argument("csv", help="filtered_summary.csv", type=validate_file)
+        subparser.add_argument(
+            "csv", help="filtered_summary.csv", type=validate_file)
 
     @staticmethod
     def run_report(args):
@@ -149,7 +157,7 @@ class CoverageParserHelper(PlotParserHelper):
     @staticmethod
     def run_report(args):
         return make_coverage_report(args.gff, args.reference, args.maxContigs,
-                                 args.report, args.output, args.dpi, args.dumpdata)
+                                    args.report, args.output, args.dpi, args.dumpdata)
 
 
 class ControlParserHelper(PlotParserHelper):
@@ -170,8 +178,8 @@ class ControlParserHelper(PlotParserHelper):
 
     @staticmethod
     def run_report(args):
-         return make_control_report(args.cntrCmpH5, args.csv,
-                                args.report, args.output, args.dpi, args.dumpdata)
+        return make_control_report(args.cntrCmpH5, args.csv,
+                                   args.report, args.output, args.dpi, args.dumpdata)
 
 
 class TopVariantParserHelper(SubParserHelper):
@@ -203,7 +211,7 @@ class TopVariantParserHelper(SubParserHelper):
     @staticmethod
     def run_report(args):
         return make_topvariants_report(args.gff, args.reference,
-                                    args.how_many, args.batch_sort_size, args.report, args.output)
+                                       args.how_many, args.batch_sort_size, args.report, args.output)
 
 
 class MinorTopVariantParserHelper(TopVariantParserHelper):
@@ -223,7 +231,7 @@ class MinorTopVariantParserHelper(TopVariantParserHelper):
     @staticmethod
     def run_report(args):
         return make_topvariants_report(args.gff, args.reference,
-                                    args.how_many, args.batch_sort_size, args.report, args.output, True)
+                                       args.how_many, args.batch_sort_size, args.report, args.output, True)
 
 
 class PolishedAssemblyParserHelper(SubParserHelper):
@@ -277,7 +285,7 @@ class VariantsParserHelper(PlotParserHelper):
     @staticmethod
     def run_report(args):
         return make_variants_report(args.aln_summ_gff, args.variants_gff, args.reference, args.maxContigs,
-                                 args.report, args.output, args.dpi, args.dumpdata)
+                                    args.report, args.output, args.dpi, args.dumpdata)
 
 
 class ModificationsParserHelper(PlotParserHelper):
@@ -320,6 +328,7 @@ class SatParserHelper(SubParserHelper):
     @staticmethod
     def run_report(args):
         return make_sat_report(args.h5,  args.mapping_stats_rpt, args.var_rpt, args.report, args.output)
+
 
 def get_subparser_helpers():
     """

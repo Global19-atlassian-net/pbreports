@@ -29,6 +29,7 @@ __version__ = '0.4'
 __all__ = ['make_polished_assembly_report', 'ContigInfo',
            'get_parser']
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.polished_assembly"
     A_N_CONTIGS = "polished_contigs"
@@ -58,7 +59,8 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
     :param report: (str) report name
     create a polished assembly report.
     """
-    log.info("Starting version {f} v{x}".format(x=__version__, f=os.path.basename(__file__)))
+    log.info("Starting version {f} v{x}".format(
+        x=__version__, f=os.path.basename(__file__)))
 
     log.debug("Loading {f}".format(f=fastq))
     contigs = _get_contigs(fastq)
@@ -71,10 +73,9 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
     cvqp = _coverage_vs_quality_plot(contigs, output_dir)
 
     pgrp = PlotGroup('coverage_based',
-                   title='Contig Coverage vs Confidence',
-                   thumbnail=cvqp.thumbnail,
-                   plots=[cvqp])
-
+                     title='Contig Coverage vs Confidence',
+                     thumbnail=cvqp.thumbnail,
+                     plots=[cvqp])
 
     rep = Report('polished_assembly')
     rep.add_attribute(
@@ -144,8 +145,8 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     x_vals = [x.mean_coverage for x in contigs.values()]
     y_vals = [x.mean_qv for x in contigs.values()]
 
-    axes.set_xlim(0, max(x_vals)*1.2)
-    axes.set_ylim(0, max(y_vals)*1.2)
+    axes.set_xlim(0, max(x_vals) * 1.2)
+    axes.set_ylim(0, max(y_vals) * 1.2)
 
     axes.scatter(x_vals, y_vals, s=12)
 
@@ -221,6 +222,7 @@ class ContigInfo(object):
     """Contains relevant contig information needed for plotting.  Contig id,
     length and averaged QV and average coverage depth.
     """
+
     def __init__(self, rec):
         """Constructs a new object with the given fastq record"""
         # strip quiver appendage from name
@@ -260,6 +262,7 @@ class ContigInfo(object):
         """Average coverage"""
         return self._cov.meanCoveragePerBase()
 
+
 def args_runner(args):
     output_dir, report = os.path.split(args.polished_assembly_rpt)
     make_polished_assembly_report(report,
@@ -267,6 +270,7 @@ def args_runner(args):
                                   args.polished_assembly,
                                   output_dir)
     return 0
+
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
@@ -276,6 +280,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         rtc.task.input_files[1],
         os.path.dirname(rtc.task.output_files[0]))
     return 0
+
 
 def _add_options_to_parser(p):
     p.add_input_file_type(
@@ -295,6 +300,7 @@ def _add_options_to_parser(p):
         description="Polished Assembly Report",
         default_name="polished_assembly_report.json")
 
+
 def add_options_to_parser(p):
     """
     API function for extending main pbreport arg parser (independently of
@@ -308,6 +314,7 @@ def add_options_to_parser(p):
     p.set_defaults(func=args_runner)
     return p
 
+
 def _get_parser_core():
     driver_exe = ("python -m "
                   "pbreports.report.polished_assembly "
@@ -320,10 +327,12 @@ def _get_parser_core():
         driver_exe)
     return p
 
+
 def get_parser():
     p = _get_parser_core()
     _add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv):
     mp = get_parser()

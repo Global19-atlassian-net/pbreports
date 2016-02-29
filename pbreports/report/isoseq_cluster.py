@@ -27,7 +27,7 @@ from pprint import pformat
 
 log = logging.getLogger(__name__)
 
-__version__ = '0.1.0.132615'  #The last 6 digits is changelist
+__version__ = '0.1.0.132615'  # The last 6 digits is changelist
 
 
 class Constants(object):
@@ -59,7 +59,7 @@ def summaryToAttributes(inSummaryFN):
                     val = int(val)
                 except ValueError:
                     pass
-                attr_id = "_".join (attr.split(' '))
+                attr_id = "_".join(attr.split(' '))
                 # Make attribute id match '^[a-z0-9_]+$'
                 attr_id = attr_id.lower().replace('-', '_')
                 attributes.append(Attribute(attr_id, val, name=attr))
@@ -69,10 +69,12 @@ def summaryToAttributes(inSummaryFN):
 
 def _report_to_attributes(report_file):
     report = load_report_from_json(report_file)
-    attr = { a.id:a.value for a in report.attributes }
+    attr = {a.id: a.value for a in report.attributes}
     if attr.get("isoseq_numconsensusisoforms", 0) > 0:
-        avg = attr["isoseq_numtotalbases"]/attr["isoseq_numconsensusisoforms"]
-        report.attributes.append(Attribute("isoseq_average_consensus_isoform_length", avg, name="Average consensus isoform length"))
+        avg = attr["isoseq_numtotalbases"] / \
+            attr["isoseq_numconsensusisoforms"]
+        report.attributes.append(Attribute(
+            "isoseq_average_consensus_isoform_length", avg, name="Average consensus isoform length"))
     return report.attributes
 
 
@@ -143,7 +145,7 @@ def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
 
 
 def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
-        plot_name, barcolor, datum, output_dir, dpi=72):
+                  plot_name, barcolor, datum, output_dir, dpi=72):
     """Internal function used to create Plot instances.
 
     This should probably have a special container class to capture all the
@@ -154,7 +156,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     path = os.path.join(output_dir, plot_name)
     try:
         fig.tight_layout()
-    except AttributeError as e: # FIXME bug 25872
+    except AttributeError as e:  # FIXME bug 25872
         log.warn("figure.tight_layout() not available")
         log.warn(str(e))
     except ValueError as e:
@@ -171,9 +173,9 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     return plot
 
 create_readlength_plot = functools.partial(
-        __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
-        ("Read Length", "Reads", "Reads > Read Length"), 80,
-         "consensus_isoforms_readlength_hist.png", get_blue(3))
+    __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
+    ("Read Length", "Reads", "Reads > Read Length"), 80,
+    "consensus_isoforms_readlength_hist.png", get_blue(3))
 
 
 def makeReport(inReadsFN, inSummaryFN, outDir):
@@ -194,7 +196,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
 
     """
     log.info("Plotting read length histogram from file: {f}".
-            format(f=inReadsFN))
+             format(f=inReadsFN))
 
     # Collect read lengths of
     reader = ContigSet(inReadsFN)
@@ -205,12 +207,12 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, outDir)
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-        title="Read Length of Consensus Isoforms Reads",
-        plots=[readlength_plot],
-        thumbnail=readlength_plot.thumbnail)
+                                 title="Read Length of Consensus Isoforms Reads",
+                                 plots=[readlength_plot],
+                                 thumbnail=readlength_plot.thumbnail)
 
     log.info("Plotting summary attributes from file: {f}".
-            format(f=inSummaryFN))
+             format(f=inSummaryFN))
     # Produce attributes based on summary.
     if inSummaryFN.endswith(".json"):
         attributes = _report_to_attributes(inSummaryFN)
@@ -228,6 +230,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
 
     return report
 
+
 def _run(fasta_file, summary_txt, json_report, outDir):
     if outDir in ["", None]:
         outDir = os.getcwd()
@@ -239,12 +242,14 @@ def _run(fasta_file, summary_txt, json_report, outDir):
     report.write_json(json_report)
     return 0
 
+
 def args_runner(args):
     return _run(
         fasta_file=args.inReadsFN,
         summary_txt=args.inSummaryFN,
         json_report=args.outJson,
         outDir=os.path.dirname(args.outJson))
+
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
@@ -265,14 +270,14 @@ def get_contract_parser():
         is_distributed=True)
 
     p.add_input_file_type(FileTypes.DS_CONTIG, "inReadsFN", "Fasta reads",
-        description="Reads in FASTA format, usually are consensus, " + \
-                    "isoforms produced by IsoSeq Cluster.")
+                          description="Reads in FASTA format, usually are consensus, " +
+                          "isoforms produced by IsoSeq Cluster.")
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary text",
-        description="A summary produced by IsoSeq Cluster, e.g. " + \
-                    "cluster_summary.txt")
+                          description="A summary produced by IsoSeq Cluster, e.g. " +
+                          "cluster_summary.txt")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "Output JSON",
-        description="Path to write Report json output.",
-        default_name="isoseq_cluster_report.json")
+                           description="Path to write Report json output.",
+                           default_name="isoseq_cluster_report.json")
     return p
 
 

@@ -39,7 +39,7 @@ class IntervalTree(object):
                 leftp = ivals[0].start
                 rightp = max(k.stop for k in ivals)
 
-            centerp = ivals[len(ivals)//2].start
+            centerp = ivals[len(ivals) // 2].start
             self.center = centerp
 
             lefts = []

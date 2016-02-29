@@ -26,6 +26,7 @@ from pbreports.util import compute_n50
 
 __version__ = '0.1.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.filter_stats_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.filter_stats_xml "
@@ -34,10 +35,11 @@ class Constants(object):
 
 log = logging.getLogger(__name__)
 
+
 def _total_from_bins(bins, min_val, bin_width):
     _min = min_val
     _wid = bin_width
-    bin_means = [_min + (_wid * i) + _wid/2 for i in range(len(bins))]
+    bin_means = [_min + (_wid * i) + _wid / 2 for i in range(len(bins))]
     bin_totals = [count * mean for count, mean in zip(bins, bin_means)]
     return sum(bin_totals)
 
@@ -80,7 +82,7 @@ def to_report(stats_xml, output_dir, dpi=72):
             # use the average, except for the last bin
             if i != len(rlendist.bins) - 1:
                 value = ((i * rlendist.binWidth) + rlendist.minBinValue +
-                         rlendist.binWidth/2)
+                         rlendist.binWidth / 2)
             # for the last bin, just use the value
             else:
                 value = (i * rlendist.binWidth) + rlendist.minBinValue
@@ -99,13 +101,12 @@ def to_report(stats_xml, output_dir, dpi=72):
                                            rqualdist.binWidth)
         readscorenumber += sum(rqualdist.bins)
 
-
     readlen = 0
     if nreads != 0:
-        readlen = np.round(nbases/nreads, decimals=2)
+        readlen = np.round(nbases / nreads, decimals=2)
     readQuality = 0
     if readscorenumber != 0:
-        readQuality = np.round(readscoretotal/readscorenumber, decimals=2)
+        readQuality = np.round(readscoretotal / readscorenumber, decimals=2)
     row_names = ["Polymerase Read Bases",
                  "Polymerase Reads",
                  "Polymerase Read N50",
@@ -188,6 +189,7 @@ def args_runner(args):
     report.write_json(args.report)
     return 0
 
+
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
@@ -196,6 +198,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     report = to_report(rtc.task.input_files[0], output_dir)
     report.write_json(rtc.task.output_files[0])
     return 0
+
 
 def _add_options_to_parser(p):
     p.add_input_file_type(
@@ -208,6 +211,7 @@ def _add_options_to_parser(p):
         description=("Filename of JSON output report. Should be name only, "
                      "and will be written to output dir"),
         default_name="report.json")
+
 
 def add_options_to_parser(p):
     """
@@ -222,6 +226,7 @@ def add_options_to_parser(p):
     p.set_defaults(func=args_runner)
     return p
 
+
 def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
@@ -232,10 +237,12 @@ def _get_parser_core():
         is_distributed=True)
     return p
 
+
 def get_parser():
     p = _get_parser_core()
     _add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv):
     mp = get_parser()

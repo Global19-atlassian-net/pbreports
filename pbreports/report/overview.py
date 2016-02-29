@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 __version__ = '2.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.overview"
     TOOL_NAME = "Overview report"
@@ -34,12 +35,12 @@ def run(dataset_file):
         movies = set([])
         for file_name in ds.toExternalFiles():
             if type(ds).__name__ == "HdfSubreadSet":
-                movies.add( path_to_movie(file_name) )
+                movies.add(path_to_movie(file_name))
             else:
                 with BamReader(file_name) as bam:
                     for rg in bam.peer.header["RG"]:
                         movies.add(rg["PU"])
-        cells = set([ movie_to_cell(movie) for movie in movies ])
+        cells = set([movie_to_cell(movie) for movie in movies])
         ncells_attr = Attribute('ncells', len(cells), name="SMRT Cells")
         nmovies_attr = Attribute('nmovies', len(movies), name="Movies")
         attrs = [ncells_attr, nmovies_attr]
@@ -56,10 +57,12 @@ def make_report(input_ds, output_json):
 def args_runner(args):
     return make_report(input_ds=args.input_ds, output_json=args.output_json)
 
+
 def resolved_tool_contract_runner(rtc):
     return make_report(
         input_ds=rtc.task.input_files[0],
         output_json=rtc.task.output_files[0])
+
 
 def get_parser():
     p = get_pbparser(
@@ -69,12 +72,12 @@ def get_parser():
         description=__doc__,
         driver_exe=Constants.DRIVER_EXE)
     p.add_input_file_type(FileTypes.DS_SUBREADS, "input_ds",
-        name="SubreadSet",
-        description="Subread dataset")
+                          name="SubreadSet",
+                          description="Subread dataset")
     p.add_output_file_type(FileTypes.REPORT, "output_json",
-        name="JSON file",
-        description="Path to write report JSON output",
-        default_name="overview_report.json")
+                           name="JSON file",
+                           description="Path to write report JSON output",
+                           default_name="overview_report.json")
     return p
 
 

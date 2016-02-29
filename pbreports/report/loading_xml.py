@@ -17,6 +17,7 @@ from pbcore.io import DataSet
 
 __version__ = '0.1.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.loading_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.loading_xml "
@@ -24,6 +25,7 @@ class Constants(object):
 
 
 log = logging.getLogger(__name__)
+
 
 def to_report(stats_xml):
     """Main point of entry
@@ -65,9 +67,10 @@ def to_report(stats_xml):
         productive_zmws = int(dset.metadata.summaryStats.numSequencingZmws)
         empty, productive, other, _ = dset.metadata.summaryStats.prodDist.bins
 
-        prod0 = np.round(100.0 * empty/float(productive_zmws), decimals=2)
-        prod1 = np.round(100.0 * productive/float(productive_zmws), decimals=2)
-        prod2 = np.round(100.0 * other/float(productive_zmws), decimals=2)
+        prod0 = np.round(100.0 * empty / float(productive_zmws), decimals=2)
+        prod1 = np.round(100.0 * productive /
+                         float(productive_zmws), decimals=2)
+        prod2 = np.round(100.0 * other / float(productive_zmws), decimals=2)
         this_row = [movie_name, productive_zmws, prod0, prod1, prod2]
         map(lambda (x, y): x.append(y), zip(col_values, this_row))
     columns = [Column(cn.translate(None, '(%)').strip().replace(' ',
@@ -87,6 +90,7 @@ def args_runner(args):
     report.write_json(args.report)
     return 0
 
+
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
@@ -95,6 +99,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     report.write_json(rtc.task.output_files[0])
     return 0
 
+
 def _add_options_to_parser(p):
     p.add_input_file_type(
         FileTypes.DS_SUBREADS,
@@ -102,9 +107,10 @@ def _add_options_to_parser(p):
         name="SubreadSet",
         description="SubreadSet")
     p.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
-        description=("Filename of JSON output report. Should be name only, "
-                     "and will be written to output dir"),
-        default_name="report.json")
+                           description=("Filename of JSON output report. Should be name only, "
+                                        "and will be written to output dir"),
+                           default_name="report.json")
+
 
 def add_options_to_parser(p):
     """
@@ -119,6 +125,7 @@ def add_options_to_parser(p):
     p.set_defaults(func=args_runner)
     return p
 
+
 def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
@@ -129,10 +136,12 @@ def _get_parser_core():
         is_distributed=True)
     return p
 
+
 def get_parser():
     p = _get_parser_core()
     _add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv):
     mp = get_parser()

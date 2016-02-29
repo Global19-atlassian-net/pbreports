@@ -70,16 +70,16 @@ class Constants(object):
     """
     R_ID = 'filter_subread'
 
-    #Table
+    # Table
     #T_MY_ID = ''
 
-    #Plot Groups
+    # Plot Groups
     PG_SUBREAD_LENGTH = 'subread'
 
-    #Plot
+    # Plot
     P_POST_FILTER = 'post_filter'
 
-    #Attributes
+    # Attributes
     A_NBASES = 'filter_subread_nbases'
     A_NREADS = 'filter_subread_nreads'
     A_MEAN = 'filter_subread_mean'
@@ -101,6 +101,7 @@ class NoSubreadsPassedFilter(_BaseSubreadFilterException):
 
 
 class _BaseHistogram(BaseAggregator):
+
     def __init__(self, dx=100.0, nbins=1000, dtype=np.int32):
         """
         :param dx: float, int
@@ -144,6 +145,7 @@ class _BaseHistogram(BaseAggregator):
 
 
 class SubreadLengthHistogram(_BaseHistogram):
+
     def apply(self, record):
         """This will be readlengths"""
         i = int(math.ceil(record.length / self.dx))
@@ -154,7 +156,8 @@ class SubreadLengthHistogram(_BaseHistogram):
             log.error(e)
             x = self.dx * self.nbins
             _d = dict(v=record.length, i=i, d=self.dx, x=x, n=self.nbins)
-            log.error("Max value {v} dx:{d} nbins{n} max value {x}".format(**_d))
+            log.error(
+                "Max value {v} dx:{d} nbins{n} max value {x}".format(**_d))
 
 
 class MeanSubreadLengthAggregator(MeanAggregator):
@@ -162,6 +165,7 @@ class MeanSubreadLengthAggregator(MeanAggregator):
 
 
 class N50Aggregator(BaseAggregator):
+
     def __init__(self, record_field, values=()):
         self.record_field = record_field
         # this is not constant memory
@@ -188,6 +192,7 @@ class N50Aggregator(BaseAggregator):
 
 
 class Record(object):
+
     def __init__(self, movie_name, hole_number, start, end, length, passed_filter):
         self.movie_name = movie_name
         self.hole_number = hole_number
@@ -318,13 +323,15 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
 
     passed_filter = lambda record: record.passed_filter is True
 
-    passed_filter_func = functools.partial(_apply, [passed_filter], aggregators.values())
+    passed_filter_func = functools.partial(
+        _apply, [passed_filter], aggregators.values())
 
     all_subread_aggregators = {'raw_nreads': SumAggregator('length'),
                                'max_raw_readlength': MaxAggregator('length'),
                                'raw_readlength_histogram': HistogramAggregator('length', 0, 100, nbins=10000)}
 
-    all_filter_func = functools.partial(_apply, [null_filter], all_subread_aggregators.values())
+    all_filter_func = functools.partial(
+        _apply, [null_filter], all_subread_aggregators.values())
 
     funcs = [passed_filter_func, all_filter_func]
 
@@ -339,13 +346,13 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
 
     # Check if any reads are found
     if all_subread_aggregators['raw_nreads'].attribute == 0:
-        raise NoSubreadsFound("No subreads found in {f}".format(f=filtered_csv))
+        raise NoSubreadsFound(
+            "No subreads found in {f}".format(f=filtered_csv))
 
     # Now check
     if aggregators['nreads'].attribute == 0:
         msg = "No subreads passed the filter in {f}.".format(f=filtered_csv)
         raise NoSubreadsPassedFilter(msg)
-
 
     # this is where you change the plotting options
     plot_view = PlotViewProperties(Constants.P_POST_FILTER,
@@ -382,10 +389,11 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
 
 
 def args_runner(args):
-     log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
-     report = to_report(args.filter_summary_csv, args.output, dpi=args.dpi)
-     report.write_json(args.report)
-     return 0
+    log.info("Starting {f} version {v} report generation".format(
+        f=__file__, v=__version__))
+    report = to_report(args.filter_summary_csv, args.output, dpi=args.dpi)
+    report.write_json(args.report)
+    return 0
 
 
 def get_parser():
