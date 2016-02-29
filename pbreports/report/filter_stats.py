@@ -51,10 +51,11 @@ VALID_COLUMNS = {"Movie": ("|S64", str),
 COLUMN_TYPES = {k: operator.getitem(v, 1)
                 for k, v in VALID_COLUMNS.iteritems()}
 
+
 class Constants(object):
     R_ID = 'filtering_report'
 
-    #Plot Groups
+    # Plot Groups
     PG_READ_LENGTH = "filter_readlength"
     PG_READ_SCORE = "filter_quality"
 
@@ -85,7 +86,7 @@ class Constants(object):
     # Tables
     T_FILTER_STATS = "filter_stats_table"
 
-    #Columns
+    # Columns
     C_METRICS = "metrics"
     C_PRE_FILTER = "pre_filter"
     C_POST_FILTER = "post_filter"
@@ -107,9 +108,9 @@ class N50Aggregator(BaseAggregator):
     def apply(self, record):
         value = getattr(record, self.record_field)
         if int(value) > self.bins.size:
-            self.bins.resize(int(value)+1)
+            self.bins.resize(int(value) + 1)
             # np.resize to larger size also fills the extra elements with zeros
-            self.bins[int(value)]  = 1
+            self.bins[int(value)] = 1
         else:
             self.bins[int(value)] += 1
 
@@ -172,7 +173,7 @@ class Record(object):
 
     def __repr__(self):
         o = " ".join([''.join([x, '=', str(getattr(self, x))])
-                     for x in _REQUIRED_HEADER_FIELDS])
+                      for x in _REQUIRED_HEADER_FIELDS])
         _d = dict(k=self.__class__.__name__, o=o)
         return "<{k} {o}>".format(**_d)
 
@@ -258,7 +259,8 @@ def to_table(pre_filter_data, post_filter_data):
                     ]
 
     columns = [Column(Constants.C_METRICS, header="Metrics", values=metric_names),
-               Column(Constants.C_PRE_FILTER, header="Pre-Filter", values=pre_filter_data),
+               Column(Constants.C_PRE_FILTER, header="Pre-Filter",
+                      values=pre_filter_data),
                Column(Constants.C_POST_FILTER, header="Post-Filter", values=post_filter_data)]
 
     table = Table(Constants.T_FILTER_STATS, title="Filtering", columns=columns)

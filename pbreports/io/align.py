@@ -68,7 +68,7 @@ def alignment_info_from_bam(bam_file_name, movie_name):
 
     last_zmw_id = None
     with IndexedBamReader(bam_file_name) as bam:
-        identities = bam.identity # cache this
+        identities = bam.identity  # cache this
         for i_aln, rgId in enumerate(bam.qId):
             current_movie_name = bam.readGroupInfo(rgId).MovieName
             movie_names.add(current_movie_name)
@@ -80,7 +80,7 @@ def alignment_info_from_bam(bam_file_name, movie_name):
             qs, qe = bam.qStart[i_aln], bam.qEnd[i_aln]
             rstart, rend = bam.aStart[i_aln], bam.aEnd[i_aln]
             identity = None
-            if (qs, qe) == (-1,-1):
+            if (qs, qe) == (-1, -1):
                 qs = 0
                 # XXX This is only used to key subreads so the exact value is
                 # not important - still clumsy though
@@ -101,11 +101,12 @@ def alignment_info_from_bam(bam_file_name, movie_name):
 
             this_a.append(1.0 if zmw_id != last_zmw_id else 0.0)  # isFirst
 
-            # modStart, a value without a clear meaning, so just write some garbage
+            # modStart, a value without a clear meaning, so just write some
+            # garbage
             this_a.append(99999)
 
             last_zmw_id = zmw_id
-        
+
             if subread_id in datum:
                 warnings.warn("Duplicate subread %s" % str(subread_id))
 

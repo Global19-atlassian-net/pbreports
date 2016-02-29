@@ -28,6 +28,7 @@ class BaseAggregatorAttribute(BaseAggregator, BaseAttribute):
 
 
 class CountAggregator(BaseAggregatorAttribute):
+
     def __init__(self, record_field, total=0):
         self.total = total
         self.record_field = record_field
@@ -45,6 +46,7 @@ class CountAggregator(BaseAggregatorAttribute):
 
 
 class MinAggregator(BaseAggregatorAttribute):
+
     def __init__(self, record_field):
         self.record_field = record_field
         self.value = None
@@ -67,6 +69,7 @@ class MinAggregator(BaseAggregatorAttribute):
 
 
 class MaxAggregator(BaseAggregatorAttribute):
+
     def __init__(self, record_field):
         self.record_field = record_field
         self.value = None
@@ -89,6 +92,7 @@ class MaxAggregator(BaseAggregatorAttribute):
 
 
 class SumAggregator(BaseAggregatorAttribute):
+
     def __init__(self, record_field, total=0):
         self.total = total
         self.record_field = record_field
@@ -108,6 +112,7 @@ class SumAggregator(BaseAggregatorAttribute):
 
 
 class MeanAggregator(BaseAggregatorAttribute):
+
     def __init__(self, record_field):
         self.record_field = record_field
         self.total = 0
@@ -137,6 +142,7 @@ class MeanAggregator(BaseAggregatorAttribute):
 
 
 class HistogramAggregator(BaseAggregator):
+
     def __init__(self, record_field, min_value, dx, nbins=10):
         self.record_field = record_field
         self.min_value = min_value

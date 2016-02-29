@@ -13,7 +13,7 @@ from pprint import pformat
 import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
-                                   PlotGroup)
+                                     PlotGroup)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
@@ -26,7 +26,7 @@ from pbreports.util import validate_file
 
 log = logging.getLogger(__name__)
 
-__version__ = '0.1.0.132615'  #The last 6 digits is changelist
+__version__ = '0.1.0.132615'  # The last 6 digits is changelist
 
 
 class Constants(object):
@@ -46,7 +46,7 @@ class Constants(object):
 def _summary_to_attributes(summary_txt):
     """Extract attributes from inSummaryFN."""
     attributes = []
-        
+
     with open(summary_txt, 'r') as f:
         for line in f.readlines():
             # six attributes:
@@ -63,16 +63,18 @@ def _summary_to_attributes(summary_txt):
                     val = int(val)
                 except ValueError:
                     pass
-                attr_id = "_".join (attr.split(' '))
+                attr_id = "_".join(attr.split(' '))
                 # Make attribute id match '^[a-z0-9_]+$'
                 attr_id = attr_id.lower().replace('-', '_')
                 attributes.append(Attribute(attr_id, val, name=attr))
 
     return attributes
 
+
 def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
     return report.attributes
+
 
 def _attributes_to_table(attributes):
     """Build a report table from IsoSeq Classify attributes.
@@ -143,7 +145,7 @@ def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
 
 
 def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
-        plot_name, barcolor, datum, output_dir, dpi=72):
+                  plot_name, barcolor, datum, output_dir, dpi=72):
     """Internal function used to create Plot instances.
 
     This should probably have a special container class to capture all the
@@ -154,7 +156,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     path = os.path.join(output_dir, plot_name)
     try:
         fig.tight_layout()
-    except AttributeError as e: # FIXME bug 25872
+    except AttributeError as e:  # FIXME bug 25872
         log.warn("figure.tight_layout() not available")
         log.warn(str(e))
     except ValueError as e:
@@ -171,9 +173,9 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     return plot
 
 create_readlength_plot = functools.partial(
-        __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
-        ("Read Length", "Reads", "Reads > Read Length"), 80,
-        "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
+    __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
+    ("Read Length", "Reads", "Reads > Read Length"), 80,
+    "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
 
 
 def make_report(fasta_file, summary_txt, output_dir):
@@ -205,7 +207,7 @@ def make_report(fasta_file, summary_txt, output_dir):
     :rtype: Report
     """
     log.info("Plotting read length histogram from file: {f}".
-            format(f=fasta_file))
+             format(f=fasta_file))
 
     # Collect read lengths of
     def _get_reads():
@@ -218,12 +220,12 @@ def make_report(fasta_file, summary_txt, output_dir):
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, output_dir)
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-        title="Read Length of Full-length Non-Chimeric Reads",
-        plots=[readlength_plot],
-        thumbnail=readlength_plot.thumbnail)
+                                 title="Read Length of Full-length Non-Chimeric Reads",
+                                 plots=[readlength_plot],
+                                 thumbnail=readlength_plot.thumbnail)
 
     log.info("Plotting summary attributes from file: {f}".
-            format(f=summary_txt))
+             format(f=summary_txt))
     # Produce attributes based on summary.
     if summary_txt.endswith(".json"):
         attributes = _report_to_attributes(summary_txt)
@@ -241,6 +243,7 @@ def make_report(fasta_file, summary_txt, output_dir):
 
     return report
 
+
 def _run(fasta_file, summary_txt, output_dir, json_report):
     if output_dir in ["", None]:
         output_dir = os.getcwd()
@@ -249,12 +252,13 @@ def _run(fasta_file, summary_txt, output_dir, json_report):
     report.write_json(json_report)
     return 0
 
+
 def args_runner(args):
     return _run(
-        fasta_file = args.inReadsFN,
-        summary_txt = args.inSummaryFN,
-        json_report = args.outJson,
-        output_dir = os.path.dirname(args.outJson))
+        fasta_file=args.inReadsFN,
+        summary_txt=args.inSummaryFN,
+        json_report=args.outJson,
+        output_dir=os.path.dirname(args.outJson))
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
@@ -267,6 +271,8 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 # XXX this module is *not* used by the main 'pbreports' app, so we can skip
 # the separate argparse-only parser
+
+
 def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
@@ -276,14 +282,14 @@ def get_contract_parser():
         Constants.DRIVER_EXE)
 
     p.add_input_file_type(FileTypes.DS_CONTIG, "inReadsFN", "Fasta reads",
-        description="Reads in FASTA format, usually are full-length, " + \
-            "non-chimeric, primer-trimmed reads produced by IsoSeq classify.")
+                          description="Reads in FASTA format, usually are full-length, " +
+                          "non-chimeric, primer-trimmed reads produced by IsoSeq classify.")
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary file",
-        description="A summary produced by IsoSeq Classify, e.g. " + \
-                    "classify_summary.json")
+                          description="A summary produced by IsoSeq Classify, e.g. " +
+                          "classify_summary.json")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "JSON file",
-        description="Path to write report JSON output",
-        default_name="isoseq_classify_report.json")
+                           description="Path to write report JSON output",
+                           default_name="isoseq_classify_report.json")
 
     return p
 

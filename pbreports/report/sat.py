@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 __version__ = '0.1'
 TOOL_ID = "pbreports.tasks.sat_report"
 
+
 class Constants(object):
     ATTR_LABELS = OrderedDict([
         ("instrument", "Instrument ID"),
@@ -53,8 +54,6 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
                       ('mapping_stats_report', mapping_stats_report),
                       ('variants_report', variants_report)])
 
-
-
     d_map = _get_mapping_stats_data(mapping_stats_report)
     reads, inst = _get_reads_info(aligned_reads_file)
     d_bam = _get_read_hole_data(reads, inst)
@@ -62,16 +61,17 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
 
     rpt = Report('sat')
     rpt.add_attribute(Attribute('instrument', d_bam['instrument'],
-        Constants.ATTR_LABELS["instrument"]))
+                                Constants.ATTR_LABELS["instrument"]))
     rpt.add_attribute(Attribute('coverage', d_var['coverage'],
-        Constants.ATTR_LABELS["coverage"]))
+                                Constants.ATTR_LABELS["coverage"]))
     rpt.add_attribute(Attribute('accuracy', d_var['accuracy'],
-        Constants.ATTR_LABELS["accuracy"]))
-    rpt.add_attribute(Attribute('mapped_readlength_mean', d_map['mapped_readlength_mean'], Constants.ATTR_LABELS["mapped_readlength_mean"]))
-    rpt.add_attribute(Attribute('reads_in_cell', d_bam['reads_in_cell'], Constants.ATTR_LABELS["reads_in_cell"]))
+                                Constants.ATTR_LABELS["accuracy"]))
+    rpt.add_attribute(Attribute('mapped_readlength_mean', d_map[
+                      'mapped_readlength_mean'], Constants.ATTR_LABELS["mapped_readlength_mean"]))
+    rpt.add_attribute(Attribute('reads_in_cell', d_bam[
+                      'reads_in_cell'], Constants.ATTR_LABELS["reads_in_cell"]))
 
     rpt.write_json(os.path.join(output_dir, report))
-
 
 
 def _validate_inputs(files):
@@ -109,7 +109,8 @@ def _get_variants_data(variants_rpt_file):
     rpt = load_report_from_json(variants_rpt_file)
     coverage = rpt.get_attribute_by_id('weighted_mean_bases_called').value
     accuracy = rpt.get_attribute_by_id('weighted_mean_concordance').value
-    return {'coverage':coverage, 'accuracy':accuracy}
+    return {'coverage': coverage, 'accuracy': accuracy}
+
 
 def _get_mapping_stats_data(mapping_stats_rpt_file):
     """
@@ -119,7 +120,7 @@ def _get_mapping_stats_data(mapping_stats_rpt_file):
     """
     rpt = load_report_from_json(mapping_stats_rpt_file)
     rl = rpt.get_attribute_by_id('mapped_readlength_mean').value
-    return {'mapped_readlength_mean':rl}
+    return {'mapped_readlength_mean': rl}
 
 
 def _get_read_hole_data(reads_by_cell, instrument):
@@ -130,7 +131,6 @@ def _get_read_hole_data(reads_by_cell, instrument):
     if len(reads_by_cell) == 0:
         raise ValueError("NO CELLS found!")
     yield_, yield_1 = None, None
-
 
     cell = reads_by_cell.keys()[0]
     reads = reads_by_cell[cell]
@@ -144,6 +144,7 @@ def _get_read_hole_data(reads_by_cell, instrument):
     d['reads_set_1'] = yield_1
     d['reads_in_cell'] = yield_
     return d
+
 
 def _get_reads_info(aligned_reads_file):
     """
@@ -197,6 +198,7 @@ def args_runner(args):
         output_dir=args.output)
     return 0
 
+
 def resolved_tool_contract_runner(resolved_tool_contract):
     report_file = resolved_tool_contract.task.output_files[0]
     make_sat_report(
@@ -207,23 +209,25 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         output_dir=os.path.dirname(report_file))
     return 0
 
+
 def _add_options_to_parser(p):
     desc = 'Generates the SAT metric performance attributes'
     p = add_base_options_pbcommand(p)
     p.add_input_file_type(FileTypes.DS_ALIGN,
-        file_id="alignment_file",
-        name="AlignmentSet",
-        description="AlignmentSet XML or aligned .bam file")
+                          file_id="alignment_file",
+                          name="AlignmentSet",
+                          description="AlignmentSet XML or aligned .bam file")
     p.add_input_file_type(FileTypes.REPORT,
-        file_id="var_rpt",
-        name="Variant report JSON",
-        description="The variants report - i.e., variants_report.json")
+                          file_id="var_rpt",
+                          name="Variant report JSON",
+                          description="The variants report - i.e., variants_report.json")
     p.add_input_file_type(FileTypes.REPORT,
-        file_id="mapping_stats_rpt",
-        name="Mapping statistics JSON",
-        description="The mapping statistics report - i.e., "
-                    "mapping_stats_report.json")
+                          file_id="mapping_stats_rpt",
+                          name="Mapping statistics JSON",
+                          description="The mapping statistics report - i.e., "
+                          "mapping_stats_report.json")
     return p
+
 
 def add_options_to_parser(p):
     """
@@ -250,10 +254,12 @@ def _get_parser_core():
         is_distributed=True)
     return p
 
+
 def get_parser():
     p = _get_parser_core()
     _add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv):
     mp = get_parser()

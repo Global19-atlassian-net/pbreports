@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Created on Tue Jul 31 09:15:42 2012
+# Created on Tue Jul 31 09:15:42 2012
 #
 #@author: pmarks
 
@@ -63,27 +63,29 @@ def readModificationCsvGz(fn):
 
     with _open_file(fn) as f:
         reader = csv.reader(f)
-    
+
         records = []
         header = reader.next()
-    
+
         colIdx = 0
         colMap = {}
         for h in header:
             colMap[h] = colIdx
             colIdx += 1
-    
+
         # Read csv
         n = 0
         kinHit = collections.namedtuple("kinHit", "base coverage score")
         for row, record in enumerate(reader):
             if int(record[colMap['score']]) > 20:
-                tupleRec = kinHit(base=record[colMap['base']], coverage=int(record[colMap['coverage']]), score=int(record[colMap['score']]))
+                tupleRec = kinHit(base=record[colMap['base']], coverage=int(
+                    record[colMap['coverage']]), score=int(record[colMap['score']]))
                 records.append(tupleRec)
                 n += 1
-    
+
         # convert to recarray
-        kinRec = [('base', '|S1'), ('coverage', '>i4'), ('score', '>i4'), ('color', 'b')]
+        kinRec = [('base', '|S1'), ('coverage', '>i4'),
+                  ('score', '>i4'), ('color', 'b')]
         kinArr = np.zeros(len(records), dtype=kinRec)
         idx = 0
         for rec in records:
@@ -91,7 +93,7 @@ def readModificationCsvGz(fn):
             kinArr['coverage'][idx] = rec.coverage
             kinArr['score'][idx] = rec.score
             idx += 1
-    
+
         return kinArr
 
 
@@ -105,11 +107,15 @@ def plot_kinetics_scatter(kinArr, ax):
         baseHits = kinArr[kinArr['base'] == base]
 
         if baseHits.shape[0] > 0:
-            # Add a bit of scatter to avoid ugly aliasing in plot due to integer quantization
-            cov = baseHits['coverage'] + 0.25 * np.random.randn(baseHits.shape[0])
-            score = baseHits['score'] + 0.25 * np.random.randn(baseHits.shape[0])
+            # Add a bit of scatter to avoid ugly aliasing in plot due to
+            # integer quantization
+            cov = baseHits['coverage'] + 0.25 * \
+                np.random.randn(baseHits.shape[0])
+            score = baseHits['score'] + 0.25 * \
+                np.random.randn(baseHits.shape[0])
 
-            pl = ax.scatter(cov, score, c=color, label=base, lw=0, alpha=0.3, s=12)
+            pl = ax.scatter(cov, score, c=color, label=base,
+                            lw=0, alpha=0.3, s=12)
             handles.append(pl)
 
     ax.set_xlabel('Per-Strand Coverage')
@@ -141,7 +147,8 @@ def plot_kinetics_hist(kinArr, ax):
     for base, color in zip(bases, colors):
         baseHits = kinArr[kinArr['base'] == base]
         if baseHits.shape[0] > 0:
-            pl = ax.hist(baseHits['score'], color=color, label=base, bins=bins, histtype="step", log=True)
+            pl = ax.hist(baseHits['score'], color=color,
+                         label=base, bins=bins, histtype="step", log=True)
 
     ax.set_ylabel('Bases')
     ax.set_xlabel('Modification QV')
@@ -202,12 +209,14 @@ def make_modifications_report(modifications_csv, report, output_dir, dpi=72, dum
 #-----------------------------------------------------------------------
 # FIXME DEPRECATED (still used in pbreports tool)
 def _args_runner(args):
-    make_modifications_report(args.csv, args.report, args.output, args.dpi, args.dumpdata)
+    make_modifications_report(args.csv, args.report,
+                              args.output, args.dpi, args.dumpdata)
     return 0
+
 
 def add_options_to_parser(p):
     from pbreports.io.validators import validate_file
-    p.description = __doc__ # FIXME which is probably wrong
+    p.description = __doc__  # FIXME which is probably wrong
     p.version = __version__
     p = add_base_and_plot_options(p)
     p.add_argument("csv", help="modifications.csv.gz", type=validate_file)
@@ -216,11 +225,14 @@ def add_options_to_parser(p):
 
 #-----------------------------------------------------------------------
 # TOOL CONTRACT INTERFACE
+
+
 def args_runner(args):
     return make_modifications_report(
         modifications_csv=args.csv,
         report=os.path.basename(args.report),
         output_dir=args.output)
+
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
@@ -239,7 +251,7 @@ def get_parser():
         Constants.DRIVER_EXE,
         is_distributed=True)
     p.add_input_file_type(FileTypes.CSV, "csv", "CSV file",
-        "CSV file of base modifications")
+                          "CSV file of base modifications")
     add_base_options_pbcommand(p)
     return p
 

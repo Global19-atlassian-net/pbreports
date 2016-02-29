@@ -62,7 +62,8 @@ def log_timing(func):
 
     run_time = time.time() - started_at
     name = func.__name__
-    log.info("Func {f} took {s:.2f} sec ({m:.2f} min)".format(f=name, s=run_time, m=run_time / 60.0))
+    log.info("Func {f} took {s:.2f} sec ({m:.2f} min)".format(
+        f=name, s=run_time, m=run_time / 60.0))
 
     return wrapper
 
@@ -114,9 +115,10 @@ validate_file = functools.partial(_validate_resource, os.path.isfile)
 validate_dir = functools.partial(_validate_resource, os.path.isdir)
 validate_output_dir = functools.partial(_validate_resource, os.path.isdir)
 
-def validate_nonempty_file( resource ):
+
+def validate_nonempty_file(resource):
     try:
-        resource_path = validate_file( resource )
+        resource_path = validate_file(resource)
     except IOError as e:
         raise e
     try:
@@ -126,12 +128,14 @@ def validate_nonempty_file( resource ):
         raise IOError("{f} appears to be empty".format(f=resource))
     return resource_path
 
+
 def validate_report(report):
     """
     Raise ValueError if report contains path seps
     """
     if not os.path.basename(report) == report:
-        raise ValueError("Path separators are not allowed: {r}".format(r=report))
+        raise ValueError(
+            "Path separators are not allowed: {r}".format(r=report))
     return report
 
 
@@ -146,7 +150,8 @@ def validate_fofn(fofn):
 
     if os.path.isfile(fofn):
         file_names = bas_fofn_to_bas_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(n=len(file_names), f=fofn))
+        log.debug("Found {n} files in FOFN {f}.".format(
+            n=len(file_names), f=fofn))
         return os.path.abspath(fofn)
     else:
         raise IOError("Unable to find {f}".format(f=fofn))
@@ -167,7 +172,8 @@ def fofn_to_files(fofn):
                 # performing an NFS refresh
                 found = _nfs_exists_check(bas_file)
                 if not found:
-                    raise IOError("Unable to find bas/bax file '{f}'".format(f=bas_file))
+                    raise IOError(
+                        "Unable to find bas/bax file '{f}'".format(f=bas_file))
 
         return list(bas_files)
     else:
@@ -220,7 +226,7 @@ def accuracy_as_phred_qv(accuracy, max_qv=70):
         if isinstance(accuracy, (tuple, list)):
             accuracy = np.array(accuracy)
         error_rate = 1.0 - accuracy
-        min_error_rate = 10 ** (-max_qv/10.0)
+        min_error_rate = 10 ** (-max_qv / 10.0)
         zero_error = error_rate < min_error_rate
         error_rate[zero_error] = min_error_rate
         return -10 * np.log(error_rate) / Constants.LOG_10
@@ -283,36 +289,38 @@ def compute_n50(readlengths):
 
 def add_plot_options(parser):
     parser.add_argument("--dpi", action="store", default=60,
-                           help="dot/inch")
+                        help="dot/inch")
     parser.add_argument("--dumpdata", action="store_true",
-                           help="Dump csv data for the plots.")
+                        help="Dump csv data for the plots.")
     return parser
+
 
 def add_base_options(parser):
     parser.add_argument("--debug", action="store_true",
-                               help="Enable debug output.")
+                        help="Enable debug output.")
     parser.add_argument("output", type=validate_output_dir,
-                               help="Output directory for associated files")
+                        help="Output directory for associated files")
     parser.add_argument("report", type=validate_report,
-                               help="Filename of JSON output report. Should be name only," +
-                               "and will be written to output dir")
+                        help="Filename of JSON output report. Should be name only," +
+                        "and will be written to output dir")
     return parser
+
 
 def add_base_options_pbcommand(parser):
     """
     Eventual replacement for add_base_options(parser).
     """
     # XXX this is handled elsewhere now
-    #common_options.add_debug_option(parser.arg_parser.parser)
+    # common_options.add_debug_option(parser.arg_parser.parser)
     # NOTE 'output' is not part of tool contract!
     parser.arg_parser.parser.add_argument(
         "output",
         type=validate_output_dir,
         help="Output directory for associated files")
     parser.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
-        description="Filename of JSON output report",
-        default_name="report.json")
-    return parser 
+                                description="Filename of JSON output report",
+                                default_name="report.json")
+    return parser
 
 
 def compose(*funcs):
@@ -326,6 +334,7 @@ def compose(*funcs):
     return functools.reduce(compose_two, funcs)
 
 add_base_and_plot_options = compose(add_base_options, add_plot_options)
+
 
 def get_base_parser(version, description):
     p = argparse.ArgumentParser(version=version, description=description)
@@ -343,13 +352,15 @@ def recfromcsv(fname, **kwargs):
     data = np.recfromcsv(fname, **kwargs)
 
     # np.recfromcsv will return a singleton if there's but a single row.
-    # Beyond being unbelievably stupid, this is unindexable. Turn it into a table with 1 row.
+    # Beyond being unbelievably stupid, this is unindexable. Turn it into a
+    # table with 1 row.
     if len(data.shape) < 1:
         tbl = np.recarray((1,), dtype=data.dtype)
         tbl[0] = data
         return tbl
 
     return data
+
 
 def openReference(fname):
     """ Take a ReferenceSet, fasta or reference dir path and return a

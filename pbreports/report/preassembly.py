@@ -34,11 +34,12 @@ from pbcommand.utils import setup_log
 from pbcommand.common_options import add_debug_option
 
 from pbreports.util import get_fasta_readlengths, \
-                        compute_n50_from_file
+    compute_n50_from_file
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
+
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.preassembly"
@@ -46,6 +47,7 @@ class Constants(object):
     # This is just put in the report as an attribute... this is a stand-in for
     # what should be "None"
     LENGTH_CUTOFF = -1
+
 
 class FastaContainer(object):
 
@@ -56,7 +58,7 @@ class FastaContainer(object):
 
     @staticmethod
     def from_file(file_name):
-#        nreads, total = _compute_values(file_name)
+        #        nreads, total = _compute_values(file_name)
         read_lens = get_fasta_readlengths(file_name)
         nreads = len(read_lens)
         total = sum(read_lens)
@@ -94,18 +96,25 @@ def to_report(filtered_subreads, filtered_longreads, corrected_reads, length_cut
 
     # Report Attributes
     attrs = []
-    attrs.append(Attribute('polymerase_read_bases', value=subreads.total, name="Polymerase Read Bases"))
+    attrs.append(Attribute('polymerase_read_bases',
+                           value=subreads.total, name="Polymerase Read Bases"))
     if length_cutoff is not None:
-        attrs.append(Attribute('length_cutoff', length_cutoff, name="Length Cutoff"))
+        attrs.append(Attribute('length_cutoff',
+                               length_cutoff, name="Length Cutoff"))
     attrs.append(Attribute('seed_bases', longreads.total, name="Seed Bases"))
-    attrs.append(Attribute('preassembled_bases', creads.total, name="Pre-Assembled bases"))
-    attrs.append(Attribute('preassembled_yield', yield_, name="Pre-Assembled Yield"))
-    attrs.append(Attribute('presssembled_reads', creads.nreads, name="Pre-Assembled Reads"))
-    attrs.append(Attribute('presssembled_readlength', rlength, name="Pre-Assembled Reads Length"))
+    attrs.append(Attribute('preassembled_bases',
+                           creads.total, name="Pre-Assembled bases"))
+    attrs.append(Attribute('preassembled_yield',
+                           yield_, name="Pre-Assembled Yield"))
+    attrs.append(Attribute('presssembled_reads',
+                           creads.nreads, name="Pre-Assembled Reads"))
+    attrs.append(Attribute('presssembled_readlength',
+                           rlength, name="Pre-Assembled Reads Length"))
     attrs.append(Attribute('preassembled_n50', n50, name="Pre-Assembled N50"))
 
     report = Report('preassembly', attributes=attrs)
     return report
+
 
 def make_preassembly_report(filtered_subreads, filtered_longreads,
                             corrected_reads, length_cutoff, output_json):
@@ -118,6 +127,7 @@ def make_preassembly_report(filtered_subreads, filtered_longreads,
         fh.write(report.to_json())
     return 0
 
+
 def args_runner(args):
     filtered_subreads = args.filtered_subreads_fasta
     filtered_longreads = args.filtered_longreads_fasta
@@ -128,6 +138,7 @@ def args_runner(args):
                             corrected_reads, length_cutoff, output_json)
     return 0
 
+
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     make_preassembly_report(
@@ -137,6 +148,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         rtc.task.options[Constants.LENGTH_CUTOFF_ID],
         rtc.task.output_files[0])
     return 0
+
 
 def _add_options_to_parser(p):
     p.add_input_file_type(
@@ -167,6 +179,7 @@ def _add_options_to_parser(p):
         description="Preassembly Report",
         default_name="preassembly_report.json")
 
+
 def add_options_to_parser(p):
     """
     API function for extending main pbreport arg parser (independently of
@@ -180,6 +193,7 @@ def add_options_to_parser(p):
     p.set_defaults(func=args_runner)
     return p
 
+
 def _get_parser_core():
     driver_exe = ("python -m "
                   "pbreports.report.preassembly "
@@ -192,10 +206,12 @@ def _get_parser_core():
         driver_exe)
     return p
 
+
 def get_parser():
     p = _get_parser_core()
     _add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv):
     mp = get_parser()

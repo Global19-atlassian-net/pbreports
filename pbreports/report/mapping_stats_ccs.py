@@ -123,7 +123,7 @@ def to_report(alignment_file, output_dir):
 
 def _args_runner(args):
     return run_and_write_report(args.alignment_file, args.report_json,
-        report_func=to_report)
+                                report_func=to_report)
 
 
 def _resolved_tool_contract_runner(resolved_contract):
@@ -143,14 +143,17 @@ def _resolved_tool_contract_runner(resolved_contract):
     output_report = resolved_contract.task.output_files[0]
 
     return run_and_write_report(alignment_path, output_report,
-        report_func=to_report)
+                                report_func=to_report)
 
 
 def _get_parser():
-    parser = get_pbparser(TOOL_ID, __version__, "CCS Mapping Statistics", __doc__, DRIVER_EXE)
+    parser = get_pbparser(TOOL_ID, __version__,
+                          "CCS Mapping Statistics", __doc__, DRIVER_EXE)
 
-    parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file", "ConsensusAlignment XML DataSet", "BAM, SAM or ConsensusAlignment DataSet")
-    parser.add_output_file_type(FileTypes.REPORT, "report_json", "PacBio Json Report", "Output report JSON file.", "mapping_stats_report.json")
+    parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
+                               "ConsensusAlignment XML DataSet", "BAM, SAM or ConsensusAlignment DataSet")
+    parser.add_output_file_type(FileTypes.REPORT, "report_json", "PacBio Json Report",
+                                "Output report JSON file.", "mapping_stats_report.json")
 
     return parser
 

@@ -45,7 +45,8 @@ def run(region_files, output_csv):
     """
     Return (bool): based on success of analyzing the rgn files
     """
-    log.info("{n} version {v} is running".format(n=os.path.basename(__file__), v=__version__))
+    log.info("{n} version {v} is running".format(
+        n=os.path.basename(__file__), v=__version__))
 
     # core container of list of lists that have 6 items.
     # FileName, ZMW, start, end, length, PassedFilter as 0/1 (False/True)
@@ -67,7 +68,8 @@ def run(region_files, output_csv):
             datum.extend(data)
             run_time = time.time() - started_at
 
-            log.info("Found {n} different Subreads in {s:.2f} sec ({m:.2f} min)".format(n=len(data), s=run_time, m=run_time / 60.0))
+            log.info("Found {n} different Subreads in {s:.2f} sec ({m:.2f} min)".format(
+                n=len(data), s=run_time, m=run_time / 60.0))
 
         else:
             state = False
@@ -75,7 +77,8 @@ def run(region_files, output_csv):
 
     # ToDo convert this to use the python stdlib
     with open(output_csv, 'w+') as f:
-        log.info("{c} writing {f}".format(c=os.path.basename(__file__), f=output_csv))
+        log.info("{c} writing {f}".format(
+            c=os.path.basename(__file__), f=output_csv))
         header = 'MovieName HoleNumber Start End Length PassedFilter'.split()
 
         f.write(",".join(header) + "\n")
@@ -83,7 +86,8 @@ def run(region_files, output_csv):
             f.write(",".join([str(i) for i in data]) + "\n")
 
     run_time = time.time() - t0
-    log.info("Completed writing {f} with {n} Subreads in {s:.2f} seconds ({m:.2f} minutes)".format(f=output_csv, n=len(datum), s=run_time, m=run_time / 60.0))
+    log.info("Completed writing {f} with {n} Subreads in {s:.2f} seconds ({m:.2f} minutes)".format(
+        f=output_csv, n=len(datum), s=run_time, m=run_time / 60.0))
 
     return state
 
@@ -125,7 +129,8 @@ def _get_subreads(name, regions, r_index, hq_index):
 
         if rtype == hq_index:
             if zmw_id in zmw_passed:
-                log.debug("Found duplicate ZMW {i}. Please check the rgn file version!".format(i=zmw_id))
+                log.debug(
+                    "Found duplicate ZMW {i}. Please check the rgn file version!".format(i=zmw_id))
                 continue
             else:
                 # "Zero'ed" out regions have start == end == 0
@@ -151,7 +156,8 @@ def _get_subreads(name, regions, r_index, hq_index):
             # log.debug(line)
             datum.append(line)
 
-    log.info("Found {n} ZMWs. {p} Passed filtering.".format(n=len(zmws), p=len(zmw_passed)))
+    log.info("Found {n} ZMWs. {p} Passed filtering.".format(
+        n=len(zmws), p=len(zmw_passed)))
     return datum
 
 
@@ -170,7 +176,8 @@ def _get_data_from_rgn_file(fileName):
 
     if name is None:
         name = os.path.basename(fileName)
-        log.info("Unable to extract movie name from {f}. Setting movie name to {n} from the filename".format(f=fileName, n=name))
+        log.info("Unable to extract movie name from {f}. Setting movie name to {n} from the filename".format(
+            f=fileName, n=name))
     else:
         log.info("Found movie name {n} from Region File".format(n=name))
 
@@ -180,7 +187,8 @@ def _get_data_from_rgn_file(fileName):
     region_type_name = 'RegionTypes'
 
     for k, v in f[group_name].attrs.items():
-        log.debug("Found Metadata {k} = {v} in {n}".format(k=k, v=v, n=fileName))
+        log.debug("Found Metadata {k} = {v} in {n}".format(
+            k=k, v=v, n=fileName))
 
     # Get Version by inspecting the metadata
     if region_type_name in f[group_name].attrs:
@@ -188,7 +196,8 @@ def _get_data_from_rgn_file(fileName):
         log.info("Found {r} metadata {x}".format(r=region_type_name,
                                                  x=regionTypes))
     else:
-        msg = "Unable to find {n} to in rgn.h5 metadata".format(n=region_type_name)
+        msg = "Unable to find {n} to in rgn.h5 metadata".format(
+            n=region_type_name)
         log.error(msg)
         raise KeyError(msg)
 
@@ -200,7 +209,8 @@ def _get_data_from_rgn_file(fileName):
     insert_region_index = version_dict['Insert']
     hq_region_index = version_dict['HQRegion']
 
-    data = [x for x in _get_subreads(name, f[group_name], insert_region_index, hq_region_index)]
+    data = [x for x in _get_subreads(
+        name, f[group_name], insert_region_index, hq_region_index)]
     log.info("Found {n} Subreads in {f}".format(n=len(data), f=fileName))
 
     f.close()
@@ -242,17 +252,20 @@ def _get_movie_name_from_pls_h5(plsH5FileName):
                 warnings.warn(msg)
                 log.warn(msg)
         else:
-            log.warn("Unable to find MovieName in {g} attrs!".format(g=groupName))
+            log.warn(
+                "Unable to find MovieName in {g} attrs!".format(g=groupName))
         f.close()
     except KeyError as e:
-        log.warning("unable to find group {n} in rgn file due to {e}".format(n=groupName, e=e.message))
+        log.warning("unable to find group {n} in rgn file due to {e}".format(
+            n=groupName, e=e.message))
         f.close()
 
     return movieName
 
 
 def args_runner(args):
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__), v=__version__))
+    log.info("Starting {f} v{v}".format(
+        f=os.path.basename(__file__), v=__version__))
     region_files = bas_fofn_to_bas_files(args.region_fofn)
     state = run(region_files, args.output_csv)
     rcode = 0 if state else -1

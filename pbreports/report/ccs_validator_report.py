@@ -21,6 +21,7 @@ __version__ = '1.2'
 
 
 class FastqStats(object):
+
     def __init__(self, reads, qvs, file_name):
         """Simple container class"""
         self.qvs = qvs
@@ -67,15 +68,18 @@ def __generate_histogram_comparison(method_name, title, xlabel, list_fastq_stats
     hs = OrderedDict()
     for fastq_stat in list_fastq_stats:
         label = os.path.basename(fastq_stat.file_name)
-        h = ax.hist(getattr(fastq_stat, method_name), alpha=alpha, bins=85, label=label)
+        h = ax.hist(getattr(fastq_stat, method_name),
+                    alpha=alpha, bins=85, label=label)
         hs[label] = h
 
     ax.set_xlabel(xlabel)
     ax.legend(loc="best")
     return fig, ax
 
-to_qv_histogram = functools.partial(__generate_histogram_comparison, 'qvs', "Quality Values", "Quality Values")
-to_read_length_histogram = functools.partial(__generate_histogram_comparison, 'reads', "Read Length", "Read Length")
+to_qv_histogram = functools.partial(
+    __generate_histogram_comparison, 'qvs', "Quality Values", "Quality Values")
+to_read_length_histogram = functools.partial(
+    __generate_histogram_comparison, 'reads', "Read Length", "Read Length")
 
 
 def _generate_table(list_fastq_stats):
@@ -88,17 +92,22 @@ def _generate_table(list_fastq_stats):
     table = Table('fastq_table', columns=columns)
 
     for fastq_stat in list_fastq_stats:
-        table.add_data_by_column_id('file_name', os.path.basename(fastq_stat.file_name))
+        table.add_data_by_column_id(
+            'file_name', os.path.basename(fastq_stat.file_name))
         table.add_data_by_column_id('n_reads', fastq_stat.reads.shape[0])
-        table.add_data_by_column_id('total_bases', int(np.sum(fastq_stat.reads)))
-        table.add_data_by_column_id('mean_readlength', int(fastq_stat.reads.mean()))
-        table.add_data_by_column_id('mean_qv', np.round(fastq_stat.qvs.mean(), decimals=2))
+        table.add_data_by_column_id(
+            'total_bases', int(np.sum(fastq_stat.reads)))
+        table.add_data_by_column_id(
+            'mean_readlength', int(fastq_stat.reads.mean()))
+        table.add_data_by_column_id('mean_qv', np.round(
+            fastq_stat.qvs.mean(), decimals=2))
 
     return table
 
 
 def fastq_files_to_stats(fastq_files):
-    fastq_stats = {file_name: FastqStats.from_file(file_name) for file_name in fastq_files}
+    fastq_stats = {file_name: FastqStats.from_file(
+        file_name) for file_name in fastq_files}
     return fastq_stats
 
 
@@ -118,7 +127,8 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
         fig.savefig(readlength_hist)
 
     readlength_hist_plot = Plot('readlength_hist', readlength_hist)
-    plotgroup = PlotGroup('readlength_group', title="Read Length Histogram", plots=[readlength_hist_plot])
+    plotgroup = PlotGroup('readlength_group', title="Read Length Histogram", plots=[
+                          readlength_hist_plot])
     report = Report('ccs_validator', tables=[table], plotgroups=[plotgroup])
     return report
 
@@ -129,7 +139,8 @@ def args_runner(args):
 
     to_p = lambda x: os.path.join(output_dir, x)
     json_report = to_p(json_report_name)
-    readlength_hist = to_p('ccs_validation_readlength_histogram.png') if output_dir else None
+    readlength_hist = to_p(
+        'ccs_validation_readlength_histogram.png') if output_dir else None
     qv_hist = to_p('ccs_validation_qv_histogram.png') if output_dir else None
 
     log.info("Starting v{v} of {f}".format(v=__version__,
@@ -139,7 +150,7 @@ def args_runner(args):
     # weak attempt to make the plots labels show up consistently
     fastq_files.sort()
     report = to_report(fastq_files, qv_hist=qv_hist,
-                           readlength_hist=readlength_hist)
+                       readlength_hist=readlength_hist)
 
     log.info("writing report to {j}".format(j=json_report))
     report.write_json(json_report)
@@ -165,7 +176,8 @@ def get_parser():
 
 def main(argv=sys.argv):
     """Main point of Entry"""
-    log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
+    log.info("Starting {f} version {v} report generation".format(
+        f=__file__, v=__version__))
     return main_runner_default(argv[1:], get_parser(), log)
 
 

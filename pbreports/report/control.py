@@ -10,9 +10,9 @@ import matplotlib.patches as mp
 import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, PlotGroup, Plot,
-    PbReportError)
+                                     PbReportError)
 from pbcommand.cli import (pacbio_args_runner,
-    get_default_argparser_with_base_opts)
+                           get_default_argparser_with_base_opts)
 from pbcommand.utils import setup_log
 from pbcore.io import CmpH5Reader
 
@@ -225,7 +225,7 @@ def _create_score_figure(control_data, sample_data):
     """
     Returns a matplotlib fig object, with score histogram data applied
     """
-    min_score = min( min(control_data[0, :]), min(sample_data[0,:]) )
+    min_score = min(min(control_data[0, :]), min(sample_data[0, :]))
     if min_score > 0.6:
         min_score = 0.6
     x_data = np.arange(min_score, 1.0, 0.02)
@@ -239,7 +239,7 @@ def _create_length_figure(control_data, sample_data):
     """
     Returns a matplotlib fig object, with length histogram data applied
     """
-    len_max = max( max(control_data[1, :]), max(sample_data[1,:]) )
+    len_max = max(max(control_data[1, :]), max(sample_data[1, :]))
     num_len_bins = 30.0
     len_unit = _get_pretty_value(math.ceil(len_max / num_len_bins))
     x_data = np.arange(0, len_unit * num_len_bins, len_unit)
@@ -374,7 +374,7 @@ def _get_pretty_value(raw_value):
 
 def args_runner(args):
     return make_control_report(args.cntrCmpH5, args.csv,
-                                args.report, args.output, args.dpi, args.dumpdata)
+                               args.report, args.output, args.dpi, args.dumpdata)
 
 
 def add_options_to_parser(p):
@@ -382,7 +382,8 @@ def add_options_to_parser(p):
     p.description = desc
     p.version = __version__
     p = add_base_and_plot_options(p)
-    p.add_argument("cntrCmpH5", help="control_reads.cmp.h5", type=validate_file)
+    p.add_argument("cntrCmpH5", help="control_reads.cmp.h5",
+                   type=validate_file)
     p.add_argument("csv", help="filtered_summary.csv", type=validate_file)
 
     p.set_defaults(func=args_runner)
@@ -394,6 +395,7 @@ def get_parser():
     p = argparse.ArgumentParser(version=__version__)
     p = add_options_to_parser(p)
     return p
+
 
 def main(argv=sys.argv[1:]):
     """Main point of Entry"""

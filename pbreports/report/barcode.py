@@ -31,9 +31,11 @@ def _movie_name_from_file(fn):
 
 
 def _get_movie_in_files(movie_name, file_names):
-    movie_file = [f for f in file_names if _movie_name_from_file(f) == movie_name]
+    movie_file = [
+        f for f in file_names if _movie_name_from_file(f) == movie_name]
     if len(movie_file) != 1:
-        raise ValueError("Incompatible FOFN files. Movie '{m}' not in {b}".format(b=file_names, m=movie_file))
+        raise ValueError("Incompatible FOFN files. Movie '{m}' not in {b}".format(
+            b=file_names, m=movie_file))
     return movie_file[0]
 
 
@@ -66,10 +68,12 @@ def _to_tuple_list(bas_fofn, barcode_fofn):
 
 
 def _labels_reads_iterator(bas_barcode_tuple_list, subreads=True):
-    log.info("Using {b} with subreads mode? {t}".format(b=bas_barcode_tuple_list, t=subreads))
+    log.info("Using {b} with subreads mode? {t}".format(
+        b=bas_barcode_tuple_list, t=subreads))
     for item in bas_barcode_tuple_list:
         if len(item) != 2:
-            raise ValueError("Expected tuple of (path/to/movie.bas.h5, path/to/movie.bc.h5)")
+            raise ValueError(
+                "Expected tuple of (path/to/movie.bas.h5, path/to/movie.bc.h5)")
 
     for bas_file, barcode_file in bas_barcode_tuple_list:
         log.info("Processing: %s %s" % (bas_file, barcode_file))
@@ -130,7 +134,8 @@ def run_to_report(bas_barcode_tuple_list, subreads=True):
 
 
 def args_runner(args):
-    log.info("Starting {f} version {v} report generation".format(f=__file__, v=__version__))
+    log.info("Starting {f} version {v} report generation".format(
+        f=__file__, v=__version__))
     # generate list of tuples
     bas_barcode_tuple_list = _to_tuple_list(args.bas_fofn, args.barcode_fofn)
     use_subreads = not args.ccs

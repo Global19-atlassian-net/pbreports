@@ -86,12 +86,12 @@ def _make_plot(data, png_fn, bounds=None, dpi=60, nolegend=False):
     axes.set_axisbelow(True)
 
     # from color brewer
-    #qv_colors = ['#a6cee3', '#1f77b4', '#b2df8a', '#33a02c', '#fb9a99',
-                 #'#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a',
-                 #'#ffff99']
+    # qv_colors = ['#a6cee3', '#1f77b4', '#b2df8a', '#33a02c', '#fb9a99',
+    #'#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a',
+    #'#ffff99']
     qv_colors = ['#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d']
-    #qv_colors.extend(qv_colors)
-    #qv_colors.extend(qv_colors)
+    # qv_colors.extend(qv_colors)
+    # qv_colors.extend(qv_colors)
     # plot by z-values
     qv_min = 1.0
     #qv_delta = 3.0
@@ -99,7 +99,7 @@ def _make_plot(data, png_fn, bounds=None, dpi=60, nolegend=False):
     labels = []
     # Make sure the max actually gets in a bin
     qv_max = max(data[:, 2]) + 1
-    qv_delta = (qv_max - qv_min)/len(qv_colors)
+    qv_delta = (qv_max - qv_min) / len(qv_colors)
     for qv_bin, color in zip(
             #np.arange(qv_min, qv_min + qv_delta * len(qv_colors), qv_delta),
             np.arange(qv_min, qv_max, qv_delta),
