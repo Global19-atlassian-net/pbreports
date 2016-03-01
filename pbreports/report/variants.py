@@ -161,7 +161,7 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
     """
     Returns io.model.PlotGroup object
     Create the plotGroup element that contains variants plots of the top contigs.
-    :param top_contigs: (list of pbsystem.io.reference_entry.Contig objects) sorted by contig size
+    :param top_contigs: (list of Contig objects) sorted by contig size
     :param var_map: (dict string:ContigVariants) mapping of contig.header to ContigVariants object
     :param output_dir: (string) where to write images
     """
@@ -271,8 +271,8 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     """
     Get a tuple: Table and list of Attributes
     :param ref_data: (dict) dict of data pulled from alignment_summary.gff
-    :param reference_entry: (pbsystem.io.reference_entry) reference entry
-    :return: tuple (pbreports.io.model.Table, [pbreports.io.model.Attributes])
+    :param reference_entry: reference entry
+    :return: tuple (Table, [Attributes])
     """
     table = Table('consensus_table', 'Consensus Calling Results')
     table.add_column(Column('contig_name', 'Reference'))
@@ -465,6 +465,5 @@ def main(argv=sys.argv):
                            log,
                            setup_log)
 
-# for 'python -m pbreports.report.sat ...'
 if __name__ == "__main__":
     sys.exit(main())

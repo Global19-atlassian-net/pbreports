@@ -60,7 +60,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
     """
     Returns io.model.PlotGroup object
     Create the plotGroup element that contains the coverage plots of the top contigs.
-    :param top_contigs: (list of pbsystem.io.reference_entry.Contig objects) sorted by contig size
+    :param top_contigs: (list of Contig objects) sorted by contig size
     :param cov_map: (dict string:ContigCoverage) mapping of contig.header to ContigCoverage object
     :param output_dir: (string) where to write images
     """

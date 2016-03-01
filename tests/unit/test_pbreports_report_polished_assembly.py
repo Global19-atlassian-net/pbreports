@@ -9,6 +9,7 @@ import os
 import sys
 
 from pbcommand.pb_io.report import dict_to_report
+import pbcommand.testkit.core
 from pbcore.util.Process import backticks
 
 from pbreports.report.polished_assembly import (make_polished_assembly_report,
@@ -123,3 +124,15 @@ class TestPolishedAssemblyReportBig(_BaseTestCase):
     }
     FASTQ = op.join(ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fastq.gz')
     GFF = op.join(ROOT_DATA_DIR, 'polished_assembly', 'alignment_summary.gff')
+
+
+class TestToolContract(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.polished_assembly "
+    DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
+    DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [
+        op.join(LOCAL_DATA, "polished_assembly", "alignment_summary.gff"),
+        op.join(LOCAL_DATA, "polished_assembly", "assembly.fastq.gz")
+    ]
+    TASK_OPTIONS = {}

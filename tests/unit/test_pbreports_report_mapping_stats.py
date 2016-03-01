@@ -11,6 +11,7 @@ import sys
 
 from pbcommand.pb_io.report import dict_to_report
 from pbcommand.models.report import Report
+import pbcommand.testkit
 from pbcore.io import AlignmentSet
 import pbcore.data
 
@@ -433,3 +434,18 @@ class TestMappingStatsCCSReport(unittest.TestCase):
             Constants.A_READLENGTH_N50,
             Constants.A_NBASES,
         ])
+
+
+class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.mapping_stats "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [pbcore.data.getBamAndCmpH5()[0]]
+    TASK_OPTIONS = {}
+
+
+class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.mapping_stats_ccs "
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [os.path.join(LOCAL_DATA, "mapping_stats_ccs",
+        "aligned.consensusalignmentset.xml")]
+    TASK_OPTIONS = {}
