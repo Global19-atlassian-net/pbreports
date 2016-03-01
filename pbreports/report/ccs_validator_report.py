@@ -1,20 +1,21 @@
 #!/usr/bin/env python
+
 from collections import OrderedDict
-import os
-import sys
+import functools
 import argparse
 import logging
-import functools
+import os
+import sys
 
 import numpy as np
 
+from pbcommand.models.report import Table, Column, Report, Plot, PlotGroup
+from pbcommand.validators import validate_dir, validate_file
+from pbcommand.cli.core import pacbio_args_runner
+from pbcommand.utils import setup_log
 from pbcore.io.FastqIO import FastqReader
-from pbreports.pbsystem_common.cmdline.core import main_runner_default
-
-from pbreports.pbsystem_common.validators import validate_dir, validate_file
 
 from pbreports.plot.helper import get_fig_axes_lpr
-from pbreports.model.model import Table, Column, Report, Plot, PlotGroup
 
 log = logging.getLogger(__name__)
 __version__ = '1.2'
@@ -169,8 +170,6 @@ def get_parser():
                    default="ccs_validator_report.json",
                    help="Name of Json report file.")
     p.add_argument('--debug', action='store_true', help='Debug to stdout.')
-
-    p.set_defaults(func=args_runner)
     return p
 
 
@@ -178,7 +177,12 @@ def main(argv=sys.argv):
     """Main point of Entry"""
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    return main_runner_default(argv[1:], get_parser(), log)
+    return pacbio_args_runner(
+        argv=argv[1:], 
+        parser=get_parser(),
+        args_runner_func=args_runner,
+        alog=log,
+        setup_log_func=setup_log)
 
 
 if __name__ == '__main__':

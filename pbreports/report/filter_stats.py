@@ -242,7 +242,7 @@ def applyer(row_to_record_func, iterable, funcs):
 
 
 def to_table(pre_filter_data, post_filter_data):
-    """Create a pbreports.model.Table instance
+    """Create a pbcommands.models.report.Table instance
 
     Data list must be:
         number of bases,

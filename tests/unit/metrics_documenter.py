@@ -516,7 +516,7 @@ class TestMetricsDocumenter(unittest.TestCase):
 
     def _deserialize_report(self, rptfile):
         """
-        Read json report from file, return pbreports.model.Report
+        Read json report from file, return pbcommand.models.report.Report
         """
         s = None
         with open(os.path.join(rptfile), 'r') as f:

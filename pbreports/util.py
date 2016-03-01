@@ -253,7 +253,7 @@ def get_top_contigs(reference, max_contigs):
 def get_top_contigs_from_ref_entry(ref_entry, max_contigs):
     """
     Get a list of contigs sorted in descending order by length
-    :param reference: (pbsystem.io.reference_entry) ref_entry
+    :param reference: ref_entry
     :param max_contigs: (int) max number of contigs to return
     """
     contigs = sorted(list(ref_entry.contigs),
