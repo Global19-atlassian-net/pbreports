@@ -332,6 +332,9 @@ class TestXMLstatsRpts(unittest.TestCase):
                 self.get_output_dir(),
                 'readQualDist0.png')))
 
+            # these are from a raw STS file
+            self.assertEqual(len(rpt._dataset_uuids), 0, "Incorrect report datasets uuids")
+
         except:
             log.error(traceback.format_exc())
             raise

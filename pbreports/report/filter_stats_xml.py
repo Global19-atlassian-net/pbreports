@@ -56,9 +56,12 @@ def to_report(stats_xml, output_dir, dpi=72):
     log.info("Analyzing XML {f}".format(f=stats_xml))
     # stats_xml should be a dataset:
     dset = DataSet(stats_xml)
+    dataset_uuids = [dset.uuid]
     # but if it isn't, no problem:
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
+        # an sts file was provided which will generate a new random uuid
+        dataset_uuids = []
     if not dset.metadata.summaryStats.readLenDists:
         raise RuntimeError("No Pipeline Summary Stats (sts.xml) found")
 
@@ -176,7 +179,8 @@ def to_report(stats_xml, output_dir, dpi=72):
                     title="Filtering stats XML report",
                     tables=tables,
                     attributes=None,
-                    plotgroups=plot_groups)
+                    plotgroups=plot_groups,
+                    dataset_uuids=dataset_uuids)
 
     return report
 
