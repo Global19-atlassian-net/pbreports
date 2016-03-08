@@ -277,7 +277,7 @@ def get_contract_parser():
                           "cluster_summary.txt")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "Output JSON",
                            description="Path to write Report json output.",
-                           default_name="isoseq_cluster_report.json")
+                           default_name="isoseq_cluster_report")
     return p
 
 

@@ -153,7 +153,7 @@ def _get_parser():
     parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
                                "ConsensusAlignment XML DataSet", "BAM, SAM or ConsensusAlignment DataSet")
     parser.add_output_file_type(FileTypes.REPORT, "report_json", "PacBio Json Report",
-                                "Output report JSON file.", "mapping_stats_report.json")
+                                "Output report JSON file.", "mapping_stats_report")
 
     return parser
 

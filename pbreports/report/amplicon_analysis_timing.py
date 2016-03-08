@@ -157,7 +157,7 @@ def _add_options_to_parser(p):
         file_id="report_json",
         name="TimingReportJSON",
         description="Timing Report JSON",
-        default_name="timing_report.json")
+        default_name="timing_report")
 
 
 def add_options_to_parser(p):

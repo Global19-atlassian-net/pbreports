@@ -289,7 +289,7 @@ def get_contract_parser():
                           "classify_summary.json")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "JSON file",
                            description="Path to write report JSON output",
-                           default_name="isoseq_classify_report.json")
+                           default_name="isoseq_classify_report")
 
     return p
 

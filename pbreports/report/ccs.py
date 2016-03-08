@@ -494,7 +494,7 @@ def get_parser():
     p.add_output_file_type(FileTypes.REPORT, "report_json",
                            name="JSON report",
                            description="Path to write Report json output.",
-                           default_name="ccs_report.json")
+                           default_name="ccs_report")
     ap.add_argument('-o', '--output-dir', dest='output_dir',
                     default=os.getcwd(),
                     help="Path to write histogram images to.")

@@ -177,7 +177,7 @@ def _add_options_to_parser(p):
         file_id="output_json",
         name="Preassembly Report",
         description="Preassembly Report",
-        default_name="preassembly_report.json")
+        default_name="preassembly_report")
 
 
 def add_options_to_parser(p):

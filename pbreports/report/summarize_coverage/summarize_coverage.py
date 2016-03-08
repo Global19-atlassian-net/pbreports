@@ -477,7 +477,7 @@ def _add_options_to_parser(p):
         file_id="aln_summ_gff",
         name="Alignment Summary GFF",
         description="Alignment Summary GFF",
-        default_name="alignment_summary.gff")
+        default_name="alignment_summary")
     p.add_int(
         option_id=Constants.NUM_REGIONS_ID,
         option_str="num_regions",
