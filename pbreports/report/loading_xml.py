@@ -109,7 +109,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
                            description=("Filename of JSON output report. Should be name only, "
                                         "and will be written to output dir"),
-                           default_name="report.json")
+                           default_name="report")
 
 
 def add_options_to_parser(p):

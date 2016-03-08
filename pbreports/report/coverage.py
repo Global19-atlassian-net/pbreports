@@ -485,7 +485,7 @@ def get_parser():
     p.add_output_file_type(FileTypes.REPORT, "report_json",
                            name="JSON report",
                            description="Path to write report JSON output",
-                           default_name="coverage_report.json")
+                           default_name="coverage_report")
     p.add_int(
         option_id=Constants.MAX_CONTIGS_ID,
         option_str="maxContigs",

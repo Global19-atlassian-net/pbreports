@@ -77,7 +77,7 @@ def get_parser():
     p.add_output_file_type(FileTypes.REPORT, "output_json",
                            name="JSON file",
                            description="Path to write report JSON output",
-                           default_name="overview_report.json")
+                           default_name="overview_report")
     return p
 
 

@@ -298,7 +298,7 @@ def _add_options_to_parser(p):
         file_id="polished_assembly_rpt",
         name="Polished Assembly Report",
         description="Polished Assembly Report",
-        default_name="polished_assembly_report.json")
+        default_name="polished_assembly_report")
 
 
 def add_options_to_parser(p):

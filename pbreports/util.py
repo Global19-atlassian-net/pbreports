@@ -319,7 +319,7 @@ def add_base_options_pbcommand(parser):
         help="Output directory for associated files")
     parser.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
                                 description="Filename of JSON output report",
-                                default_name="report.json")
+                                default_name="report")
     return parser
 
 

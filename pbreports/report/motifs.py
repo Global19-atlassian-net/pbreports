@@ -632,7 +632,7 @@ def get_parser():
     p.add_output_file_type(FileTypes.REPORT, 'report_json',
                            name="JSON report",
                            description="Path of output JSON report",
-                           default_name="motifs_report.json")
+                           default_name="motifs_report")
     return p
 
 
