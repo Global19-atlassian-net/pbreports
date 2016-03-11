@@ -367,10 +367,8 @@ def openReference(fname):
     referenceSet.
     """
     if os.path.isdir(fname):
-        options = glob.glob(os.path.join(fname, 'sequence', '*.fasta'))
-        if len(options) > 1:
-            log.warn("multiple potential references found, picking the first")
-        fname = options[0]
+        raise ValueError("{r} is a directory, not a ReferenceSet".format(
+                         r=fname))
     ref = ReferenceSet(fname)
     return ref
 

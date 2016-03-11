@@ -75,7 +75,8 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Test top contigs from ref
         """
-        ref = op.join(LOCAL_DATA, "coverage", 'simple3')
+        ref = op.join(LOCAL_DATA, "coverage", 'simple3', "sequence",
+                      "simple3.fasta")
         self.assertEqual(2, len(get_top_contigs(ref, 2)))
 
     def test_contigs_to_plot(self):

@@ -295,7 +295,7 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
 class TestVariantsReportEcoli(TestVariantsReport):
     CONTIG_ID = "ecoliK12_pbi_March2013"
     DATA_DIR = VARIANTS_DATA
-    REFERENCE = op.join(DATA_DIR, 'ecoliK12_pbi_March2013')
+    REFERENCE = "/pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta"
     ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary.gff")
     VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
     TEST_VALUES = {
@@ -307,24 +307,6 @@ class TestVariantsReportEcoli(TestVariantsReport):
         "n_gff_err_2": 9,
     }
 
-    def _get_reference_fasta(self):
-        return op.join(self.REFERENCE, 'sequence',
-                       'ecoliK12_pbi_March2013.fasta')
-
-    # XXX we don't need this in the parent class because the input is a FASTA
-    # file to begin with - but in this test it's an old-style reference dir
-    def test_exit_code_0_fasta(self):
-        """
-        Like a cram test. Assert exits with 0 with fasta.
-        """
-        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
-            o=self._output_dir, r='rpt.json', c=self._get_reference_fasta(),
-            a=self.ALIGNMENT_SUMMARY,
-            v=self.VARIANTS_GFF)
-        rcode = run_backticks(cmd)
-        self.assertEquals(0, rcode)
-        self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
-
 
 @skip_if_data_dir_not_present
 class TestVariantsReportLarge(BaseTestCase, unittest.TestCase):
@@ -332,7 +314,7 @@ class TestVariantsReportLarge(BaseTestCase, unittest.TestCase):
     DATA_DIR = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/summarizeConsensus"
     ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary_variants_big_chr.gff")
     VARIANTS_GFF = op.join(DATA_DIR, "variants_big_chr.gff")
-    REFERENCE = "/pbi/dept/secondary/siv/references/hg19_M_sorted"
+    REFERENCE = "/pbi/dept/secondary/siv/references/hg19_M_sorted/hg19_M_sorted.referenceset.xml"
     TEST_VALUES = {
         "contig_len": 200000000,
         "concordance": 0.9995,
