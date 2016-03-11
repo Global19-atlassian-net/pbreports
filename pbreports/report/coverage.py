@@ -13,13 +13,14 @@ import os.path as op
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcore.io.GffIO import GffReader
+from pbcore.io import GffReader, ReferenceSet
 
 from pbreports.io.validators import validate_file, validate_dir
 from pbreports.util import get_top_contigs, add_base_and_plot_options
@@ -83,7 +84,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
             thumbnail = os.path.basename(imgfiles[1])
         else:
             fig.savefig(fname)
-
+        plt.close(fig)
         id_ = 'coverage_contig_{i}'.format(i=str(idx))
         caption = "Observed depth of coverage across {c} (window size = {b}bp)."
         plot = Plot(id_, os.path.basename(fname), caption.format(
@@ -443,7 +444,8 @@ def make_coverage_report(gff, reference, max_contigs_to_plot, report,
     rpt = Report('coverage',
                  title="Coverage",
                  plotgroups=plotgroups,
-                 attributes=[a1, a2])
+                 attributes=[a1, a2],
+                 dataset_uuids=(ReferenceSet(reference).uuid,))
 
     rpt.write_json(os.path.join(output_dir, report))
     return rpt

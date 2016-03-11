@@ -8,6 +8,8 @@ import logging
 import functools
 import types
 
+import matplotlib.pyplot as plt
+
 from pbcommand.models.report import Plot, PlotGroup
 
 from pbreports.plot.helper import get_fig_axes_lpr, get_blue, get_green
@@ -336,6 +338,7 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
         thumb_path = os.path.join(output_dir, plot_view.thumb)
         log.debug("Saving thumb to {t}".format(t=thumb_path))
         fig.savefig(thumb_path, dpi=20)
+        plt.close(fig)
 
         # these are relative paths
         plot = Plot(id_, plot_view.image_name, thumbnail=plot_view.thumb)

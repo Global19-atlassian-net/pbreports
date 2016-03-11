@@ -10,6 +10,7 @@ import logging
 import argparse
 from pprint import pformat
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
@@ -166,6 +167,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     thumbnail = plot_name.replace(".png", "_thumb.png")
 
     fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    plt.close(fig)
     log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, os.path.basename(plot_name),
                 thumbnail=os.path.basename(thumbnail))
@@ -178,11 +180,11 @@ create_readlength_plot = functools.partial(
     "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
 
 
-def make_report(fasta_file, summary_txt, output_dir):
+def make_report(contig_set, summary_txt, output_dir):
     """
     Generate a report with ID, tables, attributes and plot groups.
 
-    :param fasta_file: an input FASTA file which has all full-length,
+    :param contig_set: an input FASTA file which has all full-length,
     non-chimeric reads produced by pbtranscript.py classify.
 
     This file is required to plot a read length histogram as part of
@@ -200,18 +202,18 @@ def make_report(fasta_file, summary_txt, output_dir):
 
     Attributes of the report are extracted from this file.
 
-    :type fasta_file: str
+    :type contig_set: str
     :type summary_txt: str
     :type output_dir: str
 
     :rtype: Report
     """
     log.info("Plotting read length histogram from file: {f}".
-             format(f=fasta_file))
+             format(f=contig_set))
 
     # Collect read lengths of
     def _get_reads():
-        with ContigSet(fasta_file) as f:
+        with ContigSet(contig_set) as f:
             for record in f:
                 yield len(record.sequence)
 
@@ -239,15 +241,16 @@ def make_report(fasta_file, summary_txt, output_dir):
     report = Report(Constants.R_ID,
                     tables=[table],
                     attributes=attributes,
-                    plotgroups=[readlength_group])
+                    plotgroups=[readlength_group],
+                    dataset_uuids=(ContigSet(contig_set).uuid,))
 
     return report
 
 
-def _run(fasta_file, summary_txt, output_dir, json_report):
+def _run(contig_set, summary_txt, output_dir, json_report):
     if output_dir in ["", None]:
         output_dir = os.getcwd()
-    report = make_report(fasta_file, summary_txt, output_dir)
+    report = make_report(contig_set, summary_txt, output_dir)
     log.info(pformat(report.to_dict()))
     report.write_json(json_report)
     return 0
@@ -255,7 +258,7 @@ def _run(fasta_file, summary_txt, output_dir, json_report):
 
 def args_runner(args):
     return _run(
-        fasta_file=args.inReadsFN,
+        contig_set=args.inReadsFN,
         summary_txt=args.inSummaryFN,
         json_report=args.outJson,
         output_dir=os.path.dirname(args.outJson))
@@ -264,7 +267,7 @@ def args_runner(args):
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     return _run(
-        fasta_file=rtc.task.input_files[0],
+        contig_set=rtc.task.input_files[0],
         summary_txt=rtc.task.input_files[1],
         json_report=rtc.task.output_files[0],
         output_dir=os.path.dirname(rtc.task.output_files[0]))

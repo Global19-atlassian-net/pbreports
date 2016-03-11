@@ -75,7 +75,8 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Test top contigs from ref
         """
-        ref = op.join(LOCAL_DATA, "coverage", 'simple3')
+        ref = op.join(LOCAL_DATA, "coverage", 'simple3', "sequence",
+                      "simple3.fasta")
         self.assertEqual(2, len(get_top_contigs(ref, 2)))
 
     def test_contigs_to_plot(self):
@@ -251,7 +252,7 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Like a cram test. Assert exits with 0, even though totalNumContigs is 0.
         """
-        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC')
+        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC', 'sequence', 'enzyme_methylation_T0070_mC.fasta')
         gff = op.join(self._data_dir, 'tiny_alignment_summary.gff')
         r = op.join(self._output_dir, 'rpt.json')
         cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(

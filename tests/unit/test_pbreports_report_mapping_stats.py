@@ -9,10 +9,10 @@ import json
 import os
 import sys
 
-from pbcommand.pb_io.report import dict_to_report
+from pbcommand.pb_io.report import dict_to_report, load_report_from_json
 from pbcommand.models.report import Report
 import pbcommand.testkit
-from pbcore.io import AlignmentSet
+from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 import pbcore.data
 
 from pbreports.report import mapping_stats_ccs
@@ -439,8 +439,21 @@ class TestMappingStatsCCSReport(unittest.TestCase):
 class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats "
     REQUIRES_PBCORE = True
-    INPUT_FILES = [pbcore.data.getBamAndCmpH5()[0]]
+    INPUT_FILES = [
+        tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name
+    ]
     TASK_OPTIONS = {}
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestPbreportMappingStats, cls).setUpClass()
+        ds = AlignmentSet(pbcore.data.getBamAndCmpH5()[0], strict=True)
+        ds.write(cls.INPUT_FILES[0])
+
+    def run_after(self, rtc, output_dir):
+        r = load_report_from_json(rtc.task.output_files[0])
+        with AlignmentSet(self.INPUT_FILES[0]) as ds:
+            self.assertEqual(r._dataset_uuids, [ds.uuid])
 
 
 class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
@@ -449,3 +462,8 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
     INPUT_FILES = [os.path.join(LOCAL_DATA, "mapping_stats_ccs",
         "aligned.consensusalignmentset.xml")]
     TASK_OPTIONS = {}
+
+    def run_after(self, rtc, output_dir):
+        r = load_report_from_json(rtc.task.output_files[0])
+        with ConsensusAlignmentSet(self.INPUT_FILES[0]) as ds:
+            self.assertEqual(r._dataset_uuids, [ds.uuid])

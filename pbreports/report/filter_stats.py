@@ -184,8 +184,6 @@ def _row_to_record(column_names, row):
     d = {}
     for name, value in zip(column_names, row.strip().split(',')):
         t = COLUMN_TYPES[name]
-        # print row
-        # print name, t, value
         v = t(value)
         d[name] = v
 

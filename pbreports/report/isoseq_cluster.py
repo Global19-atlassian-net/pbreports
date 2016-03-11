@@ -10,6 +10,7 @@ import time
 import logging
 import argparse
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
@@ -166,6 +167,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     thumbnail = plot_name.replace(".png", "_thumb.png")
 
     fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    plt.close(fig)
     log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, os.path.basename(plot_name),
                 thumbnail=os.path.basename(thumbnail))
@@ -226,7 +228,8 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     report = Report(Constants.R_ID,
                     title="Transcript Clustering",
                     attributes=attributes,
-                    plotgroups=[readlength_group])
+                    plotgroups=[readlength_group],
+                    dataset_uuids=(ContigSet(inReadsFN).uuid,))
 
     return report
 

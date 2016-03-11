@@ -276,7 +276,7 @@ class TestTopVariantsReport(unittest.TestCase):
 class TestTopVariantsReportEcoli(TestTopVariantsReport):
     CONTIG_ID = "ecoliK12_pbi_March2013"
     DATA_DIR = op.join(_get_root_data_dir(), "topvariants")
-    REFERENCE = op.join(DATA_DIR, CONTIG_ID)
+    REFERENCE = "/pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta"
     VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
     RARE_VARIANTS_GFF = op.join(DATA_DIR, "rare_variants.gff.gz")
     N_TOP_VARIANTS = 9
@@ -298,25 +298,6 @@ class TestTopVariantsReportEcoli(TestTopVariantsReport):
         40,
         'haploid',
     ]
-
-    def _get_reference_fasta(self):
-        return op.join(self.REFERENCE, "sequence",
-                       "ecoliK12_pbi_March2013.fasta")
-
-    def test_exit_code_0_fasta(self):
-        """
-        Like a cram test. Assert exits with 0 with fasta
-        """
-        ref = self._get_reference_fasta()
-        gff = self.VARIANTS_GFF
-        j = 'rpt.json'
-        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(o=self._output_dir,
-                                                                    g=gff, r=ref, j=j)
-        log.info(cmd)
-
-        rcode = run_backticks(cmd)
-        self.assertEquals(0, rcode)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, j)))
 
     def test_minor_variant_table_builder(self):
         raise SkipTest("IGNORE")

@@ -12,6 +12,7 @@ import argparse
 import time
 from pprint import pformat
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
@@ -372,6 +373,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barco
 
     to_b = lambda x: os.path.basename(x)
     fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    plt.close(fig)
     log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, to_b(plot_name), thumbnail=to_b(thumbnail))
 
@@ -445,7 +447,8 @@ def to_report(ccs_subread_set, output_dir):
 
     report = Report(Constants.R_ID, tables=[table], attributes=attributes,
                     plotgroups=[readlength_group, accuracy_group,
-                                npasses_group, scatter_group])
+                                npasses_group, scatter_group],
+                    dataset_uuids=(ccs_subread_set.uuid,))
 
     return report
 
