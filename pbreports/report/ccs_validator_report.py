@@ -7,6 +7,7 @@ import logging
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import Table, Column, Report, Plot, PlotGroup
@@ -126,7 +127,7 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
     if readlength_hist is not None:
         fig, ax = to_read_length_histogram(fastq_stats.values())
         fig.savefig(readlength_hist)
-
+    plt.close(fig)
     readlength_hist_plot = Plot('readlength_hist', readlength_hist)
     plotgroup = PlotGroup('readlength_group', title="Read Length Histogram", plots=[
                           readlength_hist_plot])

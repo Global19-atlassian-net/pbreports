@@ -262,6 +262,7 @@ def plotKineticsScatter(kinArr, outputFileName):
         ax.set_ylim(0, np.percentile(kinArr['score'], 99.9) * 1.3)
 
     fig.savefig(outputFileName, dpi=72)
+    plt.close(fig)
 
 
 def plotKineticsHist(kinArr, outputFileName):
@@ -296,6 +297,7 @@ def plotKineticsHist(kinArr, outputFileName):
         ax.legend(loc='upper right')
 
     fig.savefig(outputFileName, dpi=72)
+    plt.close(fig)
 
 
 def addQmodPlot(kinData, outputFolder):

@@ -297,6 +297,7 @@ def save_figure_with_thumbnail(figure, filename, dpi=60):
     parts = os.path.splitext(filename)
     thumb = '{b}_thumb{e}'.format(b=parts[0], e=parts[1])
     _save_figures(figure, [(filename, dpi), (thumb, 20)])
+    plt.close(figure)
     return filename, thumb
 
 

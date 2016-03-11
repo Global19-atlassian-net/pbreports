@@ -12,6 +12,7 @@ import os
 import sys
 import hashlib
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import (Table, Column, Attribute, Report,
@@ -193,6 +194,7 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
         plot = Plot(id_, os.path.basename(fname), caption)
         plots.append(plot)
         idx += 1
+        plt.close(fig)
 
     plot_group = PlotGroup('variants_plots', title='Variants Across Reference', legend=legend,
                            thumbnail=thumbnail, plots=plots)
@@ -213,6 +215,7 @@ def _get_legend_file(bars, output_dir):
     fig = PH.get_bar_plot_legend_fig(bars)
     fname = 'variants_plot_legend.png'
     fig.savefig(os.path.join(output_dir, fname), dpi=60)
+    plt.close(fig)
     return fname
 
 

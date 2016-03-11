@@ -13,6 +13,7 @@ import os.path as op
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
@@ -83,7 +84,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
             thumbnail = os.path.basename(imgfiles[1])
         else:
             fig.savefig(fname)
-
+        plt.close(fig)
         id_ = 'coverage_contig_{i}'.format(i=str(idx))
         caption = "Observed depth of coverage across {c} (window size = {b}bp)."
         plot = Plot(id_, os.path.basename(fname), caption.format(
