@@ -119,7 +119,6 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
 
     table = _generate_table(fastq_stats.values())
     log.info(str(table))
-    print table
 
     if qv_hist is not None:
         fig, ax = to_qv_histogram(fastq_stats.values())

@@ -842,7 +842,6 @@ class MappingStatsCollector(object):
                 table.add_data_by_column_id(c.id, value)
 
         log.debug(str(table))
-        print table
         return table
 
     def to_report(self, output_dir):
