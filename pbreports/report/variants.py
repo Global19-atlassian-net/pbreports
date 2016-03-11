@@ -20,7 +20,7 @@ from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-from pbcore.io.GffIO import GffReader
+from pbcore.io import GffReader, ReferenceSet
 
 from pbreports.util import (openReference,
                             add_base_options_pbcommand,
@@ -91,7 +91,8 @@ def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_p
     rpt = Report('variants',
                  plotgroups=[plotgroup],
                  attributes=atts,
-                 tables=[table])
+                 tables=[table],
+                 dataset_uuids=(ReferenceSet(reference).uuid,))
 
     rpt.write_json(os.path.join(output_dir, report))
     return rpt

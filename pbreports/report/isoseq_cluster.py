@@ -226,7 +226,8 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     report = Report(Constants.R_ID,
                     title="Transcript Clustering",
                     attributes=attributes,
-                    plotgroups=[readlength_group])
+                    plotgroups=[readlength_group],
+                    dataset_uuids=(ContigSet(inReadsFN).uuid,))
 
     return report
 

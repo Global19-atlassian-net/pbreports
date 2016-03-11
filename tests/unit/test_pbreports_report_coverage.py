@@ -251,7 +251,7 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Like a cram test. Assert exits with 0, even though totalNumContigs is 0.
         """
-        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC')
+        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC', 'sequence', 'enzyme_methylation_T0070_mC.fasta')
         gff = op.join(self._data_dir, 'tiny_alignment_summary.gff')
         r = op.join(self._output_dir, 'rpt.json')
         cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(

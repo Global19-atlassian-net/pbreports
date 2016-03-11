@@ -19,7 +19,7 @@ from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReport
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcore.io.GffIO import GffReader
+from pbcore.io import GffReader, ReferenceSet
 
 from pbreports.io.validators import validate_file, validate_dir
 from pbreports.util import get_top_contigs, add_base_and_plot_options
@@ -443,7 +443,8 @@ def make_coverage_report(gff, reference, max_contigs_to_plot, report,
     rpt = Report('coverage',
                  title="Coverage",
                  plotgroups=plotgroups,
-                 attributes=[a1, a2])
+                 attributes=[a1, a2],
+                 dataset_uuids=(ReferenceSet(reference).uuid,))
 
     rpt.write_json(os.path.join(output_dir, report))
     return rpt

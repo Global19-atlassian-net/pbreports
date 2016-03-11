@@ -59,7 +59,8 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     d_bam = _get_read_hole_data(reads, inst)
     d_var = _get_variants_data(variants_report)
 
-    rpt = Report('sat')
+    ds = AlignmentSet(aligned_reads_file)
+    rpt = Report('sat', dataset_uuids=(ds.uuid,))
     rpt.add_attribute(Attribute('instrument', d_bam['instrument'],
                                 Constants.ATTR_LABELS["instrument"]))
     rpt.add_attribute(Attribute('coverage', d_var['coverage'],

@@ -445,7 +445,8 @@ def to_report(ccs_subread_set, output_dir):
 
     report = Report(Constants.R_ID, tables=[table], attributes=attributes,
                     plotgroups=[readlength_group, accuracy_group,
-                                npasses_group, scatter_group])
+                                npasses_group, scatter_group],
+                    dataset_uuids=(ccs_subread_set.uuid,))
 
     return report
 
