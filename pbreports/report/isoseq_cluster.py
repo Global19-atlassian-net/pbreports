@@ -216,8 +216,12 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     log.info("Plotting summary attributes from file: {f}".
              format(f=inSummaryFN))
     # Produce attributes based on summary.
+    dataset_uuids = [ContigSet(inReadsFN).uuid]
     if inSummaryFN.endswith(".json"):
         attributes = _report_to_attributes(inSummaryFN)
+        r = load_report_from_json(inSummaryFN)
+        assert dataset_uuids[0] in r._dataset_uuids
+        dataset_uuids = r._dataset_uuids
     else:
         attributes = summaryToAttributes(inSummaryFN)
 
@@ -229,7 +233,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
                     title="Transcript Clustering",
                     attributes=attributes,
                     plotgroups=[readlength_group],
-                    dataset_uuids=(ContigSet(inReadsFN).uuid,))
+                    dataset_uuids=dataset_uuids)
 
     return report
 

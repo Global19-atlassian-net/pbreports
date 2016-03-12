@@ -13,7 +13,7 @@
             "value": 35563
         }
     ], 
-    "dataset_uuids": [], 
+    "dataset_uuids": ["ed77fa65-19d4-3cc1-30d1-7640e92ed3ef"], 
     "id": "isoseq_cluster", 
     "plotGroups": [], 
     "tables": []

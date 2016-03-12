@@ -48,7 +48,7 @@
             "value": 11
         }
     ], 
-    "dataset_uuids": [], 
+    "dataset_uuids": ["d40a53b2-b84d-224b-87e6-d4311ee37213"], 
     "id": "isoseq_classify", 
     "plotGroups": [], 
     "tables": [
