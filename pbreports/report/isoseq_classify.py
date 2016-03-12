@@ -228,9 +228,13 @@ def make_report(contig_set, summary_txt, output_dir):
 
     log.info("Plotting summary attributes from file: {f}".
              format(f=summary_txt))
+    dataset_uuids = [ContigSet(contig_set).uuid]
     # Produce attributes based on summary.
     if summary_txt.endswith(".json"):
         attributes = _report_to_attributes(summary_txt)
+        r = load_report_from_json(summary_txt)
+        assert dataset_uuids[0] in r._dataset_uuids
+        dataset_uuids = r._dataset_uuids
     else:
         attributes = _summary_to_attributes(summary_txt)
 
@@ -242,7 +246,7 @@ def make_report(contig_set, summary_txt, output_dir):
                     tables=[table],
                     attributes=attributes,
                     plotgroups=[readlength_group],
-                    dataset_uuids=(ContigSet(contig_set).uuid,))
+                    dataset_uuids=dataset_uuids)
 
     return report
 
