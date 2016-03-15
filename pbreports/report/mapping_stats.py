@@ -662,18 +662,18 @@ class MappingStatsCollector(object):
         Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_ACCURACY
     ]
     ATTR_LABELS = OrderedDict([
-        (Constants.A_SUBREAD_ACCURACY, "Mean Mapped Concordance"),
-        (Constants.A_NSUBREADS, "Mapped Subreads"),
-        (Constants.A_SUBREAD_LENGTH, "Mapped Subread Length Mean"),
-        (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
-        (Constants.A_SUBREAD_LENGTH_Q95, "Mapped Subread Length 95%"),
-        (Constants.A_SUBREAD_LENGTH_MAX, "Mapped Subread Length Max"),
-        (Constants.A_SUBREAD_NBASES, "Mapped Subread Bases"),
-        (Constants.A_NREADS, "Mapped Polymerase Reads"),
-        (Constants.A_READLENGTH, "Mapped Polymerase Read Length Mean"),
-        (Constants.A_READLENGTH_N50, "Mapped Polymerase Read N50"),
-        (Constants.A_READLENGTH_Q95, "Mapped Polymerase Read Length 95%"),
-        (Constants.A_READLENGTH_MAX, "Mapped Polymerase Read Length Max"),
+        (Constants.A_SUBREAD_ACCURACY, "Mean Concordance"),
+        (Constants.A_NSUBREADS, "Subreads"),
+        (Constants.A_SUBREAD_LENGTH, "Subread Length Mean"),
+        (Constants.A_SUBREAD_LENGTH_N50, "Subread N50"),
+        (Constants.A_SUBREAD_LENGTH_Q95, "Subread Length 95%"),
+        (Constants.A_SUBREAD_LENGTH_MAX, "Subread Length Max"),
+        (Constants.A_SUBREAD_NBASES, "Subread Bases"),
+        (Constants.A_NREADS, "Polymerase Reads"),
+        (Constants.A_READLENGTH, "Polymerase Read Length Mean"),
+        (Constants.A_READLENGTH_N50, "Polymerase Read N50"),
+        (Constants.A_READLENGTH_Q95, "Polymerase Read Length 95%"),
+        (Constants.A_READLENGTH_MAX, "Polymerase Read Length Max"),
     ])
     ATTR_DESCRIPTIONS = {
         Constants.A_SUBREAD_ACCURACY: "The mean concordance of subreads that mapped to the reference sequence",
@@ -696,13 +696,13 @@ class MappingStatsCollector(object):
     }
     COLUMNS = [
         (Constants.C_MOVIE, "Movie"),
-        (Constants.C_READS, "Mapped Reads"),
-        (Constants.C_READLENGTH, "Mapped Polymerase Read Length"),
-        (Constants.C_READLENGTH_N50, "Mapped Polymerase Read Length n50"),
-        (Constants.C_SUBREADS, "Mapped Subreads"),
-        (Constants.C_SUBREAD_NBASES, "Mapped Subread Bases"),
-        (Constants.C_SUBREAD_LENGTH, "Mapped Subread Length"),
-        (Constants.C_SUBREAD_ACCURACY, "Mapped Subread Accuracy")
+        (Constants.C_READS, "Reads"),
+        (Constants.C_READLENGTH, "Polymerase Read Length"),
+        (Constants.C_READLENGTH_N50, "Polymerase Read Length n50"),
+        (Constants.C_SUBREADS, "Subreads"),
+        (Constants.C_SUBREAD_NBASES, "Subread Bases"),
+        (Constants.C_SUBREAD_LENGTH, "Subread Length"),
+        (Constants.C_SUBREAD_ACCURACY, "Subread Accuracy")
     ]
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
@@ -762,7 +762,7 @@ class MappingStatsCollector(object):
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Subread Accuracy"),
+                plot_group_title="Subread Accuracy"),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
@@ -773,7 +773,7 @@ class MappingStatsCollector(object):
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
-                plot_group_title="Mapped Subread Length"),
+                plot_group_title="Subread Length"),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -784,7 +784,7 @@ class MappingStatsCollector(object):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Polymerase Read Length"),
+                plot_group_title="Polymerase Read Length"),
         ]
         return {v.plot_id: v for v in _p}
 
