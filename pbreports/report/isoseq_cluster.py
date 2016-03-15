@@ -75,7 +75,7 @@ def _report_to_attributes(report_file):
         avg = attr["isoseq_numtotalbases"] / \
             attr["isoseq_numconsensusisoforms"]
         report.attributes.append(Attribute(
-            "isoseq_average_consensus_isoform_length", avg, name="Average consensus isoform length"))
+            "isoseq_average_consensus_isoform_length", avg, name="Mean consensus isoform length"))
     return report.attributes
 
 
