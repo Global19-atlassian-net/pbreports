@@ -23,13 +23,13 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         Constants.A_NBASES, Constants.A_READ_ACCURACY
     ]
     ATTR_LABELS = OrderedDict([
-        (Constants.A_READ_ACCURACY, "Mapped Consensus Read Accuracy"),
-        (Constants.A_NREADS, "Mapped Consensus Reads"),
-        (Constants.A_NBASES, "Mapped Consensus Bases"),
-        (Constants.A_READLENGTH, "Mapped Consensus Read Length Mean"),
-        (Constants.A_READLENGTH_Q95, "Mapped Consensus Read Length 95%"),
-        (Constants.A_READLENGTH_MAX, "Mapped Consensus Read Length Max"),
-        (Constants.A_READLENGTH_N50, "Mapped N50"),
+        (Constants.A_READ_ACCURACY, "Consensus Read Accuracy"),
+        (Constants.A_NREADS, "Consensus Reads"),
+        (Constants.A_NBASES, "Consensus Bases"),
+        (Constants.A_READLENGTH, "Consensus Read Length Mean"),
+        (Constants.A_READLENGTH_Q95, "Consensus Read Length 95%"),
+        (Constants.A_READLENGTH_MAX, "Consensus Read Length Max"),
+        (Constants.A_READLENGTH_N50, "N50"),
     ])
     ATTR_DESCRIPTIONS = {
         Constants.A_READ_ACCURACY: "The mean accuracy of CCS reads that mapped to the reference sequence",
@@ -46,11 +46,11 @@ class CCSMappingStatsCollector(MappingStatsCollector):
     }
     COLUMNS = [
         (Constants.C_MOVIE, "Movie"),
-        (Constants.C_READS, "Mapped Reads"),
-        (Constants.C_READLENGTH, "Mapped Consensus Read Length"),
-        (Constants.C_READLENGTH_N50, "Mapped Consensus Read Length n50"),
-        (Constants.C_READ_NBASES, "Mapped Consensus Bases"),
-        (Constants.C_READ_ACCURACY, "Mapped Read Accuracy")
+        (Constants.C_READS, "Reads"),
+        (Constants.C_READLENGTH, "Consensus Read Length"),
+        (Constants.C_READLENGTH_N50, "Consensus Read Length n50"),
+        (Constants.C_READ_NBASES, "Consensus Bases"),
+        (Constants.C_READ_ACCURACY, "Read Accuracy")
     ]
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
@@ -86,7 +86,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Consensus Read Accuracy"),
+                plot_group_title="Consensus Read Accuracy"),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -97,7 +97,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Consensus Read Length")
+                plot_group_title="Consensus Read Length")
         ]
         return {v.plot_id: v for v in _p}
 

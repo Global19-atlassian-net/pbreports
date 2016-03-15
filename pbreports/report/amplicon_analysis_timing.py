@@ -87,7 +87,7 @@ def create_table(timings):
     # Add the average time information
     seconds_sum = sum(seconds)
     avg_seconds = seconds_sum / len(timings)
-    t.add_data_by_column_id('barcode_col', 'Average')
+    t.add_data_by_column_id('barcode_col', 'Mean')
     t.add_data_by_column_id('hour_col',   avg_seconds / 3600)
     t.add_data_by_column_id('minute_col', avg_seconds / 60)
     t.add_data_by_column_id('second_col', avg_seconds)
