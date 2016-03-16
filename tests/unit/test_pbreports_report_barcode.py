@@ -46,11 +46,10 @@ class TestBarcodeReportBasic(unittest.TestCase):
     def setUp(self):
         self.bas_h5_fofn = os.path.join(_DATA_DIR, 'bash5.fofn')
         self.barcode_h5_fofn = os.path.join(_DATA_DIR, 'barcodeh5.fofn')
-        self.bas_barcode_list = _to_tuple_list(self.bas_h5_fofn, self.barcode_h5_fofn)
 
     def test_basic(self):
-        use_subreads = True
-        report = run_to_report(self.bas_barcode_list, subreads=use_subreads)
+        report = run_to_report(self.bas_h5_fofn, self.barcode_h5_fofn,
+                               subreads=True)
         d = report.to_dict()
         self.assertIsNotNone(d)
         log.info(pformat(d))
@@ -104,11 +103,10 @@ class TestReadsOfInsertBarcodeReportBasic(unittest.TestCase):
         self.barcode_h5_fofn = os.path.join(dir_name, 'barcode.fofn')
         self.bas_h5_fofn = os.path.join(dir_name, 'reads_of_insert.fofn')
         self.ccs = True
-        self.bas_barcode_list = _to_tuple_list(self.bas_h5_fofn, self.barcode_h5_fofn)
 
     def test_basic(self):
-        use_subreads = False
-        report = run_to_report(self.bas_barcode_list, subreads=use_subreads)
+        report = run_to_report(self.bas_h5_fofn, self.barcode_h5_fofn,
+                               subreads=False)
         d = report.to_dict()
         self.assertIsNotNone(d)
         log.info(pformat(d))
@@ -123,5 +121,3 @@ class TestReadsOfInsertBarcodeIntegration(TestBarcodeIntegration):
         self.barcode_h5_fofn = os.path.join(dir_name, 'barcode.fofn')
         self.bas_h5_fofn = os.path.join(dir_name, 'reads_of_insert.fofn')
         self.ccs = True
-        self.bas_barcode_list = _to_tuple_list(self.bas_h5_fofn, self.barcode_h5_fofn)
-        log.info(pformat(self.bas_barcode_list))

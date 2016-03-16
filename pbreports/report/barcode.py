@@ -1,10 +1,12 @@
-import os
-import sys
-import time
-import logging
-import argparse
-import re
+
 from pprint import pformat
+import functools
+import argparse
+import logging
+import time
+import os
+import re
+import sys
 
 from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
@@ -74,7 +76,8 @@ def _to_tuple_list(bas_fofn, barcode_fofn):
     return bas_bc_files
 
 
-def _labels_reads_iterator(bas_barcode_tuple_list, subreads=True):
+def _labels_reads_iterator_h5(reads, barcodes, subreads=True):
+    bas_barcode_tuple_list = _to_tuple_list(reads, barcodes)
     log.info("Using {b} with subreads mode? {t}".format(
         b=bas_barcode_tuple_list, t=subreads))
     for item in bas_barcode_tuple_list:
@@ -102,10 +105,13 @@ def _labels_reads_iterator(bas_barcode_tuple_list, subreads=True):
                     yield label, read
 
 
-def run_to_report(bas_barcode_tuple_list, subreads=True):
-    """ Generate a Report instance from a list of tuples.
+def _labels_reads_iterator(reads, barcodes):
+    raise NotImplementedError()
 
-    :param bas_barcode_tuple_list: [(path/to/movie.bas.h5, path/to/movie.bc.h5), ...]
+
+def _run_to_report(labels_reads_iterator, reads, barcodes,
+                   subreads=True):
+    """ Generate a Report instance from a SubreadSet and BarcodeSet.
     :param subreads: If the ccs fofn is given this needs to be set to False
     """
 
@@ -118,7 +124,8 @@ def run_to_report(bas_barcode_tuple_list, subreads=True):
 
     label2row = {}
 
-    for label, read in _labels_reads_iterator(bas_barcode_tuple_list, subreads=subreads):
+    for label, read in labels_reads_iterator(reads, barcodes,
+                                             subreads=subreads):
         if not label in label2row:
             label2row[label] = MyRow(label)
         label2row[label].bases += len(read)
@@ -140,20 +147,31 @@ def run_to_report(bas_barcode_tuple_list, subreads=True):
     return report
 
 
+run_to_report = functools.partial(_run_to_report, _labels_reads_iterator_h5)
+run_to_report_bam = functools.partial(_run_to_report, _labels_reads_iterator)
+
+
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    # generate list of tuples
-    bas_barcode_tuple_list = _to_tuple_list(args.subreads, args.barcodes)
-    use_subreads = not args.ccs
-    report = run_to_report(bas_barcode_tuple_list, subreads=use_subreads)
+    report = run_to_report(args.subreads, args.barcodes,
+                           subreads=not args.ccs)
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
     return 0
 
 
 def resolved_tool_contract_runner(rtc):
-    raise NotImplementedError("TODO")
+    log.info("Starting {f} version {v} report generation".format(
+        f=__file__, v=__version__))
+    report = run_to_report_bam(
+        reads=rtc.task.input_files[0],
+        barcodes=rtc.task.input_files[1],
+        subreads=True)
+    log.info(pformat(report.to_dict()))
+    report.write_json(args.report_json)
+    return 0
+
 
 
 def get_parser():
