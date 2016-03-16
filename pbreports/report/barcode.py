@@ -6,10 +6,12 @@ import argparse
 import re
 from pprint import pformat
 
-from pbcommand.cli import pacbio_args_runner, \
-    get_default_argparser_with_base_opts
+from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
+from pbcore.io import openDataFile # FIXME(nechols)(2016-03-15)
+
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
 
@@ -17,17 +19,22 @@ from pbreports.io.validators import bas_fofn_to_bas_files, validate_fofn
 
 
 log = logging.getLogger(__name__)
+__version__ = '0.6'
 
-__version__ = '0.5'
 
-# Some of this is borrowed and modified from pbbarcode
-_BAS_PLS_REGEX = r'\.ba[x|s]\.h5$|\.pl[x|s]\.h5$|\.cc[x|s]\.h5$'
-_BARCODE_EXT = '.bc.h5'
-_BC_REGEX = r'\.bc\.h5'
+class Constants(object):
+    TOOL_ID = "pbreports.tasks.barcode_report"
+    TOOL_NAME = "barcode_report"
+    DRIVER_EXE = "python -m pbreports.report.barcode --resolved-tool-contract"
+
+    # Some of this is borrowed and modified from pbbarcode
+    BAS_PLS_REGEX = r'\.ba[x|s]\.h5$|\.pl[x|s]\.h5$|\.cc[x|s]\.h5$'
+    BARCODE_EXT = '.bc.h5'
+    BC_REGEX = r'\.bc\.h5'
 
 
 def _movie_name_from_file(fn):
-    return re.sub('|'.join((_BC_REGEX, _BAS_PLS_REGEX)), '', os.path.basename(fn))
+    return re.sub('|'.join((Constants.BC_REGEX, Constants.BAS_PLS_REGEX)), '', os.path.basename(fn))
 
 
 def _get_movie_in_files(movie_name, file_names):
@@ -137,7 +144,7 @@ def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     # generate list of tuples
-    bas_barcode_tuple_list = _to_tuple_list(args.bas_fofn, args.barcode_fofn)
+    bas_barcode_tuple_list = _to_tuple_list(args.subreads, args.barcodes)
     use_subreads = not args.ccs
     report = run_to_report(bas_barcode_tuple_list, subreads=use_subreads)
     log.info(pformat(report.to_dict()))
@@ -145,26 +152,42 @@ def args_runner(args):
     return 0
 
 
+def resolved_tool_contract_runner(rtc):
+    raise NotImplementedError("TODO")
+
+
 def get_parser():
-    p = get_default_argparser_with_base_opts(
-        version=__version__, description=__doc__)
-    p.add_argument('bas_fofn', help="Bas h5 FOFN.", type=validate_fofn)
-    p.add_argument('barcode_fofn', type=validate_fofn, help="Barcode h5 FOFN.")
-    p.add_argument('report_json',
-                   help="Path to write Report json output.")
+    p = get_pbparser(
+        tool_id=Constants.TOOL_ID,
+        version=__version__,
+        name=Constants.TOOL_NAME,
+        description=__doc__,
+        driver_exe=Constants.DRIVER_EXE)
+    p.add_input_file_type(FileTypes.DS_SUBREADS, "subreads",
+                          name="BarcodedSubreadSet",
+                          description="Barcoded Subread DataSet XML")
+    p.add_input_file_type(FileTypes.DS_BARCODE, "barcodes",
+                          name="BarcodeSet",
+                          description="Barcode DataSet XML")
+    p.add_output_file_type(FileTypes.REPORT, "report_json",
+                           name="JSON report",
+                           description="Path to write Report json output.",
+                           default_name="barcode_report")
+    # TODO(nechols)(2016-03-15) not yet supported in SA 3.x
     # this is necessary for BasH5Reader to handle the differences between the
     # .ccs.h5 files and .bas.h5 files.
-    p.add_argument('--ccs', action='store_true',
-                   help='Use consensus reads instead of subreads.')
+    ap = p.arg_parser.parser
+    ap.add_argument('--ccs', action='store_true',
+                    help='Use consensus reads instead of subreads.')
     return p
 
 
 def main(argv=sys.argv[1:]):
-    """Main point of Entry"""
-    return pacbio_args_runner(
-        argv=argv,
+    return pbparser_runner(
+        argv=argv[1:],
         parser=get_parser(),
         args_runner_func=args_runner,
+        contract_runner_func=resolved_tool_contract_runner,
         alog=log,
         setup_log_func=setup_log)
 
