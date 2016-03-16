@@ -12,7 +12,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
-from pbcore.io import openDataFile # FIXME(nechols)(2016-03-15)
+from pbcore.io import openDataFile  # FIXME(nechols)(2016-03-15)
 
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
@@ -35,10 +35,12 @@ class Constants(object):
     BC_REGEX = r'\.bc\.h5'
 
 
+# FIXME DELETE
 def _movie_name_from_file(fn):
     return re.sub('|'.join((Constants.BC_REGEX, Constants.BAS_PLS_REGEX)), '', os.path.basename(fn))
 
 
+# FIXME DELETE
 def _get_movie_in_files(movie_name, file_names):
     movie_file = [
         f for f in file_names if _movie_name_from_file(f) == movie_name]
@@ -48,6 +50,7 @@ def _get_movie_in_files(movie_name, file_names):
     return movie_file[0]
 
 
+# FIXME DELETE
 def _to_tuple_list(bas_fofn, barcode_fofn):
     """
     Returns a list of [(/path/to/a.bas.h5, /path/to/bc.h5)...] based on
@@ -76,6 +79,7 @@ def _to_tuple_list(bas_fofn, barcode_fofn):
     return bas_bc_files
 
 
+# FIXME DELETE
 def _labels_reads_iterator_h5(reads, barcodes, subreads=True):
     bas_barcode_tuple_list = _to_tuple_list(reads, barcodes)
     log.info("Using {b} with subreads mode? {t}".format(
@@ -106,7 +110,14 @@ def _labels_reads_iterator_h5(reads, barcodes, subreads=True):
 
 
 def _labels_reads_iterator(reads, barcodes):
-    raise NotImplementedError()
+    with openDataSet(reads) as ds:
+        movies = set()
+        apply(movies.update, [rr.movieNames for rr in ds.resourceReaders()])
+        if len(movies) != 1:  # FIXME
+            raise NotImplementedError("Multiple-movie datasets are not " +
+                                      "supported by this application.")
+        with openDataFile(barcodes) as bc:
+            pass
 
 
 def _run_to_report(labels_reads_iterator, reads, barcodes,
@@ -151,6 +162,7 @@ run_to_report = functools.partial(_run_to_report, _labels_reads_iterator_h5)
 run_to_report_bam = functools.partial(_run_to_report, _labels_reads_iterator)
 
 
+# FIXME should handle exclusively DataSet input
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
@@ -171,7 +183,6 @@ def resolved_tool_contract_runner(rtc):
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
     return 0
-
 
 
 def get_parser():
