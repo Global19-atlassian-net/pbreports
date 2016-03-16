@@ -26,7 +26,6 @@ LOCAL_DATA_DIR = op.join(LOCAL_DATA, "barcode")
 BAM_FILE = op.join(LOCAL_DATA_DIR, "barcoded.subreads.bam")
 
 
-@unittest.skipUnless(op.isfile(BAM_FILE), "TODO")
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.barcode"
     INPUT_FILES = [
