@@ -482,8 +482,6 @@ def resolved_tool_contract_runner(rtc):
 
 
 def get_parser():
-    """Return an instance of argparse.ArgumentParser for CCS"""
-    p = argparse.ArgumentParser(version=__version__)
     p = get_pbparser(
         tool_id=Constants.TOOL_ID,
         version=__version__,
