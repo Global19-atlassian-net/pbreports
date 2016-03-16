@@ -45,14 +45,14 @@ class Constants(object):
     LONGEST_CONTIG = "longest_contig_name"
 
     ATTR_LABELS = OrderedDict([
-        (MEAN_CONTIG_LENGTH, "Mean Reference Length"),
-        (MEAN_BASES_CALLED, "Mean Reference Bases Called"),
-        (MEAN_CONCORDANCE, "Mean Reference Consensus Concordance"),
-        (MEAN_COVERAGE, "Mean Reference Coverage"),
+        (MEAN_CONTIG_LENGTH, "Average Reference Length"),
+        (MEAN_BASES_CALLED, "Average Reference Bases Called"),
+        (MEAN_CONCORDANCE, "Average Reference Consensus Concordance"),
+        (MEAN_COVERAGE, "Average Reference Coverage"),
         (LONGEST_CONTIG, "Longest Reference Contig")
     ])
     ATTR_DESCRIPTIONS = {
-        MEAN_CONTIG_LENGTH: "Mean length of reference sequence contigs",
+        MEAN_CONTIG_LENGTH: "Average length of reference sequence contigs",
         MEAN_BASES_CALLED: "Percentage of the reference sequence for which consensus bases were called",
         MEAN_CONCORDANCE: "The percent accuracy (concordance) of the consensus sequence compared to the reference",
         MEAN_COVERAGE: "The mean depth of coverage across the reference sequence",
