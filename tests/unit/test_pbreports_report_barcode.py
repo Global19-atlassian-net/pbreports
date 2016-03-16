@@ -22,12 +22,12 @@ log = logging.getLogger(__name__)
 
 _DATA_DIR = op.join(ROOT_DATA_DIR, 'barcode')
 LOCAL_DATA_DIR = op.join(LOCAL_DATA, "barcode")
+# TODO need to make sure this is okay to push to GitHub
+BAM_FILE = op.join(LOCAL_DATA_DIR, "barcoded.subreads.bam")
 
 
-@unittest.skipUnless(op.isdir(LOCAL_DATA_DIR), "TODO")
+@unittest.skipUnless(op.isfile(BAM_FILE), "TODO")
 class TestToolContract(pbcommand.testkit.PbTestApp):
-    # TODO need to make sure this is okay to push to GitHub
-    BAM_FILE = op.join(LOCAL_DATA_DIR, "barcoded.subreads.bam")
     DRIVER_BASE = "python -m pbreports.report.barcode"
     INPUT_FILES = [
         tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name,
