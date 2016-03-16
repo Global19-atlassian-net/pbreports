@@ -127,7 +127,8 @@ class TestFilterStats(unittest.TestCase, AttributesTestBase):
 
 @skip_if_data_dir_not_present
 class TestFilterStatsLarge(unittest.TestCase, AttributesTestBase):
-    CSV_FILE = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, "filtered_summary.csv")
+    CSV_FILE = os.path.join(
+        ROOT_DATA_DIR, _DATA_DIR_NAME, "filtered_summary.csv")
     TEST_VALUES = {
         "reads_n_pre_filter": 300584,
         "reads_n_post_filter": 93408,
@@ -190,6 +191,7 @@ class TestFilterStatsCsvParserError(unittest.TestCase):
 
 
 class TestFilterStatsAllQvsZero(unittest.TestCase):
+
     def test_01(self):
         name = "filtered_summary_with_all_qvs_zero.csv"
         file_name = os.path.join(LOCAL_DATA, _DATA_DIR_NAME, name)

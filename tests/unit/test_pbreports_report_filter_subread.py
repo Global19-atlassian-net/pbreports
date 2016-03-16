@@ -21,6 +21,7 @@ _DATA_DIR_NAME = 'filter_subread'
 
 log = logging.getLogger(__name__)
 
+
 def __get_from_constant(prefix_str, c):
     names = [i for i in dir(c) if i.startswith(prefix_str)]
     return [getattr(Constants, n) for n in names]
@@ -37,7 +38,8 @@ class TestFilterSubreadSummaryReport(unittest.TestCase):
     @skip_if_data_dir_not_present
     def setUpClass(cls):
         name = "filtered_subread_summary.csv"
-        cls.filtered_subread_summary_csv = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        cls.filtered_subread_summary_csv = os.path.join(
+            ROOT_DATA_DIR, _DATA_DIR_NAME, name)
         log.info("Using {f}".format(f=cls.filtered_subread_summary_csv))
         output_dir = tempfile.mkdtemp(suffix="filter_subread_")
         t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
@@ -98,7 +100,7 @@ class TestFilterSubreadSummaryReport(unittest.TestCase):
         self._test_attribute(Constants.A_MEAN, value)
 
     def test_plot_group_id(self):
-        ids =[p.id for p in self.report.plotGroups]
+        ids = [p.id for p in self.report.plotGroups]
         cids = [Constants.PG_SUBREAD_LENGTH]
         self.assertListEqual(ids, cids)
 
@@ -136,9 +138,11 @@ class TestFilterSubreadSummaryReportIntegration(TestFilterSubreadSummaryReport):
 
 @skip_if_data_dir_not_present
 class TestFilterSubreadReportNoSubreadsFound(unittest.TestCase):
+
     def test_basic(self):
         name = "filtered_subread_summary_empty.csv"
-        filtered_subread_summary_csv = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        filtered_subread_summary_csv = os.path.join(
+            ROOT_DATA_DIR, _DATA_DIR_NAME, name)
         log.info("Using {f}".format(f=filtered_subread_summary_csv))
         output_dir = tempfile.mkdtemp(suffix="filter_subread_")
         t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
@@ -150,9 +154,11 @@ class TestFilterSubreadReportNoSubreadsFound(unittest.TestCase):
 
 @skip_if_data_dir_not_present
 class TestFilterSubreadReportNoSubreadsPassedFilterException(unittest.TestCase):
+
     def test_basic(self):
         name = "filtered_subread_summary_no_passed.csv"
-        filtered_subread_summary_csv = os.path.join(ROOT_DATA_DIR, _DATA_DIR_NAME, name)
+        filtered_subread_summary_csv = os.path.join(
+            ROOT_DATA_DIR, _DATA_DIR_NAME, name)
         log.info("Using {f}".format(f=filtered_subread_summary_csv))
         output_dir = tempfile.mkdtemp(suffix="filter_subread_")
         t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
@@ -160,4 +166,3 @@ class TestFilterSubreadReportNoSubreadsPassedFilterException(unittest.TestCase):
         with self.assertRaises(NoSubreadsPassedFilter):
             report = to_report(filtered_subread_summary_csv, output_dir)
             log.info(report)
-

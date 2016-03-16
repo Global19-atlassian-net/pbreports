@@ -38,9 +38,11 @@ class _TestIsoSeqBase(unittest.TestCase):
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.report_constants = pbreports.report.isoseq_classify.Constants
         cls.input_fasta = os.path.join(_DATA_DIR, 'isoseq_flnc.fasta')
-        cls.output_summary_txt = os.path.join(_DATA_DIR, 'isoseq_classify_summary.txt')
+        cls.output_summary_txt = os.path.join(
+            _DATA_DIR, 'isoseq_classify_summary.txt')
         cls.report_json = os.path.join(cls.results_dir, "isoseq_classify.json")
-        _d = dict(o=cls.results_dir, f=cls.input_fasta, s=cls.output_summary_txt, j=cls.report_json)
+        _d = dict(o=cls.results_dir, f=cls.input_fasta,
+                  s=cls.output_summary_txt, j=cls.report_json)
         cmd = 'isoseq_classify_report --debug {f} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
 
@@ -65,7 +67,6 @@ class _TestIsoSeqBase(unittest.TestCase):
         report_plot_group_ids = [p.id for p in r.plotGroups]
         plot_group_ids = get_plot_groups_from_constants(self.report_constants)
         self.assertSequenceEqual(report_plot_group_ids, plot_group_ids)
-
 
     def test_images_exist(self):
         image_names = get_image_names_from_constants(self.report_constants)
@@ -94,9 +95,11 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
         cls.report_constants = pbreports.report.isoseq_cluster.Constants
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.input_fasta = os.path.join(_DATA_DIR, 'isoseq_flnc.fasta')
-        cls.output_summary_txt = os.path.join(_DATA_DIR, 'isoseq_cluster_summary.txt')
+        cls.output_summary_txt = os.path.join(
+            _DATA_DIR, 'isoseq_cluster_summary.txt')
         cls.report_json = os.path.join(cls.results_dir, "isoseq_cluster.json")
-        _d = dict(o=cls.results_dir, f=cls.input_fasta, s=cls.output_summary_txt, j=cls.report_json)
+        _d = dict(o=cls.results_dir, f=cls.input_fasta,
+                  s=cls.output_summary_txt, j=cls.report_json)
         cmd = 'isoseq_cluster_report --debug {f} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
 

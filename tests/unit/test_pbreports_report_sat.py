@@ -93,18 +93,18 @@ class TestSatRpt(unittest.TestCase):
         assert os.path.exists(bam)
         ri, inst = _get_reads_info(bam)
         d = _get_read_hole_data(ri, inst)
-        self.assertEqual('sidney', d['instrument'] )
-        self.assertEqual(48, d['reads_in_cell'] )
+        self.assertEqual('sidney', d['instrument'])
+        self.assertEqual(48, d['reads_in_cell'])
 
     def test_exit_code_0(self):
         bam = self.getAlignmentSet()
         var_rpt = os.path.join(DATA, 'variants_report.json')
         mapping_rpt = os.path.join(DATA, 'mapping_stats_report.json')
         cmd = 'python -m pbreports.report.sat {o} {r} {c} {a} {v}'.format(o=self._output_dir,
-                                                                r='rpt.json',
-                                                                c=bam,
-                                                                a=var_rpt,
-                                                                v=mapping_rpt)
+                                                                          r='rpt.json',
+                                                                          c=bam,
+                                                                          a=var_rpt,
+                                                                          v=mapping_rpt)
         o, c, m = backticks(cmd)
         log.info(cmd)
         if c is not 0:
@@ -117,7 +117,8 @@ class TestSatRpt(unittest.TestCase):
         self.assertEqual('sidney', rpt.get_attribute_by_id('instrument').value)
         self.assertEqual(1, rpt.get_attribute_by_id('coverage').value)
         self.assertEqual(1, rpt.get_attribute_by_id('accuracy').value)
-        self.assertEqual(1328, rpt.get_attribute_by_id('mapped_readlength_mean').value)
+        self.assertEqual(1328, rpt.get_attribute_by_id(
+            'mapped_readlength_mean').value)
         self.assertEqual(48, rpt.get_attribute_by_id('reads_in_cell').value)
         out = StringIO()
         self.assertTrue(summarize_report(rpt_file, out=out))

@@ -32,7 +32,8 @@ class TestTopVariantsReport(unittest.TestCase):
     VARIANTS_GFF = op.join(LOCAL_DATA, "variants", "variants.gff.gz")
     RARE_VARIANTS_GFF = op.join(DATA_DIR, "rare_variants.gff.gz")
     N_TOP_VARIANTS = 5
-    TABLE_ROW_FIRST = [CONTIG_ID, 19183L, "19183delT", 'DEL', 20, 48, "haploid"]
+    TABLE_ROW_FIRST = [CONTIG_ID, 19183L,
+                       "19183delT", 'DEL', 20, 48, "haploid"]
     TABLE_ROW_LAST = [CONTIG_ID, 24872L, "24872_24873insT", "INS", 17, 41,
                       "haploid"]
 
@@ -61,17 +62,21 @@ class TestTopVariantsReport(unittest.TestCase):
 
         # test gff
         with self.assertRaises(PbReportError):
-            make_topvariants_report(None, ref, 'foo.json', 1, 10, self._output_dir)
+            make_topvariants_report(
+                None, ref, 'foo.json', 1, 10, self._output_dir)
 
         with self.assertRaises(IOError):
-            make_topvariants_report('foo', ref, 'foo.json', 1, 10, self._output_dir)
+            make_topvariants_report(
+                'foo', ref, 'foo.json', 1, 10, self._output_dir)
 
         # test ref
         with self.assertRaises(PbReportError):
-            make_topvariants_report(gff, None, 'foo.json', 1, 10, self._output_dir)
+            make_topvariants_report(
+                gff, None, 'foo.json', 1, 10, self._output_dir)
 
         with self.assertRaises(IOError):
-            make_topvariants_report(gff, 'foo', 'foo.json', 1, 10, self._output_dir)
+            make_topvariants_report(
+                gff, 'foo', 'foo.json', 1, 10, self._output_dir)
 
     def test_make_topvariants_report_inputs(self):
         """
@@ -81,11 +86,13 @@ class TestTopVariantsReport(unittest.TestCase):
         gff = self.VARIANTS_GFF
         # test how_many
         with self.assertRaises(ValueError):
-            make_topvariants_report(gff, ref, 'foo.json', None, 10, self._output_dir)
+            make_topvariants_report(
+                gff, ref, 'foo.json', None, 10, self._output_dir)
 
         # test batch size
         with self.assertRaises(ValueError):
-            make_topvariants_report(gff, ref, 'foo.json', 1, None, self._output_dir)
+            make_topvariants_report(
+                gff, ref, 'foo.json', 1, None, self._output_dir)
 
     def test_variant_finder(self):
         ref = self.REFERENCE
@@ -169,7 +176,8 @@ class TestTopVariantsReport(unittest.TestCase):
         """
         ref = self.REFERENCE
         gff = self.VARIANTS_GFF
-        make_topvariants_report(gff, ref, 100, 10000, 'rpt.json', self._output_dir)
+        make_topvariants_report(gff, ref, 100, 10000,
+                                'rpt.json', self._output_dir)
 
         # deserialize report
         s = None
@@ -185,7 +193,8 @@ class TestTopVariantsReport(unittest.TestCase):
         """
         ref = self.REFERENCE
         gff = self.RARE_VARIANTS_GFF
-        make_topvariants_report(gff, ref, 100, 10000, 'rpt.json', self._output_dir, is_minor_variants_rpt=True)
+        make_topvariants_report(
+            gff, ref, 100, 10000, 'rpt.json', self._output_dir, is_minor_variants_rpt=True)
 
         # deserialize report
         s = None
@@ -236,7 +245,8 @@ class TestTopVariantsReport(unittest.TestCase):
         """
         ref = self.REFERENCE
         gff = self.VARIANTS_GFF
-        cmd = 'python -m pbreports.report.top_variants {o} rpt.json {g} {r}'.format(o=self._output_dir, g=self.VARIANTS_GFF, r=ref)
+        cmd = 'python -m pbreports.report.top_variants {o} rpt.json {g} {r}'.format(
+            o=self._output_dir, g=self.VARIANTS_GFF, r=ref)
         log.info(cmd)
         o, c, m = backticks(cmd)
 
@@ -245,7 +255,8 @@ class TestTopVariantsReport(unittest.TestCase):
             log.error(o)
             print(m)
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, 'rpt.json')))
+        self.assertTrue(os.path.exists(
+            os.path.join(self._output_dir, 'rpt.json')))
 
     @unittest.skip("TEMPORARILY DISABLED")
     def test_exit_code_0_minor(self):
@@ -255,7 +266,7 @@ class TestTopVariantsReport(unittest.TestCase):
         ref = self.REFERENCE
         gff = self.RARE_VARIANTS_GFF
         cmd = 'pbreport minor-topvariants {o} rpt.json {g} {r}'.format(o=self._output_dir,
-                                                                          g=gff, r=ref)
+                                                                       g=gff, r=ref)
         log.info(cmd)
         o, c, m = backticks(cmd)
         if c is not 0:

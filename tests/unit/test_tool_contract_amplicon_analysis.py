@@ -16,7 +16,7 @@ from base_test_case import LOCAL_DATA
 class TestAmpliconAnalysisConsensus(pbcommand.testkit.PbTestApp):
     name = 'amplicon_analysis_summary.csv'
     csv_file_name = os.path.join(LOCAL_DATA, "amplicon_analysis_consensus",
-        name)
+                                 name)
     t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
     t.close()
     report_json = t.name

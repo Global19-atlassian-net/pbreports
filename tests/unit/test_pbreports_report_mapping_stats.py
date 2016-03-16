@@ -37,6 +37,7 @@ _TOTAL_NUMBER_OF_PLOT_GROUPS = 4
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
 
+
 def _almost_value(actual_value, value, delta):
     """Check if a value is +/- delta amount"""
     max_value = value + delta
@@ -190,7 +191,7 @@ class TestMappingStatsReport(unittest.TestCase):
         value = self.EXPECTED_VALUES[id_]
         self.assertTrue(
             _almost_value(self._get_attribute_value_by_id(id_), value,
-            delta=_Q95_DELTA))
+                          delta=_Q95_DELTA))
 
 
 class TestMappingStatsReportXML(TestMappingStatsReport):
@@ -202,7 +203,6 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
         ds = AlignmentSet(cls.ALIGNMENTS, strict=True)
         ds.write(ds_xml)
         return ds_xml
-
 
     def test_attributes_order(self):
         attribute_ids = [a.id for a in self.report.attributes]
@@ -252,7 +252,7 @@ class TestMappingStatsMisc(unittest.TestCase):
 
     def setUp(self):
         self.bam_file = os.path.join(LOCAL_DATA, "mapping_stats",
-            "duplicate.subreads.bam")
+                                     "duplicate.subreads.bam")
 
     def test_duplicate_subreads(self):
         """Test that report doesn't crash on duplicate subreads"""
@@ -366,13 +366,13 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     def setUpClass(cls):
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
         cls.aligned_reads_xml = os.path.join(_CCS_DATA_DIR,
-            'aligned.consensusalignmentset.xml')
+                                             'aligned.consensusalignmentset.xml')
         t = tempfile.NamedTemporaryFile(
             delete=False, suffix="mapping_report.json")
         t.close()
         cls.report_json = t.name
         cls.report = mapping_stats_ccs.to_report(cls.aligned_reads_xml,
-            cls.output_dir)
+                                                 cls.output_dir)
         cls.report.write_json(cls.report_json)
 
         if isinstance(cls.report, Report):
@@ -460,7 +460,7 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats_ccs "
     REQUIRES_PBCORE = True
     INPUT_FILES = [os.path.join(LOCAL_DATA, "mapping_stats_ccs",
-        "aligned.consensusalignmentset.xml")]
+                                "aligned.consensusalignmentset.xml")]
     TASK_OPTIONS = {}
 
     def run_after(self, rtc, output_dir):

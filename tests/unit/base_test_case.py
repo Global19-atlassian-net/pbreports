@@ -24,7 +24,8 @@ if os.path.exists(_NOSE_REPORT_CFG):
     _NOSE_REPORT_CFG = os.path.abspath(_NOSE_REPORT_CFG)
     print "loading data config from {0}".format(_NOSE_REPORT_CFG)
 else:
-    raise IOError("Unable to find test CFG file {f}.".format(f=_NOSE_REPORT_CFG))
+    raise IOError(
+        "Unable to find test CFG file {f}.".format(f=_NOSE_REPORT_CFG))
 
 
 # Need to rethink this? Not sure we'll have the correct privileges?
@@ -46,7 +47,8 @@ def _get_root_data_dir():
         log.info(msg)
         return data_dir
     else:
-        msg = "Unable to find section:{s} or option:{o} in {f}".format(s=section, o=option, f=nosecfg)
+        msg = "Unable to find section:{s} or option:{o} in {f}".format(
+            s=section, o=option, f=nosecfg)
         log.error(msg)
         KeyError(msg)
 
@@ -68,7 +70,8 @@ def run_backticks(cmd, expected=0):
     if rcode != expected:
         log.error(output)
         log.error(emsg)
-        sys.stderr.write("Exit code {r} Failed cmd '{c}'\n".format(r=rcode, c=cmd))
+        sys.stderr.write(
+            "Exit code {r} Failed cmd '{c}'\n".format(r=rcode, c=cmd))
         sys.stderr.write(str(output) + "\n")
         sys.stderr.write(str(emsg) + "\n")
 
@@ -77,20 +80,21 @@ def run_backticks(cmd, expected=0):
 
 def __get_from_constant(prefix_str, contstants_klass):
     if not inspect.isclass(contstants_klass):
-        raise TypeError("Expected Class type, got type {x}".format(t=type(contstants_klass)))
+        raise TypeError("Expected Class type, got type {x}".format(
+            t=type(contstants_klass)))
 
     names = [i for i in dir(contstants_klass) if i.startswith(prefix_str)]
     return [getattr(contstants_klass, n) for n in names]
 
 
-get_attribute_names_from_constants = functools.partial(__get_from_constant, 'A_')
+get_attribute_names_from_constants = functools.partial(
+    __get_from_constant, 'A_')
 get_image_names_from_constants = functools.partial(__get_from_constant, 'I_')
 get_plot_groups_from_constants = functools.partial(__get_from_constant, 'PG_')
 get_plots_from_constants = functools.partial(__get_from_constant, 'P_')
 get_tables_from_constants = functools.partial(__get_from_constant, 'T_')
 get_columns_from_constants = functools.partial(__get_from_constant, 'C_')
 get_report_id_from_constants = functools.partial(__get_from_constant, 'R_')
-
 
 
 class LogManager(object):

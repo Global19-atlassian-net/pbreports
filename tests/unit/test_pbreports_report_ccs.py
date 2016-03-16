@@ -20,6 +20,7 @@ from base_test_case import run_backticks, LOCAL_DATA
 
 log = logging.getLogger(__name__)
 
+
 def __get_from_constant(prefix_str, c):
     names = [i for i in dir(c) if i.startswith(prefix_str)]
     return [getattr(Constants, n) for n in names]
@@ -189,7 +190,7 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
 
     def run_after(self, rtc, output_dir):
         report = load_report_from_json(rtc.task.output_files[0])
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr[Constants.A_NREADS],
                          EXPECTED_VALUES[Constants.A_NREADS])
 

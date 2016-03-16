@@ -170,7 +170,6 @@ class TestXMLstatsRpts(unittest.TestCase):
                 TestXMLstatsRpts.test_make_loading_report_with_dataset.__doc__)
             sts_xml = data.getXmlWithStats()
 
-
             rpt = make_loading_report(sts_xml)
             d = json.loads(rpt.to_json())
 
@@ -221,7 +220,7 @@ class TestXMLstatsRpts(unittest.TestCase):
             self.assertEqual('loading_xml_report.loading_xml_table.'
                              'productivity_2',
                              c4['id'])
-            self.assertAlmostEqual(4.61 , c4['values'][0], delta=.0003)
+            self.assertAlmostEqual(4.61, c4['values'][0], delta=.0003)
             self.assertAlmostEqual(13.87, c4['values'][1], delta=.0003)
             self.assertAlmostEqual(4.44, c4['values'][2], delta=.0003)
 
@@ -333,7 +332,8 @@ class TestXMLstatsRpts(unittest.TestCase):
                 'readQualDist0.png')))
 
             # these are from a raw STS file
-            self.assertEqual(len(rpt._dataset_uuids), 0, "Incorrect report datasets uuids")
+            self.assertEqual(len(rpt._dataset_uuids), 0,
+                             "Incorrect report datasets uuids")
 
         except:
             log.error(traceback.format_exc())
