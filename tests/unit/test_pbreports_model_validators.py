@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 
 class TestAttributeValidators(unittest.TestCase):
+
     def test_basic(self):
         a = Attribute('my_id', 12, name="My Attribute")
         d = a.to_dict()
@@ -39,6 +40,7 @@ class TestAttributeValidators(unittest.TestCase):
 
 
 class TestPlotValidator(unittest.TestCase):
+
     def test_basic(self):
         image = 'image.png'
         p = Plot('my_id', image, caption="Caption", thumbnail=image)
@@ -47,6 +49,7 @@ class TestPlotValidator(unittest.TestCase):
 
 
 class TestPlotGroupValidator(unittest.TestCase):
+
     def test_basic(self):
         p1 = Plot('p1', 'image.png', thumbnail='thumb.png')
         p2 = Plot('p2', 'image2.png', thumbnail='thumb2.png')
@@ -68,6 +71,7 @@ def _column_generator(id_, values):
 
 
 class TestColumnValidator(unittest.TestCase):
+
     def test_basic(self):
         c = _column_generator('my_id', list(xrange(3)))
         d = c.to_dict()
@@ -76,6 +80,7 @@ class TestColumnValidator(unittest.TestCase):
 
 
 class TestTableValidator(unittest.TestCase):
+
     def test_basic(self):
         n = 3
         columns = [_column_generator('my_id1', list(xrange(n))),

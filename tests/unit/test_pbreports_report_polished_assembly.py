@@ -18,7 +18,7 @@ from pbreports.report.polished_assembly import (make_polished_assembly_report,
                                                 _get_att_sum_contig_lengths)
 
 from base_test_case import (LOCAL_DATA, ROOT_DATA_DIR, AttributesTestBase,
-    skip_if_data_dir_not_present)
+                            skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
 
@@ -46,13 +46,15 @@ class _BaseTestCase(AttributesTestBase, unittest.TestCase):
         IOError if fasta does not exist
         """
         with self.assertRaises(IOError):
-            make_polished_assembly_report('foo', 'bar', 'baz', self._output_dir)
+            make_polished_assembly_report(
+                'foo', 'bar', 'baz', self._output_dir)
 
     def test_make_polished_assembly_report(self):
         """
         Test the attributes of the report
         """
-        make_polished_assembly_report('rpt.json', self.GFF, self.FASTQ, self._output_dir)
+        make_polished_assembly_report(
+            'rpt.json', self.GFF, self.FASTQ, self._output_dir)
         # deserialize report
         s = None
         with open(op.join(self._output_dir, 'rpt.json'), 'r') as f:
@@ -68,7 +70,8 @@ class _BaseTestCase(AttributesTestBase, unittest.TestCase):
         Like a cram test. Assert exits with 0.
         """
         r = op.join(self._output_dir, 'rpt.json')
-        cmd = 'python -m pbreports.report.polished_assembly {g} {f} {r}'.format(g=self.GFF, f=self.FASTQ, r=r)
+        cmd = 'python -m pbreports.report.polished_assembly {g} {f} {r}'.format(
+            g=self.GFF, f=self.FASTQ, r=r)
         log.info(cmd)
         o, c, m = backticks(cmd)
         if c is not 0:
@@ -95,14 +98,16 @@ class TestPolishedAssemblyReport(_BaseTestCase):
 
 
 class TestPolishedAssemblyReportQuiver(TestPolishedAssemblyReport):
-    FASTQ = op.join(LOCAL_DATA, "polished_assembly", "assembly_quiver.fastq.gz")
+    FASTQ = op.join(LOCAL_DATA, "polished_assembly",
+                    "assembly_quiver.fastq.gz")
 
     def test_make_polished_assembly_report_io(self):
         """
         IOError if fasta does not exist
         """
         with self.assertRaises(IOError):
-            make_polished_assembly_report('foo', 'bar', 'baz', self._output_dir)
+            make_polished_assembly_report(
+                'foo', 'bar', 'baz', self._output_dir)
 
     def test_get_att_sum_contig_length(self):
         self.assertEqual(0, _get_att_sum_contig_lengths([]).value)
@@ -122,7 +127,8 @@ class TestPolishedAssemblyReportBig(_BaseTestCase):
         "n_50_contig_length": 4204013,
         "sum_contig_lengths": 28553574,
     }
-    FASTQ = op.join(ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fastq.gz')
+    FASTQ = op.join(ROOT_DATA_DIR, 'polished_assembly',
+                    'polished_assembly.fastq.gz')
     GFF = op.join(ROOT_DATA_DIR, 'polished_assembly', 'alignment_summary.gff')
 
 

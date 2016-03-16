@@ -24,7 +24,8 @@ class TestLongAmpliconAnalysisPcrReport(unittest.TestCase):
         cls.summary_file = os.path.join(DATA_DIR, summary_name)
         zmw_name = 'amplicon_analysis_zmws.csv'
         cls.zmw_file = os.path.join(DATA_DIR, zmw_name)
-        log.info("Using {s} and {z}".format(s=cls.summary_file, z=cls.zmw_file))
+        log.info("Using {s} and {z}".format(
+            s=cls.summary_file, z=cls.zmw_file))
 
     def test_basic(self):
         report = run_to_report(self.summary_file, self.zmw_file)
@@ -40,7 +41,7 @@ class TestIntegrationLongAmpliconAnalysisPcrReport(TestLongAmpliconAnalysisPcrRe
         t.close()
         report_json = t.name
         exe = "amplicon_analysis_input_report"
-        cmd = "{e} --debug {s} {z} {r}".format(e=exe, 
+        cmd = "{e} --debug {s} {z} {r}".format(e=exe,
                                                s=self.summary_file,
                                                z=self.zmw_file,
                                                r=report_json)

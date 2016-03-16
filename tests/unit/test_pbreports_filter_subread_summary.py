@@ -15,6 +15,7 @@ _DATA_DIR_NAME = 'filter_subread_summary'
 
 log = logging.getLogger(__name__)
 
+
 @skip_if_data_dir_not_present
 class TestFilterSubreadSummaryReport(unittest.TestCase):
 

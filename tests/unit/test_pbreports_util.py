@@ -18,8 +18,8 @@ _EMPTY = 'amplicon_analysis_consensus_empty'
 _FILE = 'amplicon_analysis_summary.csv'
 DATA_ABS_PATH = os.path.join(ROOT_DATA_DIR, _NAME, _FILE)
 EMPTY_ABS_PATH = os.path.join(ROOT_DATA_DIR, _EMPTY, _FILE)
-DATA_REL_PATH = os.path.relpath( DATA_ABS_PATH )
-EMPTY_REL_PATH = os.path.relpath( EMPTY_ABS_PATH )
+DATA_REL_PATH = os.path.relpath(DATA_ABS_PATH)
+EMPTY_REL_PATH = os.path.relpath(EMPTY_ABS_PATH)
 
 log = logging.getLogger(__name__)
 
@@ -73,23 +73,23 @@ class TestUtil(BaseTestCase):
         """
         Test: Return abspath if file found
         """
-        file_path = validate_file( DATA_REL_PATH )
-        self.assertEqual( file_path, DATA_ABS_PATH )
+        file_path = validate_file(DATA_REL_PATH)
+        self.assertEqual(file_path, DATA_ABS_PATH)
 
     @nose.tools.raises(IOError)
     def test_validate_file_fails(self):
         """
         Test: Raise IOError if file not found
         """
-        validate_file( "this_file_doesn't_exist" )
+        validate_file("this_file_doesn't_exist")
 
     @skip_if_data_dir_not_present
     def test_validate_nonempty_file(self):
         """
         Test: Return abspath if file found and not empty
         """
-        file_path = validate_nonempty_file( DATA_REL_PATH )
-        self.assertEqual( file_path, DATA_ABS_PATH )
+        file_path = validate_nonempty_file(DATA_REL_PATH)
+        self.assertEqual(file_path, DATA_ABS_PATH)
 
     @skip_if_data_dir_not_present
     @nose.tools.raises(IOError)
@@ -97,7 +97,7 @@ class TestUtil(BaseTestCase):
         """
         Test: Raise IOError if file found but empty
         """
-        validate_nonempty_file( EMPTY_REL_PATH )
+        validate_nonempty_file(EMPTY_REL_PATH)
 
     def test_validate_report(self):
         """
@@ -163,10 +163,11 @@ class TestUtil(BaseTestCase):
         with self.assertRaises(IOError):
             get_fasta_readlengths('what.ever')
 
-        fasta = os.path.join( ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
+        fasta = os.path.join(
+            ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
         l = get_fasta_readlengths(fasta)
-        self.assertEqual( 2, len(l) )
-        self.assertEqual( 47938, sum(l) )
+        self.assertEqual(2, len(l))
+        self.assertEqual(47938, sum(l))
 
     @skip_if_data_dir_not_present
     def test_compute_n50_from_file(self):
@@ -176,17 +177,19 @@ class TestUtil(BaseTestCase):
         with self.assertRaises(IOError):
             get_fasta_readlengths('what.ever')
 
-        fasta = os.path.join( ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
-        self.assertEqual( 33586, compute_n50_from_file(fasta) )
+        fasta = os.path.join(
+            ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
+        self.assertEqual(33586, compute_n50_from_file(fasta))
 
     @skip_if_data_dir_not_present
     def test_compute_n50_from_readlenths(self):
         """
         Test getting N50 from length list
         """
-        fasta = os.path.join( ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
+        fasta = os.path.join(
+            ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fasta.gz')
         l = get_fasta_readlengths(fasta)
-        self.assertEqual( 33586, compute_n50(l) )
+        self.assertEqual(33586, compute_n50(l))
 
     def test_accuracy_as_phred_qv(self):
         qv = accuracy_as_phred_qv(0.999)
@@ -194,5 +197,5 @@ class TestUtil(BaseTestCase):
         qv = accuracy_as_phred_qv(1.0, max_qv=60)
         self.assertEquals(int(round(qv)), 60)
         qv = accuracy_as_phred_qv([0.95, 1.0, 0.99999])
-        qvs = [ int(round(x)) for x in qv ]
+        qvs = [int(round(x)) for x in qv]
         self.assertEqual(qvs, [13, 70, 50])

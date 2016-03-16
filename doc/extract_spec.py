@@ -15,7 +15,7 @@ import sys
 from tabulate import tabulate
 
 from pbreports.report import (mapping_stats, mapping_stats_ccs, ccs, sat,
-    variants, polished_assembly, coverage)
+                              variants, polished_assembly, coverage)
 
 try:
     from pbtranscript.io import Summary
@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 TARGET = op.join(op.dirname(__file__), "report_specifications.rst")
 HEADERS = ["Attribute ID", "Name", "Description"]
 
+
 def run(args=()):
     with open(TARGET, "w") as f:
         f.write("""\
@@ -35,6 +36,7 @@ pbreports specifications (automatically generated)
 ==================================================
 
 """)
+
         def _write_report_info(k, m, n, doc=None):
             if doc is None:
                 doc = m.__doc__
@@ -47,21 +49,21 @@ pbreports specifications (automatically generated)
                               k.ATTR_DESCRIPTIONS[attr]))
             f.write(tabulate(table, HEADERS, tablefmt="rst"))
 
-        for m,c in [(mapping_stats, "MappingStatsCollector"),
-                    (mapping_stats_ccs, "CCSMappingStatsCollector"),
-                    (coverage, "Constants"),
-                    (variants, "Constants"),
-                    (sat, "Constants"),
-                    (ccs, "Constants"),
-                    (polished_assembly, "Constants")]:
+        for m, c in [(mapping_stats, "MappingStatsCollector"),
+                     (mapping_stats_ccs, "CCSMappingStatsCollector"),
+                     (coverage, "Constants"),
+                     (variants, "Constants"),
+                     (sat, "Constants"),
+                     (ccs, "Constants"),
+                     (polished_assembly, "Constants")]:
             klass = getattr(m, c)
             _write_report_info(klass, m, m.__name__)
         if Summary is not None:
-            for m,c,n in [(Summary, "ClassifySummary", "isoseq_classify"),
-                          (Summary, "ClusterSummary", "isoseq_cluster")]:
+            for m, c, n in [(Summary, "ClassifySummary", "isoseq_classify"),
+                            (Summary, "ClusterSummary", "isoseq_cluster")]:
                 klass = getattr(m, c)
                 _write_report_info(klass, m, "pbreports.report.{n}".format(n=n),
-                    doc="IsoSeq {r} report".format(r=c[:-7]))
+                                   doc="IsoSeq {r} report".format(r=c[:-7]))
         else:
             log.warn("Skipping IsoSeq reports")
     return 0
