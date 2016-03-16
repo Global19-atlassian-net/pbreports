@@ -1,4 +1,9 @@
 
+"""
+Generate a report on SubreadSet barcoding.
+"""
+
+from collections import defaultdict
 from pprint import pformat
 import functools
 import argparse
@@ -12,7 +17,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
-from pbcore.io import openDataFile  # FIXME(nechols)(2016-03-15)
+from pbcore.io import openDataSet, openDataFile  # FIXME(nechols)(2016-03-15)
 
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
@@ -109,19 +114,33 @@ def _labels_reads_iterator_h5(reads, barcodes, subreads=True):
                     yield label, read
 
 
-def _labels_reads_iterator(reads, barcodes):
+def _labels_reads_iterator(reads, barcodes, subreads=True):
     with openDataSet(reads) as ds:
         movies = set()
         apply(movies.update, [rr.movieNames for rr in ds.resourceReaders()])
         if len(movies) != 1:  # FIXME
             raise NotImplementedError("Multiple-movie datasets are not " +
                                       "supported by this application.")
+        assert ds.isIndexed
+        zmws_by_barcode = defaultdict(set)
+        reads_by_zmw = defaultdict(list)
+        for rr in ds.resourceReaders():
+            for i, (b, z) in enumerate(zip(rr.pbi.bcForward,
+                                           rr.pbi.holeNumber)):
+                zmws_by_barcode[b].add(z)
+                reads_by_zmw[z].append((rr, i))
         with openDataFile(barcodes) as bc:
-            pass
+            for i_bc, barcode in enumerate(bc):
+                zmws = sorted(list(zmws_by_barcode[i_bc]))
+                for zmw in zmws:
+                    for rr, i_read in reads_by_zmw[zmw]:
+                        # FIXME(nechols)(2016-03-15) this will not work on CCS
+                        qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
+                        yield barcode.id, ["n"] * qlen
 
 
 def _run_to_report(labels_reads_iterator, reads, barcodes,
-                   subreads=True):
+                   subreads=True, dataset_uuids=()):
     """ Generate a Report instance from a SubreadSet and BarcodeSet.
     :param subreads: If the ccs fofn is given this needs to be set to False
     """
@@ -154,7 +173,8 @@ def _run_to_report(labels_reads_iterator, reads, barcodes,
         table.add_data_by_column_id('number_of_reads', row.reads)
         table.add_data_by_column_id('number_of_bases', row.bases)
 
-    report = Report('barcode', tables=[table])
+    report = Report('barcode', tables=[table],
+                    dataset_uuids=dataset_uuids)
     return report
 
 
@@ -176,12 +196,17 @@ def args_runner(args):
 def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
+    dataset_uuids = [
+        openDataFile(rtc.task.input_files[0]).uuid,
+        openDataFile(rtc.task.input_files[1]).uuid
+    ]
     report = run_to_report_bam(
         reads=rtc.task.input_files[0],
         barcodes=rtc.task.input_files[1],
-        subreads=True)
+        subreads=True,
+        dataset_uuids=dataset_uuids)
     log.info(pformat(report.to_dict()))
-    report.write_json(args.report_json)
+    report.write_json(rtc.task.output_files[0])
     return 0
 
 
@@ -211,7 +236,7 @@ def get_parser():
     return p
 
 
-def main(argv=sys.argv[1:]):
+def main(argv=sys.argv):
     return pbparser_runner(
         argv=argv[1:],
         parser=get_parser(),

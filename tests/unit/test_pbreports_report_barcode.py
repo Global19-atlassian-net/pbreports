@@ -1,20 +1,47 @@
+
 import json
 import os
+import os.path as op
 import logging
 import tempfile
 import unittest
 from pprint import pformat
+
 from pbcore.util.Process import backticks
+from pbcore.io import SubreadSet, FastaWriter
+import pbcommand.testkit
 
 from pbreports.report.barcode import run_to_report, _to_tuple_list
 from pbreports.util import bas_fofn_to_bas_files
 
-from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
+from base_test_case import (_get_root_data_dir, skip_if_data_dir_not_present,
+                            LOCAL_DATA)
 ROOT_DATA_DIR = _get_root_data_dir()
 
 log = logging.getLogger(__name__)
 
-_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'barcode')
+_DATA_DIR = op.join(ROOT_DATA_DIR, 'barcode')
+LOCAL_DATA_DIR = op.join(LOCAL_DATA, "barcode")
+
+
+@unittest.skipUnless(op.isdir(LOCAL_DATA_DIR), "TODO")
+class TestToolContract(pbcommand.testkit.PbTestApp):
+    # TODO need to make sure this is okay to push to GitHub
+    BAM_FILE = op.join(LOCAL_DATA_DIR, "barcoded.subreads.bam")
+    DRIVER_BASE = "python -m pbreports.report.barcode"
+    INPUT_FILES = [
+        tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name,
+        tempfile.NamedTemporaryFile(suffix=".fasta").name
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestToolContract, cls).setUpClass()
+        ds = SubreadSet(cls.BAM_FILE, strict=True)
+        ds.write(cls.INPUT_FILES[0])
+        with FastaWriter(cls.INPUT_FILES[1]) as fa_out:
+            for i in range(1010):
+                fa_out.writeRecord("%04d_Forward" % i, "A" * 16)
 
 
 @skip_if_data_dir_not_present
@@ -28,14 +55,17 @@ class TestBarcodeFunctions(unittest.TestCase):
 
     def test_missing_file_in_fofn(self):
         with self.assertRaises(IOError):
-            bas_h5_fofn = os.path.join(_DATA_DIR, 'ccs_01', 'reads_of_insert_with_no_existent_file.fofn')
+            bas_h5_fofn = os.path.join(
+                _DATA_DIR, 'ccs_01', 'reads_of_insert_with_no_existent_file.fofn')
             bas_files = bas_fofn_to_bas_files(bas_h5_fofn)
             log.info(pformat(bas_files))
 
     def test_incompatible_fofn(self):
         with self.assertRaises(ValueError):
-            bas_h5_fofn = os.path.join(_DATA_DIR, 'ccs_01', 'reads_of_insert.fofn')
-            barcode_h5_fofn = os.path.join(_DATA_DIR, 'ccs_01', 'barcode_missing_movie.fofn')
+            bas_h5_fofn = os.path.join(
+                _DATA_DIR, 'ccs_01', 'reads_of_insert.fofn')
+            barcode_h5_fofn = os.path.join(
+                _DATA_DIR, 'ccs_01', 'barcode_missing_movie.fofn')
             bas_barcode_list = _to_tuple_list(bas_h5_fofn, barcode_h5_fofn)
             log.info(pformat(bas_barcode_list))
 
