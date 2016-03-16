@@ -13,7 +13,7 @@ class TestCsvReader(BaseTestCase):
 
     @classmethod
     def _check_data_dir(cls):
-        pass # XXX we don't actually need it for this test
+        pass  # XXX we don't actually need it for this test
 
     def setUp(self):
         """
@@ -52,19 +52,19 @@ class TestCsvReader(BaseTestCase):
         # baz is not
         column_dtypes = {"foo": ("|S64", str),
                          "bah": ("|S64", str)}
-        r = CsvReader(b,column_dtypes, True)
+        r = CsvReader(b, column_dtypes, True)
 
         def _test_valerror():
             r.load()
 
         self.assertRaises(ValueError, _test_valerror)
-        
-        #strict is false, so no exception
+
+        # strict is false, so no exception
         column_dtypes = {"foo": ("|S64", str),
                          "bah": ("|S64", str)}
-        r = CsvReader(b,column_dtypes, False)
+        r = CsvReader(b, column_dtypes, False)
 
-        #we only want 2 columns        
+        # we only want 2 columns
         column_dtypes = {"foo": ("|S64", str),
                          "bar": ("|S64", str)}
-        r = CsvReader(b,column_dtypes, True)
+        r = CsvReader(b, column_dtypes, True)

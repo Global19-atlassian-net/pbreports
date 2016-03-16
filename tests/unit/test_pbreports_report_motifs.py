@@ -33,7 +33,8 @@ class TestKineticsMotifs(unittest.TestCase):
 
     def test_basic(self):
         d = tempfile.mkdtemp()
-        t = tempfile.NamedTemporaryFile(suffix="_motif_report.json", delete=False, dir=d)
+        t = tempfile.NamedTemporaryFile(
+            suffix="_motif_report.json", delete=False, dir=d)
         t.close()
         json_report = t.name
         output_dir = os.path.dirname(json_report)
@@ -48,10 +49,12 @@ class TestKineticsMotifs(unittest.TestCase):
         if os.path.exists(d):
             shutil.rmtree(d)
 
+
 class TestIntegrationKineticsMotifs(unittest.TestCase):
 
     def test_basic(self):
-        t = tempfile.NamedTemporaryFile(suffix="_motif_report.json", delete=False)
+        t = tempfile.NamedTemporaryFile(
+            suffix="_motif_report.json", delete=False)
         t.close()
         json_report = t.name
         output_dir = os.path.dirname(json_report)
@@ -62,12 +65,15 @@ class TestIntegrationKineticsMotifs(unittest.TestCase):
         cmd_str = '{e} {g} {c} {j}'.format(**_d)
 
         rcode = run_backticks(cmd_str)
-        self.assertEqual(rcode, 0, "Exit code '{o}' for command '{c}'".format(o=rcode, c=cmd_str))
+        self.assertEqual(
+            rcode, 0, "Exit code '{o}' for command '{c}'".format(o=rcode, c=cmd_str))
 
 
 class TestKineticsMotifsMain(unittest.TestCase):
+
     def test_basic(self):
-        t = tempfile.NamedTemporaryFile(suffix="_motif_report.json", delete=False)
+        t = tempfile.NamedTemporaryFile(
+            suffix="_motif_report.json", delete=False)
         t.close()
         json_report = t.name
         output_dir = os.path.dirname(json_report)

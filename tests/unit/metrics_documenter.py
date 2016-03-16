@@ -109,7 +109,8 @@ class TestMetricsDocumenter(unittest.TestCase):
         env = Environment(loader=FileSystemLoader(self._jinja_tmpls))
         template = env.get_template('metrics.html')
         reports_with_attributes, reports_without_attributes = [], []
-        [reports_with_attributes.append(i.id) for i in reports if i.attributes != []]
+        [reports_with_attributes.append(i.id)
+         for i in reports if i.attributes != []]
         #[reports_without_attributes.append(i.id) for i in reports if i.attributes == []]
 
         final_html = os.path.join(self._html_dir, 'metrics.html')
@@ -159,7 +160,8 @@ class TestMetricsDocumenter(unittest.TestCase):
         log.info(
             'Creating reads_of_insert report using datadir {d}'.format(d=datadir))
 
-        bas_files = fofn_to_files(os.path.join(datadir, 'reads_of_insert.fofn'))
+        bas_files = fofn_to_files(os.path.join(
+            datadir, 'reads_of_insert.fofn'))
         output_json = os.path.join(self._output_dir, 'reads_of_insert.json')
         report = to_report(bas_files, self._output_dir)
         pformat(report.to_dict())
@@ -202,7 +204,8 @@ class TestMetricsDocumenter(unittest.TestCase):
             ROOT_DATA_DIR, 'polished_assembly', 'alignment_summary.gff')
         fastq = os.path.join(
             ROOT_DATA_DIR, 'polished_assembly', 'polished_assembly.fastq')
-        make_polished_assembly_report('polished_assembly.json', gff, fastq, self._output_dir)
+        make_polished_assembly_report(
+            'polished_assembly.json', gff, fastq, self._output_dir)
 
         return self._deserialize_report(os.path.join(self._output_dir, 'polished_assembly.json'))
 

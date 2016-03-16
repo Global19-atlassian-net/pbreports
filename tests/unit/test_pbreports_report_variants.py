@@ -31,7 +31,7 @@ from base_test_case import _get_root_data_dir, run_backticks, \
 
 VARIANTS_DATA = op.join(_get_root_data_dir(), 'variants')
 
-DT='Desulfurobacterium_thermolithotrophum_DSM11699_gDNA'
+DT = 'Desulfurobacterium_thermolithotrophum_DSM11699_gDNA'
 
 log = logging.getLogger(__name__)
 
@@ -64,21 +64,27 @@ class BaseTestCase(object):
 
         # als tests
         with self.assertRaises(PbReportError):
-            make_variants_report(None, self.VARIANTS_GFF, self.REFERENCE, 'foo.json', 1, self._output_dir, '1', False)
+            make_variants_report(None, self.VARIANTS_GFF, self.REFERENCE,
+                                 'foo.json', 1, self._output_dir, '1', False)
         with self.assertRaises(IOError):
-            make_variants_report('foo', self.VARIANTS_GFF, self.REFERENCE, 'foo.json', 1, self._output_dir, '1', False)
+            make_variants_report('foo', self.VARIANTS_GFF, self.REFERENCE,
+                                 'foo.json', 1, self._output_dir, '1', False)
 
         # variants tests
         with self.assertRaises(PbReportError):
-            make_variants_report(self.ALIGNMENT_SUMMARY, None, self.REFERENCE, 'foo.json', 1, self._output_dir, '1', False)
+            make_variants_report(self.ALIGNMENT_SUMMARY, None, self.REFERENCE,
+                                 'foo.json', 1, self._output_dir, '1', False)
         with self.assertRaises(IOError):
-            make_variants_report(self.ALIGNMENT_SUMMARY, 'foo', self.REFERENCE, 'foo.json', 1, self._output_dir, '1', False)
+            make_variants_report(self.ALIGNMENT_SUMMARY, 'foo',
+                                 self.REFERENCE, 'foo.json', 1, self._output_dir, '1', False)
 
         # ref tests
         with self.assertRaises(PbReportError):
-            make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF, None, 'foo.json', 1, self._output_dir, '1', False)
+            make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF,
+                                 None, 'foo.json', 1, self._output_dir, '1', False)
         with self.assertRaises(IOError):
-            make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF, 'foo', 'foo.json', 1, self._output_dir, '1', False)
+            make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF,
+                                 'foo', 'foo.json', 1, self._output_dir, '1', False)
 
     def test_extract_alignment_summ_data(self):
         """
@@ -86,9 +92,11 @@ class BaseTestCase(object):
         """
 #        top_contigs = get_top_contigs(ref, 2)
 
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
+        top_contigs = get_top_contigs_from_ref_entry(
+            self._get_reference_entry(), 2)
 
-        ref_data, contig_variants = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)
+        ref_data, contig_variants = _extract_alignment_summ_data(
+            self.ALIGNMENT_SUMMARY, top_contigs)
         self.assertEqual(1, len(ref_data))
 
         results = ref_data[self.CONTIG_ID]
@@ -101,9 +109,11 @@ class BaseTestCase(object):
         """
         Test the data in the table object and the attributes
         """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
+        top_contigs = get_top_contigs_from_ref_entry(
+            self._get_reference_entry(), 2)
 
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
+        ref_data = _extract_alignment_summ_data(
+            self.ALIGNMENT_SUMMARY, top_contigs)[0]
         self.assertEqual(1, len(ref_data))
 
         results = ref_data[self.CONTIG_ID]
@@ -112,7 +122,8 @@ class BaseTestCase(object):
 
         _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
 
-        table, attributes = _get_consensus_table_and_attributes(ref_data, self._get_reference_entry())
+        table, attributes = _get_consensus_table_and_attributes(
+            ref_data, self._get_reference_entry())
         self.assertEqual(5, len(attributes))
 
         def __get_att_val(_id, atts):
@@ -123,8 +134,8 @@ class BaseTestCase(object):
         self.assertEqual(self.TEST_VALUES["contig_len"],
                          __get_att_val('mean_contig_length', attributes))
         self.assertAlmostEqual(self.TEST_VALUES["bases_called"],
-                         __get_att_val('weighted_mean_bases_called',
-                                       attributes), places=4)
+                               __get_att_val('weighted_mean_bases_called',
+                                             attributes), places=4)
         self.assertAlmostEqual(self.TEST_VALUES["concordance"],
                                __get_att_val('weighted_mean_concordance',
                                              attributes),
@@ -162,9 +173,11 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         """
 #        top_contigs = get_top_contigs(ref, 2)
 
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
+        top_contigs = get_top_contigs_from_ref_entry(
+            self._get_reference_entry(), 2)
 
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
+        ref_data = _extract_alignment_summ_data(
+            self.ALIGNMENT_SUMMARY, top_contigs)[0]
         self.assertEqual(1, len(ref_data))
 
         results = ref_data[self.CONTIG_ID]
@@ -179,9 +192,11 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         """
         Test the data in the table object and the attributes
         """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 2)
+        top_contigs = get_top_contigs_from_ref_entry(
+            self._get_reference_entry(), 2)
 
-        ref_data = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[0]
+        ref_data = _extract_alignment_summ_data(
+            self.ALIGNMENT_SUMMARY, top_contigs)[0]
         self.assertEqual(1, len(ref_data))
 
         results = ref_data[self.CONTIG_ID]
@@ -190,7 +205,8 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
 
         _append_variants_gff_data(ref_data, self.VARIANTS_GFF)
 
-        table, attributes = _get_consensus_table_and_attributes(ref_data, self._get_reference_entry())
+        table, attributes = _get_consensus_table_and_attributes(
+            ref_data, self._get_reference_entry())
         self.assertEqual(5, len(table.columns))
         self.assertEqual(self.CONTIG_ID, table.columns[0].values[0])
         self.assertEqual(self.TEST_VALUES["contig_len"],
@@ -213,10 +229,13 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         """
         Test that plotGroup of variants plots is created as expected
         """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 25)
-        ref_data, contig_variants = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)
+        top_contigs = get_top_contigs_from_ref_entry(
+            self._get_reference_entry(), 25)
+        ref_data, contig_variants = _extract_alignment_summ_data(
+            self.ALIGNMENT_SUMMARY, top_contigs)
 
-        plot_group = _create_variants_plot_grp(top_contigs, contig_variants, self._output_dir)
+        plot_group = _create_variants_plot_grp(
+            top_contigs, contig_variants, self._output_dir)
         self.assertEqual(1, len(plot_group.plots))
 
         self._assert_image_file(plot_group.thumbnail)
@@ -229,8 +248,10 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         """
         Create the legend png
         """
-        top_contigs = get_top_contigs_from_ref_entry(self._get_reference_entry(), 25)
-        contig_variants = _extract_alignment_summ_data(self.ALIGNMENT_SUMMARY, top_contigs)[1]
+        top_contigs = get_top_contigs_from_ref_entry(
+            self._get_reference_entry(), 25)
+        contig_variants = _extract_alignment_summ_data(
+            self.ALIGNMENT_SUMMARY, top_contigs)[1]
         ctgvar = None
         for t in top_contigs:
             ctgvar = contig_variants[t.header]
@@ -245,7 +266,8 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         self.assertTrue(op.exists(leg_path))
 
     def _assert_image_file(self, filename):
-        # Should we add validation to model.report that forces the filename to be relative?
+        # Should we add validation to model.report that forces the filename to
+        # be relative?
         self.assertFalse(op.isabs(filename))
         self.assertTrue(op.exists(op.join(self._output_dir, filename)))
 
@@ -253,7 +275,8 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         """
         Create a report object, do assertions on its properties, then assert that it gets written
         """
-        report = make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF, self.REFERENCE, 25, 'rpt.json', self._output_dir, 60, False)
+        report = make_variants_report(self.ALIGNMENT_SUMMARY, self.VARIANTS_GFF,
+                                      self.REFERENCE, 25, 'rpt.json', self._output_dir, 60, False)
         self.assertEqual(5, len(report.attributes))
         self.assertEqual(1, len(report.tables))
         self.assertEqual(1, len(report.plotGroups))
@@ -273,7 +296,6 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
         self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
-
 
     def test_exit_code_0_referenceset(self):
         """
@@ -312,7 +334,8 @@ class TestVariantsReportEcoli(TestVariantsReport):
 class TestVariantsReportLarge(BaseTestCase, unittest.TestCase):
     CONTIG_ID = "chr1"
     DATA_DIR = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/summarizeConsensus"
-    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary_variants_big_chr.gff")
+    ALIGNMENT_SUMMARY = op.join(
+        DATA_DIR, "alignment_summary_variants_big_chr.gff")
     VARIANTS_GFF = op.join(DATA_DIR, "variants_big_chr.gff")
     REFERENCE = "/pbi/dept/secondary/siv/references/hg19_M_sorted/hg19_M_sorted.referenceset.xml"
     TEST_VALUES = {
@@ -329,6 +352,7 @@ class TestVariantsReportLarge(BaseTestCase, unittest.TestCase):
 
 
 class TestVariantsReportMisc(unittest.TestCase):
+
     def test_ref_ids_ordered_by_len(self):
         """
         Test the list of seq ids ordered by len

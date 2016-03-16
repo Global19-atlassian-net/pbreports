@@ -48,5 +48,5 @@ setup(
         'filter_stats_xml = pbreports.report.filter_stats_xml:main',
         'loading_xml = pbreports.report.loading_xml:main',
         'adapter_xml = pbreports.report.adapter_xml:main',
-        ]}
+    ]}
 )

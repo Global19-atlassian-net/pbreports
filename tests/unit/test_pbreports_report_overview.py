@@ -16,12 +16,13 @@ log = logging.getLogger(__name__)
 
 ROOT_DATA_DIR = "/pbi/dept/secondary/siv/testdata/SA3-DS"
 
+
 @skip_if_data_dir_not_present
 class TestOverViewReport(unittest.TestCase):
 
     def setUp(self):
         self.input_file = op.join(ROOT_DATA_DIR, "dacetoxidans", "2530923",
-            "0005_0006.subreadset.xml")
+                                  "0005_0006.subreadset.xml")
         self.report = overview.run(self.input_file)
         log.info(pformat(self.report.to_dict()))
 
@@ -46,17 +47,19 @@ class TestOverViewReport(unittest.TestCase):
 
 @skip_if_data_dir_not_present
 class TestOverviewReportIntegration(unittest.TestCase):
+
     def setUp(self):
         self.input_file = op.join(ROOT_DATA_DIR, "dacetoxidans", "2530923",
-            "0005_0006.subreadset.xml")
-        t = tempfile.NamedTemporaryFile(delete=False, suffix="overview_report.json")
+                                  "0005_0006.subreadset.xml")
+        t = tempfile.NamedTemporaryFile(
+            delete=False, suffix="overview_report.json")
         t.close()
         self.report_json = t.name
 
     def test_basic(self):
 
         cmd = "overview_report --debug {i} {o}".format(i=self.input_file,
-                                                          o=self.report_json)
+                                                       o=self.report_json)
         rcode = run_backticks(cmd)
         self.assertEqual(rcode, 0)
 
@@ -66,5 +69,6 @@ class TestOverviewToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.overview"
     REQUIRES_PBCORE = True
     INPUT_FILES = [
-        op.join(ROOT_DATA_DIR,"dacetoxidans","2530923","0005_0006.subreadset.xml")
+        op.join(ROOT_DATA_DIR, "dacetoxidans",
+                "2530923", "0005_0006.subreadset.xml")
     ]

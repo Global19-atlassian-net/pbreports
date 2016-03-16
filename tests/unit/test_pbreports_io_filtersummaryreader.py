@@ -61,7 +61,8 @@ class TestFilteredSummaryReader(BaseTestCase):
         try:
 
             log.info(TestFilteredSummaryReader.test_count_records.__doc__)
-            fsr = FilteredSummaryReader(os.path.join(BaseTestCase.get_data_dir(), 'loading', 'filtered_summary_small.csv'))
+            fsr = FilteredSummaryReader(os.path.join(
+                BaseTestCase.get_data_dir(), 'loading', 'filtered_summary_small.csv'))
             fsr.load()
             self.assertEqual(2, fsr.num_records)
 
@@ -75,7 +76,8 @@ class TestFilteredSummaryReader(BaseTestCase):
         """
         try:
             log.info(TestFilteredSummaryReader.test_count_records.__doc__)
-            fsr = FilteredSummaryReader(os.path.join(BaseTestCase.get_data_dir(), 'loading', 'filtered_summary_small.csv'))
+            fsr = FilteredSummaryReader(os.path.join(
+                BaseTestCase.get_data_dir(), 'loading', 'filtered_summary_small.csv'))
             fsr.load()
 
             ri_exp = ['m120128_025832_42129_c100277632550000001523007907041250_s2_p0/0',

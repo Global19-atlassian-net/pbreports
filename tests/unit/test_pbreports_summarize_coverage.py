@@ -27,13 +27,13 @@ class TestCompareToPbpy(unittest.TestCase):
 
     def _get_readers(self):
         ds_reader = AlignmentSet(self.aln_path, strict=True,
-            reference=self.ref_path)
+                                 reference=self.ref_path)
         return ds_reader, ds_reader.resourceReaders()
 
     def setUp(self):
         self.aln_path = pbcore.data.getBamAndCmpH5()[0]
         self.gff_path = os.path.join(LOCAL_DATA, "summarize_coverage",
-            "alignment_summary.gff")
+                                     "alignment_summary.gff")
         self.ref_path = pbcore.data.getLambdaFasta()
         self.selected_reference = None
 
@@ -92,7 +92,8 @@ class TestCompareToPbpy(unittest.TestCase):
         pbpy_gff_reader = GffIO.GffReader(self.gff_path)
         pbpy_gff_records = {}
         for gff_record in pbpy_gff_reader:
-            record_key = (gff_record.seqid.split()[0], gff_record.start, gff_record.end)
+            record_key = (gff_record.seqid.split()[
+                          0], gff_record.start, gff_record.end)
             record_val = gff_record
             pbpy_gff_records[record_key] = record_val
 
@@ -133,7 +134,8 @@ class TestCompareToPbpy(unittest.TestCase):
             remaining_pbpy_records = {}
             for record_key in pbpy_gff_records:
                 if record_key[0] == self.selected_reference:
-                    remaining_pbpy_records[record_key] = pbpy_gff_records[record_key]
+                    remaining_pbpy_records[
+                        record_key] = pbpy_gff_records[record_key]
         else:
             remaining_pbpy_records = pbpy_gff_records
 
@@ -152,10 +154,12 @@ class TestCompareToPbpyBigGenome(TestCompareToPbpy):
         return cmph5, [cmph5]
 
     def setUp(self):
-        self.aln_path = os.path.join(SC_DATA_DIR, 'aligned_reads_human_chr2.cmp.h5')
-        self.gff_path = os.path.join(SC_DATA_DIR, 'alignment_summary_human_chr2.gff')
+        self.aln_path = os.path.join(
+            SC_DATA_DIR, 'aligned_reads_human_chr2.cmp.h5')
+        self.gff_path = os.path.join(
+            SC_DATA_DIR, 'alignment_summary_human_chr2.gff')
         self.selected_reference = 'chr2'
-    
+
     def test_metadata(self):
         """The metadata lines won't match. The pbpy version of summarizeCoverge writes out metadata for every reference in the repository, the bfx version only write metadata for contigs with coverage.
         """
@@ -170,7 +174,7 @@ class TestBuildIntervalLists(unittest.TestCase):
     def setUpClass(cls):
         cls.bam_path = pbcore.data.getBamAndCmpH5()[0]
         cls.ds_reader = AlignmentSet(cls.bam_path, strict=True,
-            reference=pbcore.data.getLambdaFasta())
+                                     reference=pbcore.data.getLambdaFasta())
         cls.bam_readers = cls.ds_reader.resourceReaders()
         cls.interval_lists = summarize_coverage.build_interval_lists(
             cls.bam_readers)
@@ -188,7 +192,7 @@ class TestBuildIntervalLists(unittest.TestCase):
             ref_id = record.ID
             ref_length = record.Length
             n_alns = len(list(self.ds_reader.readsInRange(ref_id, 0, ref_length,
-                                                        True)))
+                                                          True)))
             if n_alns:
                 self.assertEqual(len(self.interval_lists[ref_id]), n_alns)
 

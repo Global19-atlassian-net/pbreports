@@ -23,7 +23,7 @@ from pbreports.report.coverage import (make_coverage_report,
                                        _create_coverage_plot_grp, _create_coverage_histo_plot_grp)
 
 from base_test_case import (ROOT_DATA_DIR, LOCAL_DATA,
-    skip_if_data_dir_not_present)
+                            skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class TestCoverageRpt(unittest.TestCase):
         """
         with self.assertRaises(PbReportError):
             make_coverage_report(None, self.REFERENCE, 'foo.json', 1,
-                self._output_dir)
+                                 self._output_dir)
 
     def test_make_coverage_report_no_gff(self):
         """
@@ -55,21 +55,23 @@ class TestCoverageRpt(unittest.TestCase):
         """
         with self.assertRaises(IOError):
             make_coverage_report('foo', self.REFERENCE, 'foo.json', 1,
-                self._output_dir)
+                                 self._output_dir)
 
     def test_make_coverage_report_none_reference(self):
         """
         Reference cannot be null
         """
         with self.assertRaises(PbReportError):
-            make_coverage_report(self.GFF, None, 'foo.json', 1, self._output_dir)
+            make_coverage_report(
+                self.GFF, None, 'foo.json', 1, self._output_dir)
 
     def test_make_coverage_report_no_reference(self):
         """
         Reference must exist
         """
         with self.assertRaises(IOError):
-            make_coverage_report(self.GFF, 'foo', 'foo.json', 1, self._output_dir)
+            make_coverage_report(
+                self.GFF, 'foo', 'foo.json', 1, self._output_dir)
 
     def test_top_contigs(self):
         """
@@ -85,7 +87,8 @@ class TestCoverageRpt(unittest.TestCase):
         """
         tcs = get_top_contigs(self.REFERENCE, 25)
         self.assertEqual(1, len(tcs))
-        als = self.GFF#op.join(self._data_dir, 'alignment_summary.lambda.gff')
+        # op.join(self._data_dir, 'alignment_summary.lambda.gff')
+        als = self.GFF
         pls = _get_contigs_to_plot(als, tcs)
         self.assertEqual(len(pls), len(tcs))
         contig = tcs[0]
@@ -130,11 +133,11 @@ class TestCoverageRpt(unittest.TestCase):
         stats = _get_reference_coverage_stats(pls.values())
         att = _get_att_mean_coverage(stats)
         # This was in coverage.xml for the alignment summary gff used
-        # attribute hidden="true" id="depth_coverage_mean" name="Coverage" value="2958.16">2958.16</attribute>
+        # attribute hidden="true" id="depth_coverage_mean" name="Coverage"
+        # value="2958.16">2958.16</attribute>
         self.assertAlmostEqual(1.228, att.value, places=3)
         att = _get_att_percent_missing(stats)
         self.assertAlmostEqual(58.4, att.value, places=1)
-
 
     @skip_if_data_dir_not_present
     def test_attributes_high_coverage(self):
@@ -146,11 +149,11 @@ class TestCoverageRpt(unittest.TestCase):
         stats = _get_reference_coverage_stats(pls.values())
         att = _get_att_mean_coverage(stats)
         # This was in coverage.xml for the alignment summary gff used
-        # attribute hidden="true" id="depth_coverage_mean" name="Coverage" value="2958.16">2958.16</attribute>
+        # attribute hidden="true" id="depth_coverage_mean" name="Coverage"
+        # value="2958.16">2958.16</attribute>
         self.assertAlmostEqual(2958.16, att.value, places=2)
         att = _get_att_percent_missing(stats)
         self.assertEqual(0, att.value)
-
 
     def test_create_histogram(self):
         """
@@ -195,7 +198,8 @@ class TestCoverageRpt(unittest.TestCase):
             self._assert_image_file(plot.image)
 
     def _assert_image_file(self, filename):
-        # Should we add validation to model.report that forces the filename to be relative?
+        # Should we add validation to model.report that forces the filename to
+        # be relative?
         self.assertFalse(op.isabs(filename))
         self.assertTrue(op.exists(op.join(self._output_dir, filename)))
 
@@ -205,7 +209,7 @@ class TestCoverageRpt(unittest.TestCase):
         """
         gff = self.GFF
         report = make_coverage_report(self.GFF, self.REFERENCE, 25, 'rpt.json',
-            self._output_dir)
+                                      self._output_dir)
         self.assertEqual(2, len(report.attributes))
         self.assertEqual(0, len(report.tables))
         self.assertEqual(2, len(report.plotGroups))
@@ -252,7 +256,8 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Like a cram test. Assert exits with 0, even though totalNumContigs is 0.
         """
-        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC', 'sequence', 'enzyme_methylation_T0070_mC.fasta')
+        ref = op.join(self._data_dir, 'references', 'enzyme_methylation_T0070_mC',
+                      'sequence', 'enzyme_methylation_T0070_mC.fasta')
         gff = op.join(self._data_dir, 'tiny_alignment_summary.gff')
         r = op.join(self._output_dir, 'rpt.json')
         cmd = 'python -m pbreports.report.coverage {c} {g} {r}'.format(

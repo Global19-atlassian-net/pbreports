@@ -18,7 +18,7 @@ from pbreports.report.control import (make_control_report, _get_control_reads,
                                       _get_attr_control_subread_acc,
                                       _get_attr_control_mean_readlength,
                                       _get_attr_control_95_readlength, _get_attr_n50,
-                                      _create_score_figure,_create_length_figure)
+                                      _create_score_figure, _create_length_figure)
 
 from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
 
@@ -49,7 +49,8 @@ class TestControlRpt(unittest.TestCase):
             cmph5 = os.path.join(cls.DATA_DIR, 'control_reads.cmp.h5')
             csv = os.path.join(cls.DATA_DIR, 'filtered_summary.csv')
 
-            log.info('Loading data 1 time from {c} and {f}'.format(c=cmph5, f=csv))
+            log.info('Loading data 1 time from {c} and {f}'.format(
+                c=cmph5, f=csv))
 
             cls._data = {}
             cls._data[CONTROL_READS] = _get_control_reads(cmph5)
@@ -79,7 +80,8 @@ class TestControlRpt(unittest.TestCase):
         """
         csv = os.path.join(self.DATA_DIR, 'filtered_summary.csv')
         with self.assertRaises(PbReportError):
-            make_control_report(None, csv, 'foo.json', self._output_dir, '1', False)
+            make_control_report(None, csv, 'foo.json',
+                                self._output_dir, '1', False)
 
     def test_make_coverage_report_no_cmp_h5(self):
         """
@@ -87,7 +89,8 @@ class TestControlRpt(unittest.TestCase):
         """
         csv = os.path.join(self.DATA_DIR, 'filtered_summary.csv')
         with self.assertRaises(IOError):
-            make_control_report('foo', csv, 'foo.json', self._output_dir, '1', False)
+            make_control_report('foo', csv, 'foo.json',
+                                self._output_dir, '1', False)
 
     def test_make_coverage_report_none_csv(self):
         """
@@ -95,7 +98,8 @@ class TestControlRpt(unittest.TestCase):
         """
         cmph5 = os.path.join(self.DATA_DIR, 'control_reads.cmp.h5')
         with self.assertRaises(PbReportError):
-            make_control_report(cmph5, None, 'foo.json', self._output_dir, '1', False)
+            make_control_report(cmph5, None, 'foo.json',
+                                self._output_dir, '1', False)
 
     def test_make_coverage_report_no_csv(self):
         """
@@ -103,7 +107,8 @@ class TestControlRpt(unittest.TestCase):
         """
         cmph5 = os.path.join(self.DATA_DIR, 'control_reads.cmp.h5')
         with self.assertRaises(IOError):
-            make_control_report(cmph5, 'foo', 'foo.json', self._output_dir, '1', False)
+            make_control_report(cmph5, 'foo', 'foo.json',
+                                self._output_dir, '1', False)
 
     def test_get_control_reads(self):
         """
@@ -122,11 +127,13 @@ class TestControlRpt(unittest.TestCase):
 #                self.fail('control read {c} is not in filtered_summary.csv'.format(c=cid))
 
         if len(not_in) > 0:
-            self.fail('{l} control reads not in filtered_summary.csv'.format(l=len(not_in)))
+            self.fail(
+                '{l} control reads not in filtered_summary.csv'.format(l=len(not_in)))
             log.info('\n'.join(not_in))
 
     def _get_all_filtered_read_ids(self):
-        reader = FilteredSummaryReader(os.path.join(self.DATA_DIR, 'filtered_summary.csv'), CSV_COLUMN_MAP)
+        reader = FilteredSummaryReader(os.path.join(
+            self.DATA_DIR, 'filtered_summary.csv'), CSV_COLUMN_MAP)
         reader.load()
         data = reader.data_as_numpy_array()
         ids = set([])
@@ -152,7 +159,8 @@ class TestControlRpt(unittest.TestCase):
         f_reads = self._data[FILTERED_READS]
         control_data, sample_data = _process_reads(c_reads, f_reads)
 
-        self.assertTrue(len(control_data[0]) == len(control_data[1]) == len(control_data[2]) == len(control_data[3]))
+        self.assertTrue(len(control_data[0]) == len(control_data[1]) == len(
+            control_data[2]) == len(control_data[3]))
         self.assertEqual(333, len(control_data[0]))
         self.assertEqual(26614, len(sample_data[0]))
 
@@ -193,7 +201,6 @@ class TestControlRpt(unittest.TestCase):
                          _get_attr_control_95_readlength(control_data).value)
         self.assertEqual(3912, _get_attr_n50(control_data).value)
 
-
     def test_create_score_figure(self):
         """
         Test that the score figure obj is not None
@@ -222,7 +229,8 @@ class TestControlRpt(unittest.TestCase):
         """
         cmph5 = os.path.join(self.DATA_DIR, 'control_reads.cmp.h5')
         csv = os.path.join(self.DATA_DIR, 'filtered_summary.csv')
-        make_control_report(cmph5, csv, 'foo.json', self._output_dir, 60, False)
+        make_control_report(cmph5, csv, 'foo.json',
+                            self._output_dir, 60, False)
 
         # deserialize report
         s = None
@@ -235,10 +243,12 @@ class TestControlRpt(unittest.TestCase):
         for i in range(2):
             pg = report.plotGroups[i]
             self.assertFalse(os.path.isabs(pg.thumbnail))
-            self.assertTrue(os.path.exists(os.path.join(self._output_dir, pg.thumbnail)))
+            self.assertTrue(os.path.exists(
+                os.path.join(self._output_dir, pg.thumbnail)))
             p = pg.plots[0]
             self.assertFalse(os.path.isabs(p.image))
-            self.assertTrue(os.path.exists(os.path.join(self._output_dir, p.image)))
+            self.assertTrue(os.path.exists(
+                os.path.join(self._output_dir, p.image)))
 
     def test_exit_code_0(self):
         """
@@ -248,8 +258,8 @@ class TestControlRpt(unittest.TestCase):
         cmph5 = os.path.join(self.DATA_DIR, 'control_reads.cmp.h5')
         csv = os.path.join(self.DATA_DIR, 'filtered_summary.csv')
         cmd = 'python -m pbreports.report.control {o} {r} {c} {g}'.format(o=self._output_dir,
-                                                           r='rpt.json',
-                                                           c=cmph5, g=csv)
+                                                                          r='rpt.json',
+                                                                          c=cmph5, g=csv)
 
         o, c, m = backticks(cmd)
         log.info(cmd)
@@ -258,4 +268,5 @@ class TestControlRpt(unittest.TestCase):
             log.error(o)
             print(m)
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, 'rpt.json')))
+        self.assertTrue(os.path.exists(
+            os.path.join(self._output_dir, 'rpt.json')))

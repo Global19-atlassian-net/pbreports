@@ -178,7 +178,7 @@ def main(argv=sys.argv):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     return pacbio_args_runner(
-        argv=argv[1:], 
+        argv=argv[1:],
         parser=get_parser(),
         args_runner_func=args_runner,
         alog=log,

@@ -100,6 +100,7 @@ EXPECTED_FILES = [
     'kinetic_histogram.png',
 ]
 
+
 class TestPbreportModifications(pbcommand.testkit.PbTestApp):
     DATA = os.path.join(LOCAL_DATA, "modifications")
     DRIVER_BASE = "python -m pbreports.report.modifications "
