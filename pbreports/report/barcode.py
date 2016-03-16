@@ -1,15 +1,24 @@
-import os
-import sys
-import time
-import logging
-import argparse
-import re
-from pprint import pformat
 
-from pbcommand.cli import pacbio_args_runner, \
-    get_default_argparser_with_base_opts
+"""
+Generate a report on SubreadSet barcoding.
+"""
+
+from collections import defaultdict
+from pprint import pformat
+import functools
+import argparse
+import logging
+import time
+import os
+import re
+import sys
+
+from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
+from pbcore.io import openDataSet, openDataFile  # FIXME(nechols)(2016-03-15)
+
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
 
@@ -17,19 +26,26 @@ from pbreports.io.validators import bas_fofn_to_bas_files, validate_fofn
 
 
 log = logging.getLogger(__name__)
-
-__version__ = '0.5'
-
-# Some of this is borrowed and modified from pbbarcode
-_BAS_PLS_REGEX = r'\.ba[x|s]\.h5$|\.pl[x|s]\.h5$|\.cc[x|s]\.h5$'
-_BARCODE_EXT = '.bc.h5'
-_BC_REGEX = r'\.bc\.h5'
+__version__ = '0.6'
 
 
+class Constants(object):
+    TOOL_ID = "pbreports.tasks.barcode_report"
+    TOOL_NAME = "barcode_report"
+    DRIVER_EXE = "python -m pbreports.report.barcode --resolved-tool-contract"
+
+    # Some of this is borrowed and modified from pbbarcode
+    BAS_PLS_REGEX = r'\.ba[x|s]\.h5$|\.pl[x|s]\.h5$|\.cc[x|s]\.h5$'
+    BARCODE_EXT = '.bc.h5'
+    BC_REGEX = r'\.bc\.h5'
+
+
+# FIXME DELETE
 def _movie_name_from_file(fn):
-    return re.sub('|'.join((_BC_REGEX, _BAS_PLS_REGEX)), '', os.path.basename(fn))
+    return re.sub('|'.join((Constants.BC_REGEX, Constants.BAS_PLS_REGEX)), '', os.path.basename(fn))
 
 
+# FIXME DELETE
 def _get_movie_in_files(movie_name, file_names):
     movie_file = [
         f for f in file_names if _movie_name_from_file(f) == movie_name]
@@ -39,6 +55,7 @@ def _get_movie_in_files(movie_name, file_names):
     return movie_file[0]
 
 
+# FIXME DELETE
 def _to_tuple_list(bas_fofn, barcode_fofn):
     """
     Returns a list of [(/path/to/a.bas.h5, /path/to/bc.h5)...] based on
@@ -67,7 +84,9 @@ def _to_tuple_list(bas_fofn, barcode_fofn):
     return bas_bc_files
 
 
-def _labels_reads_iterator(bas_barcode_tuple_list, subreads=True):
+# FIXME DELETE
+def _labels_reads_iterator_h5(reads, barcodes, subreads=True):
+    bas_barcode_tuple_list = _to_tuple_list(reads, barcodes)
     log.info("Using {b} with subreads mode? {t}".format(
         b=bas_barcode_tuple_list, t=subreads))
     for item in bas_barcode_tuple_list:
@@ -95,10 +114,34 @@ def _labels_reads_iterator(bas_barcode_tuple_list, subreads=True):
                     yield label, read
 
 
-def run_to_report(bas_barcode_tuple_list, subreads=True):
-    """ Generate a Report instance from a list of tuples.
+def _labels_reads_iterator(reads, barcodes, subreads=True):
+    with openDataSet(reads) as ds:
+        movies = set()
+        apply(movies.update, [rr.movieNames for rr in ds.resourceReaders()])
+        if len(movies) != 1:  # FIXME
+            raise NotImplementedError("Multiple-movie datasets are not " +
+                                      "supported by this application.")
+        assert ds.isIndexed
+        zmws_by_barcode = defaultdict(set)
+        reads_by_zmw = defaultdict(list)
+        for rr in ds.resourceReaders():
+            for i, (b, z) in enumerate(zip(rr.pbi.bcForward,
+                                           rr.pbi.holeNumber)):
+                zmws_by_barcode[b].add(z)
+                reads_by_zmw[z].append((rr, i))
+        with openDataFile(barcodes) as bc:
+            for i_bc, barcode in enumerate(bc):
+                zmws = sorted(list(zmws_by_barcode[i_bc]))
+                for zmw in zmws:
+                    for rr, i_read in reads_by_zmw[zmw]:
+                        # FIXME(nechols)(2016-03-15) this will not work on CCS
+                        qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
+                        yield barcode.id, ["n"] * qlen
 
-    :param bas_barcode_tuple_list: [(path/to/movie.bas.h5, path/to/movie.bc.h5), ...]
+
+def _run_to_report(labels_reads_iterator, reads, barcodes,
+                   subreads=True, dataset_uuids=()):
+    """ Generate a Report instance from a SubreadSet and BarcodeSet.
     :param subreads: If the ccs fofn is given this needs to be set to False
     """
 
@@ -111,7 +154,8 @@ def run_to_report(bas_barcode_tuple_list, subreads=True):
 
     label2row = {}
 
-    for label, read in _labels_reads_iterator(bas_barcode_tuple_list, subreads=subreads):
+    for label, read in labels_reads_iterator(reads, barcodes,
+                                             subreads=subreads):
         if not label in label2row:
             label2row[label] = MyRow(label)
         label2row[label].bases += len(read)
@@ -129,42 +173,75 @@ def run_to_report(bas_barcode_tuple_list, subreads=True):
         table.add_data_by_column_id('number_of_reads', row.reads)
         table.add_data_by_column_id('number_of_bases', row.bases)
 
-    report = Report('barcode', tables=[table])
+    report = Report('barcode', tables=[table],
+                    dataset_uuids=dataset_uuids)
     return report
 
 
+run_to_report = functools.partial(_run_to_report, _labels_reads_iterator_h5)
+run_to_report_bam = functools.partial(_run_to_report, _labels_reads_iterator)
+
+
+# FIXME should handle exclusively DataSet input
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    # generate list of tuples
-    bas_barcode_tuple_list = _to_tuple_list(args.bas_fofn, args.barcode_fofn)
-    use_subreads = not args.ccs
-    report = run_to_report(bas_barcode_tuple_list, subreads=use_subreads)
+    report = run_to_report(args.subreads, args.barcodes,
+                           subreads=not args.ccs)
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
     return 0
 
 
+def resolved_tool_contract_runner(rtc):
+    log.info("Starting {f} version {v} report generation".format(
+        f=__file__, v=__version__))
+    dataset_uuids = [
+        openDataFile(rtc.task.input_files[0]).uuid,
+        openDataFile(rtc.task.input_files[1]).uuid
+    ]
+    report = run_to_report_bam(
+        reads=rtc.task.input_files[0],
+        barcodes=rtc.task.input_files[1],
+        subreads=True,
+        dataset_uuids=dataset_uuids)
+    log.info(pformat(report.to_dict()))
+    report.write_json(rtc.task.output_files[0])
+    return 0
+
+
 def get_parser():
-    p = get_default_argparser_with_base_opts(
-        version=__version__, description=__doc__)
-    p.add_argument('bas_fofn', help="Bas h5 FOFN.", type=validate_fofn)
-    p.add_argument('barcode_fofn', type=validate_fofn, help="Barcode h5 FOFN.")
-    p.add_argument('report_json',
-                   help="Path to write Report json output.")
+    p = get_pbparser(
+        tool_id=Constants.TOOL_ID,
+        version=__version__,
+        name=Constants.TOOL_NAME,
+        description=__doc__,
+        driver_exe=Constants.DRIVER_EXE)
+    p.add_input_file_type(FileTypes.DS_SUBREADS, "subreads",
+                          name="BarcodedSubreadSet",
+                          description="Barcoded Subread DataSet XML")
+    p.add_input_file_type(FileTypes.DS_BARCODE, "barcodes",
+                          name="BarcodeSet",
+                          description="Barcode DataSet XML")
+    p.add_output_file_type(FileTypes.REPORT, "report_json",
+                           name="JSON report",
+                           description="Path to write Report json output.",
+                           default_name="barcode_report")
+    # TODO(nechols)(2016-03-15) not yet supported in SA 3.x
     # this is necessary for BasH5Reader to handle the differences between the
     # .ccs.h5 files and .bas.h5 files.
-    p.add_argument('--ccs', action='store_true',
-                   help='Use consensus reads instead of subreads.')
+    ap = p.arg_parser.parser
+    ap.add_argument('--ccs', action='store_true',
+                    help='Use consensus reads instead of subreads.')
     return p
 
 
-def main(argv=sys.argv[1:]):
-    """Main point of Entry"""
-    return pacbio_args_runner(
-        argv=argv,
+def main(argv=sys.argv):
+    return pbparser_runner(
+        argv=argv[1:],
         parser=get_parser(),
         args_runner_func=args_runner,
+        contract_runner_func=resolved_tool_contract_runner,
         alog=log,
         setup_log_func=setup_log)
 
