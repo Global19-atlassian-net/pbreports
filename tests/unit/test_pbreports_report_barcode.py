@@ -34,10 +34,11 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
         tempfile.NamedTemporaryFile(suffix=".fasta").name
     ]
 
+    @unittest.skipUnless(op.isfile(BAM_FILE), "TODO")
     @classmethod
     def setUpClass(cls):
         super(TestToolContract, cls).setUpClass()
-        ds = SubreadSet(cls.BAM_FILE, strict=True)
+        ds = SubreadSet(BAM_FILE, strict=True)
         ds.write(cls.INPUT_FILES[0])
         with FastaWriter(cls.INPUT_FILES[1]) as fa_out:
             for i in range(1010):
