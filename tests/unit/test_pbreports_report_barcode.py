@@ -34,7 +34,6 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
         tempfile.NamedTemporaryFile(suffix=".fasta").name
     ]
 
-    @unittest.skipUnless(op.isfile(BAM_FILE), "TODO")
     @classmethod
     def setUpClass(cls):
         super(TestToolContract, cls).setUpClass()
