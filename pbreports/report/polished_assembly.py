@@ -249,7 +249,7 @@ class ContigInfo(object):
 
     @property
     def mean_qv(self):
-        """Average QV value"""
+        """Mean QV value"""
         return self._qv
 
     @property
@@ -259,7 +259,7 @@ class ContigInfo(object):
 
     @property
     def mean_coverage(self):
-        """Average coverage"""
+        """Mean coverage"""
         return self._cov.meanCoveragePerBase()
 
 
