@@ -809,7 +809,7 @@ class MappingStatsCollector(object):
             ("readlength_histogram", ReadLengthHistogram(dx=500)),
             ("subreadlength_histogram", SubReadlengthHistogram()),
             ("subread_concordance_histogram", SubReadConcordanceHistogram(dx=0.005,
-                                                                    nbins=1001))
+                                                                          nbins=1001))
         ])
 
     def _to_table(self, movie_datum):
@@ -971,7 +971,8 @@ def summarize_report(report_file, out=sys.stdout):
     report = load_report_from_json(report_file)
     attr = {a.id: a.value for a in report.attributes}
     W("%s:" % report_file)
-    W("  MEAN CONCORDANCE: {f}".format(f=attr[Constants.A_SUBREAD_CONCORDANCE]))
+    W("  MEAN CONCORDANCE: {f}".format(
+        f=attr[Constants.A_SUBREAD_CONCORDANCE]))
     W("  NSUBREADS: {n}".format(n=attr[Constants.A_NSUBREADS]))
     W("  NREADS: {n}".format(n=attr[Constants.A_NREADS]))
     W("  NBASES: {n}".format(n=attr[Constants.A_SUBREAD_NBASES]))

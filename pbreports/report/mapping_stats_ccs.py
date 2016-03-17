@@ -107,7 +107,8 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                                                              nbins=10000)),
             (Constants.A_READLENGTH_N50, N50Aggreggator()),
             (Constants.A_NBASES, NumberBasesAggregator()),
-            (self.HISTOGRAM_IDS[Constants.P_READLENGTH], ReadLengthHistogram()),
+            (self.HISTOGRAM_IDS[Constants.P_READLENGTH],
+             ReadLengthHistogram()),
             (self.HISTOGRAM_IDS[Constants.P_READ_CONCORDANCE],
              SubReadConcordanceHistogram(dx=0.005, nbins=1001))
         ])
