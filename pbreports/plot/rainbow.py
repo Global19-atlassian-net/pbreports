@@ -1,8 +1,8 @@
 
 """
 Convert an input bam or DataSet XML file (used to be a cmp.h5 file, thus the
-name) to a figure of Accuracy vs. Subread Length. Each point on the graph
-represents the accuracy and length of a single subread as measured by a local
+name) to a figure of Concordance vs. Subread Length. Each point on the graph
+represents the concordance and length of a single subread as measured by a local
 alignment to the reference. The points are colored by qv-score.
 """
 
@@ -27,9 +27,9 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     PLOT_GROUP_ID = "alignment_to_png_plot_group"
-    TITLE_STRING = "Accuracy vs. Subread Length"
+    TITLE_STRING = "Concordance vs. Subread Length"
     CAPTION_STRING = """\
-Each point on the graph represents the accuracy and length of a single subread
+Each point on the graph represents the concordance and length of a single subread
 as measured by a local alignment to the reference.  The points are colored by
 Z-score, a measure of the significance of each alignment."""
 
@@ -44,7 +44,7 @@ def _read_in_file(in_fn, reference=None):
                    None)
 
     Returns:
-        A 2D array of lengths, percent accuracy and color by MapQV
+        A 2D array of lengths, percent concordance and color by MapQV
     """
     def _openAlignments():
         if in_fn.endswith(".cmp.h5"):
@@ -77,7 +77,7 @@ def _read_in_file(in_fn, reference=None):
 
 
 def _make_plot(data, png_fn, bounds=None, dpi=60, nolegend=False):
-    """Make a scatterplot of read length and accuracy"""
+    """Make a scatterplot of read length and concordance"""
     fig = plt.figure()
     axes = fig.add_subplot(111)
     axes.axesPatch.set_facecolor('#ffffff')
@@ -123,7 +123,7 @@ def _make_plot(data, png_fn, bounds=None, dpi=60, nolegend=False):
         axes.set_xlim(xmin=intbounds[0], xmax=intbounds[1])
         axes.set_ylim(ymin=intbounds[2], ymax=intbounds[3])
     axes.set_xlabel('Subread Length / bp')
-    axes.set_ylabel('% Accuracy')
+    axes.set_ylabel('% Concordance')
     save_figure_with_thumbnail(fig, png_fn, dpi=int(dpi))
     plt.close(fig)
 
@@ -132,12 +132,12 @@ def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
                 reference=None, dpi=60, name=None):
     """AlignmentToPng Report
 
-    Convert an input bam or DataSet XML file to a figure of Accuracy vs.
+    Convert an input bam or DataSet XML file to a figure of Concordance vs.
     Subread Length.
 
     Args:
         in_fn: the bam, DataSet XML or cmp.h5 file to turn into a length vs
-               accuracy plot
+               concordance plot
         out_dir: the output directory to be used with the file name or default
         name: the file name to be used with the outdir or default (no full
               path filenames!)

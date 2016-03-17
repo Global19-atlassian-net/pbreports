@@ -96,7 +96,7 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
 class TestMappingStatsReport(unittest.TestCase):
     ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
     EXPECTED_VALUES = {
-        Constants.A_SUBREAD_ACCURACY: 0.9283,
+        Constants.A_SUBREAD_CONCORDANCE: 0.9283,
         Constants.A_NREADS: 48,
         Constants.A_NSUBREADS: 112,
         Constants.A_SUBREAD_NBASES: 60467,
@@ -132,7 +132,7 @@ class TestMappingStatsReport(unittest.TestCase):
 
     def test_number_of_plot_groups(self):
         # the Yield pie chart has been removed in the streaming version.
-        # only subread accuracy, subread readlength, readlength histograms
+        # only subread concordance, subread readlength, readlength histograms
         value = _TOTAL_NUMBER_OF_PLOT_GROUPS
         self.assertEqual(len(self.report.plotGroups), value)
 
@@ -180,8 +180,8 @@ class TestMappingStatsReport(unittest.TestCase):
     def test_mapped_readlength_n50(self):
         self._compare_metric_values(Constants.A_READLENGTH_N50)
 
-    def test_mapped_subread_accuracy_mean(self):
-        id_ = Constants.A_SUBREAD_ACCURACY
+    def test_mapped_subread_concordance_mean(self):
+        id_ = Constants.A_SUBREAD_CONCORDANCE
         value = self.EXPECTED_VALUES[id_]
         self.assertAlmostEqual(
             self._get_attribute_value_by_id(id_), value, places=2)
@@ -207,7 +207,7 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
     def test_attributes_order(self):
         attribute_ids = [a.id for a in self.report.attributes]
         self.assertEqual(attribute_ids, [
-            Constants.A_SUBREAD_ACCURACY,
+            Constants.A_SUBREAD_CONCORDANCE,
             Constants.A_NSUBREADS,
             Constants.A_SUBREAD_LENGTH,
             Constants.A_SUBREAD_LENGTH_N50,
@@ -226,7 +226,7 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
 class TestMappingStatsReportLarge(TestMappingStatsReport):
     ALIGNMENTS = os.path.join(_IO_DATA_DIR, "lambda_aligned.xml")
     EXPECTED_VALUES = {
-        Constants.A_SUBREAD_ACCURACY: 0.8723,
+        Constants.A_SUBREAD_CONCORDANCE: 0.8723,
         Constants.A_NREADS: 1491,
         Constants.A_NSUBREADS: 18768,
         Constants.A_SUBREAD_NBASES: 14398098,
@@ -308,8 +308,8 @@ class TestMappingStatsGmapReport(unittest.TestCase):
         value = 1
         self.assertEqual(len(self.report.tables), value)
 
-    def test_mapped_subread_accuracy_mean(self):
-        id_ = Constants.A_SUBREAD_ACCURACY
+    def test_mapped_subread_concordance_mean(self):
+        id_ = Constants.A_SUBREAD_CONCORDANCE
         value = 0.8465
         self.assertAlmostEqual(
             self._get_attribute_value_by_id(id_), value, places=2)
@@ -353,7 +353,7 @@ class TestMappingStatsGmapReport(unittest.TestCase):
 
 class TestMappingStatsCCSReport(unittest.TestCase):
     EXPECTED_VALUES = {
-        Constants.A_READ_ACCURACY: 0.999,
+        Constants.A_READ_CONCORDANCE: 0.999,
         Constants.A_NREADS: 10,
         Constants.A_READLENGTH: 1123,
         Constants.A_READLENGTH_MAX: 1866,
@@ -405,8 +405,8 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         value = self.EXPECTED_VALUES[metric_id]
         self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
 
-    def test_mapped_read_accuracy_mean(self):
-        self._compare_metric_values(Constants.A_READ_ACCURACY)
+    def test_mapped_read_concordance_mean(self):
+        self._compare_metric_values(Constants.A_READ_CONCORDANCE)
 
     def test_mapped_reads_n(self):
         self._compare_metric_values(Constants.A_NREADS)
@@ -426,7 +426,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     def test_attributes_order(self):
         attribute_ids = [a.id for a in self.report.attributes]
         self.assertEqual(attribute_ids, [
-            Constants.A_READ_ACCURACY,
+            Constants.A_READ_CONCORDANCE,
             Constants.A_NREADS,
             Constants.A_READLENGTH,
             Constants.A_READLENGTH_MAX,

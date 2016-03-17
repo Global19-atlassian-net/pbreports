@@ -12,22 +12,22 @@ Generates a report of statistics for subreads mapped to a reference genome with
 Blasr/pbalign.
 
 
-==============================  ==================================  =====================================================================================================================================
-Attribute ID                    Name                                Description
-==============================  ==================================  =====================================================================================================================================
-mapped_subread_accuracy_mean    Mean Mapped Concordance             The mean concordance of subreads that mapped to the reference sequence
-mapped_subreads_n               Mapped Subreads                     The number of subreads mapped to the reference sequence
-mapped_subread_readlength_mean  Mapped Subread Length Mean          The mean length of subreads that mapped to the reference sequence
-mapped_subreadlength_n50        Mapped Subread N50                  50% of bases that mapped to the reference sequence are in subreads longer than this value
-mapped_subreadlength_q95        Mapped Subread Length 95%           The 95th percentile of length of subreads that mapped to the reference sequence
-mapped_subread_readlength_max   Mapped Subread Length Max           The maximum length of subreads that mapped to the reference sequence
-mapped_subread_bases_n          Mapped Subread Bases                The number of subread bases mapped to the reference sequence
-mapped_reads_n                  Mapped Polymerase Reads             The number of polymerase reads mapped to the reference sequence
-mapped_readlength_mean          Mapped Polymerase Read Length Mean  The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)
-mapped_readlength_n50           Mapped Polymerase Read N50          50% of bases that mapped to the reference sequence are in polymerase reads longer than this value
-mapped_readlength_q95           Mapped Polymerase Read Length 95%   The 95th percentile of read length of polymerase reads that mapped to the reference sequence
-mapped_readlength_max           Mapped Polymerase Read Length Max   The maximum length of polymerase reads that mapped to the reference sequence
-==============================  ==================================  =====================================================================================================================================
+===============================  =========================================  =====================================================================================================================================
+Attribute ID                     Name                                       Description
+===============================  =========================================  =====================================================================================================================================
+mapped_subread_concordance_mean  Mean Mapped Concordance                    The mean concordance of subreads that mapped to the reference sequence
+mapped_subreads_n                Subreads (mapped)                          The number of subreads mapped to the reference sequence
+mapped_subread_readlength_mean   Subread Length Mean (bp) (mapped)          The mean length of subreads that mapped to the reference sequence
+mapped_subreadlength_n50         Subread Length N50 (bp) (mapped)           50% of bases that mapped to the reference sequence are in subreads longer than this value
+mapped_subreadlength_q95         Subread Length 95% (bp) (mapped)           The 95th percentile of length of subreads that mapped to the reference sequence
+mapped_subread_readlength_max    Subread Length Max (bp) (mapped)           The maximum length of subreads that mapped to the reference sequence
+mapped_subread_bases_n           Subread Bases (bp) (mapped)                The number of subread bases mapped to the reference sequence
+mapped_reads_n                   Polymerase Reads (mapped)                  The number of polymerase reads mapped to the reference sequence
+mapped_readlength_mean           Polymerase Read Length Mean (bp) (mapped)  The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)
+mapped_readlength_n50            Polymerase Read N50 (bp) (mapped)          50% of bases that mapped to the reference sequence are in polymerase reads longer than this value
+mapped_readlength_q95            Polymerase Read Length 95% (bp) (mapped)   The 95th percentile of read length of polymerase reads that mapped to the reference sequence
+mapped_readlength_max            Polymerase Read Length Max (bp) (mapped)   The maximum length of polymerase reads that mapped to the reference sequence
+===============================  =========================================  =====================================================================================================================================
 
 
 **pbreports.report.mapping_stats_ccs**:
@@ -37,17 +37,17 @@ Generates a report of statistics for CCS reads mapped to a reference genome
 with Blasr/pbalign.
 
 
-=========================  =================================  ====================================================================================
-Attribute ID               Name                               Description
-=========================  =================================  ====================================================================================
-mapped_read_accuracy_mean  Mapped Consensus Read Accuracy     The mean accuracy of CCS reads that mapped to the reference sequence
-mapped_reads_n             Mapped Consensus Reads             The number of CCS reads that mapped to the reference sequence
-mapped_bases_n             Mapped Consensus Bases             The number of CCS read bases that mapped to the reference sequence
-mapped_readlength_mean     Mapped Consensus Read Length Mean  The mean length of CCS reads that mapped to the reference sequence
-mapped_readlength_q95      Mapped Consensus Read Length 95%   The 95th percentile of length of CCS reads that mapped to the reference sequence
-mapped_readlength_max      Mapped Consensus Read Length Max   The maximum length of CCS reads that mapped to the reference sequence
-mapped_readlength_n50      Mapped N50                         50% of bases that mapped to the reference sequence are in contigs at least this long
-=========================  =================================  ====================================================================================
+============================  ======================================  ===========================================================================================
+Attribute ID                  Name                                    Description
+============================  ======================================  ===========================================================================================
+mapped_read_concordance_mean  Mapped Consensus Read Mean Concordance  The mean concordance of CCS reads that mapped to the reference sequence
+mapped_reads_n                Mapped Consensus Reads                  The number of CCS reads that mapped to the reference sequence
+mapped_bases_n                Mapped Consensus Bases                  The number of CCS read bases that mapped to the reference sequence
+mapped_readlength_mean        Mapped Consensus Read Length Mean       The mean length of CCS reads that mapped to the reference sequence
+mapped_readlength_q95         Mapped Consensus Read Length 95%        The 95th percentile of length of CCS reads that mapped to the reference sequence
+mapped_readlength_max         Mapped Consensus Read Length Max        The maximum length of CCS reads that mapped to the reference sequence
+mapped_readlength_n50         Mapped N50                              The read length at which 50% of the bases are in reads longer than, or equal to, this value
+============================  ======================================  ===========================================================================================
 
 
 **pbreports.report.coverage**:
@@ -72,15 +72,15 @@ Generates a table showing consensus stats and a report showing variants plots
 for the top 25 contigs of the supplied reference.
 
 
-==========================  =======================================  ======================================================================================
-Attribute ID                Name                                     Description
-==========================  =======================================  ======================================================================================
-mean_contig_length          Average Reference Length                 Average length of reference sequence contigs
-weighted_mean_bases_called  Average Reference Bases Called           Percentage of the reference sequence for which consensus bases were called
-weighted_mean_concordance   Average Reference Consensus Concordance  The percent accuracy (concordance) of the consensus sequence compared to the reference
-weighted_mean_coverage      Average Reference Coverage               The mean depth of coverage across the reference sequence
-longest_contig_name         Longest Reference Contig                 The FASTA header ID of the longest reference contig
-==========================  =======================================  ======================================================================================
+==========================  ====================================  ======================================================================================
+Attribute ID                Name                                  Description
+==========================  ====================================  ======================================================================================
+mean_contig_length          Mean Reference Length                 Mean length of reference sequence contigs
+weighted_mean_bases_called  Mean Reference Bases Called           Percentage of the reference sequence for which consensus bases were called
+weighted_mean_concordance   Mean Reference Consensus Concordance  The percent accuracy (concordance) of the consensus sequence compared to the reference
+weighted_mean_coverage      Mean Reference Coverage               The mean depth of coverage across the reference sequence
+longest_contig_name         Longest Reference Contig              The FASTA header ID of the longest reference contig
+==========================  ====================================  ======================================================================================
 
 
 **pbreports.report.sat**:
