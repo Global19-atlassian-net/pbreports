@@ -53,7 +53,7 @@ class Constants(object):
     C_SUBREADS = "mapped_subreads"
     C_SUBREAD_NBASES = "mapped_subread_base"
     C_SUBREAD_LENGTH = "mapped_subread_length"
-    C_SUBREAD_ACCURACY = "mapped_subread_accuracy"
+    C_SUBREAD_CONCORDANCE = "mapped_subread_concordance"
 
     # Table id
     #
@@ -69,7 +69,7 @@ class Constants(object):
 
     A_NSUBREADS = "mapped_subreads_n"
     A_SUBREAD_NBASES = "mapped_subread_bases_n"
-    A_SUBREAD_ACCURACY = "mapped_subread_accuracy_mean"
+    A_SUBREAD_CONCORDANCE = "mapped_subread_concordance_mean"
     A_SUBREAD_QUALITY = "mapped_subread_read_quality_mean"
     A_SUBREAD_LENGTH = "mapped_subread_readlength_mean"
     A_SUBREAD_LENGTH_MAX = "mapped_subread_readlength_max"
@@ -77,22 +77,22 @@ class Constants(object):
     A_SUBREAD_LENGTH_Q95 = "mapped_subreadlength_q95"
 
     # Plot Group ids
-    PG_SUBREAD_ACCURACY = "subread_accuracy_group"
+    PG_SUBREAD_CONCORDANCE = "subread_concordance_group"
     PG_SUBREAD_LENGTH = "subreadlength_plot"
     PG_READLENGTH = "readlength_plot"
     PG_RAINBOW = "rainbow_plot"
 
     # Plot ids
-    P_SUBREAD_ACCURACY = "subread_accuracy_group_accuracy_plot"
+    P_SUBREAD_CONCORDANCE = "concordance_plot"
     P_SUBREAD_LENGTH = "subreadlength_plot"
     P_READLENGTH = "readlength_plot"
     P_RAINBOW = "rainbow_plot"
 
     # XXX for CCS report - easier to put it here
-    A_READ_ACCURACY = "mapped_read_accuracy_mean"
-    C_READ_ACCURACY = "mapped_read_accuracy"
-    P_READ_ACCURACY = "read_accuracy_group_accuracy_plot"
-    PG_READ_ACCURACY = "read_accuracy_group"
+    A_READ_CONCORDANCE = "mapped_read_concordance_mean"
+    C_READ_CONCORDANCE = "mapped_read_concordance_mean"
+    P_READ_CONCORDANCE = "concordance_plot"
+    PG_READ_CONCORDANCE = "read_concordance_group"
     C_READ_NBASES = "mapped_bases"
 
 
@@ -432,12 +432,12 @@ class MeanSubreadLengthAggregator(_MeanAggregator):
         return int(np.round(self.mean))
 
 
-class MeanSubreadAccuracyAggregator(_MeanAggregator):
+class MeanSubreadConcordanceAggregator(_MeanAggregator):
     DATA_TYPE = SUBREAD_TYPE
 
     def apply(self, npa):
-        self.nvalues += npa['Accuracy'].shape[0]
-        self.total += npa['Accuracy'].sum()
+        self.nvalues += npa['Concordance'].shape[0]
+        self.total += npa['Concordance'].sum()
 
     @property
     def attribute(self):
@@ -475,19 +475,19 @@ class SubReadlengthHistogram(_BaseHistogram):
             self.bins[i] += 1
 
 
-class SubReadAccuracyHistogram(_BaseHistogram):
+class SubReadConcordanceHistogram(_BaseHistogram):
     DATA_TYPE = SUBREAD_TYPE
 
     def __init__(self, dx=0.01, nbins=101):
-        super(SubReadAccuracyHistogram, self).__init__(dx=dx, nbins=nbins)
+        super(SubReadConcordanceHistogram, self).__init__(dx=dx, nbins=nbins)
 
     def apply(self, crunched_npa):
         """This will be readlengths"""
-        for value in crunched_npa['Accuracy']:
+        for value in crunched_npa['Concordance']:
             i = int(math.ceil(value / self.dx))
             if i < 0:
                 log.warn(
-                    "Assuming GMAP mode. Negative accuracy found {n}".format(n=i))
+                    "Assuming GMAP mode. Negative concordance found {n}".format(n=i))
                 continue
             # add
             try:
@@ -597,7 +597,7 @@ def analyze_movie(movie, alignment_file, stats_models):
     reads = crunched.reads()
 
     # subreads recarray
-    # ["Length", "Accuracy", "isFirst", "modStart", "isFullSubread", "isMaxSubread"]
+    # ["Length", "Concordance", "isFirst", "modStart", "isFullSubread", "isMaxSubread"]
     subreads = crunched.subreads()
 
     log.info("Movie")
@@ -659,24 +659,24 @@ class MappingStatsCollector(object):
     COLUMN_ATTR = [
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
         Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
-        Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_ACCURACY
+        Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_CONCORDANCE
     ]
     ATTR_LABELS = OrderedDict([
-        (Constants.A_SUBREAD_ACCURACY, "Mean Mapped Concordance"),
-        (Constants.A_NSUBREADS, "Mapped Subreads"),
-        (Constants.A_SUBREAD_LENGTH, "Mapped Subread Length Mean"),
-        (Constants.A_SUBREAD_LENGTH_N50, "Mapped Subread N50"),
-        (Constants.A_SUBREAD_LENGTH_Q95, "Mapped Subread Length 95%"),
-        (Constants.A_SUBREAD_LENGTH_MAX, "Mapped Subread Length Max"),
-        (Constants.A_SUBREAD_NBASES, "Mapped Subread Bases"),
-        (Constants.A_NREADS, "Mapped Polymerase Reads"),
-        (Constants.A_READLENGTH, "Mapped Polymerase Read Length Mean"),
-        (Constants.A_READLENGTH_N50, "Mapped Polymerase Read N50"),
-        (Constants.A_READLENGTH_Q95, "Mapped Polymerase Read Length 95%"),
-        (Constants.A_READLENGTH_MAX, "Mapped Polymerase Read Length Max"),
+        (Constants.A_SUBREAD_CONCORDANCE, "Mean Mapped Concordance"),
+        (Constants.A_NSUBREADS, "Subreads (mapped)"),
+        (Constants.A_SUBREAD_LENGTH, "Subread Length Mean (bp) (mapped)"),
+        (Constants.A_SUBREAD_LENGTH_N50, "Subread Length N50 (bp) (mapped)"),
+        (Constants.A_SUBREAD_LENGTH_Q95, "Subread Length 95% (bp) (mapped)"),
+        (Constants.A_SUBREAD_LENGTH_MAX, "Subread Length Max (bp) (mapped)"),
+        (Constants.A_SUBREAD_NBASES, "Subread Bases (bp) (mapped)"),
+        (Constants.A_NREADS, "Polymerase Reads (mapped)"),
+        (Constants.A_READLENGTH, "Polymerase Read Length Mean (bp) (mapped)"),
+        (Constants.A_READLENGTH_N50, "Polymerase Read N50 (bp) (mapped)"),
+        (Constants.A_READLENGTH_Q95, "Polymerase Read Length 95% (bp) (mapped)"),
+        (Constants.A_READLENGTH_MAX, "Polymerase Read Length Max (bp) (mapped)"),
     ])
     ATTR_DESCRIPTIONS = {
-        Constants.A_SUBREAD_ACCURACY: "The mean concordance of subreads that mapped to the reference sequence",
+        Constants.A_SUBREAD_CONCORDANCE: "The mean concordance of subreads that mapped to the reference sequence",
         Constants.A_NREADS: "The number of polymerase reads mapped to the reference sequence",
         Constants.A_NSUBREADS: "The number of subreads mapped to the reference sequence",
         Constants.A_SUBREAD_NBASES: "The number of subread bases mapped to the reference sequence",
@@ -686,11 +686,11 @@ class MappingStatsCollector(object):
         Constants.A_SUBREAD_LENGTH_Q95: "The 95th percentile of length of subreads that mapped to the reference sequence",
         Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
         Constants.A_SUBREAD_LENGTH_MAX: "The maximum length of subreads that mapped to the reference sequence",
-        Constants.A_SUBREAD_LENGTH_N50: "50% of bases that mapped to the reference sequence are in subreads longer than this value",
-        Constants.A_READLENGTH_N50: "50% of bases that mapped to the reference sequence are in polymerase reads longer than this value",
+        Constants.A_SUBREAD_LENGTH_N50: "The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value",
+        Constants.A_READLENGTH_N50: "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value",
     }
     HISTOGRAM_IDS = {
-        Constants.P_SUBREAD_ACCURACY: "subread_accuracy_histogram",
+        Constants.P_SUBREAD_CONCORDANCE: "subread_concordance_histogram",
         Constants.PG_SUBREAD_LENGTH: "subreadlength_histogram",
         Constants.P_READLENGTH: "readlength_histogram",
     }
@@ -702,7 +702,7 @@ class MappingStatsCollector(object):
         (Constants.C_SUBREADS, "Mapped Subreads"),
         (Constants.C_SUBREAD_NBASES, "Mapped Subread Bases"),
         (Constants.C_SUBREAD_LENGTH, "Mapped Subread Length"),
-        (Constants.C_SUBREAD_ACCURACY, "Mapped Subread Accuracy")
+        (Constants.C_SUBREAD_CONCORDANCE, "Mapped Subread Concordance")
     ]
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
@@ -711,7 +711,7 @@ class MappingStatsCollector(object):
         SubreadCounterAggregator,
         NumberSubreadBasesAggregator,
         MeanSubreadLengthAggregator,
-        MeanSubreadAccuracyAggregator
+        MeanSubreadConcordanceAggregator
     ]
 
     def __init__(self, alignment_file):
@@ -746,23 +746,23 @@ class MappingStatsCollector(object):
 
         There's three histogram plots.
 
-        1. Subread accuracy
+        1. Subread concordance
         2. Subread rendlength
         3. Readlength
 
         """
         _p = [
             PlotViewProperties(
-                Constants.P_SUBREAD_ACCURACY,
-                Constants.PG_SUBREAD_ACCURACY,
+                Constants.P_SUBREAD_CONCORDANCE,
+                Constants.PG_SUBREAD_CONCORDANCE,
                 generate_plot,
-                'mapped_subread_accuracy_histogram.png',
+                'mapped_subread_concordance_histogram.png',
                 xlabel="Concordance",
                 ylabel="Subreads",
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Subread Accuracy"),
+                plot_group_title="Mapped Subread Concordance"),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
@@ -790,7 +790,7 @@ class MappingStatsCollector(object):
 
     def _get_total_aggregators(self):
         return OrderedDict([
-            (Constants.A_SUBREAD_ACCURACY, MeanSubreadAccuracyAggregator()),
+            (Constants.A_SUBREAD_CONCORDANCE, MeanSubreadConcordanceAggregator()),
             (Constants.A_NSUBREADS, SubreadCounterAggregator()),
             (Constants.A_SUBREAD_LENGTH, MeanSubreadLengthAggregator()),
             (Constants.A_SUBREAD_LENGTH_N50, SubreadN50Aggregator()),
@@ -808,7 +808,7 @@ class MappingStatsCollector(object):
             #'mapped_subread_read_quality_mean', MeanSubreadQualityAggregator()),
             ("readlength_histogram", ReadLengthHistogram(dx=500)),
             ("subreadlength_histogram", SubReadlengthHistogram()),
-            ("subread_accuracy_histogram", SubReadAccuracyHistogram(dx=0.005,
+            ("subread_concordance_histogram", SubReadConcordanceHistogram(dx=0.005,
                                                                     nbins=1001))
         ])
 
@@ -825,7 +825,7 @@ class MappingStatsCollector(object):
         polymerase readlength
         number of subread bases
         mean subread readlength
-        mean subread accuracy), ...]
+        mean subread concordance), ...]
         """
         columns = [Column(k, header=h) for k, h in self.COLUMNS]
         table = Table(Constants.T_STATS,
@@ -936,11 +936,11 @@ class MappingStatsCollector(object):
         plot_groups = to_plot_groups(plot_config_views, output_dir,
                                      id_to_aggregators)
         rb_pg = PlotGroup(Constants.PG_RAINBOW,
-                          title="Mapped Accuracy vs. Read Length")
-        rb_png = "mapped_accuracy_vs_read_length.png"
+                          title="Mapped Concordance vs. Read Length")
+        rb_png = "mapped_concordance_vs_read_length.png"
         make_rainbow_plot(self.alignment_file, rb_png)
         rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                      caption="Mapped Accuracy vs. Read Length")
+                      caption="Mapped Concordance vs. Read Length")
         rb_pg.add_plot(rb_plt)
         plot_groups.append(rb_pg)
 
@@ -971,7 +971,7 @@ def summarize_report(report_file, out=sys.stdout):
     report = load_report_from_json(report_file)
     attr = {a.id: a.value for a in report.attributes}
     W("%s:" % report_file)
-    W("  MEAN ACCURACY: {f}".format(f=attr[Constants.A_SUBREAD_ACCURACY]))
+    W("  MEAN CONCORDANCE: {f}".format(f=attr[Constants.A_SUBREAD_CONCORDANCE]))
     W("  NSUBREADS: {n}".format(n=attr[Constants.A_NSUBREADS]))
     W("  NREADS: {n}".format(n=attr[Constants.A_NREADS]))
     W("  NBASES: {n}".format(n=attr[Constants.A_SUBREAD_NBASES]))

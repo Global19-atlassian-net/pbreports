@@ -128,7 +128,7 @@ def from_alignment_file(movie_name, alignment_file_name):
     log.debug("analyzing Movie {m} in alignment file {a}".format(
         m=movie_name, a=alignment_file_name))
 
-    columns = ["Length", "Accuracy", "Read quality", "isFirst", "modStart"]
+    columns = ["Length", "Concordance", "Read quality", "isFirst", "modStart"]
 
     datum, unrolled, max_subread, movie_names = alignment_info_from_bam(
         alignment_file_name, movie_name)

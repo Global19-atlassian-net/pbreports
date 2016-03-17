@@ -20,10 +20,10 @@ __version__ = "0.1"
 class CCSMappingStatsCollector(MappingStatsCollector):
     COLUMN_ATTR = [
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
-        Constants.A_NBASES, Constants.A_READ_ACCURACY
+        Constants.A_NBASES, Constants.A_READ_CONCORDANCE
     ]
     ATTR_LABELS = OrderedDict([
-        (Constants.A_READ_ACCURACY, "Mapped Consensus Read Accuracy"),
+        (Constants.A_READ_CONCORDANCE, "Mapped Consensus Read Mean Concordance"),
         (Constants.A_NREADS, "Mapped Consensus Reads"),
         (Constants.A_NBASES, "Mapped Consensus Bases"),
         (Constants.A_READLENGTH, "Mapped Consensus Read Length Mean"),
@@ -32,16 +32,16 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         (Constants.A_READLENGTH_N50, "Mapped N50"),
     ])
     ATTR_DESCRIPTIONS = {
-        Constants.A_READ_ACCURACY: "The mean accuracy of CCS reads that mapped to the reference sequence",
+        Constants.A_READ_CONCORDANCE: "The mean concordance of CCS reads that mapped to the reference sequence",
         Constants.A_NREADS: "The number of CCS reads that mapped to the reference sequence",
         Constants.A_NBASES: "The number of CCS read bases that mapped to the reference sequence",
         Constants.A_READLENGTH: "The mean length of CCS reads that mapped to the reference sequence",
         Constants.A_READLENGTH_Q95: "The 95th percentile of length of CCS reads that mapped to the reference sequence",
         Constants.A_READLENGTH_MAX: "The maximum length of CCS reads that mapped to the reference sequence",
-        Constants.A_READLENGTH_N50: "50% of bases that mapped to the reference sequence are in contigs at least this long"
+        Constants.A_READLENGTH_N50: "The read length at which 50% of the bases are in reads longer than, or equal to, this value"
     }
     HISTOGRAM_IDS = {
-        Constants.P_READ_ACCURACY: "read_accuracy_histogram",
+        Constants.P_READ_CONCORDANCE: "read_concordance_histogram",
         Constants.P_READLENGTH: "readlength_histogram",
     }
     COLUMNS = [
@@ -50,19 +50,15 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         (Constants.C_READLENGTH, "Mapped Consensus Read Length"),
         (Constants.C_READLENGTH_N50, "Mapped Consensus Read Length n50"),
         (Constants.C_READ_NBASES, "Mapped Consensus Bases"),
-        (Constants.C_READ_ACCURACY, "Mapped Read Accuracy")
+        (Constants.C_READ_CONCORDANCE, "Mapped Read Concordance")
     ]
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
         MeanReadLengthAggregator,
         N50Aggreggator,
         NumberSubreadBasesAggregator,
-        MeanSubreadAccuracyAggregator
+        MeanSubreadConcordanceAggregator
     ]
-    HISTOGRAM_IDS = {
-        Constants.P_READ_ACCURACY: "read_accuracy_histogram",
-        Constants.P_READLENGTH: "readlength_histogram",
-    }
 
     def _get_plot_view_configs(self):
         """
@@ -77,16 +73,16 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         """
         _p = [
             PlotViewProperties(
-                Constants.P_READ_ACCURACY,
-                Constants.PG_READ_ACCURACY,
+                Constants.P_READ_CONCORDANCE,
+                Constants.PG_READ_CONCORDANCE,
                 generate_plot,
-                'mapped_read_accuracy_histogram.png',
+                'mapped_read_concordance_histogram.png',
                 xlabel="Concordance",
                 ylabel="Consensus Reads",
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Consensus Read Accuracy"),
+                plot_group_title="Mapped Consensus Read Concordance"),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -103,7 +99,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
 
     def _get_total_aggregators(self):
         return OrderedDict([
-            (Constants.A_READ_ACCURACY, MeanSubreadAccuracyAggregator()),
+            (Constants.A_READ_CONCORDANCE, MeanSubreadConcordanceAggregator()),
             (Constants.A_NREADS, ReadCounterAggregator()),
             (Constants.A_READLENGTH, MeanReadLengthAggregator()),
             (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
@@ -111,9 +107,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                                                              nbins=10000)),
             (Constants.A_READLENGTH_N50, N50Aggreggator()),
             (Constants.A_NBASES, NumberBasesAggregator()),
-            ("readlength_histogram", ReadLengthHistogram()),
-            ("read_accuracy_histogram", SubReadAccuracyHistogram(dx=0.005,
-                                                                 nbins=1001)),
+            (self.HISTOGRAM_IDS[Constants.P_READLENGTH], ReadLengthHistogram()),
+            (self.HISTOGRAM_IDS[Constants.P_READ_CONCORDANCE],
+             SubReadConcordanceHistogram(dx=0.005, nbins=1001))
         ])
 
 
@@ -149,12 +145,13 @@ def _resolved_tool_contract_runner(resolved_contract):
 def _get_parser():
     parser = get_pbparser(TOOL_ID, __version__,
                           "CCS Mapping Statistics", __doc__, DRIVER_EXE)
-
     parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
-                               "ConsensusAlignment XML DataSet", "BAM, SAM or ConsensusAlignment DataSet")
-    parser.add_output_file_type(FileTypes.REPORT, "report_json", "PacBio Json Report",
-                                "Output report JSON file.", "mapping_stats_report")
-
+                               "ConsensusAlignment XML DataSet",
+                               "BAM, SAM or ConsensusAlignment DataSet")
+    parser.add_output_file_type(FileTypes.REPORT, "report_json",
+                                "PacBio Json Report",
+                                "Output report JSON file.",
+                                default_name="mapping_stats_report")
     return parser
 
 
