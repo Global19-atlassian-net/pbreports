@@ -17,7 +17,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
-from pbcore.io import openDataSet, openDataFile  # FIXME(nechols)(2016-03-15)
+from pbcore.io import openDataSet, BarcodeSet
 
 from pbcore.io.BasH5IO import BasH5Reader
 from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
@@ -129,7 +129,7 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                                            rr.pbi.holeNumber)):
                 zmws_by_barcode[b].add(z)
                 reads_by_zmw[z].append((rr, i))
-        with openDataFile(barcodes) as bc:
+        with BarcodeSet(barcodes) as bc:
             for i_bc, barcode in enumerate(bc):
                 zmws = sorted(list(zmws_by_barcode[i_bc]))
                 for zmw in zmws:
@@ -197,8 +197,8 @@ def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     dataset_uuids = [
-        openDataFile(rtc.task.input_files[0]).uuid,
-        openDataFile(rtc.task.input_files[1]).uuid
+        openDataSet(rtc.task.input_files[0]).uuid,
+        BarcodeSet(rtc.task.input_files[1]).uuid
     ]
     report = run_to_report_bam(
         reads=rtc.task.input_files[0],
