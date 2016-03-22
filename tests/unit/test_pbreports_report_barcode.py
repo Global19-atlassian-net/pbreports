@@ -1,16 +1,17 @@
 
+from pprint import pformat
+import tempfile
+import unittest
+import logging
 import json
 import os
 import os.path as op
-import logging
-import tempfile
-import unittest
-from pprint import pformat
+import re
 
 import pysam
 
 from pbcore.util.Process import backticks
-from pbcore.io import SubreadSet, FastaWriter
+from pbcore.io import BarcodeSet, SubreadSet, FastaWriter
 import pbcommand.testkit
 
 from pbreports.report.barcode import run_to_report
