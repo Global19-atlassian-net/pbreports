@@ -19,11 +19,6 @@ from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
 
-from pbcore.io.BasH5IO import BasH5Reader
-from pbcore.io.BarcodeH5Reader import BarcodeH5Reader
-
-from pbreports.io.validators import bas_fofn_to_bas_files, validate_fofn
-
 
 log = logging.getLogger(__name__)
 __version__ = '0.6'
@@ -33,85 +28,6 @@ class Constants(object):
     TOOL_ID = "pbreports.tasks.barcode_report"
     TOOL_NAME = "barcode_report"
     DRIVER_EXE = "python -m pbreports.report.barcode --resolved-tool-contract"
-
-    # Some of this is borrowed and modified from pbbarcode
-    BAS_PLS_REGEX = r'\.ba[x|s]\.h5$|\.pl[x|s]\.h5$|\.cc[x|s]\.h5$'
-    BARCODE_EXT = '.bc.h5'
-    BC_REGEX = r'\.bc\.h5'
-
-
-# FIXME DELETE
-def _movie_name_from_file(fn):
-    return re.sub('|'.join((Constants.BC_REGEX, Constants.BAS_PLS_REGEX)), '', os.path.basename(fn))
-
-
-# FIXME DELETE
-def _get_movie_in_files(movie_name, file_names):
-    movie_file = [
-        f for f in file_names if _movie_name_from_file(f) == movie_name]
-    if len(movie_file) != 1:
-        raise ValueError("Incompatible FOFN files. Movie '{m}' not in {b}".format(
-            b=file_names, m=movie_file))
-    return movie_file[0]
-
-
-# FIXME DELETE
-def _to_tuple_list(bas_fofn, barcode_fofn):
-    """
-    Returns a list of [(/path/to/a.bas.h5, /path/to/bc.h5)...] based on
-    the movie names
-
-    :raises ValueError if fofn's are incompatible
-    """
-    bas_files = bas_fofn_to_bas_files(bas_fofn)
-    barcode_files = bas_fofn_to_bas_files(barcode_fofn)
-
-    movie_names = set([])
-    for fs in [bas_files, barcode_files]:
-        for file_name in fs:
-            movie_names.add(_movie_name_from_file(file_name))
-
-    s_movie_names = sorted(movie_names)
-
-    # store the results as a list of [(/path/to/a.bas.h5, /path/to/bc.h5),...]
-    bas_bc_files = []
-
-    for movie_name in s_movie_names:
-        bas_f = _get_movie_in_files(movie_name, bas_files)
-        barcode_f = _get_movie_in_files(movie_name, barcode_files)
-        bas_bc_files.append((bas_f, barcode_f))
-
-    return bas_bc_files
-
-
-# FIXME DELETE
-def _labels_reads_iterator_h5(reads, barcodes, subreads=True):
-    bas_barcode_tuple_list = _to_tuple_list(reads, barcodes)
-    log.info("Using {b} with subreads mode? {t}".format(
-        b=bas_barcode_tuple_list, t=subreads))
-    for item in bas_barcode_tuple_list:
-        if len(item) != 2:
-            raise ValueError(
-                "Expected tuple of (path/to/movie.bas.h5, path/to/movie.bc.h5)")
-
-    for bas_file, barcode_file in bas_barcode_tuple_list:
-        log.info("Processing: %s %s" % (bas_file, barcode_file))
-        basH5 = BasH5Reader(bas_file)
-        bcH5 = BarcodeH5Reader(barcode_file)
-
-        for label in bcH5.barcodeLabels:
-            for labeledZmw in bcH5.labeledZmwsFromBarcodeLabel(label):
-                zmw = basH5[labeledZmw.holeNumber]
-                if zmw is None:
-                    continue
-                if subreads:
-                    reads = zmw.subreads
-                else:
-                    reads = [zmw.ccsRead]
-                if not any(reads):
-                    continue
-                for read in reads:
-                    yield label, read
 
 
 def _labels_reads_iterator(reads, barcodes, subreads=True):
@@ -139,8 +55,7 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                         yield barcode.id, ["n"] * qlen
 
 
-def _run_to_report(labels_reads_iterator, reads, barcodes,
-                   subreads=True, dataset_uuids=()):
+def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
     """ Generate a Report instance from a SubreadSet and BarcodeSet.
     :param subreads: If the ccs fofn is given this needs to be set to False
     """
@@ -178,11 +93,6 @@ def _run_to_report(labels_reads_iterator, reads, barcodes,
     return report
 
 
-run_to_report = functools.partial(_run_to_report, _labels_reads_iterator_h5)
-run_to_report_bam = functools.partial(_run_to_report, _labels_reads_iterator)
-
-
-# FIXME should handle exclusively DataSet input
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
@@ -200,7 +110,7 @@ def resolved_tool_contract_runner(rtc):
         openDataSet(rtc.task.input_files[0]).uuid,
         BarcodeSet(rtc.task.input_files[1]).uuid
     ]
-    report = run_to_report_bam(
+    report = run_to_report(
         reads=rtc.task.input_files[0],
         barcodes=rtc.task.input_files[1],
         subreads=True,
