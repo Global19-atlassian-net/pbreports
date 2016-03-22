@@ -35,7 +35,7 @@ def _make_dataset(file_name=None):
 
 def _make_barcodes(file_name=None):
     if file_name is None:
-        file_name = tempfile.NamedTemporaryFile(suffix=".fasta").name
+        file_name = tempfile.NamedTemporaryFile(suffix=".barcodeset.xml").name
     fasta_file_name = file_name
     if file_name.endswith(".barcodeset.xml"):
         fasta_file_name = re.sub(".barcodeset.xml", ".fasta", file_name)
