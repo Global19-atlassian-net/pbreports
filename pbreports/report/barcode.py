@@ -69,7 +69,7 @@ def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
 
     label2row = {}
 
-    for label, read in labels_reads_iterator(reads, barcodes,
+    for label, read in _labels_reads_iterator(reads, barcodes,
                                              subreads=subreads):
         if not label in label2row:
             label2row[label] = MyRow(label)

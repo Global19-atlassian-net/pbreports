@@ -52,7 +52,7 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.barcode"
     INPUT_FILES = [
         tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name,
-        tempfile.NamedTemporaryFile(suffix=".fasta").name
+        tempfile.NamedTemporaryFile(suffix=".barcodeset.xml").name
     ]
 
     @classmethod
