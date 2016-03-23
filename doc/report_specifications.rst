@@ -18,13 +18,13 @@ Attribute ID                     Name                                       Desc
 mapped_subread_concordance_mean  Mean Mapped Concordance                    The mean concordance of subreads that mapped to the reference sequence
 mapped_subreads_n                Subreads (mapped)                          The number of subreads mapped to the reference sequence
 mapped_subread_readlength_mean   Subread Length Mean (bp) (mapped)          The mean length of subreads that mapped to the reference sequence
-mapped_subreadlength_n50         Subread Length N50 (bp) (mapped)           50% of bases that mapped to the reference sequence are in subreads longer than this value
+mapped_subreadlength_n50         Subread Length N50 (bp) (mapped)           The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value
 mapped_subreadlength_q95         Subread Length 95% (bp) (mapped)           The 95th percentile of length of subreads that mapped to the reference sequence
 mapped_subread_readlength_max    Subread Length Max (bp) (mapped)           The maximum length of subreads that mapped to the reference sequence
 mapped_subread_bases_n           Subread Bases (bp) (mapped)                The number of subread bases mapped to the reference sequence
 mapped_reads_n                   Polymerase Reads (mapped)                  The number of polymerase reads mapped to the reference sequence
 mapped_readlength_mean           Polymerase Read Length Mean (bp) (mapped)  The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)
-mapped_readlength_n50            Polymerase Read N50 (bp) (mapped)          50% of bases that mapped to the reference sequence are in polymerase reads longer than this value
+mapped_readlength_n50            Polymerase Read N50 (bp) (mapped)          The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value
 mapped_readlength_q95            Polymerase Read Length 95% (bp) (mapped)   The 95th percentile of read length of polymerase reads that mapped to the reference sequence
 mapped_readlength_max            Polymerase Read Length Max (bp) (mapped)   The maximum length of polymerase reads that mapped to the reference sequence
 ===============================  =========================================  =====================================================================================================================================
@@ -37,17 +37,17 @@ Generates a report of statistics for CCS reads mapped to a reference genome
 with Blasr/pbalign.
 
 
-============================  ======================================  ===========================================================================================
-Attribute ID                  Name                                    Description
-============================  ======================================  ===========================================================================================
-mapped_read_concordance_mean  Mapped Consensus Read Mean Concordance  The mean concordance of CCS reads that mapped to the reference sequence
-mapped_reads_n                Mapped Consensus Reads                  The number of CCS reads that mapped to the reference sequence
-mapped_bases_n                Mapped Consensus Bases                  The number of CCS read bases that mapped to the reference sequence
-mapped_readlength_mean        Mapped Consensus Read Length Mean       The mean length of CCS reads that mapped to the reference sequence
-mapped_readlength_q95         Mapped Consensus Read Length 95%        The 95th percentile of length of CCS reads that mapped to the reference sequence
-mapped_readlength_max         Mapped Consensus Read Length Max        The maximum length of CCS reads that mapped to the reference sequence
-mapped_readlength_n50         Mapped N50                              The read length at which 50% of the bases are in reads longer than, or equal to, this value
-============================  ======================================  ===========================================================================================
+============================  ================================  ===========================================================================================
+Attribute ID                  Name                              Description
+============================  ================================  ===========================================================================================
+mapped_read_concordance_mean  Mapped CCS Read Mean Concordance  The mean concordance of CCS reads that mapped to the reference sequence
+mapped_reads_n                Mapped CCS Reads                  The number of CCS reads that mapped to the reference sequence
+mapped_bases_n                Mapped CCS Bases (bp)             The number of CCS read bases that mapped to the reference sequence
+mapped_readlength_mean        Mapped CCS Read Length (mean)     The mean length of CCS reads that mapped to the reference sequence
+mapped_readlength_q95         Mapped CCS Read Length 95% (bp)   The 95th percentile of length of CCS reads that mapped to the reference sequence
+mapped_readlength_max         Mapped CCS Read Length Max (bp)   The maximum length of CCS reads that mapped to the reference sequence
+mapped_readlength_n50         Mapped N50 (bp)                   The read length at which 50% of the bases are in reads longer than, or equal to, this value
+============================  ================================  ===========================================================================================
 
 
 **pbreports.report.coverage**:
@@ -106,16 +106,15 @@ reads_in_cell           Reads in cell            Number of polymerase reads that
 Generate a report summarizing Circular Consensus Read (CCS) results.
 
 
-=========================  =================================  =============================================================================
-Attribute ID               Name                               Description
-=========================  =================================  =============================================================================
-number_of_ccs_reads        Consensus (CCS) reads              The number of CCS reads
-total_number_of_ccs_bases  Number of consensus bases          Total number of consensus bases in all CCS reads
-mean_ccs_readlength        Mean Consensus Read Length         Mean length of CCS reads
-mean_accuracy              Mean Consensus Predicted Accuracy  Mean predicted accuracy of CCS reads
-mean_qv                    Mean Consensus Predicted QV        Phred log-scale QV, equivalent to mean accuracy
-mean_ccs_num_passes        Mean Number of Passes              Mean number of complete subreads per CCS read, rounded to the nearest integer
-=========================  =================================  =============================================================================
+=========================  =======================  =============================================================================
+Attribute ID               Name                     Description
+=========================  =======================  =============================================================================
+number_of_ccs_reads        CCS reads                The number of CCS reads
+total_number_of_ccs_bases  Number of CCS bases      Total number of consensus bases in all CCS reads
+mean_ccs_readlength        CCS Read Length (mean)   Mean length of CCS reads
+mean_accuracy              CCS Read Score (mean)    Mean predicted accuracy of CCS reads
+mean_ccs_num_passes        Number of Passes (mean)  Mean number of complete subreads per CCS read, rounded to the nearest integer
+=========================  =======================  =============================================================================
 
 
 **pbreports.report.polished_assembly**:
