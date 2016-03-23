@@ -68,7 +68,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
 
         1. Subread accuracy
         2. Subread rendlength
-        3. Readlength
+        3. Read length
 
         """
         _p = [
