@@ -31,14 +31,14 @@ __version__ = '3.2'
 
 log = logging.getLogger(__name__)
 
-_REQUIRED_HEADER_FIELDS = ('Read length', 'ReadScore',
+_REQUIRED_HEADER_FIELDS = ('Readlength', 'ReadScore',
                            'PassedFilter', 'SequencingZMW', "ReadId")
 
 # Format is { Name: ( dType, f(str->dType) ) }
 VALID_COLUMNS = {"Movie": ("|S64", str),
                  "ReadId": ("|S64", str),
                  "#Bases": (int, int),
-                 "Read length": (int, int),
+                 "Readlength": (int, int),
                  "ReadScore": (float, float),
                  "Productivity": (int, int),
                  "SequencingZMW": (int, int),
@@ -416,17 +416,17 @@ def to_report(filter_csv, output_dir, dpi=72):
     hq_filter_f = lambda record: record.PassedFilter > 0
 
     # Pre-Filter Aggregator(s)
-    nbases_ag = SumAggregator('Read length')
-    nreads_ag = CountAggregator('Read length')
-    readlength_ag = MeanAggregator('Read length')
-    max_readlength_ag = MaxAggregator('Read length')
-    min_readlength_ag = MinAggregator('Read length')
+    nbases_ag = SumAggregator('Readlength')
+    nreads_ag = CountAggregator('Readlength')
+    readlength_ag = MeanAggregator('Readlength')
+    max_readlength_ag = MaxAggregator('Readlength')
+    min_readlength_ag = MinAggregator('Readlength')
     # the histogram is adaptively computed. The min value and dx is the
-    readlength_hist_ag = HistogramAggregator('Read length', 0, dx=100)
+    readlength_hist_ag = HistogramAggregator('Readlength', 0, dx=100)
     read_score_hist_ag = HistogramAggregator('ReadScore', 0, dx=0.002)
 
-    # n50_ag = N50Aggregator('Read length', max_bins=200000)
-    pre_n50_ag = N50Aggregator('Read length', max_bins=200000)
+    # n50_ag = N50Aggregator('Readlength', max_bins=200000)
+    pre_n50_ag = N50Aggregator('Readlength', max_bins=200000)
 
     readscore_ag = SumAggregator('ReadScore', total=0)
     readscore_mean_ag = MeanAggregator('ReadScore')
@@ -447,19 +447,19 @@ def to_report(filter_csv, output_dir, dpi=72):
     pre_models = [P(_apply, pre_filters, pre_agros)]
 
     # Post-Filter Aggregator(s)
-    post_nbases_ag = SumAggregator('Read length')
-    post_nreads_ag = CountAggregator('Read length')
-    post_readlength_ag = MeanAggregator('Read length')
-    post_min_readlength_ag = MinAggregator('Read length')
-    post_max_readlength_ag = MaxAggregator('Read length')
+    post_nbases_ag = SumAggregator('Readlength')
+    post_nreads_ag = CountAggregator('Readlength')
+    post_readlength_ag = MeanAggregator('Readlength')
+    post_min_readlength_ag = MinAggregator('Readlength')
+    post_max_readlength_ag = MaxAggregator('Readlength')
     # the histogram is adaptively computed. The min value and dx is the
-    post_readlength_hist_ag = HistogramAggregator('Read length', 0, dx=100)
+    post_readlength_hist_ag = HistogramAggregator('Readlength', 0, dx=100)
     post_readscore_hist_ag = HistogramAggregator('ReadScore', 0, dx=0.002)
 
     post_readscore_ag = SumAggregator('ReadScore')
     post_readscore_mean_ag = MeanAggregator('ReadScore')
 
-    post_n50_ag = N50Aggregator('Read length', max_bins=200000)
+    post_n50_ag = N50Aggregator('Readlength', max_bins=200000)
 
     # Post Filter Models
     post_filters = [seq_zmw_filter_f, hq_filter_f]
