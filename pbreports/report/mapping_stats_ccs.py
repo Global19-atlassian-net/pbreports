@@ -23,13 +23,13 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         Constants.A_NBASES, Constants.A_READ_CONCORDANCE
     ]
     ATTR_LABELS = OrderedDict([
-        (Constants.A_READ_CONCORDANCE, "Mapped Consensus Read Mean Concordance"),
-        (Constants.A_NREADS, "Mapped Consensus Reads"),
-        (Constants.A_NBASES, "Mapped Consensus Bases"),
-        (Constants.A_READLENGTH, "Mapped Consensus Read Length Mean"),
-        (Constants.A_READLENGTH_Q95, "Mapped Consensus Read Length 95%"),
-        (Constants.A_READLENGTH_MAX, "Mapped Consensus Read Length Max"),
-        (Constants.A_READLENGTH_N50, "Mapped N50"),
+        (Constants.A_READ_CONCORDANCE, "Mapped CCS Read Mean Concordance"),
+        (Constants.A_NREADS, "Mapped CCS Reads"),
+        (Constants.A_NBASES, "Mapped CCS Bases (bp)"),
+        (Constants.A_READLENGTH, "Mapped CCS Read Length (mean)"),
+        (Constants.A_READLENGTH_Q95, "Mapped CCS Read Length 95% (bp)"),
+        (Constants.A_READLENGTH_MAX, "Mapped CCS Read Length Max (bp)"),
+        (Constants.A_READLENGTH_N50, "Mapped N50 (bp)"),
     ])
     ATTR_DESCRIPTIONS = {
         Constants.A_READ_CONCORDANCE: "The mean concordance of CCS reads that mapped to the reference sequence",
@@ -46,11 +46,11 @@ class CCSMappingStatsCollector(MappingStatsCollector):
     }
     COLUMNS = [
         (Constants.C_MOVIE, "Movie"),
-        (Constants.C_READS, "Mapped Reads"),
-        (Constants.C_READLENGTH, "Mapped Consensus Read Length"),
-        (Constants.C_READLENGTH_N50, "Mapped Consensus Read Length n50"),
-        (Constants.C_READ_NBASES, "Mapped Consensus Bases"),
-        (Constants.C_READ_CONCORDANCE, "Mapped Read Concordance")
+        (Constants.C_READS, "Mapped CCS Reads"),
+        (Constants.C_READLENGTH, "Mapped CCS Read Length (mean)"),
+        (Constants.C_READLENGTH_N50, "Mapped CCS Read Length N50 (bp)"),
+        (Constants.C_READ_NBASES, "Mapped CCS Bases (bp)"),
+        (Constants.C_READ_CONCORDANCE, "Mapped CCS Read Concordance (mean)")
     ]
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
@@ -78,11 +78,11 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 generate_plot,
                 'mapped_read_concordance_histogram.png',
                 xlabel="Concordance",
-                ylabel="Consensus Reads",
+                ylabel="CCS Reads",
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Consensus Read Concordance"),
+                plot_group_title="Mapped CCS Read Concordance"),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -93,7 +93,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Consensus Read Length")
+                plot_group_title="Mapped CCS Read Length")
         ]
         return {v.plot_id: v for v in _p}
 

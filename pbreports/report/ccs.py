@@ -60,7 +60,7 @@ class Constants(object):
     A_TOTAL_BASES = 'total_number_of_ccs_bases'
     A_MEAN_READLENGTH = 'mean_ccs_readlength'
     A_MEAN_ACCURACY = 'mean_accuracy'
-    A_MEAN_QV = 'mean_qv'
+    #A_MEAN_QV = 'mean_qv'
     A_MEAN_NPASSES = 'mean_ccs_num_passes'
 
     # Table
@@ -72,23 +72,23 @@ class Constants(object):
     C_TOTAL_BASES = 'total_number_of_ccs_bases'
     C_MEAN_READLENGTH = 'ave_ccs_readlength'
     C_MEAN_ACCURACY = 'ave_ccs_accuracy'
-    C_MEAN_QV = 'mean_ccs_qv'
+    #C_MEAN_QV = 'mean_ccs_qv'
     C_MEAN_NPASSES = 'mean_ccs_num_passes'
 
     ATTR_LABELS = OrderedDict([
-        (A_NREADS, "Consensus (CCS) reads"),
-        (A_TOTAL_BASES, "Number of consensus bases"),
-        (A_MEAN_READLENGTH, "Mean Consensus Read Length"),
-        (A_MEAN_ACCURACY, "Mean Consensus Predicted Accuracy"),
-        (A_MEAN_QV, "Mean Consensus Predicted QV"),
-        (A_MEAN_NPASSES, "Mean Number of Passes")
+        (A_NREADS, "CCS reads"),
+        (A_TOTAL_BASES, "Number of CCS bases"),
+        (A_MEAN_READLENGTH, "CCS Read Length (mean)"),
+        (A_MEAN_ACCURACY, "CCS Read Score (mean)"),
+        #(A_MEAN_QV, "Mean Consensus Predicted QV"),
+        (A_MEAN_NPASSES, "Number of Passes (mean)")
     ])
     ATTR_DESCRIPTIONS = {
         A_NREADS: "The number of CCS reads",
         A_TOTAL_BASES: "Total number of consensus bases in all CCS reads",
         A_MEAN_READLENGTH: "Mean length of CCS reads",
         A_MEAN_ACCURACY: "Mean predicted accuracy of CCS reads",
-        A_MEAN_QV: "Phred log-scale QV, equivalent to mean accuracy",
+        #A_MEAN_QV: "Phred log-scale QV, equivalent to mean accuracy",
         A_MEAN_NPASSES: "Mean number of complete subreads per CCS read, rounded to the nearest integer"
     }
 
@@ -165,7 +165,7 @@ def _movie_results_to_attributes(movie_results):
     m_accuracy = np.round(
         accuracies.mean(), decimals=4) if accuracies.size > 0 else 0.0
     m_npasses = np.round(num_passes.mean()) if num_passes.size > 0 else 0.0
-    m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
+    #m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
     n_reads_at = Attribute(
         Constants.A_NREADS, read_lengths.shape[0], name=Constants.ATTR_LABELS[
@@ -176,14 +176,13 @@ def _movie_results_to_attributes(movie_results):
         Constants.A_MEAN_READLENGTH, m_readlength, name=Constants.ATTR_LABELS[Constants.A_MEAN_READLENGTH])
     m_accuracy_at = Attribute(
         Constants.A_MEAN_ACCURACY, m_accuracy, name=Constants.ATTR_LABELS[Constants.A_MEAN_ACCURACY])
-    m_qv = Attribute(
-        Constants.A_MEAN_QV, m_qv, name=Constants.ATTR_LABELS[Constants.A_MEAN_QV])
-
+    #m_qv = Attribute(
+    #    Constants.A_MEAN_QV, m_qv, name=Constants.ATTR_LABELS[Constants.A_MEAN_QV])
     m_npasses_at = Attribute(
         Constants.A_MEAN_NPASSES, m_npasses, name=Constants.ATTR_LABELS[Constants.A_MEAN_NPASSES])
 
     attributes = [n_reads_at, t_bases_at,
-                  m_readlength_at, m_accuracy_at, m_qv, m_npasses_at]
+                  m_readlength_at, m_accuracy_at, m_npasses_at]
 
     return attributes
 
@@ -194,19 +193,21 @@ def _movie_results_to_table(movie_results):
     Table has movie name, # of CCS bases, Total CCS bases,
     mean CCS readlength and mean CCS accuracy.
     """
+    labels = Constants.ATTR_LABELS
     columns = [Column(Constants.C_MOVIE_NAME, header="Movie"),
-               Column(Constants.A_NREADS, header="Consensus reads"),
+               Column(Constants.A_NREADS, header=labels[Constants.A_NREADS]),
                Column(Constants.A_TOTAL_BASES,
-                      header="Number of consensus bases"),
+                      header=labels[Constants.A_TOTAL_BASES]),
                Column(Constants.A_MEAN_READLENGTH,
-                      header="Mean Consensus Read Length"),
+                      header=labels[Constants.A_MEAN_READLENGTH]),
                Column(Constants.A_MEAN_ACCURACY,
-                      header="Mean Consensus Predicted Accuracy"),
-               Column(Constants.A_MEAN_QV,
-                      header="Mean Consensus Predicted QV"),
-               Column(Constants.A_MEAN_NPASSES, header="Mean Number of Passes")]
+                      header=labels[Constants.A_MEAN_ACCURACY]),
+               #Column(Constants.A_MEAN_QV,
+               #       header="Mean Consensus Predicted QV"),
+               Column(Constants.A_MEAN_NPASSES,
+                      header=labels[Constants.A_MEAN_NPASSES])]
 
-    table = Table(Constants.T_ID, title="Consensus reads", columns=columns)
+    table = Table(Constants.T_ID, title="CCS reads by movie", columns=columns)
 
     movie_names = {m.movie_name for m in movie_results}
 
@@ -227,7 +228,7 @@ def _movie_results_to_table(movie_results):
             accuracies.mean(), decimals=4) if accuracies.size > 0 else 0.0
         m_npasses = np.round(
             num_passes.mean(), decimals=3) if num_passes.size > 0 else 0.0
-        m_qv = int(round(accuracy_as_phred_qv(float(accuracies.mean()))))
+        #m_qv = int(round(accuracy_as_phred_qv(float(accuracies.mean()))))
 
         table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_name)
         table.add_data_by_column_id(Constants.A_NREADS, read_lengths.shape[0])
@@ -235,7 +236,7 @@ def _movie_results_to_table(movie_results):
             Constants.A_TOTAL_BASES, read_lengths.sum())
         table.add_data_by_column_id(Constants.A_MEAN_READLENGTH, m_readlength)
         table.add_data_by_column_id(Constants.A_MEAN_ACCURACY, m_accuracy)
-        table.add_data_by_column_id(Constants.A_MEAN_QV, m_qv)
+        #table.add_data_by_column_id(Constants.A_MEAN_QV, m_qv)
         table.add_data_by_column_id(Constants.A_MEAN_NPASSES, m_npasses)
 
     return table
