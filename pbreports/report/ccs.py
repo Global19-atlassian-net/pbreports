@@ -207,7 +207,7 @@ def _movie_results_to_table(movie_results):
                Column(Constants.A_MEAN_NPASSES,
                       header=labels[Constants.A_MEAN_NPASSES])]
 
-    table = Table(Constants.T_ID, title="CCS reads by movie", columns=columns)
+    table = Table(Constants.T_ID, title="By Movie", columns=columns)
 
     movie_names = {m.movie_name for m in movie_results}
 
