@@ -220,8 +220,8 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     if inSummaryFN.endswith(".json"):
         attributes = _report_to_attributes(inSummaryFN)
         r = load_report_from_json(inSummaryFN)
-        assert dataset_uuids[0] in r._dataset_uuids
-        dataset_uuids = r._dataset_uuids
+        # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
+        # reports; should we be?
     else:
         attributes = summaryToAttributes(inSummaryFN)
 
