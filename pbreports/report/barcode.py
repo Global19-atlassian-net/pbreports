@@ -53,8 +53,8 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                         # FIXME(nechols)(2016-03-15) this will not work on CCS
                         qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
                         barcode_id = "{f}--{r}".format(
-                            f=rr.pbi.bcForward[i_read]+1,
-                            r=rr.pbi.bcReverse[i_read]+1)
+                            f=rr.pbi.bcForward[i_read],
+                            r=rr.pbi.bcReverse[i_read])
                         yield barcode_id, barcode, ["n"] * qlen
 
 
