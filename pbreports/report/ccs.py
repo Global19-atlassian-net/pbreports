@@ -334,7 +334,8 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, datum, axis_labels, nbins,
 
 def scatter_plot_accuracy_vs_numpasses(data,
                                        axis_labels=(
-                                           "Number of passes", "Predicted accuracy (Phred QV)"),
+                                           "Number of passes",
+                                           "Read Score as Phred QV"),
                                        nbins=None, barcolor=None):
     """
     """
@@ -384,7 +385,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barco
 _custom_read_length_histogram = functools.partial(
     _custom_histogram_with_cdf, "Mb > Read Length", 1000000)
 _custom_read_accuracy_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Predicted Accuracy", 1000000)
+    _custom_histogram_with_cdf, "Mb > Read Score", 1000000)
 
 
 # These functions need to generate a function with signature (datum,
@@ -393,7 +394,7 @@ create_readlength_plot = functools.partial(__create_plot, _custom_read_length_hi
                                            ("Read Length", "Reads", "bp > Read Length"), 80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
 create_accuracy_plot = functools.partial(__create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
-                                         ("Quality", "Reads", "bp > Predicted Accuracy"), 80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
+                                         ("Quality", "Reads", "bp > Read Score"), 80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
 create_npasses_plot = functools.partial(__create_plot, _make_histogram, Constants.P_NPASSES,
                                         ("Number of Passes", "Reads"), 80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
@@ -401,7 +402,7 @@ create_npasses_plot = functools.partial(__create_plot, _make_histogram, Constant
 create_scatter_plot = functools.partial(__create_plot,
                                         scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
                                         ("Number of passes",
-                                         "Predicted accuracy (Phred QV)"), None,
+                                         "Read Score as Phred QV"), None,
                                         Constants.I_CCS_SCATTER_PLOT, get_blue(3))
 
 
@@ -426,12 +427,12 @@ def to_report(ccs_subread_set, output_dir):
     scatter_plot = create_scatter_plot((num_passes, accuracies), output_dir)
 
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title="Consensus Read Length",
+                                 title="CCS Read Length",
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
     accuracy_group = PlotGroup(Constants.PG_ACCURACY, plots=[accuracy_plot],
                                thumbnail=accuracy_plot.thumbnail,
-                               title="Consensus Predicted Accuracy")
+                               title="CCS Read Score")
 
     npasses_group = PlotGroup(Constants.P_NPASSES, plots=[npasses_plot],
                               thumbnail=npasses_plot.thumbnail,
@@ -439,7 +440,7 @@ def to_report(ccs_subread_set, output_dir):
 
     scatter_group = PlotGroup(Constants.P_SCATTER, plots=[scatter_plot],
                               thumbnail=scatter_plot.thumbnail,
-                              title="Number of Passes vs. Predicted Accuracy")
+                              title="Number of Passes vs. Read Score")
 
     table = _movie_results_to_table(movie_results)
     log.info(str(table))
