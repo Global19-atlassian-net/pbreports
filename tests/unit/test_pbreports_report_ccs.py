@@ -35,7 +35,7 @@ EXPECTED_VALUES = {
     Constants.A_MEAN_READLENGTH: 4766,
     Constants.A_MEAN_ACCURACY: 0.947,
     Constants.A_MEAN_NPASSES: 4,
-    Constants.A_MEAN_QV: 13
+    #Constants.A_MEAN_QV: 13
 }
 
 
@@ -165,8 +165,8 @@ class TestCCSMetrics(unittest.TestCase, TestCCSBase):
         actual = self._get_attribute_value_by_id(Constants.A_MEAN_ACCURACY)
         self.assertEqual('%.3f' % value, '%.3f' % actual)
 
-    def test_mean_qv(self):
-        self._compare_metric_values(Constants.A_MEAN_QV)
+    #def test_mean_qv(self):
+    #    self._compare_metric_values(Constants.A_MEAN_QV)
 
     def test_mean_ccs_num_passes(self):
         self._compare_metric_values(Constants.A_MEAN_NPASSES)
