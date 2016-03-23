@@ -52,7 +52,10 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                     for rr, i_read in reads_by_zmw[zmw]:
                         # FIXME(nechols)(2016-03-15) this will not work on CCS
                         qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
-                        yield barcode.id, ["n"] * qlen
+                        barcode_id = "{f}--{r}".format(
+                            f=rr.pbi.bcForward[i_read]+1,
+                            r=rr.pbi.bcReverse[i_read]+1)
+                        yield barcode_id, barcode, ["n"] * qlen
 
 
 def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
@@ -69,8 +72,8 @@ def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
 
     label2row = {}
 
-    for label, read in _labels_reads_iterator(reads, barcodes,
-                                             subreads=subreads):
+    for label, barcode, read in _labels_reads_iterator(reads, barcodes,
+                                                       subreads=subreads):
         if not label in label2row:
             label2row[label] = MyRow(label)
         label2row[label].bases += len(read)
