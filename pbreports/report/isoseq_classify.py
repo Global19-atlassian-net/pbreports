@@ -233,8 +233,8 @@ def make_report(contig_set, summary_txt, output_dir):
     if summary_txt.endswith(".json"):
         attributes = _report_to_attributes(summary_txt)
         r = load_report_from_json(summary_txt)
-        assert dataset_uuids[0] in r._dataset_uuids
-        dataset_uuids = r._dataset_uuids
+        # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
+        # reports; should we be?
     else:
         attributes = _summary_to_attributes(summary_txt)
 
