@@ -302,7 +302,7 @@ def generate_gff_records(interval_list, readers, ref_id,
         region_end = region_start + region_size
         # pbpy summarizeCoverage would merge the last region into the
         # penultimate region, so we do that here
-        if region_end >= ref_length:
+        if region_end >= ref_length and region_start > 0:
             continue
         if region_end + region_size >= ref_length:
             region_end = ref_length
