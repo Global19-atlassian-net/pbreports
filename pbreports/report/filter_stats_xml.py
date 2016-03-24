@@ -22,7 +22,7 @@ from pbcore.io import DataSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
-from pbreports.util import compute_n50
+from pbreports.util import compute_n50, dist_shaper
 
 __version__ = '0.1.0'
 
@@ -73,8 +73,11 @@ def to_report(stats_xml, output_dir, dpi=72):
     readscorenumber = 0
     approx_read_lens = []
 
+
     # if a merge failed there may be more than one dist:
-    for rlendist in dset.metadata.summaryStats.readLenDists:
+    shaper = dist_shaper(dset.metadata.summaryStats.readLenDists)
+    for orig_rlendist in dset.metadata.summaryStats.readLenDists:
+        rlendist = shaper(orig_rlendist)
         nbases += _total_from_bins(rlendist.bins,
                                    rlendist.minBinValue,
                                    rlendist.binWidth)
@@ -98,7 +101,9 @@ def to_report(stats_xml, output_dir, dpi=72):
             # approx_read_lens.append(rlendist.maxBinValue)
     n50 = np.round(compute_n50(approx_read_lens))
 
-    for rqualdist in dset.metadata.summaryStats.readQualDists:
+    shaper = dist_shaper(dset.metadata.summaryStats.readQualDists)
+    for orig_rqualdist in dset.metadata.summaryStats.readQualDists:
+        rqualdist = shaper(orig_rqualdist)
         readscoretotal += _total_from_bins(rqualdist.bins,
                                            rqualdist.minBinValue,
                                            rqualdist.binWidth)
@@ -124,7 +129,9 @@ def to_report(stats_xml, output_dir, dpi=72):
     plots = []
 
     # ReadLen distribution to barplot:
-    for i, rlendist in enumerate(dset.metadata.summaryStats.readLenDists):
+    shaper = dist_shaper(dset.metadata.summaryStats.readLenDists)
+    for i, orig_rlendist in enumerate(dset.metadata.summaryStats.readLenDists):
+        rlendist = shaper(orig_rlendist)
         len_fig, len_axes = get_fig_axes_lpr()
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
@@ -147,7 +154,9 @@ def to_report(stats_xml, output_dir, dpi=72):
     plots = []
 
     # ReadQual distribution to barplot:
-    for i, rqualdist in enumerate(dset.metadata.summaryStats.readQualDists):
+    shaper = dist_shaper(dset.metadata.summaryStats.readQualDists)
+    for i, orig_rqualdist in enumerate(dset.metadata.summaryStats.readQualDists):
+        rqualdist = shaper(orig_rqualdist)
         qual_fig, qual_axes = get_fig_axes_lpr()
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
