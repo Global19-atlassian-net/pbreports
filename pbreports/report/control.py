@@ -33,7 +33,7 @@ __version__ = '0.1'
 
 
 CSV_COLUMN_MAP = {"ReadId": ("|S128", str),
-                  "Read length": (int, int),
+                  "Readlength": (int, int),
                   "ReadScore": (float, float),
                   "PassedFilter": (int, int)}
 
@@ -191,7 +191,7 @@ def _process_reads(control_reads, filtered_reads):
     for row in filtered_reads:
         id, score, length = row['ReadId'],\
             row['ReadScore'],\
-            row['Read length']
+            row['Readlength']
 
         if id in control_reads:
 
