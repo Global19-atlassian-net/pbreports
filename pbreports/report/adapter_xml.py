@@ -9,7 +9,7 @@ import sys
 
 import numpy as np
 
-from pbreports.util import dist_shaper
+from pbreports.util import continuous_dist_shaper
 from pbcommand.models.report import Report, Table, Column, PlotGroup, Plot
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
@@ -59,7 +59,7 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     plots = []
     # Pull some histograms (may have dupes (unmergeable distributions)):
-    shaper = dist_shaper(dset.metadata.summaryStats.medianInsertDists)
+    shaper = continuous_dist_shaper(dset.metadata.summaryStats.medianInsertDists)
     for i, orig_ins_len_dist in enumerate(
             dset.metadata.summaryStats.medianInsertDists):
         ins_len_dist = shaper(orig_ins_len_dist)

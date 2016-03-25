@@ -14,7 +14,7 @@ from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
 from pbcore.io import SubreadSet
 
-from pbreports.util import dist_shaper
+from pbreports.util import dist_shaper, continuous_dist_shaper
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
@@ -443,7 +443,7 @@ class TestXMLstatsRpts(unittest.TestCase):
                 dists = getattr(ss4.metadata.summaryStats, dist_name)
                 self.assertEqual(len(dists), 1)
                 for n in [0, 1, 2, 10, 40, 41, 49, 50, 51, 200, 500]:
-                    ds = dist_shaper(dists, bins=n)
+                    ds = continuous_dist_shaper(dists, nbins=n)
                     fixed_dists = [ds(dist) for dist in dists]
                     self.assertEqual(len(dists[0].bins), nbins)
                     self.assertEqual(len(fixed_dists[0].bins), nbins)
@@ -456,13 +456,10 @@ class TestXMLstatsRpts(unittest.TestCase):
                     dists = getattr(sset.metadata.summaryStats, dist_name)
                     self.assertEqual(len(dists), 1)
                     # 0, requested nbins > numBins fails back to no-op
-                    test_nbins = [1, 2, 3, 4, 7, 10, 40, 41, 49, 50,
-                                  51, 200, 500]
-                    breakpoint = len([i for i in test_nbins if i <= nbins])
-                    no_ops = [0] + test_nbins[breakpoint:]
-                    ops = test_nbins[:breakpoint]
+                    ops = [1, 2, 3, 4, 7, 10, 40, 41, 49, 50, 51, 200, 500]
+                    no_ops = [0]
                     for n in no_ops:
-                        ds = dist_shaper(dists, bins=n)
+                        ds = continuous_dist_shaper(dists, nbins=n)
                         fixed_dists = [ds(dist) for dist in dists]
                         self.assertEqual(len(dists[0].bins), nbins)
                         self.assertEqual(len(fixed_dists[0].bins), nbins)
@@ -470,13 +467,68 @@ class TestXMLstatsRpts(unittest.TestCase):
                                          sum(fixed_dists[0].bins))
 
                     for n in ops:
-                        ds = dist_shaper(dists, bins=n)
+                        ds = continuous_dist_shaper(dists, nbins=n)
                         fixed_dists = [ds(dist) for dist in dists]
                         self.assertEqual(len(dists[0].bins), nbins)
                         self.assertEqual(len(fixed_dists[0].bins), n)
                         self.assertEqual(sum(dists[0].bins),
                                          sum(fixed_dists[0].bins))
 
+        except:
+            log.error(traceback.format_exc())
+            raise
+
+    @unittest.skipIf(not _internal_data(),
+                     "Internal data not available")
+    def test_abstract_dist_shaper(self):
+        try:
+            bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
+            labels1 = [i*5 for i in range(len(bins1))]
+            bins2 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0]
+            labels2 = [25 + i * 5 for i in range(len(bins2))]
+            dist_list = [(bins1, labels1), (bins2, labels2)]
+            merged = [0, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0]
+            for nbins in range(1, 100):
+                shaper = dist_shaper(dist_list, nbins=nbins)
+                for dist in dist_list:
+                    bins, labels = shaper(dist)
+                    self.assertEqual(len(bins), len(labels))
+                    self.assertEqual(len(bins), nbins)
+                    self.assertEqual(sum(bins), sum(dist[0]))
+                    """
+                    if nbins > len(merged):
+                        self.assertEqual(bins, merged)
+                        self.assertEqual(labels,
+                                         [i*5 for i in range(len(merged))])
+                    """
+        except:
+            log.error(traceback.format_exc())
+            raise
+
+
+    @unittest.skipIf(not _internal_data(),
+                     "Internal data not available")
+    def test_abstract_dist_shaper_float_bwidth(self):
+        try:
+            bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
+            labels1 = [i*0.2 for i in range(len(bins1))]
+            bins2 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0]
+            labels2 = [1.0 + i * 0.2 for i in range(len(bins2))]
+            dist_list = [(bins1, labels1), (bins2, labels2)]
+            merged = [0, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0]
+            for nbins in range(1, 100):
+                shaper = dist_shaper(dist_list, nbins=nbins)
+                for dist in dist_list:
+                    bins, labels = shaper(dist)
+                    self.assertEqual(len(bins), len(labels))
+                    self.assertEqual(len(bins), nbins)
+                    self.assertEqual(sum(bins), sum(dist[0]))
+                    """
+                    if nbins > len(merged):
+                        self.assertEqual(bins, merged)
+                        self.assertEqual(labels,
+                                         [i*5 for i in range(len(merged))])
+                    """
         except:
             log.error(traceback.format_exc())
             raise
