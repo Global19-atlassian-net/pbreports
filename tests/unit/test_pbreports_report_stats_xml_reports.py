@@ -12,13 +12,32 @@ from numpy import ndarray
 from pbcore.io.dataset.DataSetIO import InvalidDataSetIOError
 from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
+from pbcore.io import SubreadSet
 
+from pbreports.util import dist_shaper
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
 from pbreports.report.adapter_xml import to_report as make_adapter_report
 
 log = logging.getLogger(__name__)
+
+def _internal_data():
+    if os.path.exists("/pbi/dept/secondary/siv/testdata"):
+        return True
+    return False
+
+def get_fixed_bin_sts():
+    sfn = ('/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/'
+           'sts_xml/3120134-r54009_20160323_173308-1_A01-Bug30772/'
+           'm54009_160323_173323.sts.xml')
+    return sfn
+
+def get_fixed_bin_dataset():
+    sfn = get_fixed_bin_sts()
+    sset = SubreadSet()
+    sset.loadStats(sfn)
+    return sset
 
 
 class TestXMLstatsRpts(unittest.TestCase):
@@ -388,3 +407,77 @@ class TestXMLstatsRpts(unittest.TestCase):
         except:
             log.error(traceback.format_exc())
             raise
+
+    @unittest.skipIf(not _internal_data(),
+                     "Internal data not available")
+    def test_reports_with_fixed_bins(self):
+        try:
+            # TODO readQualDists are currently unpopulated, turn back on when
+            # they're repopulated
+            #for dist_name, nbins in zip(['medianInsertDists', 'readLenDists',
+            #                             'readQualDists'], [200, 200, 50]):
+            for dist_name, nbins in zip(['medianInsertDists', 'readLenDists'],
+                                        [200, 200]):
+                ss = SubreadSet()
+                ss.loadStats(get_fixed_bin_sts())
+
+                ss2 = SubreadSet()
+                ss2.loadStats(get_fixed_bin_sts())
+
+                # shift ss2
+                mdist = getattr(ss2.metadata.summaryStats, dist_name)[0].bins
+                mdist = [0, 0, 0] + mdist[:-3]
+                getattr(ss2.metadata.summaryStats, dist_name)[0].bins = mdist
+
+
+                ss3 = ss + ss2
+
+                ss4 = SubreadSet()
+                ss4.loadStats(get_fixed_bin_sts())
+
+                # shift ss4
+                mdist = getattr(ss4.metadata.summaryStats, dist_name)[0].bins
+                mdist = [0 for _ in mdist]
+                getattr(ss4.metadata.summaryStats, dist_name)[0].bins = mdist
+
+                dists = getattr(ss4.metadata.summaryStats, dist_name)
+                self.assertEqual(len(dists), 1)
+                for n in [0, 1, 2, 10, 40, 41, 49, 50, 51, 200, 500]:
+                    ds = dist_shaper(dists, bins=n)
+                    fixed_dists = [ds(dist) for dist in dists]
+                    self.assertEqual(len(dists[0].bins), nbins)
+                    self.assertEqual(len(fixed_dists[0].bins), nbins)
+                    self.assertEqual(sum(dists[0].bins),
+                                     sum(fixed_dists[0].bins))
+
+                sss = [ss, ss2, ss3]
+
+                for sset in sss:
+                    dists = getattr(sset.metadata.summaryStats, dist_name)
+                    self.assertEqual(len(dists), 1)
+                    # 0, requested nbins > numBins fails back to no-op
+                    test_nbins = [1, 2, 3, 4, 7, 10, 40, 41, 49, 50,
+                                  51, 200, 500]
+                    breakpoint = len([i for i in test_nbins if i <= nbins])
+                    no_ops = [0] + test_nbins[breakpoint:]
+                    ops = test_nbins[:breakpoint]
+                    for n in no_ops:
+                        ds = dist_shaper(dists, bins=n)
+                        fixed_dists = [ds(dist) for dist in dists]
+                        self.assertEqual(len(dists[0].bins), nbins)
+                        self.assertEqual(len(fixed_dists[0].bins), nbins)
+                        self.assertEqual(sum(dists[0].bins),
+                                         sum(fixed_dists[0].bins))
+
+                    for n in ops:
+                        ds = dist_shaper(dists, bins=n)
+                        fixed_dists = [ds(dist) for dist in dists]
+                        self.assertEqual(len(dists[0].bins), nbins)
+                        self.assertEqual(len(fixed_dists[0].bins), n)
+                        self.assertEqual(sum(dists[0].bins),
+                                         sum(fixed_dists[0].bins))
+
+        except:
+            log.error(traceback.format_exc())
+            raise
+
