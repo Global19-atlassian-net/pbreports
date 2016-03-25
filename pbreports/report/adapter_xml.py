@@ -47,7 +47,8 @@ def to_report(stats_xml, output_dir, dpi=72):
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.medianInsertDists:
-        raise RuntimeError("No Pipeline Summary Stats (sts.xml) found")
+        raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
+                      "key distributions")
 
     # Pull some stats:
     adapter_dimers = np.round(

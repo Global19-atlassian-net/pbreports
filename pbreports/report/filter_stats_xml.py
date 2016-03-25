@@ -63,7 +63,8 @@ def to_report(stats_xml, output_dir, dpi=72):
         # an sts file was provided which will generate a new random uuid
         dataset_uuids = []
     if not dset.metadata.summaryStats.readLenDists:
-        raise RuntimeError("No Pipeline Summary Stats (sts.xml) found")
+        raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
+                      "key distributions")
 
     # Build the stats table:
     nbases = 0
