@@ -27,9 +27,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         (Constants.A_NREADS, "Mapped CCS Reads"),
         (Constants.A_NBASES, "Mapped CCS Bases (bp)"),
         (Constants.A_READLENGTH, "Mapped CCS Read Length (mean)"),
+        (Constants.A_READLENGTH_N50, "Mapped N50 (bp)"),
         (Constants.A_READLENGTH_Q95, "Mapped CCS Read Length 95% (bp)"),
         (Constants.A_READLENGTH_MAX, "Mapped CCS Read Length Max (bp)"),
-        (Constants.A_READLENGTH_N50, "Mapped N50 (bp)"),
     ])
     ATTR_DESCRIPTIONS = {
         Constants.A_READ_CONCORDANCE: "The mean concordance of CCS reads that mapped to the reference sequence",
@@ -102,10 +102,10 @@ class CCSMappingStatsCollector(MappingStatsCollector):
             (Constants.A_READ_CONCORDANCE, MeanSubreadConcordanceAggregator()),
             (Constants.A_NREADS, ReadCounterAggregator()),
             (Constants.A_READLENGTH, MeanReadLengthAggregator()),
-            (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
+            (Constants.A_READLENGTH_N50, N50Aggreggator()),
             (Constants.A_READLENGTH_Q95, MappedReadLengthQ95(dx=10,
                                                              nbins=10000)),
-            (Constants.A_READLENGTH_N50, N50Aggreggator()),
+            (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
             (Constants.A_NBASES, NumberBasesAggregator()),
             (self.HISTOGRAM_IDS[Constants.P_READLENGTH],
              ReadLengthHistogram()),
