@@ -429,9 +429,9 @@ class TestMappingStatsCCSReport(unittest.TestCase):
             Constants.A_READ_CONCORDANCE,
             Constants.A_NREADS,
             Constants.A_READLENGTH,
-            Constants.A_READLENGTH_MAX,
-            Constants.A_READLENGTH_Q95,
             Constants.A_READLENGTH_N50,
+            Constants.A_READLENGTH_Q95,
+            Constants.A_READLENGTH_MAX,
             Constants.A_NBASES,
         ])
 
