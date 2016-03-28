@@ -25,7 +25,6 @@ from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 
 import pbreports.plot.helper as PH
-from pbreports.report.preassembly import _validate_file
 
 __version__ = '2.0'
 
@@ -151,13 +150,6 @@ def _motif_csv_to_records(csv_file):
     log.info("Found {n} motif records from {f}".format(
         n=len(records), f=csv_file))
     return records
-
-
-def _validate_file_or_none(path):
-    if path is None:
-        return None
-    else:
-        return _validate_file(path)
 
 
 def setTickLabelFontSize(ax, minorTickLabelSize, majorTickLabelSize):
