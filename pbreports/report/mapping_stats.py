@@ -19,7 +19,7 @@ from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcore.io import openAlignmentFile, openDataSet
+from pbcore.io import openAlignmentFile, openDataSet, openDataFile
 from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 
 from pbreports.plot.rainbow import make_rainbow_plot
@@ -927,22 +927,25 @@ class MappingStatsCollector(object):
             log.info(a)
 
         plot_config_views = self._get_plot_view_configs()
+        plot_groups = []
 
-        # keeping the ids independent requires a bit of dictionary madness
-        # {report_id:HistogramAggregator}
-        id_to_aggregators = {k: _total_aggregators[v]
-                             for k, v in self.HISTOGRAM_IDS.iteritems()}
-
-        plot_groups = to_plot_groups(plot_config_views, output_dir,
-                                     id_to_aggregators)
-        rb_pg = PlotGroup(Constants.PG_RAINBOW,
-                          title="Mapped Concordance vs. Read Length")
-        rb_png = "mapped_concordance_vs_read_length.png"
-        make_rainbow_plot(self.alignment_file, rb_png)
-        rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                      caption="Mapped Concordance vs. Read Length")
-        rb_pg.add_plot(rb_plt)
-        plot_groups.append(rb_pg)
+        ds = openDataFile(self.alignment_file)
+        ds.updateCounts()
+        if len(ds) > 0:
+            # keeping the ids independent requires a bit of dictionary madness
+            # {report_id:HistogramAggregator}
+            id_to_aggregators = {k: _total_aggregators[v]
+                                 for k, v in self.HISTOGRAM_IDS.iteritems()}
+            plot_groups = to_plot_groups(plot_config_views, output_dir,
+                                         id_to_aggregators)
+            rb_pg = PlotGroup(Constants.PG_RAINBOW,
+                              title="Mapped Concordance vs. Read Length")
+            rb_png = "mapped_concordance_vs_read_length.png"
+            make_rainbow_plot(self.alignment_file, rb_png)
+            rb_plt = Plot(Constants.P_RAINBOW, rb_png,
+                          caption="Mapped Concordance vs. Read Length")
+            rb_pg.add_plot(rb_plt)
+            plot_groups.append(rb_pg)
 
         tables = [table]
         report = Report(Constants.R_ID,
