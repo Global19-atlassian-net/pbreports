@@ -96,13 +96,6 @@ class Constants(object):
     C_READ_NBASES = "mapped_bases"
 
 
-def _validate_file_or_none(arg):
-    if arg is None:
-        return None
-    else:
-        return validate_file(arg)
-
-
 class _MetaKlassAggregator(type):
 
     def __new__(cls, name, parents, dct):
