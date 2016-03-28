@@ -88,7 +88,7 @@ def _generate_table(list_fastq_stats):
     columns = [Column('file_name', header='File Name'),
                Column('n_reads', header="Number of Reads"),
                Column('total_bases', header="Total Bases"),
-               Column('mean_readlength', header="Mean Read length"),
+               Column('mean_readlength', header="Mean Read Length"),
                Column('mean_qv', header="Mean Quality Values")]
 
     table = Table('fastq_table', columns=columns)
