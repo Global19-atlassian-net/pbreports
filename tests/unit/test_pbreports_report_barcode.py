@@ -25,10 +25,13 @@ LOCAL_DATA_DIR = op.join(LOCAL_DATA, "barcode")
 BAM_FILE = op.join(LOCAL_DATA_DIR, "barcoded.subreads.bam")
 
 
-def _make_dataset(file_name=None):
+def _make_dataset(file_name=None, barcodes=None):
     if file_name is None:
         file_name = tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name
     ds = SubreadSet(BAM_FILE, strict=True)
+    if barcodes is not None:
+        for er in ds.externalResources:
+            er.barcodes = barcodes
     ds.write(file_name)
     return file_name
 
@@ -65,8 +68,8 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
 class TestBarcodeReportBasic(unittest.TestCase):
 
     def setUp(self):
-        self.subreads = _make_dataset()
         self.barcodes = _make_barcodes()
+        self.subreads = _make_dataset(barcodes=self.barcodes)
 
     def test_basic(self):
         report = run_to_report(self.subreads, self.barcodes, subreads=True)
@@ -79,8 +82,8 @@ class TestBarcodeReportBasic(unittest.TestCase):
 class TestBarcodeIntegration(unittest.TestCase):
 
     def setUp(self):
-        self.subreads = _make_dataset()
         self.barcodes = _make_barcodes()
+        self.subreads = _make_dataset(barcodes=self.barcodes)
         self.ccs = False
 
     def test_integration(self):
