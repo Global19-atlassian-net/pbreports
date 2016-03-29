@@ -61,8 +61,8 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
     @classmethod
     def setUpClass(cls):
         super(TestToolContract, cls).setUpClass()
-        _make_dataset(cls.INPUT_FILES[0])
-        _make_barcodes(cls.INPUT_FILES[1])
+        bc_file = _make_barcodes(cls.INPUT_FILES[1])
+        _make_dataset(cls.INPUT_FILES[0], barcodes=bc_file)
 
 
 class TestBarcodeReportBasic(unittest.TestCase):
