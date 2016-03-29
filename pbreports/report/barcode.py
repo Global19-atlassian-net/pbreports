@@ -37,6 +37,12 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
         if len(movies) != 1:  # FIXME
             raise NotImplementedError("Multiple-movie datasets are not " +
                                       "supported by this application.")
+        for er in ds.externalResources:
+            if er.barcodes != barcodes:
+                raise ValueError("Mismatch between external resource "+
+                                 "barcodes and input BarcodeSet: "+
+                                 "{a} != {b}".format(a=er.barcodes,
+                                                     b=barcodes))
         assert ds.isIndexed
         zmws_by_barcode = defaultdict(set)
         reads_by_zmw = defaultdict(list)
