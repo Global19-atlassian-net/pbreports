@@ -15,5 +15,5 @@ Mapped Polymerase Read Length n50     description
 Mapped Subreads                       description
 Mapped Subread Bases                  description
 Mapped Subread Length                 description
-Mapped Subread Concordance            description
+Mapped Subread Concordance            test
 ====================================  =====================================================================================================================================
