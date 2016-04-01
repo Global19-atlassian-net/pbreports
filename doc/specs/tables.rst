@@ -93,3 +93,23 @@ CCS Read Length (mean)                description
 CCS Read Score (mean)                 description
 Number of Passes (mean)               description
 ====================================  =====================================================================================================================================
+
+
+**Chunk Metrics**
+
+http://smrtlink-alpha:8080/#/analysis/job/180
+
+=======================================  =====================================================================================================================================
+Column Name                              Description
+=======================================  =====================================================================================================================================
+CCS generated                            description
+Below SNR threshold                      description
+No useable subreads                      description
+Insert size too long                     description
+Insert size too small                    description
+Not enough full passes                   description
+Too many unuseable subreads              description
+CCS did not converge                     description
+CCS below minimum predicted accuracy     description
+Unknown error during processing          description
+=======================================  =====================================================================================================================================
