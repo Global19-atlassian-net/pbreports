@@ -116,6 +116,8 @@ Unknown error during processing          description
 
 **Isoseq Transcript Classification**
 
+http://smrtlink-alpha:8080/#/analysis/job/180
+
 ==========================================  =====================================================================================================================================
 Column Name                                 Description
 ==========================================  =====================================================================================================================================
@@ -130,3 +132,5 @@ Number of full-length non-chimeric reads    description
 Number of full-length non-chimeric bases    description
 Mean full-length non-chimeric read length   description
 ==========================================  =====================================================================================================================================
+
+
