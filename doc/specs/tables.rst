@@ -113,3 +113,20 @@ CCS did not converge                     description
 CCS below minimum predicted accuracy     description
 Unknown error during processing          description
 =======================================  =====================================================================================================================================
+
+**Isoseq Transcript Classification**
+
+==========================================  =====================================================================================================================================
+Column Name                                 Description
+==========================================  =====================================================================================================================================
+Number of consensus reads                   description
+Number of five prime reads                  description
+Number of three prime reads                 description
+Number of poly-A reads                      description
+Number of filtered short reads              description
+Number of non-full-length reads             description
+Number of full-length reads                 description
+Number of full-length non-chimeric reads    description
+Number of full-length non-chimeric bases    description
+Mean full-length non-chimeric read length   description
+==========================================  =====================================================================================================================================
