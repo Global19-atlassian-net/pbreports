@@ -47,7 +47,7 @@ class Constants(object):
     ATTR_LABELS = OrderedDict([
         (MEAN_CONCORDANCE, "Mean Reference Consensus Concordance"),
         (MEAN_CONTIG_LENGTH, "Reference Contig Length (mean)"),
-        (LONGEST_CONTIG, "Longest Reference Contig")
+        (LONGEST_CONTIG, "Longest Reference Contig"),
         (MEAN_BASES_CALLED, "Mean Reference Bases Called"),
         (MEAN_COVERAGE, "Percent of Reference with Consensus Calls"),
     ])
