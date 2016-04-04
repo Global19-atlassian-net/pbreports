@@ -56,11 +56,11 @@ y-label                               Read Score as Phred QV
 
 
 
-TODO: find plot ID for this!!
+
 
 **Mapped CCS Read Length**
 
-Description
+TODO: find plot ID for this!!
 
 ====================================  =====================================================================================================================================
 Plot Feature                          Description
