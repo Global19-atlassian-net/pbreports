@@ -47,9 +47,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
     COLUMNS = [
         (Constants.C_MOVIE, "Movie"),
         (Constants.C_READS, "Number of CCS Reads (mapped)"),
+        (Constants.C_READ_NBASES, "Number of CCS Bases (mapped)"),
         (Constants.C_READLENGTH, "CCS Read Length Mean (mapped)"),
         (Constants.C_READLENGTH_N50, "CCS Read Length N50 (mapped)"),
-        (Constants.C_READ_NBASES, "Number of CCS Bases (mapped)"),
         (Constants.C_READ_CONCORDANCE, "Mapped CCS Read Mean Concordance")
     ]
     COLUMN_AGGREGATOR_CLASSES = [
@@ -101,12 +101,12 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         return OrderedDict([
             (Constants.A_READ_CONCORDANCE, MeanSubreadConcordanceAggregator()),
             (Constants.A_NREADS, ReadCounterAggregator()),
+            (Constants.A_NBASES, NumberBasesAggregator()),
             (Constants.A_READLENGTH, MeanReadLengthAggregator()),
             (Constants.A_READLENGTH_N50, N50Aggreggator()),
             (Constants.A_READLENGTH_Q95, MappedReadLengthQ95(dx=10,
                                                              nbins=10000)),
             (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
-            (Constants.A_NBASES, NumberBasesAggregator()),
             (self.HISTOGRAM_IDS[Constants.P_READLENGTH],
              ReadLengthHistogram()),
             (self.HISTOGRAM_IDS[Constants.P_READ_CONCORDANCE],
