@@ -18,7 +18,7 @@ from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-from pbcore.io import GffIO, AlignmentSet
+from pbcore.io import GffIO, openDataSet
 
 import pbreports.report.summarize_coverage.interval_tree as interval_tree
 from pbreports.util import openReference
@@ -400,7 +400,7 @@ def summarize_coverage(aln_set, aln_summ_gff, ref_set=None,
         untruncator = {}
 
     #readers = enumerate_readers(args.alignment_file)
-    readers = AlignmentSet(aln_set).resourceReaders()
+    readers = openDataSet(aln_set).resourceReaders()
     gff_writer = GffIO.GffWriter(aln_summ_gff)
 
     # First write the metadata. Names of references, command line used, things
@@ -461,9 +461,9 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     return 0
 
 
-def _add_options_to_parser(p):
+def add_options_to_parser(p, ds_type=FileTypes.DS_ALIGN):
     p.add_input_file_type(
-        FileTypes.DS_ALIGN,
+        ds_type,
         file_id="aln_set",
         name="AlignmentSet",
         description="AlignmentSet")
@@ -504,20 +504,6 @@ def _add_options_to_parser(p):
             "references.  Not compatible with a fixed region size."))
 
 
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
 def _get_parser_core():
     driver_exe = ("python -m "
                   "pbreports.report.summarize_coverage.summarize_coverage "
@@ -533,7 +519,7 @@ def _get_parser_core():
 
 def get_parser():
     p = _get_parser_core()
-    _add_options_to_parser(p)
+    add_options_to_parser(p)
     return p
 
 

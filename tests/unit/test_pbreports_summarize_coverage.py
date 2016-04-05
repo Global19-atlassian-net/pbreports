@@ -1,10 +1,12 @@
+
 import functools
 import itertools
-import numpy
-import os
-import random
+import tempfile
 import unittest
 import logging
+import random
+import numpy
+import os
 
 import pbcommand.testkit
 from pbcore.io import CmpH5Reader, GffIO, AlignmentSet, IndexedBamReader
@@ -20,6 +22,15 @@ SC_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'summarize_coverage')
 log = logging.getLogger(__name__)
 
 
+def _make_alignmentset(file_name=None):
+    bam = pbcore.data.getBamAndCmpH5()[0]
+    ds = AlignmentSet(bam)
+    if file_name is None:
+        file_name = tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name
+    ds.write(file_name)
+    return file_name
+
+
 class TestCompareToPbpy(unittest.TestCase):
 
     """Compare results from the pbreports summarize_coverage to an archived result from pbpy summarizeCoverage.
@@ -31,7 +42,7 @@ class TestCompareToPbpy(unittest.TestCase):
         return ds_reader, ds_reader.resourceReaders()
 
     def setUp(self):
-        self.aln_path = pbcore.data.getBamAndCmpH5()[0]
+        self.aln_path = _make_alignmentset()
         self.gff_path = os.path.join(LOCAL_DATA, "summarize_coverage",
                                      "alignment_summary.gff")
         self.ref_path = pbcore.data.getLambdaFasta()
@@ -172,7 +183,7 @@ class TestBuildIntervalLists(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.bam_path = pbcore.data.getBamAndCmpH5()[0]
+        cls.bam_path = _make_alignmentset()
         cls.ds_reader = AlignmentSet(cls.bam_path, strict=True,
                                      reference=pbcore.data.getLambdaFasta())
         cls.bam_readers = cls.ds_reader.resourceReaders()
@@ -243,7 +254,7 @@ class TestRegionSize(unittest.TestCase):
 #         variants = os.path.join(self._data_dir, 'variants.gff.gz')
 #         ref = os.path.join(self._data_dir, 'ecoliK12_pbi_March2013')
         ref = pbcore.data.getLambdaFasta()
-        tiny_reads = pbcore.data.getBamAndCmpH5()[0]
+        tiny_reads = _make_alignmentset()
         out = os.path.join(tempfile.mkdtemp(suffix="summ_cov"), 'gff')
         cmd = 'summarize_coverage --region_size=0 --num_regions=500 {a} {r} {g}'.format(
             a=tiny_reads, r=ref, g=out)
@@ -413,10 +424,24 @@ class TestSummarizeCoverage(pbcommand.testkit.PbTestApp):
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
     INPUT_FILES = [
-        pbcore.data.getBamAndCmpH5()[0],
+        tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name,
         pbcore.data.getLambdaFasta()
     ]
     TASK_OPTIONS = {}
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSummarizeCoverage, cls).setUpClass()
+        _make_alignmentset(cls.INPUT_FILES[0])
+
+
+class TestSummarizeCoverageCCS(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.summarize_coverage.ccs"
+    INPUT_FILES = [
+        os.path.join(LOCAL_DATA, "summarize_coverage",
+                     "mapped.consensusalignmentset.xml"),
+        pbcore.data.getLambdaFasta()
+    ]
 
 
 if __name__ == '__main__':
