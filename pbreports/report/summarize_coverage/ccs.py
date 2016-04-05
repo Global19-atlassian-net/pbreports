@@ -16,9 +16,7 @@ log = logging.getLogger(__name__)
 __version__ = "0.1"
 
 def get_parser():
-    driver_exe = ("python -m "
-                  "pbreports.report.summarize_coverage.ccs"
-                  "--resolved-tool-contract ")
+    driver_exe = "python -m {m} --resolved-tool-contract ".format(m=__name__)
     p = get_pbparser(
         "pbreports.tasks.summarize_coverage_ccs",
         __version__,
