@@ -148,3 +148,29 @@ CCS Read Length (mean)                      description
 CCS Read Score (mean)                       description
 Number of Passes (mean)                     description
 ==========================================  =====================================================================================================================================
+
+
+**Motifs**
+
+http://smrtlink-alpha-nightly:8080/#/analysis/job/116
+
+==========================================  =====================================================================================================================================
+Column Name                                 Description
+==========================================  =====================================================================================================================================
+Motif                                       description
+Modified Position                           description
+Motification Type                           description
+% of Motifs Detecte                         description
+# of Motifs Detected                        description
+# of Motifs in Genome                       description
+Mean QV                                     description
+Mean Coverage                               description
+Partner Motif                               description
+Mean IPD ratio                              description
+Group Tag                                   description
+Objective Score                             description
+==========================================  =====================================================================================================================================
+
+
+
+
