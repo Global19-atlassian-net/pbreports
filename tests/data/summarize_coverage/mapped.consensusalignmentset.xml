@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ConsensusAlignmentSet CreatedAt="2016-04-05T11:20:15" MetaType="PacBio.DataSet.ConsensusAlignmentSet" Name="pacbio_dataset_consensusalignmentset-160405_182015912" Tags="" TimeStampedName="pacbio_dataset_consensusalignmentset-160405_182015912" UniqueId="a0415ebd-42e7-8aa8-d5e8-ca67358090d1" Version="3.0.1" xmlns="http://pacificbiosciences.com/PacBioDatasets.xsd" xmlns:pbbase="http://pacificbiosciences.com/PacBioBaseDataModel.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pacificbiosciences.com/PacBioDataModel.xsd">
+<ConsensusAlignmentSet CreatedAt="2016-04-05T11:58:54" MetaType="PacBio.DataSet.ConsensusAlignmentSet" Name="pacbio_dataset_consensusalignmentset-160405_185854159" Tags="" TimeStampedName="pacbio_dataset_consensusalignmentset-160405_185854159" UniqueId="118b0032-08c2-dc98-16f3-36f7172acbc6" Version="3.0.1" xmlns="http://pacificbiosciences.com/PacBioDatasets.xsd" xmlns:pbbase="http://pacificbiosciences.com/PacBioBaseDataModel.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pacificbiosciences.com/PacBioDataModel.xsd">
 	<pbbase:ExternalResources>
-		<pbbase:ExternalResource MetaType="PacBio.ConsensusReadFile.ConsensusReadBamFile" ResourceId="/home/nechols/src/pbreports/tests/data/summarize_coverage/mapped.consensusalignmentset.bam" TimeStampedName="pacbio_consensusreadfile_consensusreadbamfile-160405_182015911" UniqueId="ebd3d7f4-4114-4173-831e-084b4ee09def">
+		<pbbase:ExternalResource MetaType="PacBio.ConsensusReadFile.ConsensusReadBamFile" ResourceId="mapped.consensusalignmentset.bam" TimeStampedName="pacbio_consensusreadfile_consensusreadbamfile-160405_185854159" UniqueId="fa460ab8-5082-43a8-acad-514f9af07bdc">
 			<pbbase:FileIndices>
-				<pbbase:FileIndex MetaType="PacBio.Index.PacBioIndex" ResourceId="/home/nechols/src/pbreports/tests/data/summarize_coverage/mapped.consensusalignmentset.bam.pbi" TimeStampedName="pacbio_index_pacbioindex-160405_182015911" UniqueId="a79ccd6e-d542-47be-83d6-ce1e8ac25bf5"/>
+				<pbbase:FileIndex MetaType="PacBio.Index.PacBioIndex" ResourceId="mapped.consensusalignmentset.bam.pbi" TimeStampedName="pacbio_index_pacbioindex-160405_185854159" UniqueId="9288c324-5a59-4de4-9e41-8fd6372d7d44"/>
 			</pbbase:FileIndices>
 		</pbbase:ExternalResource>
 	</pbbase:ExternalResources>
