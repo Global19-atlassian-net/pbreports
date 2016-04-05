@@ -209,11 +209,11 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
         self.assertEqual(attribute_ids, [
             Constants.A_SUBREAD_CONCORDANCE,
             Constants.A_NSUBREADS,
+            Constants.A_SUBREAD_NBASES,
             Constants.A_SUBREAD_LENGTH,
             Constants.A_SUBREAD_LENGTH_N50,
             Constants.A_SUBREAD_LENGTH_Q95,
             Constants.A_SUBREAD_LENGTH_MAX,
-            Constants.A_SUBREAD_NBASES,
             Constants.A_NREADS,
             Constants.A_READLENGTH,
             Constants.A_READLENGTH_N50,
@@ -428,11 +428,11 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         self.assertEqual(attribute_ids, [
             Constants.A_READ_CONCORDANCE,
             Constants.A_NREADS,
+            Constants.A_NBASES,
             Constants.A_READLENGTH,
             Constants.A_READLENGTH_N50,
             Constants.A_READLENGTH_Q95,
             Constants.A_READLENGTH_MAX,
-            Constants.A_NBASES,
         ])
 
 
