@@ -114,7 +114,7 @@ def to_report(stats_xml, output_dir, dpi=72):
             # maxOutlierValue:
             # approx_read_lens.pop()
             # approx_read_lens.append(rlendist.maxBinValue)
-    n50 = np.round(compute_n50(approx_read_lens))
+    n50 = int(np.round(compute_n50(approx_read_lens), decimals=0))
 
     for rqualdist in dset.metadata.summaryStats.readQualDists:
         readscoretotal += _total_from_bins(rqualdist.bins,
