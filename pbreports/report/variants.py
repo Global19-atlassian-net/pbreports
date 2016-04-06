@@ -45,11 +45,11 @@ class Constants(object):
     LONGEST_CONTIG = "longest_contig_name"
 
     ATTR_LABELS = OrderedDict([
-        (MEAN_CONCORDANCE, "Mean Reference Consensus Concordance"),
+        (MEAN_CONCORDANCE, "Reference Consensus Concordance (mean)"),
         (MEAN_CONTIG_LENGTH, "Reference Contig Length (mean)"),
         (LONGEST_CONTIG, "Longest Reference Contig"),
-        (MEAN_BASES_CALLED, "Mean Reference Bases Called"),
-        (MEAN_COVERAGE, "Percent of Reference with Consensus Calls"),
+        (MEAN_BASES_CALLED, "Percent Reference Bases Called (mean)"),
+        (MEAN_COVERAGE, "Reference Coverage (mean)"),
     ])
     ATTR_DESCRIPTIONS = {
         MEAN_CONTIG_LENGTH: "Mean length of reference sequence contigs",
@@ -335,11 +335,12 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
 
     attributes = [Attribute(id_, val, Constants.ATTR_LABELS[id_])
                   for id_, val in [
-        (Constants.MEAN_CONTIG_LENGTH, mean_contig_length),
-        (Constants.MEAN_BASES_CALLED, mean_bases_called),
         (Constants.MEAN_CONCORDANCE, mean_concord),
+        (Constants.MEAN_CONTIG_LENGTH, mean_contig_length),
+        (Constants.LONGEST_CONTIG, ordered_ids[0]),
+        (Constants.MEAN_BASES_CALLED, mean_bases_called),
         (Constants.MEAN_COVERAGE, mean_coverage),
-        (Constants.LONGEST_CONTIG, ordered_ids[0])]]
+    ]]
 
     return table, attributes
 
