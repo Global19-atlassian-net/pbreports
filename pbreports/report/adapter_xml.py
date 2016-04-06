@@ -3,6 +3,7 @@
 Generate XML report of adapter statistics.
 """
 
+from collections import OrderedDict
 import os
 import logging
 import sys
@@ -10,7 +11,7 @@ import sys
 import numpy as np
 
 from pbreports.util import continuous_dist_shaper
-from pbcommand.models.report import Report, Table, Column, PlotGroup, Plot
+from pbcommand.models.report import Report, PlotGroup, Plot, Attribute
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -27,6 +28,14 @@ class Constants(object):
     TOOL_ID = "pbreports.tasks.adapter_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.adapter_xml "
                   "--resolved-tool-contract ")
+
+    A_DIMERS = "adapter_dimers"
+    A_SHORT_INSERTS = "short_inserts"
+
+    ATTR_LABELS = OrderedDict([
+        (A_DIMERS, "Adapter Dimers (0-10bp)"),
+        (A_SHORT_INSERTS, "Short Inserts (11-100bp)")
+    ])
 
 
 log = logging.getLogger(__name__)
@@ -85,17 +94,12 @@ def to_report(stats_xml, output_dir, dpi=72):
                              title="Observed Insert Length Distribution",
                              plots=plots,
                              thumbnail=os.path.relpath(thumbnail_base, output_dir))]
-
-    columns = [Column("adaper_xml_conditions", None,
-                      ('Adapter Dimers (0-10bp)',
-                       'Short Inserts (11-100bp)')),
-               Column("adaper_xml_results", None,
-                      (adapter_dimers, short_inserts))]
-
-    tables = [Table("adapter_xml_table", "Adapter Statistics", columns)]
+    attributes = [Attribute(i, v, name=Constants.ATTR_LABELS[i]) for i,v in
+        zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
+            [adapter_dimers, short_inserts])]
 
     report = Report("adapter_xml_report", title="Adapter Report",
-                    tables=tables, attributes=None, plotgroups=plot_groups)
+                    attributes=attributes, plotgroups=plot_groups)
 
     return report
 

@@ -6,6 +6,8 @@ Generates:
  - Table of total bases, # of reads, mean readlengh, mean
    readscore
 """
+
+from collections import OrderedDict
 import os
 import logging
 import sys
@@ -13,12 +15,12 @@ import sys
 import numpy as np
 from pbcommand.utils import setup_log
 
-from pbcommand.models.report import (Report, Table, Column, Plot,
+from pbcommand.models.report import (Report, Table, Column, Plot, Attribute,
                                      PlotGroup)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
-from pbcore.io import DataSet
+from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
@@ -31,6 +33,20 @@ class Constants(object):
     TOOL_ID = "pbreports.tasks.filter_stats_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.filter_stats_xml "
                   "--resolved-tool-contract ")
+
+    A_NBASES = "nbases"
+    A_NREADS = "nreads"
+    A_READ_N50 = "read_n50"
+    A_READ_LENGTH = "read_length"
+    A_READ_QUALITY = "read_quality"
+
+    ATTR_LABELS = OrderedDict([
+        (A_NBASES, "Polymerase Read Bases"),
+        (A_NREADS, "Polymerase Reads"),
+        (A_READ_N50, "Polymerase Read N50"),
+        (A_READ_LENGTH, "Polymerase Read Length"),
+        (A_READ_QUALITY, "Polymerase Read Quality")
+    ])
 
 
 log = logging.getLogger(__name__)
@@ -55,7 +71,7 @@ def to_report(stats_xml, output_dir, dpi=72):
     """
     log.info("Analyzing XML {f}".format(f=stats_xml))
     # stats_xml should be a dataset:
-    dset = DataSet(stats_xml)
+    dset = SubreadSet(stats_xml)
     dataset_uuids = [dset.uuid]
     # but if it isn't, no problem:
     if not dset.metadata.summaryStats:
@@ -108,20 +124,18 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     readlen = 0
     if nreads != 0:
-        readlen = np.round(nbases / nreads, decimals=2)
+        readlen = int(np.round(nbases / nreads, decimals=0))
     readQuality = 0
     if readscorenumber != 0:
         readQuality = np.round(readscoretotal / readscorenumber, decimals=2)
-    row_names = ["Polymerase Read Bases",
-                 "Polymerase Reads",
-                 "Polymerase Read N50",
-                 "Polymerase Read Length",
-                 "Polymerase Read Quality"]
-    _pre_filter = [np.round(nbases, decimals=2),
+    _pre_filter = [int(np.round(nbases, decimals=0)),
                    nreads,
                    n50,
                    readlen,
                    readQuality]
+    attr = []
+    for i, (attr_id, label) in enumerate(Constants.ATTR_LABELS.iteritems()):
+        attr.append(Attribute(attr_id, value=_pre_filter[i], name=label))
 
     plots = []
 
@@ -174,17 +188,9 @@ def to_report(stats_xml, output_dir, dpi=72):
                                  plots=plots))
 
     # build the report:
-    columns = [Column("filter_names_column", header="Metrics",
-                      values=row_names)]
-    columns.append(Column("filter_stats_column", header="Values",
-                          values=_pre_filter))
-
-    tables = [Table("filter_xml_table", "Filtering Statistics", columns)]
-
     report = Report("filtering_stats_xml_report",
                     title="Filtering stats XML report",
-                    tables=tables,
-                    attributes=None,
+                    attributes=attr,
                     plotgroups=plot_groups,
                     dataset_uuids=dataset_uuids)
 

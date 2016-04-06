@@ -18,6 +18,7 @@ from pbreports.util import dist_shaper, continuous_dist_shaper
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
+from pbreports.report.filter_stats_xml import Constants
 from pbreports.report.adapter_xml import to_report as make_adapter_report
 
 log = logging.getLogger(__name__)
@@ -261,14 +262,10 @@ class TestXMLstatsRpts(unittest.TestCase):
 
             d = json.loads(rpt.to_json())
 
-            t = d['tables'][0]
-            c0 = t['columns'][0]
-            c1 = t['columns'][1]
-
-            self.assertEqual('Adapter Dimers (0-10bp)', c0['values'][0])
-            self.assertEqual('Short Inserts (11-100bp)', c0['values'][1])
-            self.assertEqual(0.0, c1['values'][0])
-            self.assertEqual(0.0, c1['values'][1])
+            a = d['attributes']
+            self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp)')
+            self.assertEqual(a[0]['value'], 0.0)
+            self.assertEqual(a[1]['value'], 0.0)
             self.assertTrue(os.path.exists(os.path.join(
                 self.get_output_dir(),
                 'interAdapterDist0.png')))
@@ -291,14 +288,11 @@ class TestXMLstatsRpts(unittest.TestCase):
 
             d = json.loads(rpt.to_json())
 
-            t = d['tables'][0]
-            c0 = t['columns'][0]
-            c1 = t['columns'][1]
+            a = d['attributes']
+            self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp)')
+            self.assertEqual(a[0]['value'], 0.0)
+            self.assertEqual(a[1]['value'], 0.0)
 
-            self.assertEqual('Adapter Dimers (0-10bp)', c0['values'][0])
-            self.assertEqual('Short Inserts (11-100bp)', c0['values'][1])
-            self.assertEqual(0.0, c1['values'][0])
-            self.assertEqual(0.0, c1['values'][1])
             self.assertTrue(os.path.exists(os.path.join(
                 self.get_output_dir(),
                 'interAdapterDist0.png')))
@@ -309,6 +303,13 @@ class TestXMLstatsRpts(unittest.TestCase):
         except:
             log.error(traceback.format_exc())
             raise
+
+    def _compare_attribute_values(self, report_d, expected_d):
+        attr = report_d['attributes']
+        attr_d = {a_['id'].split(".")[-1]:a_['value'] for a_ in attr}
+        for id_, val in expected_d.iteritems():
+            self.assertEqual(attr_d[id_], val)
+
 
     def test_make_filter_stats_report_sts_xml(self):
         """
@@ -322,27 +323,16 @@ class TestXMLstatsRpts(unittest.TestCase):
             rpt = make_filter_report(sts_xml, self.get_output_dir())
 
             d = json.loads(rpt.to_json())
+            self._compare_attribute_values(
+                report_d=d,
+                expected_d={
+                    Constants.A_NBASES:  4464266,
+                    Constants.A_NREADS: 901,
+                    Constants.A_READ_N50: 6570,
+                    Constants.A_READ_LENGTH: 4955,
+                    Constants.A_READ_QUALITY: 0.83
+                })
 
-            t = d['tables'][0]
-            c0 = t['columns'][0]
-            c1 = t['columns'][1]
-            self.assertEqual('Metrics', c0['header'])
-            self.assertEqual('filtering_stats_xml_report.filter_xml_table.'
-                             'filter_names_column', c0['id'])
-            self.assertEqual('Polymerase Read Bases', c0['values'][0])
-            self.assertEqual('Polymerase Reads', c0['values'][1])
-            self.assertEqual('Polymerase Read N50', c0['values'][2])
-            self.assertEqual('Polymerase Read Length', c0['values'][3])
-            self.assertEqual('Polymerase Read Quality', c0['values'][4])
-
-            self.assertEqual('Values', c1['header'])
-            self.assertEqual('filtering_stats_xml_report.filter_xml_table.'
-                             'filter_stats_column', c1['id'])
-            self.assertEqual(4464266.29, c1['values'][0])
-            self.assertEqual(901, c1['values'][1])
-            self.assertEqual(6570, c1['values'][2])
-            self.assertEqual(4954.79, c1['values'][3])
-            self.assertEqual(0.83, c1['values'][4])
             self.assertTrue(os.path.exists(os.path.join(
                 self.get_output_dir(),
                 'readLenDist0.png')))
@@ -370,27 +360,16 @@ class TestXMLstatsRpts(unittest.TestCase):
             rpt = make_filter_report(sts_xml, self.get_output_dir())
 
             d = json.loads(rpt.to_json())
+            self._compare_attribute_values(
+                report_d=d,
+                expected_d={
+                    Constants.A_NBASES:  393167213,
+                    Constants.A_NREADS: 25123,
+                    Constants.A_READ_N50: 21884,
+                    Constants.A_READ_LENGTH: 15650,
+                    Constants.A_READ_QUALITY: 0.86
+                })
 
-            t = d['tables'][0]
-            c0 = t['columns'][0]
-            c1 = t['columns'][1]
-            self.assertEqual('Metrics', c0['header'])
-            self.assertEqual('filtering_stats_xml_report.filter_xml_table.'
-                             'filter_names_column', c0['id'])
-            self.assertEqual('Polymerase Read Bases', c0['values'][0])
-            self.assertEqual('Polymerase Reads', c0['values'][1])
-            self.assertEqual('Polymerase Read N50', c0['values'][2])
-            self.assertEqual('Polymerase Read Length', c0['values'][3])
-            self.assertEqual('Polymerase Read Quality', c0['values'][4])
-
-            self.assertEqual('Values', c1['header'])
-            self.assertEqual('filtering_stats_xml_report.filter_xml_table.'
-                             'filter_stats_column', c1['id'])
-            self.assertEqual(393167212.65, c1['values'][0])
-            self.assertEqual(25123, c1['values'][1])
-            self.assertEqual(21884, c1['values'][2])
-            self.assertEqual(15649.69, c1['values'][3])
-            self.assertEqual(0.86, c1['values'][4])
             self.assertTrue(os.path.exists(os.path.join(
                 self.get_output_dir(),
                 'readLenDist0.png')))
