@@ -24,7 +24,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
-TARGET = op.join(op.dirname(__file__), "report_specifications.rst")
+TARGET = op.join(op.dirname(__file__), "attributes.rst")
 HEADERS = ["Attribute ID", "Name", "Description"]
 
 
