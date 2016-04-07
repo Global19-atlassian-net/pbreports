@@ -157,7 +157,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                            plots=[qv_validation_plot],
                            thumbnail=qv_validation_plot.thumbnail)
             plot_groups.append(pg)
-        except Exception as e::
+        except Exception as e:
             log.exception(e)
         return plot_groups
 
