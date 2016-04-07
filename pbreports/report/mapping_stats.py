@@ -837,6 +837,12 @@ class MappingStatsCollector(object):
         log.debug(str(table))
         return table
 
+    def add_more_plots(self, plot_groups, output_dir):
+        """
+        Unimplemented, override in subclasses
+        """
+        pass
+
     def to_report(self, output_dir):
         """
         This needs to be cleaned up. Keeping the old interface for testing purposes.
@@ -939,6 +945,7 @@ class MappingStatsCollector(object):
                           caption="Mapped Concordance vs. Read Length")
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
+        self.add_more_plots(plot_groups, output_dir)
 
         tables = [table]
         report = Report(Constants.R_ID,

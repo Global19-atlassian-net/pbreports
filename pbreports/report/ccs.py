@@ -242,36 +242,36 @@ def _movie_results_to_table(movie_results):
     return table
 
 
-def _make_histogram(datum, axis_labels, nbins, barcolor):
+def _make_histogram(data, axis_labels, nbins, barcolor):
     """Create a fig, ax instance and generate a histogram.
 
-    :param datum: np.array
+    :param data: np.array
     :param axis_labels: (tuple of str) (axis label, y axis label)
     :return: matplotlib fig, ax
     """
     # axis_labels = ('Median Distance Between Adapters', 'Pre-Filter Reads')
     fig, ax = get_fig_axes_lpr()
     apply_histogram_data(
-        ax, datum, nbins, axis_labels=axis_labels, barcolor=barcolor)
+        ax, data, nbins, axis_labels=axis_labels, barcolor=barcolor)
     return fig, ax
 
 
 def to_cdf(points):
     _total = 0
-    datum = []
+    data = []
     for x, y in points:
         _total += int(x * y)
-        datum.append(_total)
-    return datum
+        data.append(_total)
+    return data
 
 
-def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
+def _make_histogram_with_cdf(data, axis_labels, nbins, barcolor):
     """
 
     """
-    fig, ax = _make_histogram(datum, axis_labels, nbins, barcolor)
+    fig, ax = _make_histogram(data, axis_labels, nbins, barcolor)
 
-    bins, bin_edges = np.histogram(datum, bins=nbins)
+    bins, bin_edges = np.histogram(data, bins=nbins)
 
     rax = ax.twinx()
 
@@ -294,10 +294,10 @@ def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
     return fig, ax
 
 
-def _custom_histogram_with_cdf(new_rlabel, threshold, datum, axis_labels, nbins, barcolor):
-    fig, ax = _make_histogram(datum, axis_labels, nbins, barcolor)
+def _custom_histogram_with_cdf(new_rlabel, threshold, data, axis_labels, nbins, barcolor):
+    fig, ax = _make_histogram(data, axis_labels, nbins, barcolor)
 
-    bins, bin_edges = np.histogram(datum, bins=nbins)
+    bins, bin_edges = np.histogram(data, bins=nbins)
 
     rax = ax.twinx()
 
@@ -353,14 +353,14 @@ def scatter_plot_accuracy_vs_numpasses(data,
     return fig, ax
 
 
-def __create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolor, datum, output_dir, dpi=72):
+def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolor, data, output_dir, dpi=72):
     """Internal function used to create Plot instances.
 
     This should probably have a special container class to capture all the
     plot config options.
     """
 
-    fig, ax = _make_plot_func(datum, axis_labels, nbins, barcolor)
+    fig, ax = _make_plot_func(data, axis_labels, nbins, barcolor)
     path = os.path.join(output_dir, plot_name)
     try:
         fig.tight_layout()
@@ -381,25 +381,25 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barco
 
     return plot
 
-# These functions create signatures (datum, axis_labels, nbins, barcolor
+# These functions create signatures (data, axis_labels, nbins, barcolor
 _custom_read_length_histogram = functools.partial(
     _custom_histogram_with_cdf, "Mb > Read Length", 1000000)
 _custom_read_accuracy_histogram = functools.partial(
     _custom_histogram_with_cdf, "Mb > Read Score", 1000000)
 
 
-# These functions need to generate a function with signature (datum,
+# These functions need to generate a function with signature (data,
 # output_dir, dpi=)
-create_readlength_plot = functools.partial(__create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
+create_readlength_plot = functools.partial(create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
                                            ("Read Length", "Reads", "bp > Read Length"), 80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
-create_accuracy_plot = functools.partial(__create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
+create_accuracy_plot = functools.partial(create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
                                          ("Quality", "Reads", "bp > Read Score"), 80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
-create_npasses_plot = functools.partial(__create_plot, _make_histogram, Constants.P_NPASSES,
+create_npasses_plot = functools.partial(create_plot, _make_histogram, Constants.P_NPASSES,
                                         ("Number of Passes", "Reads"), 80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
 
-create_scatter_plot = functools.partial(__create_plot,
+create_scatter_plot = functools.partial(create_plot,
                                         scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
                                         ("Number of passes",
                                          "Read Score as Phred QV"), None,
