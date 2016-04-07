@@ -5,16 +5,41 @@ with Blasr/pbalign.
 """
 
 from collections import OrderedDict
+import logging
 import sys
 
 from pbcommand.models import get_pbparser, FileTypes
 
 from pbreports.report.streaming_utils import PlotViewProperties
+from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data, Line)
 from pbreports.report.mapping_stats import *
+from pbreports.report.ccs import create_plot
 
 TOOL_ID = "pbreports.tasks.mapping_stats_ccs"
 DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
 __version__ = "0.1"
+log = logging.getLogger(__name__)
+
+
+def scatter_plot_accuracy_vs_concordance(
+        data,
+        axis_labels=("Predicted accuracy", "Mapped concordance"),
+        nbins=None,
+        barcolor=None):
+    accuracy, concordance = data
+    fig, ax = get_fig_axes_lpr()
+    data = [Line(xData=accuracy,
+                 yData=concordance,
+                 style='+')]
+    apply_line_data(
+        ax=ax,
+        line_models=data,
+        axis_labels=axis_labels,
+        only_whole_ticks=False)
+    xlim = ax.get_xlim()
+    xy = np.linspace(xlim[0], xlim[1])
+    ax.plot(xy, xy, '-', color='r')
+    return fig, ax
 
 
 class CCSMappingStatsCollector(MappingStatsCollector):
@@ -59,17 +84,15 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         NumberSubreadBasesAggregator,
         MeanSubreadConcordanceAggregator
     ]
+    PG_QV_CALIBRATION = "qv_calibration"
+    P_QV_CALIBRATION = "qv_calibration_plot"
 
     def _get_plot_view_configs(self):
         """
-        Any change to the 'raw' view of a report plot should be changed here.
+        There are just two histogram plots in this report:
 
-        There's three histogram plots.
-
-        1. Subread accuracy
-        2. Subread rendlength
-        3. Read length
-
+        1. Mapped concordance
+        2. Read length
         """
         _p = [
             PlotViewProperties(
@@ -112,6 +135,31 @@ class CCSMappingStatsCollector(MappingStatsCollector):
             (self.HISTOGRAM_IDS[Constants.P_READ_CONCORDANCE],
              SubReadConcordanceHistogram(dx=0.005, nbins=1001))
         ])
+
+    def add_more_plots(self, plot_groups, output_dir):
+        try:
+            ds = ConsensusAlignmentSet(self.alignment_file)
+            accuracy, concordance = [], []
+            for bam in ds.resourceReaders():
+                accuracy.extend(list(bam.pbi.readQual))
+                concordance.extend(list(bam.identity))
+            qv_validation_plot = create_plot(
+                _make_plot_func=scatter_plot_accuracy_vs_concordance,
+                plot_id=self.P_QV_CALIBRATION,
+                axis_labels=("Predicted accuracy", "Mapped concordance"),
+                nbins=None,
+                plot_name="mapped_qv_calibration.png",
+                barcolor="#A0A0FF",
+                data=(accuracy, concordance),
+                output_dir=output_dir)
+            pg = PlotGroup(self.PG_QV_CALIBRATION,
+                           title="Mapped QV Calibration",
+                           plots=[qv_validation_plot],
+                           thumbnail=qv_validation_plot.thumbnail)
+            plot_groups.append(pg)
+        except Exception as e:
+            log.exception(e)
+        return plot_groups
 
 
 def to_report(alignment_file, output_dir):
