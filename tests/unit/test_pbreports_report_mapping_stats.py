@@ -358,7 +358,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         Constants.A_READLENGTH: 1123,
         Constants.A_READLENGTH_MAX: 1866,
         Constants.A_READLENGTH_Q95: 1890,
-        "number_of_plot_groups": 3,
+        "number_of_plot_groups": 4,
         "number_of_attributes": 7,
     }
 
@@ -467,3 +467,4 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
         r = load_report_from_json(rtc.task.output_files[0])
         with ConsensusAlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
+            self.assertEqual(len(r.plotGroups), 4)
