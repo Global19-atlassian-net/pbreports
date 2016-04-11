@@ -3,7 +3,7 @@
 Generate XML report of adapter statistics.
 """
 
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 import os
 import logging
 import sys
@@ -11,7 +11,7 @@ import sys
 import numpy as np
 
 from pbreports.util import continuous_dist_shaper
-from pbcommand.models.report import Report, PlotGroup, Plot, Attribute
+from pbcommand.models.report import *
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -31,14 +31,50 @@ class Constants(object):
 
     A_DIMERS = "adapter_dimers"
     A_SHORT_INSERTS = "short_inserts"
+    A_MEAN_MAX_SR_LEN = "mean_max_subread_length"
+
+    C_MOVIE_NAME = "movie_name"
+    C_MEAN_MAX_SR_LEN = A_MEAN_MAX_SR_LEN
+
+    T_SUBREAD_STATS = "movie_stats"
 
     ATTR_LABELS = OrderedDict([
         (A_DIMERS, "Adapter Dimers (0-10bp)"),
-        (A_SHORT_INSERTS, "Short Inserts (11-100bp)")
+        (A_SHORT_INSERTS, "Short Inserts (11-100bp)"),
+        (A_MEAN_MAX_SR_LEN, "Maximum Subread Length (mean)")
     ])
 
 
 log = logging.getLogger(__name__)
+
+
+def _get_mean_max_subread_readlength(dataset):
+    by_movie = defaultdict(lambda: defaultdict(list))
+    for bam in dataset.resourceReaders():
+        if len(bam.readGroupTable) > 1:
+            for rec in bam:
+                by_movie[rec.movieName][rec.holeNumber].append(rec.qLen)
+        else:
+            movie_id = bam.readGroupTable[0].MovieName
+            qLen = bam.qEnd - bam.qStart
+            for zmw, subread_length in zip(bam.holeNumber, qLen):
+                by_movie[movie_id][zmw].append(subread_length)
+    all_max_subread_lengths = []
+    columns = [Column(Constants.C_MOVIE_NAME, header="Movie Name"),
+               Column(Constants.C_MEAN_MAX_SR_LEN,
+                      Constants.ATTR_LABELS[Constants.A_MEAN_MAX_SR_LEN])]
+    table = Table(Constants.T_SUBREAD_STATS,
+                  title="Subread Statistics",
+                  columns=columns)
+    for movie_id in sorted(by_movie.keys()):
+        table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_id)
+        max_lengths = [max(lengths) for lengths in by_movie[movie_id].values()]
+        all_max_subread_lengths.extend(max_lengths)
+        mean_max_len = sum(max_lengths) / len(max_lengths)
+        table.add_data_by_column_id(Constants.C_MEAN_MAX_SR_LEN, mean_max_len)
+    attr = Attribute(Constants.A_MEAN_MAX_SR_LEN, mean_max_len,
+                     name=Constants.ATTR_LABELS[Constants.A_MEAN_MAX_SR_LEN])
+    return attr, table
 
 
 def to_report(stats_xml, output_dir, dpi=72):
@@ -98,8 +134,20 @@ def to_report(stats_xml, output_dir, dpi=72):
         zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
             [adapter_dimers, short_inserts])]
 
-    report = Report("adapter_xml_report", title="Adapter Report",
-                    attributes=attributes, plotgroups=plot_groups)
+    tables = []
+    try:
+        attr, table = _get_mean_max_subread_readlength(dset)
+    except Exception as e:
+        log.exception(e)
+    else:
+        attributes.append(attr)
+        tables.append(table)
+
+    report = Report("adapter_xml_report",
+                    title="Adapter Report",
+                    attributes=attributes,
+                    tables=tables,
+                    plotgroups=plot_groups)
 
     return report
 
