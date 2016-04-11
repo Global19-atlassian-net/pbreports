@@ -16,7 +16,7 @@ from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcore.io import DataSet
+from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
@@ -52,7 +52,7 @@ def to_report(stats_xml, output_dir, dpi=72):
     :rtype: Report
     """
     log.info("Analyzing XML {f}".format(f=stats_xml))
-    dset = DataSet(stats_xml)
+    dset = SubreadSet(stats_xml)
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.medianInsertDists:

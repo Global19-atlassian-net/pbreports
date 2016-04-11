@@ -12,6 +12,7 @@ from numpy import ndarray
 from pbcore.io.dataset.DataSetIO import InvalidDataSetIOError
 from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
+import pbcore.data
 from pbcore.io import SubreadSet
 
 from pbreports.util import dist_shaper, continuous_dist_shaper
@@ -82,10 +83,10 @@ class TestXMLstatsRpts(unittest.TestCase):
 
     def test_adapter_exit_code_0(self):
         log.info(TestXMLstatsRpts.test_adapter_exit_code_0.__doc__)
-        sts_xml = data.getStats(0)
+        subreads_xml = data.getXmlWithStats()
         cmd = 'adapter_xml {c} {r}'.format(
             r='foo.json',
-            c=sts_xml)
+            c=subreads_xml)
         o, c, m = backticks(cmd)
         print "COMMAND: {c}".format(c=cmd)
         log.info(cmd)
@@ -243,32 +244,6 @@ class TestXMLstatsRpts(unittest.TestCase):
             self.assertAlmostEqual(4.61, c4['values'][0], delta=.0003)
             self.assertAlmostEqual(13.87, c4['values'][1], delta=.0003)
             self.assertAlmostEqual(4.44, c4['values'][2], delta=.0003)
-
-        except:
-            log.error(traceback.format_exc())
-            raise
-
-    def test_make_adapter_report_sts_xml(self):
-        """
-        Test make_adapter_report with an sts.xml file
-        """
-        # All of the histogram generation code should be tested in
-        # pbcore.io.dataset, not here. Just test the report.
-        try:
-            log.info(
-                TestXMLstatsRpts.test_make_adapter_report_sts_xml.__doc__)
-            sts_xml = data.getStats(1)
-            rpt = make_adapter_report(sts_xml, self.get_output_dir())
-
-            d = json.loads(rpt.to_json())
-
-            a = d['attributes']
-            self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp)')
-            self.assertEqual(a[0]['value'], 0.0)
-            self.assertEqual(a[1]['value'], 0.0)
-            self.assertTrue(os.path.exists(os.path.join(
-                self.get_output_dir(),
-                'interAdapterDist0.png')))
 
         except:
             log.error(traceback.format_exc())
