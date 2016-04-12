@@ -45,7 +45,7 @@ def _make_barcodes(file_name=None):
     with FastaWriter(fasta_file_name) as fa_out:
         for i in range(1010):
             fa_out.writeRecord("%04d_Forward" % i, "A" * 16)
-    pysam.faidx(fasta_file_name)
+    pysam.faidx(fasta_file_name, catch_stdout=False)
     ds = BarcodeSet(fasta_file_name, strict=True)
     ds.write(file_name)
     return file_name
