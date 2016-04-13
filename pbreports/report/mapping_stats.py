@@ -733,6 +733,18 @@ class MappingStatsCollector(object):
             raise ValueError("Unsupported alignment file type '${x}'".format(
                 x=alignment_file))
 
+    def _get_subread_length_histogram_bin_width(self):
+        BIN_SIZES = [100, 200, 500]
+        subread_length_max = 0
+        with openDataFile(self.alignment_file) as ds:
+            for rr in ds.resourceReaders():
+                subread_length_max = max(subread_length_max,
+                                         (rr.pbi.aEnd - rr.pbi.aStart).max())
+        for bin_width in BIN_SIZES:
+            if (subread_length_max / float(bin_width)) < 100:
+                return bin_width
+        return BIN_SIZES[-1]
+
     def _get_plot_view_configs(self):
         """
         Any change to the 'raw' view of a report plot should be changed here.
@@ -782,6 +794,7 @@ class MappingStatsCollector(object):
         return {v.plot_id: v for v in _p}
 
     def _get_total_aggregators(self):
+        dx_subreads = self._get_subread_length_histogram_bin_width()
         return OrderedDict([
             (Constants.A_SUBREAD_CONCORDANCE, MeanSubreadConcordanceAggregator()),
             (Constants.A_NSUBREADS, SubreadCounterAggregator()),
@@ -800,7 +813,7 @@ class MappingStatsCollector(object):
             (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
             #'mapped_subread_read_quality_mean', MeanSubreadQualityAggregator()),
             ("readlength_histogram", ReadLengthHistogram(dx=500)),
-            ("subreadlength_histogram", SubReadlengthHistogram()),
+            ("subreadlength_histogram", SubReadlengthHistogram(dx=dx_subreads)),
             ("subread_concordance_histogram", SubReadConcordanceHistogram(dx=0.005,
                                                                           nbins=1001))
         ])
