@@ -8,13 +8,14 @@ Generates:
 """
 
 from collections import OrderedDict
-import os
+import functools
 import logging
+import os
 import sys
 
 import numpy as np
-from pbcommand.utils import setup_log
 
+from pbcommand.utils import setup_log
 from pbcommand.models.report import (Report, Table, Column, Plot, Attribute,
                                      PlotGroup)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
@@ -50,11 +51,38 @@ class Constants(object):
         (A_NREADS, "Polymerase Reads"),
         (A_READ_N50, "Polymerase Read N50"),
         (A_READ_LENGTH, "Polymerase Read Length"),
-        (A_READ_QUALITY, "Polymerase Read Quality")
+        (A_READ_QUALITY, "Polymerase Read Quality"),
+        (A_SUBREAD_NBASES, "Subread Bases"),
+        (A_NSUBREADS, "Subreads"),
+        (A_SUBREAD_N50, "Subread N50"),
+        (A_SUBREAD_LENGTH, "Subread Length"),
+        (A_SUBREAD_QUALITY, "Subread Quality")
     ])
     READ_ATTR = [A_NBASES, A_NREADS, A_READ_N50, A_READ_LENGTH, A_READ_QUALITY]
     SUBREAD_ATTR = [A_SUBREAD_NBASES, A_NSUBREADS, A_SUBREAD_N50,
                     A_SUBREAD_LENGTH, A_SUBREAD_QUALITY]
+
+class ReadStatsPlots(object):
+    P_LENGTH = "filter_len_xml_plot"
+    P_LENGTH_PREFIX = "readLenDist"
+    P_LENGTH_X_AXIS = Constants.A_READ_LENGTH
+    P_QUAL_X_AXIS = Constants.A_READ_QUALITY
+    P_Y_AXIS = Constants.A_NREADS
+    P_QUAL = "filter_qual_xml_plot"
+    P_QUAL_PREFIX = "readQualDist"
+    PG_LENGTH = "filter_len_xml_plot_group"
+    PG_QUAL = "filter_qual_xml_plot_group"
+
+class SubreadStatsPlots(object):
+    P_LENGTH_PREFIX = "subreadLenDist"
+    P_LENGTH = "filter_subread_len_xml_plot"
+    P_LENGTH_X_AXIS = Constants.A_SUBREAD_LENGTH
+    P_QUAL_X_AXIS = Constants.A_SUBREAD_QUALITY
+    P_Y_AXIS = Constants.A_NSUBREADS
+    P_QUAL = "filter_subread_qual_xml_plot"
+    P_QUAL_PREFIX = "subreadQualDist"
+    PG_LENGTH = "filter_subread_len_xml_plot_group"
+    PG_QUAL = "filter_subread_qual_xml_plot_group"
 
 
 log = logging.getLogger(__name__)
@@ -126,9 +154,9 @@ def _to_read_stats_attributes(readLenDists, readQualDists, read_attr):
     return attr
 
 
-def _to_read_stats_plots(readLenDists, readQualDists, output_dir, dpi=72):
+def _to_read_stats_plots(PlotConstants, readLenDists, readQualDists, output_dir,
+                         dpi=72):
     length_plots = []
-
     # ReadLen distribution to barplot:
     shaper = continuous_dist_shaper(readLenDists)
     for i, orig_rlendist in enumerate(readLenDists):
@@ -137,23 +165,24 @@ def _to_read_stats_plots(readLenDists, readQualDists, output_dir, dpi=72):
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel('Read Length')
-        len_axes.set_ylabel('Reads')
-        png_fn = os.path.join(output_dir, "readLenDist{i}.png".format(i=i))
+        len_axes.set_xlabel(Constants.ATTR_LABELS[PlotConstants.P_LENGTH_X_AXIS])
+        len_axes.set_ylabel(Constants.ATTR_LABELS[PlotConstants.P_Y_AXIS])
+        png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
+            p=PlotConstants.P_LENGTH_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
                                                               dpi=dpi)
-
-        length_plots.append(Plot("filter_len_xml_plot_{i}".format(i=i),
-                          os.path.relpath(png_base, output_dir),
-                          thumbnail=os.path.relpath(thumbnail_base, output_dir)))
-
-    plot_groups = [PlotGroup("filter_len_xml_plot_group",
-                             title="Polymerase Read Length",
-                             plots=length_plots,
-                             thumbnail=os.path.relpath(thumbnail_base, output_dir))]
+        length_plots.append(
+            Plot("{p}_{i}".format(i=i, p=PlotConstants.P_LENGTH),
+                 os.path.relpath(png_base, output_dir),
+                 thumbnail=os.path.relpath(thumbnail_base, output_dir)))
+    plot_groups = [
+        PlotGroup(PlotConstants.PG_LENGTH,
+                  title=Constants.ATTR_LABELS[PlotConstants.P_LENGTH_X_AXIS],
+                  plots=length_plots,
+                  thumbnail=os.path.relpath(thumbnail_base, output_dir))
+    ]
 
     qual_plots = []
-
     # ReadQual distribution to barplot:
     shaper = continuous_dist_shaper(readQualDists)
     for i, orig_rqualdist in enumerate(readQualDists):
@@ -162,21 +191,25 @@ def _to_read_stats_plots(readLenDists, readQualDists, output_dir, dpi=72):
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel('Read Quality')
-        qual_axes.set_ylabel('Reads')
-
-        png_fn = os.path.join(output_dir, "readQualDist{i}.png".format(i=i))
+        qual_axes.set_xlabel(Constants.ATTR_LABELS[PlotConstants.P_QUAL_X_AXIS])
+        qual_axes.set_ylabel(Constants.ATTR_LABELS[PlotConstants.P_Y_AXIS])
+        png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
+            p=PlotConstants.P_QUAL_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,
                                                               dpi=dpi)
-
-        qual_plots.append(Plot("filter_qual_xml_plot_{i}".format(i=i),
-                          os.path.relpath(png_base, output_dir),
-                          thumbnail=os.path.relpath(thumbnail_base, output_dir)))
-
-    plot_groups.append(PlotGroup("filter_qual_xml_plot_group",
-                                 title="Polymerase Read Quality",
-                                 plots=qual_plots))
+        qual_plots.append(
+            Plot("{p}_{i}".format(i=i, p=PlotConstants.P_QUAL),
+                 os.path.relpath(png_base, output_dir),
+                 thumbnail=os.path.relpath(thumbnail_base, output_dir)))
+    plot_groups.append(
+        PlotGroup(PlotConstants.PG_QUAL,
+                  title=Constants.ATTR_LABELS[PlotConstants.P_QUAL_X_AXIS],
+                  plots=qual_plots))
     return plot_groups
+
+to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots)
+to_subread_stats_plots = functools.partial(_to_read_stats_plots,
+                                           SubreadStatsPlots)
 
 
 def to_report(stats_xml, output_dir, dpi=72):
@@ -205,15 +238,19 @@ def to_report(stats_xml, output_dir, dpi=72):
         readLenDists=dset.metadata.summaryStats.readLenDists,
         readQualDists=dset.metadata.summaryStats.readQualDists,
         read_attr=Constants.READ_ATTR)
-    #attr.extend(_to_read_stats_attributes(
-    #    readLenDists=dset.metadata.summaryStats.insertReadLenDists,
-    #    readQualDists=dset.metadata.summaryStats.insertReadQualDists,
-    #    read_attr=Constants.SUBREAD_ATTR))
+    attr.extend(_to_read_stats_attributes(
+        readLenDists=dset.metadata.summaryStats.insertReadLenDists,
+        readQualDists=dset.metadata.summaryStats.insertReadQualDists,
+        read_attr=Constants.SUBREAD_ATTR))
 
-    plot_groups = _to_read_stats_plots(
+    plot_groups = to_read_stats_plots(
         readLenDists=dset.metadata.summaryStats.readLenDists,
         readQualDists=dset.metadata.summaryStats.readQualDists,
         output_dir=output_dir)
+    plot_groups.extend(to_subread_stats_plots(
+        readLenDists=dset.metadata.summaryStats.insertReadLenDists,
+        readQualDists=dset.metadata.summaryStats.insertReadQualDists,
+        output_dir=output_dir))
 
     # build the report:
     report = Report("filtering_stats_xml_report",
