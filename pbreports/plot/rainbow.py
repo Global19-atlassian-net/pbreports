@@ -127,7 +127,7 @@ def _make_plot(data, png_fn, bounds=None, dpi=60, nolegend=False):
         points = data[(data[:, 2] >= qv_bin) * (data[:, 2] < qv_bin_max), :]
         if len(points[:, 0]) > 0:
             l, = axes.plot(points[:, 0], points[:, 1], 'o', c=color, mec=color,
-                           alpha=0.5, ms=2.0)
+                           alpha=0.1, ms=2.0)
             handles.append(l)
             labels.append('QV >= %d' % qv_bin)
     if not nolegend:
