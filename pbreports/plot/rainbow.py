@@ -15,7 +15,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pbcore.io import openDataFile, DataSet, CmpH5Reader, AlignmentSet
+from pbcore.io import openDataFile, DataSet, CmpH5Reader
 from pbcommand.models.report import Report, PlotGroup, Plot
 
 from pbreports.plot.helper import save_figure_with_thumbnail
@@ -80,7 +80,7 @@ def _read_in_file(in_fn, reference=None):
 
 def _read_in_indexed_alignmentset(in_fn, reference=None):
     lengths, percent_accs, map_qvs = [], [], []
-    with AlignmentSet(in_fn) as ds:
+    with openDataFile(in_fn) as ds:
         for bam in ds.resourceReaders():
             identities = bam.identity
             for i_rec in range(len(bam)):
