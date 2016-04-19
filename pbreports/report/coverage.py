@@ -62,7 +62,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
     Returns io.model.PlotGroup object
     Create the plotGroup element that contains the coverage plots of the top contigs.
     :param top_contigs: (list of Contig objects) sorted by contig size
-    :param cov_map: (dict string:ContigCoverage) mapping of contig.header to ContigCoverage object
+    :param cov_map: (dict string:ContigCoverage) mapping of contig.id to ContigCoverage object
     :param output_dir: (string) where to write images
     """
     plots = []
@@ -71,11 +71,11 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
     log.debug('Creating plots for {n} top contig(s)'.format(
         n=str(len(top_contigs))))
     for tc in top_contigs:
-        if not tc.header in cov_map:
+        if not tc.id in cov_map:
             # no coverage of this contig
-            log.debug('contig {c} has no coverage info '.format(c=tc.header))
+            log.debug('contig {c} has no coverage info '.format(c=tc.id))
             continue
-        ctg_cov = cov_map[tc.header]
+        ctg_cov = cov_map[tc.id]
         fig, ax = _create_contig_plot(ctg_cov)
 
         fname = os.path.join(output_dir, ctg_cov.file_name)
@@ -132,18 +132,18 @@ def _validate_inputs(gff, reference):
 
 def _get_contigs_to_plot(alignment_summ_gff, contigs):
     """
-    Returns a dict (string: ContigCoverage) that maps a contig header to its coverage object.
+    Returns a dict (string: ContigCoverage) that maps a contig ID to its coverage object.
     :param alignment_summ_gff: (str) path to alignment_summ_gff
     :param contigs: (list) top contigs from reference
     """
 
     def _get_name(id_):
         for c in contigs:
-            if c.header == id_:
+            if c.id == id_:
                 return c.name
 
     cov_map = {}
-    contig_ids = [c.header for c in contigs]
+    contig_ids = [c.id for c in contigs]
 
     reader = GffReader(alignment_summ_gff)
     for rec in reader:
@@ -330,11 +330,7 @@ class ContigCoverage(object):
         self.yDataStdevPlus = []
         self.yDataStdevMinus = []
 
-        # seqId is the fasta header, which could be long and have spaces and/or symbols that are
-        # not good to use in filename.
-        m = hashlib.md5()
-        m.update(self._seqid)
-        self.file_name = "coverage_plot_%s%s" % (m.hexdigest(), ".png")
+        self.file_name = "coverage_plot_%s%s" % (self._seqid, ".png")
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, i=self._seqid, n=self.name,

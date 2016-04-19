@@ -272,6 +272,39 @@ class TestCoverageRpt(unittest.TestCase):
         self.assertTrue(op.exists(r))
 
 
+
+@skip_if_data_dir_not_present
+class TestManyContigs(unittest.TestCase):
+    REFERENCE = "/pbi/dept/secondary/siv/references/ecoli_split_1000/ecoli_split_1000.referenceset.xml"
+    GFF = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/coverage/alignment_summary_ecoli_split_1000.gff"
+
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp()
+        self.report_out = op.join(self.tmp_dir, "coverage_report.json")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_get_top_contigs(self):
+        top_contigs = get_top_contigs(self.REFERENCE, 25)
+        self.assertTrue(len(top_contigs), 25)
+
+    def test__get_contigs_to_plot(self):
+        top_contigs = get_top_contigs(self.REFERENCE, 25)
+        cov_map = _get_contigs_to_plot(self.GFF, top_contigs)
+        self.assertNotEqual(len(cov_map), 0)
+
+
+    def test_make_report(self):
+        rpt = make_coverage_report(self.GFF, self.REFERENCE,
+                                   report=self.report_out,
+                                   output_dir=self.tmp_dir,
+                                   max_contigs_to_plot=25)
+        attr = {a.id:a.value for a in rpt.attributes}
+        self.assertEqual(attr['missing_bases_pct'], 0.0)
+        self.assertAlmostEqual(attr['depth_coverage_mean'], 68.06, places=2)
+
+
 class TestToolContract(pbcommand.testkit.core.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.coverage"
     INPUT_FILES = [
