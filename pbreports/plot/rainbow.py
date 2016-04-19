@@ -15,7 +15,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pbcore.io import openDataFile, DataSet, CmpH5Reader
+from pbcore.io import openDataFile, DataSet, CmpH5Reader, AlignmentSet
 from pbcommand.models.report import Report, PlotGroup, Plot
 
 from pbreports.plot.helper import save_figure_with_thumbnail
@@ -46,6 +46,8 @@ def _read_in_file(in_fn, reference=None):
     Returns:
         A 2D array of lengths, percent concordance and color by MapQV
     """
+    if in_fn.endswith(".xml"):
+        return _read_in_indexed_alignmentset(in_fn, reference)
     def _openAlignments():
         if in_fn.endswith(".cmp.h5"):
             return CmpH5Reader(in_fn)
@@ -71,6 +73,22 @@ def _read_in_file(in_fn, reference=None):
                                         float(length))
                 map_qvs.append(float(row.MapQV))
 
+    data = np.array([lengths, percent_accs, map_qvs])
+    data = data.transpose()
+    return data
+
+
+def _read_in_indexed_alignmentset(in_fn, reference=None):
+    lengths, percent_accs, map_qvs = [], [], []
+    with AlignmentSet(in_fn) as ds:
+        for bam in ds.resourceReaders():
+            identities = bam.identity
+            for i_rec in range(len(bam)):
+                rec_ref = bam.referenceInfo(bam.pbi.tId[i_rec]).Name
+                if reference is None or reference == rec_ref:
+                    lengths.append(bam.pbi.aEnd[i_rec] - bam.pbi.aStart[i_rec])
+                    percent_accs.append(identities[i_rec])
+                    map_qvs.append(bam.pbi.mapQV[i_rec])
     data = np.array([lengths, percent_accs, map_qvs])
     data = data.transpose()
     return data
