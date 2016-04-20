@@ -68,14 +68,15 @@ def alignment_info_from_bam(bam_file_name, movie_name):
 
     last_zmw_id = None
     with IndexedBamReader(bam_file_name) as bam:
-        identities = bam.identity  # cache this
+        identities = bam.identity
+        subread_lengths = bam.aEnd - bam.aStart
+        # FIXME(nechols)(2016-04-19) can this be done as numpy array ops?
         for i_aln, rgId in enumerate(bam.qId):
             current_movie_name = bam.readGroupInfo(rgId).MovieName
             movie_names.add(current_movie_name)
             if movie_name != current_movie_name:
                 continue
 
-            rstart = rend = -sys.maxint
             hole_number = bam.holeNumber[i_aln]
             qs, qe = bam.qStart[i_aln], bam.qEnd[i_aln]
             rstart, rend = bam.aStart[i_aln], bam.aEnd[i_aln]
@@ -90,11 +91,8 @@ def alignment_info_from_bam(bam_file_name, movie_name):
             zmw_id = (current_movie_name, hole_number)
             subread_id = (current_movie_name, hole_number, qs, qe)
 
-            # subread_length = alignment.readLength
-            subread_length = rend - rstart
-
             this_a = []
-            this_a.append(subread_length)
+            this_a.append(subread_lengths[i_aln])
 
             this_a.append(identities[i_aln])
             this_a.append(bam.readQual[i_aln])
@@ -113,8 +111,8 @@ def alignment_info_from_bam(bam_file_name, movie_name):
             # No Z-score
             datum[subread_id] = tuple(this_a)
 
-            if zmw_id not in max_subread or subread_length > max_subread[zmw_id][1]:
-                max_subread[zmw_id] = (subread_id, subread_length)
+            if zmw_id not in max_subread or subread_lengths[i_aln] > max_subread[zmw_id][1]:
+                max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
 
             unrolled.setdefault(zmw_id, [99999, 0])
             unrolled[zmw_id][0] = min(unrolled[zmw_id][0], rstart)
