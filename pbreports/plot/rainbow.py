@@ -8,6 +8,7 @@ alignment to the reference. The points are colored by qv-score.
 
 import argparse
 import logging
+import time
 import os
 import sys
 
@@ -79,16 +80,28 @@ def _read_in_file(in_fn, reference=None):
 
 
 def _read_in_indexed_alignmentset(in_fn, reference=None):
+    """
+    Extract data from the .pbi files in an AlignmentSet using numpy array
+    operations.
+    """
     lengths, percent_accs, map_qvs = [], [], []
     with openDataFile(in_fn) as ds:
         for bam in ds.resourceReaders():
             identities = bam.identity
-            for i_rec in range(len(bam)):
-                rec_ref = bam.referenceInfo(bam.pbi.tId[i_rec]).Name
-                if reference is None or reference == rec_ref:
-                    lengths.append(bam.pbi.aEnd[i_rec] - bam.pbi.aStart[i_rec])
-                    percent_accs.append(identities[i_rec])
-                    map_qvs.append(bam.pbi.mapQV[i_rec])
+            ref_name_to_id = {r.Name:r.ID for r in bam.referenceInfoTable}
+            sel = np.full(len(identities), True, dtype=bool)
+            bam_lengths = bam.pbi.aEnd - bam.pbi.aStart
+            if reference is not None:
+                ref_id = None
+                # FIXME there must be a cleaner way to do this...
+                for ref_info in bam.referenceInfoTable:
+                    if ref_info.Name == reference:
+                        ref_id = ref_info.ID
+                        break
+                sel = bam.pbi.tId == ref_id
+            lengths.extend(bam_lengths[sel])
+            percent_accs.extend(identities[sel])
+            map_qvs.extend(bam.pbi.mapQV[sel])
     data = np.array([lengths, percent_accs, map_qvs])
     data = data.transpose()
     return data
@@ -182,5 +195,8 @@ def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
 
 
 def make_rainbow_plot(in_fn, png_name, reference=None):
+    t1 = time.time()
     data = _read_in_file(in_fn, reference)
     _make_plot(data, png_name)
+    t2 = time.time()
+    log.info("Plot generated in {s:.2f} sec".format(s=t2-t1))
