@@ -4,6 +4,7 @@ Ported from summarize_coverage.py in pbreports/reports, which was ported from
 summarizeCoverage.py in pbpy/bin.
 """
 
+from collections import defaultdict
 import functools
 import logging
 import math
@@ -234,17 +235,12 @@ def build_interval_lists(readers):
     """Create a dictionary with RefGroupId keys and values of
     intervals of alignment starts and ends for that reference.
     """
-    interval_lists = {}  # keyed by reference group id
-
+    interval_lists = defaultdict(list)  # keyed by reference group id
     for reader in readers:
+        pbi = reader.pbi
         log.debug("{x}".format(x=reader))
-        for record in reader:
-            ref_id = record.referenceId
-            start = record.tStart
-            end = record.tEnd
-
-            interval_lists.setdefault(ref_id, []).append(
-                interval_tree.Interval(start, end))
+        for ref_id, start, end in zip(pbi.tId, pbi.tStart, pbi.tEnd):
+            interval_lists[ref_id].append(interval_tree.Interval(start, end))
     log.debug("Created interval lists for {n} references.".format(
         n=len(interval_lists)))
     return interval_lists
