@@ -72,6 +72,7 @@ def _get_mean_max_subread_readlength(dataset):
         all_max_subread_lengths.extend(max_lengths)
         mean_max_len = sum(max_lengths) / len(max_lengths)
         table.add_data_by_column_id(Constants.C_MEAN_MAX_SR_LEN, mean_max_len)
+    mean_max_len = sum(all_max_subread_lengths) / len(all_max_subread_lengths)
     attr = Attribute(Constants.A_MEAN_MAX_SR_LEN, mean_max_len,
                      name=Constants.ATTR_LABELS[Constants.A_MEAN_MAX_SR_LEN])
     return attr, table
