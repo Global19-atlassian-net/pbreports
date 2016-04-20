@@ -162,8 +162,8 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         return plot_groups
 
 
-def to_report(alignment_file, output_dir):
-    return CCSMappingStatsCollector(alignment_file).to_report(output_dir)
+def to_report(alignment_file, output_dir, nproc=1):
+    return CCSMappingStatsCollector(alignment_file, nproc).to_report(output_dir)
 
 
 def _args_runner(args):
@@ -188,7 +188,8 @@ def _resolved_tool_contract_runner(resolved_contract):
     output_report = resolved_contract.task.output_files[0]
 
     return run_and_write_report(alignment_path, output_report,
-                                report_func=to_report)
+                                report_func=to_report,
+                                nproc=resolved_contract.task.nproc)
 
 
 def _get_parser():

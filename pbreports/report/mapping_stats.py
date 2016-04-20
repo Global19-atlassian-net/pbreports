@@ -5,6 +5,7 @@ Blasr/pbalign.
 """
 
 from collections import OrderedDict
+import multiprocessing
 import sys
 import os
 import math
@@ -16,7 +17,7 @@ import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import openAlignmentFile, openDataSet, openDataFile
@@ -567,23 +568,27 @@ def analyze_movie(movie, alignment_file, stats_models):
     """
     The regions should only correspond to a single Movie
 
-
     :type movie: Movie
     :type stats_models: list
     """
-
     started_at = time.time()
-    log.info("Analyzing Movie {n}".format(n=movie))
-
     movie_names, unrolled, data_, columns = from_alignment_file(
         movie, alignment_file)
+    _process_movie_data(movie, alignment_file, stats_models,
+                        movie_names, unrolled, data_, columns)
+    run_time = time.time() - started_at
+    _d = dict(n=movie, s=run_time)
+    log.info("Completed analyzing Movie {n} with in {s:.2f} sec.".format(**_d))
 
-    if len(data_) == 0:
+
+def _process_movie_data(movie, alignment_file, stats_models, movie_names,
+                        unrolled, data, columns):
+    if len(data) == 0:
         msg = "Movie '{n}' produced no alignments.".format(n=movie)
         log.warn(msg)
         return
 
-    crunched = CrunchedAlignments(movie_names, unrolled, data_, columns)
+    crunched = CrunchedAlignments(movie_names, unrolled, data, columns)
 
     log.debug("Movie names from crunched {m}.".format(m=movie_names))
 
@@ -610,16 +615,27 @@ def analyze_movie(movie, alignment_file, stats_models):
                 "model {m}. Skipping movie {r}".format(m=repr(model), r=movie))
             pass
 
-    run_time = time.time() - started_at
-    _d = dict(n=movie, s=run_time)
-    log.info("Completed analyzing Movie {n} with in {s:.2f} sec.".format(**_d))
 
-
-def analyze_movies(movies, alignment_file_names, stats_models):
+def analyze_movies(movies, alignment_file_names, stats_models, nproc=1):
+    pool = None
+    if nproc >= 1:
+        # XXX I use nproc-1 here because the callback in the main process
+        # actually takes up a lot of time
+        log.info("Starting pool of {n} processes".format(n=max(1, nproc-1)))
+        pool = multiprocessing.Pool(processes=nproc)
     for movie in movies:
-        for alignment_file_name in alignment_file_names:
-            analyze_movie(movie, alignment_file_name, stats_models)
-
+        for file_name in alignment_file_names:
+            log.info("Analyzing Movie {n}".format(n=movie))
+            def __analyze_movie(args):
+                return from_alignment_file(*args)
+            def __callback(args):
+                log.debug("processing worker results")
+                _process_movie_data(movie, file_name, stats_models, *args)
+                return True
+            pool.apply_async(from_alignment_file, (movie, file_name),
+                             callback=__callback)
+    pool.close()
+    pool.join()
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
 
@@ -707,8 +723,9 @@ class MappingStatsCollector(object):
         MeanSubreadConcordanceAggregator
     ]
 
-    def __init__(self, alignment_file):
+    def __init__(self, alignment_file, nproc=1):
         self.alignment_file = alignment_file
+        self.nproc = max(nproc, 1)
         self.dataset_uuids = []
         if alignment_file.endswith('.xml'):
             log.debug('Importing alignments from dataset XML')
@@ -899,7 +916,8 @@ class MappingStatsCollector(object):
 
         # Run all the analysis. Now the aggregators can be accessed
 
-        analyze_movies(self.movies, self.alignment_file_list, all_models)
+        analyze_movies(self.movies, self.alignment_file_list, all_models,
+                       nproc=self.nproc)
 
         # temp structure used to create the report table. The order is
         # important
@@ -974,8 +992,8 @@ class MappingStatsCollector(object):
         return report
 
 
-def to_report(alignment_file, output_dir):
-    return MappingStatsCollector(alignment_file).to_report(output_dir)
+def to_report(alignment_file, output_dir, nproc=1):
+    return MappingStatsCollector(alignment_file, nproc).to_report(output_dir)
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -996,9 +1014,10 @@ def summarize_report(report_file, out=sys.stdout):
     W("  SUBREADLENGTH_MEAN: {n}".format(n=attr[Constants.A_SUBREAD_LENGTH]))
 
 
-def run_and_write_report(alignment_file, json_report, report_func=to_report):
+def run_and_write_report(alignment_file, json_report, report_func=to_report,
+                         nproc=1):
     output_dir = os.path.dirname(json_report)
-    report = report_func(alignment_file, output_dir)
+    report = report_func(alignment_file, output_dir, nproc)
     report.write_json(json_report)
     log.info("Wrote output to %s" % json_report)
     return 0
@@ -1016,22 +1035,18 @@ def _resolved_tool_contract_runner(resolved_contract):
     :type resolved_contract: ResolvedToolContract
     :return: Exit code
     """
-
-    alignment_path = resolved_contract.task.input_files[0]
-
-    # This is a bit different than the output dir oddness that Johann added.
-    # the reports dir should be determined from the dir of the abspath of the report.json file
-    # resolved values will always be absolute paths.
-    output_report = resolved_contract.task.output_files[0]
-
-    return run_and_write_report(alignment_path, output_report)
+    return run_and_write_report(
+        alignment_file=resolved_contract.task.input_files[0],
+        json_report=resolved_contract.task.output_files[0],
+        nproc=resolved_contract.task.nproc)
 
 
 def _get_parser():
     desc = "Create a Mapping Report from a Aligned BAM or Alignment DataSet"
     driver_exe = "python -m pbreports.report.mapping_stats --resolved-tool-contract "
     parser = get_pbparser(TOOL_ID, __version__,
-                          "Mapping Statistics", desc, driver_exe)
+                          "Mapping Statistics", desc, driver_exe,
+                          nproc=4)
 
     parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
                                "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
