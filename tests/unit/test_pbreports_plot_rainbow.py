@@ -12,6 +12,7 @@ class TestRainbowPlot(unittest.TestCase):
     def test__read_in_file(self):
         bam = pbcore.data.getBamAndCmpH5()[0]
         data = _read_in_file(bam)
+        self.assertEqual(len(data), 112)
         self.assertTrue(all([row[2]==254 for row in data]))
         self.assertEqual(data[-1][0], 605)
         self.assertTrue(0.927 < data[-1][1] < 0.928)
@@ -20,6 +21,6 @@ class TestRainbowPlot(unittest.TestCase):
         bam = pbcore.data.getBamAndCmpH5()[0]
         data = _read_in_indexed_alignmentset(bam)
         self.assertTrue(all([row[2]==254 for row in data]))
-        print data
+        self.assertEqual(len(data), 112)
         self.assertEqual(data[-1][0], 605)
         self.assertTrue(0.927 < data[-1][1] < 0.928)
