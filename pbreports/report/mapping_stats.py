@@ -619,7 +619,9 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
 def analyze_movies(movies, alignment_file_names, stats_models, nproc=1):
     pool = None
     if nproc >= 1:
-        log.info("Starting pool of {n} processes".format(n=nproc))
+        # XXX I use nproc-1 here because the callback in the main process
+        # actually takes up a lot of time
+        log.info("Starting pool of {n} processes".format(n=max(1, nproc-1)))
         pool = multiprocessing.Pool(processes=nproc)
     for movie in movies:
         for file_name in alignment_file_names:
