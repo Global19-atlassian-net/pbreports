@@ -20,6 +20,25 @@ mapped_readlength_max            Polymerase Read Length Max (mapped)   The maxim
 ===============================  ====================================  =====================================================================================================================================
 
 
+----------------------------
+**Table: Mapping Statistics Summary**
+----------------------------
+
+==================================== =================================== ===============================================
+Column Name                          Attribute ID                        Description
+==================================== =================================== ===============================================
+Movie                                N/A                                 Movie ID
+Mapped Reads                         mapped_reads_n                      The number of polymerase reads mapped to the reference sequence
+Mapped Polymerase Read Length        mapped_readlength_mean              The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)
+Mapped Polymerase Read Length n50    mapped_readlength_n50               The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value
+Mapped Subreads                      mapped_subreads_n                   The number of subreads mapped to the reference sequence
+Mapped Subread Bases                 mapped_subread_bases_n              The number of subread bases mapped to the reference sequence
+Mapped Subread Length                mapped_subread_readlength_mean      The mean length of subreads that mapped to the reference sequence
+Mapped Subread Concordance           mapped_subread_concordance_mean     The mean concordance of subreads that mapped to the reference sequence
+==================================== =================================== ===============================================
+
+
+
 ---------------------------------
 **Mapped Polymerase Read Length**
 ---------------------------------
