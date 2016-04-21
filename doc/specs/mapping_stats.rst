@@ -21,13 +21,13 @@ mapped_readlength_max            Polymerase Read Length Max (mapped)   The maxim
 
 
 ----------------------------
-**Mapping Statistics Summary**
+**Table: Mapping Statistics Summary**
 ----------------------------
 
 ==================================== =================================== ===============================================
 Column Name                          Attribute ID                        Description
 ==================================== =================================== ===============================================
-Movie                                                                    Movie ID
+Movie                                N/A                                 Movie ID
 Mapped Reads                         mapped_reads_n                      The number of polymerase reads mapped to the reference sequence
 Mapped Polymerase Read Length        mapped_readlength_mean              The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)
 Mapped Polymerase Read Length n50    mapped_readlength_n50               The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value
