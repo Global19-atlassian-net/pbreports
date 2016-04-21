@@ -26,7 +26,7 @@ Mapped Subread Concordance           mapped_subread_concordance_mean     The mea
 
 Histogram of Polymerase Read Length
 
-.. image:: mapped_polymerase_readlength_histogram.png
+.. image:: images/mapped_polymerase_readlength_histogram.png
 
 
 ------------------------------
@@ -37,7 +37,7 @@ Histogram of Polymerase Read Length
 
 Description
 
-.. image:: mapped_subread_concordance_histogram.png
+.. image:: images/mapped_subread_concordance_histogram.png
 
 
 
@@ -49,7 +49,7 @@ Description
 
 Histogram of Subread Length
 
-.. image:: mapped_subreadlength_histogram.png
+.. image:: images/mapped_subreadlength_histogram.png
 
 
 
@@ -61,4 +61,4 @@ Histogram of Subread Length
 
 Description
 
-.. image:: mapped_subreadlength_vs_concordance_scatterplot.png
+.. image:: images/mapped_subreadlength_vs_concordance_scatterplot.png
