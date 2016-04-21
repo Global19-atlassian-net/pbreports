@@ -49,7 +49,7 @@ Description
 
 Histogram of Subread Length
 
-.. image:: mapped_subreadlength_histogram.pn
+.. image:: mapped_subreadlength_histogram.png
 
 
 
