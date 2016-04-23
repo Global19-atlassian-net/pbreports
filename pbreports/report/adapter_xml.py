@@ -48,36 +48,6 @@ class Constants(object):
 log = logging.getLogger(__name__)
 
 
-def _get_mean_max_subread_readlength(dataset):
-    by_movie = defaultdict(lambda: defaultdict(list))
-    for bam in dataset.resourceReaders():
-        if len(bam.readGroupTable) > 1:
-            for rec in bam:
-                by_movie[rec.movieName][rec.holeNumber].append(rec.qLen)
-        else:
-            movie_id = bam.readGroupTable[0].MovieName
-            qLen = bam.qEnd - bam.qStart
-            for zmw, subread_length in zip(bam.holeNumber, qLen):
-                by_movie[movie_id][zmw].append(subread_length)
-    all_max_subread_lengths = []
-    columns = [Column(Constants.C_MOVIE_NAME, header="Movie Name"),
-               Column(Constants.C_MEAN_MAX_SR_LEN,
-                      Constants.ATTR_LABELS[Constants.A_MEAN_MAX_SR_LEN])]
-    table = Table(Constants.T_SUBREAD_STATS,
-                  title="Subread Statistics",
-                  columns=columns)
-    for movie_id in sorted(by_movie.keys()):
-        table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_id)
-        max_lengths = [max(lengths) for lengths in by_movie[movie_id].values()]
-        all_max_subread_lengths.extend(max_lengths)
-        mean_max_len = sum(max_lengths) / len(max_lengths)
-        table.add_data_by_column_id(Constants.C_MEAN_MAX_SR_LEN, mean_max_len)
-    mean_max_len = sum(all_max_subread_lengths) / len(all_max_subread_lengths)
-    attr = Attribute(Constants.A_MEAN_MAX_SR_LEN, mean_max_len,
-                     name=Constants.ATTR_LABELS[Constants.A_MEAN_MAX_SR_LEN])
-    return attr, table
-
-
 def to_report(stats_xml, output_dir, dpi=72):
     # TODO: make dpi matter
     """Main point of entry
@@ -136,13 +106,6 @@ def to_report(stats_xml, output_dir, dpi=72):
             [adapter_dimers, short_inserts])]
 
     tables = []
-    try:
-        attr, table = _get_mean_max_subread_readlength(dset)
-    except Exception as e:
-        log.exception(e)
-    else:
-        attributes.append(attr)
-        tables.append(table)
 
     report = Report("adapter_xml_report",
                     title="Adapter Report",
