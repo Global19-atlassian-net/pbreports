@@ -254,9 +254,6 @@ class TestXMLstatsRpts(unittest.TestCase):
         self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp)')
         self.assertEqual(a[0]['value'], 0.0)
         self.assertEqual(a[1]['value'], 0.0)
-        self.assertEqual(a[2]['value'], 1486)
-        t = d['tables'][0]
-        self.assertEqual(t["columns"][1]["values"], [1486])
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'interAdapterDist0.png')))
