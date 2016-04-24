@@ -162,8 +162,8 @@ def to_insert_stats_attributes(readLenDists, readQualDists):
         attr_values=[_to_read_stats_attributes(readLenDists, readQualDists)[2]])
 
 
-def _to_read_stats_plots(PlotConstants, readLenDists, readQualDists, output_dir,
-                         dpi=72):
+def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
+                         output_dir, dpi=72):
     length_plots = []
     # ReadLen distribution to barplot:
     shaper = continuous_dist_shaper(readLenDists)
@@ -185,7 +185,7 @@ def _to_read_stats_plots(PlotConstants, readLenDists, readQualDists, output_dir,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
     plot_groups = [
         PlotGroup(PlotConstants.PG_LENGTH,
-                  title=Constants.ATTR_LABELS[PlotConstants.P_LENGTH_X_AXIS],
+                  title=title,
                   plots=length_plots,
                   thumbnail=os.path.relpath(thumbnail_base, output_dir))
     ]
@@ -217,8 +217,9 @@ def _to_read_stats_plots(PlotConstants, readLenDists, readQualDists, output_dir,
                   plots=qual_plots))
     return plot_groups
 
-to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots)
-to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots)
+to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots,
+                                        "Polymerase Read Length")
+to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots, "Insert Length")
 
 
 def to_report(stats_xml, output_dir, dpi=72):
