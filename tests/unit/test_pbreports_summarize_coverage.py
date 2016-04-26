@@ -109,7 +109,6 @@ class TestCompareToPbpy(unittest.TestCase):
             pbpy_gff_records[record_key] = record_val
 
         # Recapitulate the first few steps of summarize_coverage.main
-        #cmph5_reader = CmpH5Reader(self.cmph5_path)
         ds_reader, readers = self._get_readers()
         interval_lists = summarize_coverage.build_interval_lists(readers)
         get_region_size_frozen = functools.partial(
@@ -151,30 +150,6 @@ class TestCompareToPbpy(unittest.TestCase):
             remaining_pbpy_records = pbpy_gff_records
 
         self.assertEqual(len(remaining_pbpy_records), 0)
-
-
-# FIXME this needs to use AlignmentSet/BAM input
-@skip_if_data_dir_not_present
-class TestCompareToPbpyBigGenome(TestCompareToPbpy):
-
-    """Compare results from the pbreports summarize_coverage to an archived result from pbpy summarizeCoverage. Same as TestCompareToPbpy, but applied to the human genome.
-    """
-
-    def _get_readers(self):
-        cmph5 = CmpH5Reader(self.aln_path)
-        return cmph5, [cmph5]
-
-    def setUp(self):
-        self.aln_path = os.path.join(
-            SC_DATA_DIR, 'aligned_reads_human_chr2.cmp.h5')
-        self.gff_path = os.path.join(
-            SC_DATA_DIR, 'alignment_summary_human_chr2.gff')
-        self.selected_reference = 'chr2'
-
-    def test_metadata(self):
-        """The metadata lines won't match. The pbpy version of summarizeCoverge writes out metadata for every reference in the repository, the bfx version only write metadata for contigs with coverage.
-        """
-        pass
 
 
 class TestBuildIntervalLists(unittest.TestCase):
