@@ -111,7 +111,7 @@ def to_report(stats_xml, output_dir, dpi=72):
                     title="Adapter Report",
                     attributes=attributes,
                     tables=tables,
-                    plotgroups=plot_groups)
+                    )#plotgroups=plot_groups)
 
     return report
 
