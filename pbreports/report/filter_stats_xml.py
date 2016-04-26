@@ -61,8 +61,8 @@ class Constants(object):
 class ReadStatsPlots(object):
     P_LENGTH = "read_length_plot"
     P_LENGTH_PREFIX = "readLenDist"
-    P_LENGTH_X_AXIS = Constants.A_READ_LENGTH
-    P_QUAL_X_AXIS = Constants.A_READ_QUALITY
+    P_LENGTH_X_AXIS = "Read Length"
+    P_QUAL_X_AXIS = "Read Quality"
     P_QUAL = "read_quality_plot"
     P_QUAL_PREFIX = "readQualDist"
     PG_LENGTH = "read_length_plot_group"
@@ -72,8 +72,8 @@ class ReadStatsPlots(object):
 class InsertStatsPlots(object):
     P_LENGTH_PREFIX = "insertLenDist"
     P_LENGTH = "insert_length_plot"
-    P_LENGTH_X_AXIS = Constants.A_INSERT_LENGTH
-    P_QUAL_X_AXIS = Constants.A_INSERT_QUALITY
+    P_LENGTH_X_AXIS = "Insert Length"
+    P_QUAL_X_AXIS = "Insert Quality"
     P_QUAL = "insert_quality_plot"
     P_QUAL_PREFIX = "insertQualDist"
     PG_LENGTH = "insert_length_plot_group"
@@ -173,7 +173,7 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(Constants.ATTR_LABELS[PlotConstants.P_LENGTH_X_AXIS])
+        len_axes.set_xlabel(PlotConstants.P_LENGTH_X_AXIS)
         len_axes.set_ylabel("Number Of Reads")
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_LENGTH_PREFIX))
@@ -201,7 +201,7 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(Constants.ATTR_LABELS[PlotConstants.P_QUAL_X_AXIS])
+        qual_axes.set_xlabel(PlotConstants.P_QUAL_X_AXIS)
         qual_axes.set_ylabel("Number Of Reads")
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_QUAL_PREFIX))
@@ -219,7 +219,7 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
 
 to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots,
                                         "Polymerase Read Length")
-to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots, "Insert Length")
+to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots, "Estimated Insert Length")
 
 
 def to_report(stats_xml, output_dir, dpi=72):
