@@ -1,6 +1,5 @@
 
 import functools
-import warnings
 import argparse
 import logging
 import glob
@@ -408,7 +407,7 @@ def compute_n50_from_bins(bins):
                     return n50
     msg = "Unable to compute n50 from {n} bins with sum {x}".format(
         n=len(bins), x=total)
-    warnings.warn(msg)
+    #warnings.warn(msg)
     log.warn(msg)
     return 0
 

@@ -6,6 +6,7 @@ import logging
 import shutil
 import pprint
 import json
+import os.path as op
 import os
 import sys
 
@@ -25,15 +26,13 @@ log = logging.getLogger(__name__)
 
 _EXE = "mapping_stats"
 
-_IO_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'io')
-_GMAP_DATA_DIR = os.path.join(
+_IO_DATA_DIR = op.join(ROOT_DATA_DIR, 'io')
+_GMAP_DATA_DIR = op.join(
     ROOT_DATA_DIR, 'mapping_stats', 'gmap_2850031_0011')
-_LAMBDA_DATA_DIR = os.path.join(
+_LAMBDA_DATA_DIR = op.join(
     ROOT_DATA_DIR, 'mapping_stats', "lambda_2372215_0007_tiny")
-_CCS_DATA_DIR = os.path.join(LOCAL_DATA, 'mapping_stats_ccs')
+_CCS_DATA_DIR = op.join(LOCAL_DATA, 'mapping_stats_ccs')
 
-_TOTAL_NUMBER_OF_ATTRIBUTES = 12
-_TOTAL_NUMBER_OF_PLOT_GROUPS = 4
 # Tolerance for validating Readlength Q95. This computed from the histogram
 _Q95_DELTA = 50
 
@@ -56,7 +55,7 @@ def _almost_value(actual_value, value, delta):
 
 def _to_cmd(aligned_bam, report_json):
     cmd = "{e} --debug {a} {j}"
-    output_dir = os.path.dirname(report_json)
+    output_dir = op.dirname(report_json)
     d = dict(e=_EXE, o=output_dir, a=aligned_bam, j=report_json)
 
     s = cmd.format(**d)
@@ -95,6 +94,8 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
 
 class TestMappingStatsReport(unittest.TestCase):
     ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
+    TOTAL_NUMBER_OF_ATTRIBUTES = 12
+    TOTAL_NUMBER_OF_PLOT_GROUPS = 4
     EXPECTED_VALUES = {
         Constants.A_SUBREAD_CONCORDANCE: 0.9283,
         Constants.A_NREADS: 48,
@@ -127,13 +128,13 @@ class TestMappingStatsReport(unittest.TestCase):
             log.info(str(table))
 
     def test_number_of_attributes(self):
-        value = _TOTAL_NUMBER_OF_ATTRIBUTES
+        value = self.TOTAL_NUMBER_OF_ATTRIBUTES
         self.assertEqual(len(self.report.attributes), value)
 
     def test_number_of_plot_groups(self):
         # the Yield pie chart has been removed in the streaming version.
         # only subread concordance, subread readlength, readlength histograms
-        value = _TOTAL_NUMBER_OF_PLOT_GROUPS
+        value = self.TOTAL_NUMBER_OF_PLOT_GROUPS
         self.assertEqual(len(self.report.plotGroups), value)
 
     def test_number_of_tables(self):
@@ -198,8 +199,7 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
 
     @classmethod
     def _get_input_file(cls):
-        ds_xml = tempfile.NamedTemporaryFile(
-            suffix=".alignmentset.xml").name
+        ds_xml = tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name
         ds = AlignmentSet(cls.ALIGNMENTS, strict=True)
         ds.write(ds_xml)
         return ds_xml
@@ -222,9 +222,49 @@ class TestMappingStatsReportXML(TestMappingStatsReport):
         ])
 
 
+class TestEmptyBAM(TestMappingStatsReport):
+    """
+    Test for valid report behavior when the input contains no alignments.
+    """
+
+    ALIGNMENTS = op.join(LOCAL_DATA, "mapping_stats", "empty.subreads.bam")
+    TOTAL_NUMBER_OF_PLOT_GROUPS = 0
+    EXPECTED_VALUES = {
+        Constants.A_SUBREAD_CONCORDANCE: 0,
+        Constants.A_NREADS: 0,
+        Constants.A_NSUBREADS: 0,
+        Constants.A_SUBREAD_NBASES: 0,
+        Constants.A_READLENGTH: 0,
+        Constants.A_SUBREAD_LENGTH: 0,
+        Constants.A_READLENGTH_Q95: 0,
+        Constants.A_READLENGTH_MAX: 0,
+        Constants.A_SUBREAD_LENGTH_N50: 0,
+        Constants.A_READLENGTH_N50: 0,
+    }
+
+    @classmethod
+    def _get_input_file(cls):
+        return cls.ALIGNMENTS
+
+
+class TestPartialEmptyBAM(TestMappingStatsReport):
+    """
+    Test for valid report behavior when at least one BAM file in the dataset
+    is empty (but not all).
+    """
+
+    @classmethod
+    def _get_input_file(cls):
+        ds_xml = tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name
+        bams = [cls.ALIGNMENTS, TestEmptyBAM.ALIGNMENTS]
+        ds = AlignmentSet(*bams, strict=True)
+        ds.write(ds_xml)
+        return ds_xml
+
+
 @skip_if_data_dir_not_present
 class TestMappingStatsReportLarge(TestMappingStatsReport):
-    ALIGNMENTS = os.path.join(_IO_DATA_DIR, "lambda_aligned.xml")
+    ALIGNMENTS = op.join(_IO_DATA_DIR, "lambda_aligned.xml")
     EXPECTED_VALUES = {
         Constants.A_SUBREAD_CONCORDANCE: 0.8723,
         Constants.A_NREADS: 1491,
@@ -251,7 +291,7 @@ class TestMappingStatsReportLarge(TestMappingStatsReport):
 class TestMappingStatsMisc(unittest.TestCase):
 
     def setUp(self):
-        self.bam_file = os.path.join(LOCAL_DATA, "mapping_stats",
+        self.bam_file = op.join(LOCAL_DATA, "mapping_stats",
                                      "duplicate.subreads.bam")
 
     def test_duplicate_subreads(self):
@@ -269,10 +309,12 @@ class TestMappingStatsMisc(unittest.TestCase):
 
 @unittest.skip
 class TestMappingStatsGmapReport(unittest.TestCase):
+    TOTAL_NUMBER_OF_PLOT_GROUPS = 4
+    TOTAL_NUMBER_OF_ATTRIBUTES = 12
 
     @classmethod
     def setUpClass(cls):
-        _to_p = lambda x: os.path.join(_GMAP_DATA_DIR, x)
+        _to_p = lambda x: op.join(_GMAP_DATA_DIR, x)
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
         cls.input_fofn = _to_p('input.fofn')
         cls.aligned_reads_cmph5 = _to_p('aligned_reads.cmp.h5')
@@ -297,11 +339,11 @@ class TestMappingStatsGmapReport(unittest.TestCase):
             return a.value
 
     def test_number_of_attributes(self):
-        value = _TOTAL_NUMBER_OF_ATTRIBUTES
+        value = self.TOTAL_NUMBER_OF_ATTRIBUTES
         self.assertEqual(len(self.report.attributes), value)
 
     def test_number_of_plot_groups(self):
-        value = _TOTAL_NUMBER_OF_PLOT_GROUPS
+        value = self.TOTAL_NUMBER_OF_PLOT_GROUPS
         self.assertEqual(len(self.report.plotGroups), value)
 
     def test_number_of_tables(self):
@@ -365,7 +407,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
-        cls.aligned_reads_xml = os.path.join(_CCS_DATA_DIR,
+        cls.aligned_reads_xml = op.join(_CCS_DATA_DIR,
                                              'aligned.consensusalignmentset.xml')
         t = tempfile.NamedTemporaryFile(
             delete=False, suffix="mapping_report.json")
@@ -459,8 +501,8 @@ class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
 class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats_ccs "
     REQUIRES_PBCORE = True
-    INPUT_FILES = [os.path.join(LOCAL_DATA, "mapping_stats_ccs",
-                                "aligned.consensusalignmentset.xml")]
+    INPUT_FILES = [op.join(LOCAL_DATA, "mapping_stats_ccs",
+                           "aligned.consensusalignmentset.xml")]
     TASK_OPTIONS = {}
 
     def run_after(self, rtc, output_dir):
