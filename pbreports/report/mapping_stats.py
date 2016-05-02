@@ -755,6 +755,8 @@ class MappingStatsCollector(object):
         subread_length_max = 0
         with openDataFile(self.alignment_file) as ds:
             for rr in ds.resourceReaders():
+                if len(rr) == 0:
+                    continue
                 subread_length_max = max(subread_length_max,
                                          (rr.pbi.aEnd - rr.pbi.aStart).max())
         for bin_width in BIN_SIZES:

@@ -87,6 +87,8 @@ def _read_in_indexed_alignmentset(in_fn, reference=None):
     lengths, percent_accs, map_qvs = [], [], []
     with openDataFile(in_fn) as ds:
         for bam in ds.resourceReaders():
+            if len(bam) == 0:
+                continue
             identities = bam.identity
             ref_name_to_id = {r.Name:r.ID for r in bam.referenceInfoTable}
             sel = np.full(len(identities), True, dtype=bool)
