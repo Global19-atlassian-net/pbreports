@@ -690,7 +690,7 @@ class MappingStatsCollector(object):
         Constants.A_NSUBREADS: "The number of subreads mapped to the reference sequence",
         Constants.A_SUBREAD_NBASES: "The number of subread bases mapped to the reference sequence",
         Constants.A_READLENGTH: "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
-        Constants.A_SUBREAD_LENGTH: "The mean length of subreads that mapped to the reference sequence",
+        Constants.A_SUBREAD_LENGTH: "The mean length of the mapped portion of subreads which mapped to the reference sequence",
         Constants.A_READLENGTH_Q95: "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
         Constants.A_SUBREAD_LENGTH_Q95: "The 95th percentile of length of subreads that mapped to the reference sequence",
         Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
