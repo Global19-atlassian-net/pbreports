@@ -9,6 +9,7 @@ from collections import OrderedDict
 import argparse
 import hashlib
 import logging
+import re
 import os.path as op
 import os
 import sys
@@ -330,7 +331,8 @@ class ContigCoverage(object):
         self.yDataStdevPlus = []
         self.yDataStdevMinus = []
 
-        self.file_name = "coverage_plot_%s%s" % (self._seqid, ".png")
+        seqid_clean = re.sub("\|", "_", self._seqid) # for services
+        self.file_name = "coverage_plot_{s}.png".format(s=seqid_clean)
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, i=self._seqid, n=self.name,

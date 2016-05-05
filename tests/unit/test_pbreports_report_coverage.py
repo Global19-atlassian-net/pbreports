@@ -12,7 +12,7 @@ import sys
 from pbcommand.models.report import PbReportError
 import pbcommand.testkit.core
 from pbcore.util.Process import backticks
-from pbcore.io import ReferenceSet
+from pbcore.io import ReferenceSet, FastaReader, FastaWriter, GffReader, GffWriter
 import pbcore.data
 
 from pbreports.util import get_top_contigs
@@ -31,6 +31,8 @@ log = logging.getLogger(__name__)
 class TestCoverageRpt(unittest.TestCase):
     REFERENCE = pbcore.data.getLambdaFasta()
     GFF = op.join(LOCAL_DATA, "summarize_coverage", "alignment_summary.gff")
+    CONTIG_ID = "lambda_NEB3011"
+    PLOT_FILE_NAME = "coverage_plot_lambda_NEB3011.png"
 
     def setUp(self):
         self._data_dir = op.join(ROOT_DATA_DIR, 'coverage')
@@ -93,7 +95,8 @@ class TestCoverageRpt(unittest.TestCase):
         self.assertEqual(len(pls), len(tcs))
         contig = tcs[0]
         c_cov = pls[contig.header]
-        self.assertEqual('lambda_NEB3011', c_cov._name)
+        self.assertEqual(self.CONTIG_ID, c_cov._name)
+        self.assertEqual(self.PLOT_FILE_NAME, op.basename(c_cov.file_name))
         # TODO  more testing of cc
 
     def test_create_contig_plot(self):
@@ -207,7 +210,6 @@ class TestCoverageRpt(unittest.TestCase):
         """
         Create a report object, do assertions on its properties, then assert that it gets written
         """
-        gff = self.GFF
         report = make_coverage_report(self.GFF, self.REFERENCE, 25, 'rpt.json',
                                       self._output_dir)
         self.assertEqual(2, len(report.attributes))
@@ -271,6 +273,43 @@ class TestCoverageRpt(unittest.TestCase):
         self.assertEquals(0, c)
         self.assertTrue(op.exists(r))
 
+
+class TestCoveragePlotQuivered(TestCoverageRpt):
+    REFERENCE = tempfile.NamedTemporaryFile(suffix=".fasta").name
+    GFF = tempfile.NamedTemporaryFile(suffix=".gff").name
+    CONTIG_ID = "lambda_NEB3011|quiver"
+    PLOT_FILE_NAME = "coverage_plot_lambda_NEB3011_quiver.png"
+
+    @classmethod
+    def setUpClass(cls):
+        with FastaWriter(cls.REFERENCE) as fasta_out:
+            with FastaReader(TestCoverageRpt.REFERENCE) as fasta_in:
+                for rec in fasta_in:
+                    header = rec.id + "|quiver"
+                    fasta_out.writeRecord(header, rec.sequence)
+        with GffWriter(cls.GFF) as gff_out:
+            with GffReader(TestCoverageRpt.GFF) as gff_in:
+                for header in gff_in.headers:
+                    gff_out.writeHeader(header)
+                for rec in gff_in:
+                    rec.seqid += "|quiver"
+                    gff_out.writeRecord(rec)
+
+    def test_attributes_high_coverage(self):
+        raise unittest.SkipTest("Not applicable")
+
+    def test_plot_file_names(self):
+        report = make_coverage_report(self.GFF, self.REFERENCE, 25, 'rpt.json',
+                                      self._output_dir)
+        n = 0
+        for pg in report.plotGroups:
+            if pg.id == "coverage_plots":
+                for p in pg.plots:
+                    if p.id.startswith("coverage_contig"):
+                        self.assertEqual(self.PLOT_FILE_NAME,
+                                         op.basename(p.image))
+                        n += 1
+        self.assertEqual(n, 1, "Contig coverage plot not found")
 
 
 @skip_if_data_dir_not_present
