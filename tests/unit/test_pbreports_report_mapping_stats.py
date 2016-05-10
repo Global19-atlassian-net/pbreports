@@ -468,3 +468,26 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
         with ConsensusAlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
             self.assertEqual(len(r.plotGroups), 4)
+
+
+@skip_if_data_dir_not_present
+class TestMappingStatsMultipleMovies(TestMappingStatsReportLarge):
+    ALIGNMENTS = "/pbi/dept/secondary/siv/testdata/SA3-RS/ecoli/tiny-multimovie/Alignment_Results/combined.alignmentset.xml"
+    EXPECTED_VALUES = {
+        Constants.A_SUBREAD_CONCORDANCE: 0.829,
+        Constants.A_NSUBREADS: 27,
+        Constants.A_SUBREAD_NBASES: 120373,
+        Constants.A_SUBREAD_LENGTH: 4458,
+        Constants.A_SUBREAD_LENGTH_N50: 10937,
+        Constants.A_NREADS: 6,
+        Constants.A_READLENGTH: 20328,
+        Constants.A_READLENGTH_N50: 24306,
+        Constants.A_READLENGTH_Q95: 32080,
+        Constants.A_READLENGTH_MAX: 32086,
+    }
+
+    def test_all_movies_in_table_have_mapped_reads(self):
+        for column in self.report.tables[0].columns:
+            if column.id == "mapped_reads":
+                self.assertTrue(all([x>0 for x in column.values]),
+                                "Not all movies have a mapped read")

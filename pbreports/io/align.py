@@ -68,55 +68,56 @@ def alignment_info_from_bam(bam_file_name, movie_name):
 
     last_zmw_id = None
     with IndexedBamReader(bam_file_name) as bam:
-        identities = bam.identity
-        subread_lengths = bam.aEnd - bam.aStart
-        # FIXME(nechols)(2016-04-19) can this be done as numpy array ops?
-        for i_aln, rgId in enumerate(bam.qId):
-            current_movie_name = bam.readGroupInfo(rgId).MovieName
-            movie_names.add(current_movie_name)
-            if movie_name != current_movie_name:
-                continue
+        if len(bam) > 0:
+            identities = bam.identity
+            subread_lengths = bam.aEnd - bam.aStart
+            # FIXME(nechols)(2016-04-19) can this be done as numpy array ops?
+            for i_aln, rgId in enumerate(bam.qId):
+                current_movie_name = bam.readGroupInfo(rgId).MovieName
+                movie_names.add(current_movie_name)
+                if movie_name != current_movie_name:
+                    continue
 
-            hole_number = bam.holeNumber[i_aln]
-            qs, qe = bam.qStart[i_aln], bam.qEnd[i_aln]
-            rstart, rend = bam.aStart[i_aln], bam.aEnd[i_aln]
-            identity = None
-            if (qs, qe) == (-1, -1):
-                qs = 0
-                # XXX This is only used to key subreads so the exact value is
-                # not important - still clumsy though
-                qe = rend - rstart
+                hole_number = bam.holeNumber[i_aln]
+                qs, qe = bam.qStart[i_aln], bam.qEnd[i_aln]
+                rstart, rend = bam.aStart[i_aln], bam.aEnd[i_aln]
+                identity = None
+                if (qs, qe) == (-1, -1):
+                    qs = 0
+                    # XXX This is only used to key subreads so the exact value is
+                    # not important - still clumsy though
+                    qe = rend - rstart
 
-            # Compound ids
-            zmw_id = (current_movie_name, hole_number)
-            subread_id = (current_movie_name, hole_number, qs, qe)
+                # Compound ids
+                zmw_id = (current_movie_name, hole_number)
+                subread_id = (current_movie_name, hole_number, qs, qe)
 
-            this_a = []
-            this_a.append(subread_lengths[i_aln])
+                this_a = []
+                this_a.append(subread_lengths[i_aln])
 
-            this_a.append(identities[i_aln])
-            this_a.append(bam.readQual[i_aln])
+                this_a.append(identities[i_aln])
+                this_a.append(bam.readQual[i_aln])
 
-            this_a.append(1.0 if zmw_id != last_zmw_id else 0.0)  # isFirst
+                this_a.append(1.0 if zmw_id != last_zmw_id else 0.0)  # isFirst
 
-            # modStart, a value without a clear meaning, so just write some
-            # garbage
-            this_a.append(99999)
+                # modStart, a value without a clear meaning, so just write some
+                # garbage
+                this_a.append(99999)
 
-            last_zmw_id = zmw_id
+                last_zmw_id = zmw_id
 
-            if subread_id in datum:
-                warnings.warn("Duplicate subread %s" % str(subread_id))
+                if subread_id in datum:
+                    warnings.warn("Duplicate subread %s" % str(subread_id))
 
-            # No Z-score
-            datum[subread_id] = tuple(this_a)
+                # No Z-score
+                datum[subread_id] = tuple(this_a)
 
-            if zmw_id not in max_subread or subread_lengths[i_aln] > max_subread[zmw_id][1]:
-                max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
+                if zmw_id not in max_subread or subread_lengths[i_aln] > max_subread[zmw_id][1]:
+                    max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
 
-            unrolled.setdefault(zmw_id, [99999, 0])
-            unrolled[zmw_id][0] = min(unrolled[zmw_id][0], rstart)
-            unrolled[zmw_id][1] = max(unrolled[zmw_id][1], rend)
+                unrolled.setdefault(zmw_id, [99999, 0])
+                unrolled[zmw_id][0] = min(unrolled[zmw_id][0], rstart)
+                unrolled[zmw_id][1] = max(unrolled[zmw_id][1], rend)
 
     return datum, unrolled, max_subread, movie_names
 

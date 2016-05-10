@@ -617,25 +617,11 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
 
 
 def analyze_movies(movies, alignment_file_names, stats_models, nproc=1):
-    pool = None
-    if nproc >= 1:
-        # XXX I use nproc-1 here because the callback in the main process
-        # actually takes up a lot of time
-        log.info("Starting pool of {n} processes".format(n=max(1, nproc-1)))
-        pool = multiprocessing.Pool(processes=nproc)
     for movie in movies:
         for file_name in alignment_file_names:
             log.info("Analyzing Movie {n}".format(n=movie))
-            def __analyze_movie(args):
-                return from_alignment_file(*args)
-            def __callback(args):
-                log.debug("processing worker results")
-                _process_movie_data(movie, file_name, stats_models, *args)
-                return True
-            pool.apply_async(from_alignment_file, (movie, file_name),
-                             callback=__callback)
-    pool.close()
-    pool.join()
+            results = from_alignment_file(movie, file_name)
+            _process_movie_data(movie, file_name, stats_models, *results)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
 
