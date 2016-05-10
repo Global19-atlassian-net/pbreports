@@ -513,7 +513,7 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
 
 
 @skip_if_data_dir_not_present
-class TestMappingStatsMultipleMovies(TestMappingStatsReport):
+class TestMappingStatsMultipleMovies(TestMappingStatsReportLarge):
     ALIGNMENTS = "/pbi/dept/secondary/siv/testdata/SA3-RS/ecoli/tiny-multimovie/Alignment_Results/combined.alignmentset.xml"
     EXPECTED_VALUES = {
         Constants.A_SUBREAD_CONCORDANCE: 0.829,
