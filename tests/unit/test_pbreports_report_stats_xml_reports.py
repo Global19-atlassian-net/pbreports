@@ -282,10 +282,10 @@ class TestXMLstatsRpts(unittest.TestCase):
         self._compare_attribute_values(
             report_d=d,
             expected_d={
-                Constants.A_NBASES:  4464266,
+                Constants.A_NBASES:  4080353,
                 Constants.A_NREADS: 901,
                 Constants.A_READ_N50: 6570,
-                Constants.A_READ_LENGTH: 4955,
+                Constants.A_READ_LENGTH: 4529,
         #        Constants.A_READ_QUALITY: 0.83
             })
 
@@ -314,10 +314,10 @@ class TestXMLstatsRpts(unittest.TestCase):
         self._compare_attribute_values(
             report_d=d,
             expected_d={
-                Constants.A_NBASES:  393167213,
+                Constants.A_NBASES:  342348413,
                 Constants.A_NREADS: 25123,
                 Constants.A_READ_N50: 21884,
-                Constants.A_READ_LENGTH: 15650,
+                Constants.A_READ_LENGTH: 13627,
          #       Constants.A_READ_QUALITY: 0.86
             })
 

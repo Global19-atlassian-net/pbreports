@@ -102,10 +102,8 @@ def _to_read_stats_attributes(readLenDists, readQualDists):
 
     # if a merge failed there may be more than one dist:
     for rlendist in readLenDists:
-        nbases += _total_from_bins(rlendist.bins,
-                                   rlendist.minBinValue,
-                                   rlendist.binWidth)
-        nreads += sum(rlendist.bins)
+        nbases += rlendist.sampleMean * rlendist.sampleSize
+        nreads += rlendist.sampleSize
 
         # N50:
         for i, lbin in enumerate(rlendist.bins):
@@ -132,7 +130,8 @@ def _to_read_stats_attributes(readLenDists, readQualDists):
 
     readlen = 0
     if nreads != 0:
-        readlen = int(np.round(nbases / nreads, decimals=0))
+        readlen = nbases / nreads
+    readlen = int(np.round(readlen, decimals=0))
     readQuality = 0
     if readscorenumber != 0:
         readQuality = np.round(readscoretotal / readscorenumber, decimals=2)
