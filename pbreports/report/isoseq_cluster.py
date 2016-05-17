@@ -1,5 +1,5 @@
 """
-Generate a report for a IsoSeq Cluster run, given both
+Generate a report for a Iso-Seq Cluster run, given both
 consensus isoforms reads in Fasta file and a
 cluster summary.
 """
@@ -80,11 +80,11 @@ def _report_to_attributes(report_file):
 
 
 def attributesToTable(attributes):
-    """Build a report table from IsoSeq cluster attributes."""
+    """Build a report table from Iso-Seq cluster attributes."""
     columns = [Column(x.id, header=x.name) for x in attributes]
 
     table = Table('isoseq_cluster_table',
-                  title="IsoSeq Cluster",
+                  title="Iso-Seq Cluster",
                   columns=columns)
 
     for x in attributes:
@@ -271,16 +271,16 @@ def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "IsoSeq Cluster Report",
+        "Iso-Seq Cluster Report",
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
 
     p.add_input_file_type(FileTypes.DS_CONTIG, "inReadsFN", "Fasta reads",
                           description="Reads in FASTA format, usually are consensus, " +
-                          "isoforms produced by IsoSeq Cluster.")
+                          "isoforms produced by Iso-Seq Cluster.")
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary text",
-                          description="A summary produced by IsoSeq Cluster, e.g. " +
+                          description="A summary produced by Iso-Seq Cluster, e.g. " +
                           "cluster_summary.txt")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "Output JSON",
                            description="Path to write Report json output.",
