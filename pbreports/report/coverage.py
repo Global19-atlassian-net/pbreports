@@ -483,7 +483,7 @@ def get_parser():
                           name="Alignment Summary GFF",
                           description="Alignment Summary GFF")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name="JSON report",
+                           name="Coverage report",
                            description="Path to write report JSON output",
                            default_name="coverage_report")
     p.add_int(
