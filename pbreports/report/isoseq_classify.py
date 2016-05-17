@@ -1,6 +1,6 @@
 
 """
-Generate a report for a IsoSeq Classify run, given both primer-trimmed,
+Generate a report for a Iso-Seq Classify run, given both primer-trimmed,
 non-chimeric, full-length reads and a classify summary.
 """
 import functools
@@ -78,13 +78,13 @@ def _report_to_attributes(summary_json):
 
 
 def _attributes_to_table(attributes):
-    """Build a report table from IsoSeq Classify attributes.
+    """Build a report table from Iso-Seq Classify attributes.
 
     """
     columns = [Column(x.id, header=x.name) for x in attributes]
 
     table = Table('isoseq_classify_table',
-                  title="IsoSeq Transcript Classification",
+                  title="Iso-Seq Transcript Classification",
                   columns=columns)
 
     for x in attributes:
@@ -284,15 +284,15 @@ def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "IsoSeq Classify Report",
+        "Iso-Seq Classify Report",
         __doc__,
         Constants.DRIVER_EXE)
 
     p.add_input_file_type(FileTypes.DS_CONTIG, "inReadsFN", "Fasta reads",
                           description="Reads in FASTA format, usually are full-length, " +
-                          "non-chimeric, primer-trimmed reads produced by IsoSeq classify.")
+                          "non-chimeric, primer-trimmed reads produced by Iso-Seq classify.")
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary file",
-                          description="A summary produced by IsoSeq Classify, e.g. " +
+                          description="A summary produced by Iso-Seq Classify, e.g. " +
                           "classify_summary.json")
     p.add_output_file_type(FileTypes.REPORT, "outJson", "JSON file",
                            description="Path to write report JSON output",
