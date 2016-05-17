@@ -22,13 +22,13 @@
         "_comment": "Created by v0.2.0 at 2015-07-30T16:56:42.904356", 
         "input_types": [
             {
-                "description": "Reads in FASTA format, usually are full-length, non-chimeric, primer-trimmed reads produced by IsoSeq classify.", 
+                "description": "Reads in FASTA format, usually are full-length, non-chimeric, primer-trimmed reads produced by Iso-Seq classify.", 
                 "title": "Fasta reads", 
                 "id": "inReadsFN", 
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }, 
             {
-                "description": "A summary produced by IsoSeq Classify, e.g. classify_summary.txt", 
+                "description": "A summary produced by Iso-Seq Classify, e.g. classify_summary.txt", 
                 "title": "Summary file", 
                 "id": "inSummaryFN", 
                 "file_type_id": "PacBio.FileTypes.txt"

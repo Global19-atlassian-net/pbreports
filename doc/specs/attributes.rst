@@ -133,7 +133,7 @@ sum_contig_lengths  Sum of Contig Lengths  Total length of all contigs
 
 **pbreports.report.isoseq_classify**:
 
-IsoSeq Classify report
+Iso-Seq Classify report
 
 ========================  ============================================  =====================================================================================================================
 Attribute ID              Name                                          Description
@@ -155,7 +155,7 @@ num_flnc_bases            Number of full-length non-chimeric bases      Total nu
 
 **pbreports.report.isoseq_cluster**:
 
-IsoSeq Cluster report
+Iso-Seq Cluster report
 
 ============================  ======================================================  ==========================================================================================================
 Attribute ID                  Name                                                    Description
