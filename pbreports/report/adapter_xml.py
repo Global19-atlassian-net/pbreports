@@ -138,7 +138,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 def _add_options_to_parser(p):
     p.add_input_file_type(
         FileTypes.DS_SUBREADS, "subread_set", "SubreadSet", "PacBio SubreadSet XML File")
-    p.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
+    p.add_output_file_type(FileTypes.REPORT, "report", "Adapter report",
                            description=("Filename of JSON output report. Should be name only, "
                                         "and will be written to output dir"),
                            default_name="report")

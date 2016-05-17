@@ -624,7 +624,7 @@ def get_parser():
     p.add_input_file_type(FileTypes.CSV, 'motif_summary_csv',
                           "CSV file", 'Path to Motif summary CSV')
     p.add_output_file_type(FileTypes.REPORT, 'report_json',
-                           name="JSON report",
+                           name="Motifs report",
                            description="Path of output JSON report",
                            default_name="motifs_report")
     return p
