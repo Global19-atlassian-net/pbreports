@@ -307,7 +307,7 @@ def add_base_options(parser):
     return parser
 
 
-def add_base_options_pbcommand(parser):
+def add_base_options_pbcommand(parser, title="JSON report"):
     """
     Eventual replacement for add_base_options(parser).
     """
@@ -318,7 +318,7 @@ def add_base_options_pbcommand(parser):
         "output",
         type=validate_output_dir,
         help="Output directory for associated files")
-    parser.add_output_file_type(FileTypes.REPORT, "report", "JSON report",
+    parser.add_output_file_type(FileTypes.REPORT, "report", title,
                                 description="Filename of JSON output report",
                                 default_name="report")
     return parser

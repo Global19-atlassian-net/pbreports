@@ -327,7 +327,7 @@ def get_contract_parser():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-    add_base_options_pbcommand(p)
+    add_base_options_pbcommand(p, "Loading report")
     p.add_input_file_type(FileTypes.GFF,
                           file_id="gff",
                           name="GFF file",

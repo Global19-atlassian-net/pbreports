@@ -252,7 +252,7 @@ def get_parser():
         is_distributed=True)
     p.add_input_file_type(FileTypes.CSV, "csv", "CSV file",
                           "CSV file of base modifications")
-    add_base_options_pbcommand(p)
+    add_base_options_pbcommand(p, "Basemods report")
     return p
 
 

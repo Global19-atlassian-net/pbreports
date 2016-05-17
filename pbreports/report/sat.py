@@ -213,7 +213,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 def _add_options_to_parser(p):
     desc = 'Generates the SAT metric performance attributes'
-    p = add_base_options_pbcommand(p)
+    p = add_base_options_pbcommand(p, "SAT report")
     p.add_input_file_type(FileTypes.DS_ALIGN,
                           file_id="alignment_file",
                           name="AlignmentSet",

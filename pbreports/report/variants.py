@@ -409,7 +409,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 
 def _add_options_to_parser(p):
-    p = add_base_options_pbcommand(p)
+    p = add_base_options_pbcommand(p, "Variants report")
     p.add_input_file_type(FileTypes.DS_REF,
                           file_id="reference",
                           name="Reference dataset",
