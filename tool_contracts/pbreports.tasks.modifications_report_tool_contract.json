@@ -1,0 +1,37 @@
+{
+    "version": "2.1", 
+    "driver": {
+        "serialization": "json", 
+        "exe": "python -m pbreports.report.modifications --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.modifications_report", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "\nGenerates a table showing consensus stats and a report showing variants plots\nfor the top 25 contigs of the supplied reference.\n", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "Basemods report", 
+                "description": "Filename of JSON output report", 
+                "default_name": "report", 
+                "id": "report", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }
+        ], 
+        "_comment": "Created by v0.3.25", 
+        "name": "Modifications Report", 
+        "input_types": [
+            {
+                "description": "CSV file of base modifications", 
+                "title": "CSV file", 
+                "id": "csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.modifications_report"
+    }
+}

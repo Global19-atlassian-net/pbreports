@@ -15,15 +15,18 @@ from pbreports.report.summarize_coverage import summarize_coverage
 log = logging.getLogger(__name__)
 __version__ = "0.1"
 
-def get_parser():
-    driver_exe = "python -m {m} --resolved-tool-contract ".format(
+class Constants(object):
+    TOOL_ID = "pbreports.tasks.summarize_coverage_ccs"
+    DRIVER_EXE = "python -m {m} --resolved-tool-contract ".format(
         m="pbreports.report.summarize_coverage.ccs")
+
+def get_parser():
     p = get_pbparser(
-        "pbreports.tasks.summarize_coverage_ccs",
+        Constants.TOOL_ID,
         __version__,
         "Summarize Coverage (CCS)",
         __doc__,
-        driver_exe)
+        Constants.DRIVER_EXE)
     return p
 
 

@@ -23,10 +23,11 @@ from pbreports.util import movie_to_cell, add_base_options_pbcommand
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
-TOOL_ID = "pbreports.tasks.sat_report"
 
 
 class Constants(object):
+    TOOL_ID = "pbreports.tasks.sat_report"
+    DRIVER_EXE = "python -m pbreports.report.sat --resolved-tool-contract "
     ATTR_LABELS = OrderedDict([
         ("instrument", "Instrument ID"),
         ("coverage", "Genome Coverage"),
@@ -245,13 +246,12 @@ def add_options_to_parser(p):
 
 
 def _get_parser_core():
-    driver_exe = "python -m pbreports.report.sat --resolved-tool-contract "
     p = get_pbparser(
-        TOOL_ID,
+        Constants.TOOL_ID,
         __version__,
         "SAT Report",
         __doc__,
-        driver_exe,
+        Constants.DRIVER_EXE,
         is_distributed=True)
     return p
 

@@ -1,25 +1,27 @@
 {
     "version": "2.0", 
     "driver": {
-        "exe": "python -m pbreports.report.motifs --resolve-tool-contract", 
+        "serialization": "json", 
+        "exe": "python -m pbreports.report.motifs --resolved-tool-contract", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.motifs_report", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nCreate Kinetics report from motifs.gff.gz and motif_summary.csv\n", 
         "schema_options": [], 
         "output_types": [
             {
-                "title": "JSON report", 
+                "title": "Motifs report", 
                 "description": "Path of output JSON report", 
-                "default_name": "motifs_report.json", 
+                "default_name": "motifs_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T16:56:40.316353", 
+        "_comment": "Created by v0.3.25", 
+        "name": "Motif Report", 
         "input_types": [
             {
                 "description": "Path to motifs.gff.gz", 
@@ -35,6 +37,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.motifs_report"
     }
 }
