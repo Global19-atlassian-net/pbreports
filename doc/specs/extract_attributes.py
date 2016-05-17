@@ -63,9 +63,9 @@ pbreports specifications (automatically generated)
                             (Summary, "ClusterSummary", "isoseq_cluster")]:
                 klass = getattr(m, c)
                 _write_report_info(klass, m, "pbreports.report.{n}".format(n=n),
-                                   doc="IsoSeq {r} report".format(r=c[:-7]))
+                                   doc="Iso-Seq {r} report".format(r=c[:-7]))
         else:
-            log.warn("Skipping IsoSeq reports")
+            log.warn("Skipping Iso-Seq reports")
     return 0
 
 if __name__ == "__main__":
