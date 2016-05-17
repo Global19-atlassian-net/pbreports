@@ -13,10 +13,13 @@ from pbcommand.models import get_pbparser, FileTypes
 from pbreports.report.streaming_utils import PlotViewProperties
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data, Line)
 from pbreports.report.mapping_stats import *
+from pbreports.report.mapping_stats import Constants as BaseConstants
 from pbreports.report.ccs import create_plot
 
-TOOL_ID = "pbreports.tasks.mapping_stats_ccs"
-DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
+class Constants(BaseConstants):
+    TOOL_ID = "pbreports.tasks.mapping_stats_ccs"
+    DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
+
 __version__ = "0.1"
 log = logging.getLogger(__name__)
 
@@ -193,8 +196,9 @@ def _resolved_tool_contract_runner(resolved_contract):
 
 
 def _get_parser():
-    parser = get_pbparser(TOOL_ID, __version__,
-                          "CCS Mapping Statistics", __doc__, DRIVER_EXE)
+    parser = get_pbparser(Constants.TOOL_ID, __version__,
+                          "CCS Mapping Statistics", __doc__,
+                          Constants.DRIVER_EXE)
     parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
                                "ConsensusAlignment XML DataSet",
                                "BAM, SAM or ConsensusAlignment DataSet")

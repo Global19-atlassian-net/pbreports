@@ -1,25 +1,27 @@
 {
     "version": "0.1", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbreports.report.sat --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.sat_report", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": false, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nGenerates the SAT metric performance attributes\n", 
         "schema_options": [], 
         "output_types": [
             {
-                "title": "JSON report", 
-                "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
-                "default_name": "report.json", 
+                "title": "SAT report", 
+                "description": "Filename of JSON output report", 
+                "default_name": "report", 
                 "id": "report", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T16:56:37.215330", 
+        "_comment": "Created by v0.3.25", 
+        "name": "SAT Report", 
         "input_types": [
             {
                 "description": "AlignmentSet XML or aligned .bam file", 
@@ -34,13 +36,14 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }, 
             {
-                "description": "The mapping stats report - i.e., mapping_stats_report.json", 
-                "title": "Mapping stats JSON", 
+                "description": "The mapping statistics report - i.e., mapping_stats_report.json", 
+                "title": "Mapping statistics JSON", 
                 "id": "mapping_stats_rpt", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.sat_report"
     }
 }

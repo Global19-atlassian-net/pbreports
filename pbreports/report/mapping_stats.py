@@ -34,7 +34,6 @@ from pbreports.report.streaming_utils import (PlotViewProperties,
 log = logging.getLogger(__name__)
 
 __version__ = '4.2.0'
-TOOL_ID = "pbreports.tasks.mapping_stats"
 
 SUBREAD_TYPE = 'SubreadType'
 READ_TYPE = 'ReadType'
@@ -43,6 +42,7 @@ DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
 
 
 class Constants(object):
+    TOOL_ID = "pbreports.tasks.mapping_stats"
     # Report Id
     R_ID = "mapping_stats"
 
@@ -1047,7 +1047,7 @@ def _resolved_tool_contract_runner(resolved_contract):
 def _get_parser():
     desc = "Create a Mapping Report from a Aligned BAM or Alignment DataSet"
     driver_exe = "python -m pbreports.report.mapping_stats --resolved-tool-contract "
-    parser = get_pbparser(TOOL_ID, __version__,
+    parser = get_pbparser(Constants.TOOL_ID, __version__,
                           "Mapping Statistics", desc, driver_exe,
                           nproc=4)
 
