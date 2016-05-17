@@ -114,8 +114,8 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
-        name="ConsensusReportJSON",
-        description="Consensus Report JSON",
+        name="Amplicon consensus report",
+        description="Amplicon Consensus Report JSON",
         default_name="consensus_report")
 
 
