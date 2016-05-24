@@ -34,7 +34,7 @@ class TestBam(unittest.TestCase):
     def setUpClass(cls):
         log.info("Loading alignments from {c}".format(c=cls.BAM_PATH))
         movie_names, unrolled, datum, columns = from_alignment_file(
-            cls.MOVIE, cls.BAM_PATH)
+            alignment_info_from_bam(cls.BAM_PATH)[cls.MOVIE])
         cls.datum = datum
         cls.unrolled = unrolled
         cls.movie_names = movie_names
@@ -78,7 +78,7 @@ class TestBamLarge(TestBam):
 
     def test_alignment_info_from_bam(self):
         datum, unrolled, max_subread, movie_names = alignment_info_from_bam(
-            self.BAM_PATH, self.MOVIE)
+            self.BAM_PATH)[self.MOVIE].as_tuple()
         self.assertEqual(max_subread[(self.MOVIE, 17417)],
                          ((self.MOVIE, 17417, 1196, 3131), 1925))
         self.assertEqual(max_subread[(self.MOVIE, 27338)],

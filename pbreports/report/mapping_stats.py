@@ -26,7 +26,8 @@ from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 from pbreports.plot.rainbow import make_rainbow_plot
 from pbreports.plot.helper import get_blue, get_green
 from pbreports.util import compute_n50_from_bins
-from pbreports.io.align import (from_alignment_file, CrunchedAlignments)
+from pbreports.io.align import (alignment_info_from_bam, from_alignment_file,
+                                CrunchedAlignments)
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
@@ -564,23 +565,6 @@ def _movienames_from_bam(aligned_file):
     return movies
 
 
-def analyze_movie(movie, alignment_file, stats_models):
-    """
-    The regions should only correspond to a single Movie
-
-    :type movie: Movie
-    :type stats_models: list
-    """
-    started_at = time.time()
-    movie_names, unrolled, data_, columns = from_alignment_file(
-        movie, alignment_file)
-    _process_movie_data(movie, alignment_file, stats_models,
-                        movie_names, unrolled, data_, columns)
-    run_time = time.time() - started_at
-    _d = dict(n=movie, s=run_time)
-    log.info("Completed analyzing Movie {n} with in {s:.2f} sec.".format(**_d))
-
-
 def _process_movie_data(movie, alignment_file, stats_models, movie_names,
                         unrolled, data, columns):
     if len(data) == 0:
@@ -616,27 +600,26 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
             pass
 
 
-def analyze_movies(movies, alignment_file_names, stats_models, nproc=1):
-    #pool = None
-    #if nproc >= 1:
-    #    # XXX I use nproc-1 here because the callback in the main process
-    #    # actually takes up a lot of time
-    #    log.info("Starting pool of {n} processes".format(n=max(1, nproc-1)))
-    #    pool = multiprocessing.Pool(processes=nproc)
-    for movie in movies:
-        for file_name in alignment_file_names:
-            log.info("Analyzing Movie {n}".format(n=movie))
-            results = from_alignment_file(movie, file_name)
-            _process_movie_data(movie, file_name, stats_models, *results)
-            # FIXME need to re-think this
-            #def __analyze_movie(args):
-            #    return from_alignment_file(*args)
-            #__callback = functools.partial(_process_movie_data, movie,
-            #                               file_name, stats_models)
-            #pool.apply_async(from_alignment_file, (movie, file_name),
-            #                 callback=__callback)
-    #pool.close()
-    #pool.join()
+def _harvest_file_data(file_name):
+    log.info("reading {f}.pbi".format(f=file_name))
+    try:
+        return alignment_info_from_bam(file_name)
+    except Exception as err:
+        # multiprocessing does not handle uncaught Exceptions gracefully
+        return err
+
+
+def analyze_movies(movies, alignment_file_names, stats_models):
+    all_results = []
+    log.info("collecting data from {n} BAM files...".format(
+             n=len(alignment_file_names)))
+    for file_name in alignment_file_names:
+        log.info("reading {f}.pbi".format(f=file_name))
+        results = alignment_info_from_bam(file_name)
+        for movie, aln_info in results.iteritems():
+            log.info("Analyzing Movie {n} in {f}".format(n=movie, f=file_name))
+            args = from_alignment_file(aln_info)
+            _process_movie_data(movie, file_name, stats_models, *args)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
 
@@ -724,9 +707,8 @@ class MappingStatsCollector(object):
         MeanSubreadConcordanceAggregator
     ]
 
-    def __init__(self, alignment_file, nproc=1):
+    def __init__(self, alignment_file):
         self.alignment_file = alignment_file
-        self.nproc = max(nproc, 1)
         self.dataset_uuids = []
         if alignment_file.endswith('.xml'):
             log.debug('Importing alignments from dataset XML')
@@ -919,8 +901,7 @@ class MappingStatsCollector(object):
 
         # Run all the analysis. Now the aggregators can be accessed
 
-        analyze_movies(self.movies, self.alignment_file_list, all_models,
-                       nproc=self.nproc)
+        analyze_movies(self.movies, self.alignment_file_list, all_models)
 
         # temp structure used to create the report table. The order is
         # important
@@ -995,8 +976,8 @@ class MappingStatsCollector(object):
         return report
 
 
-def to_report(alignment_file, output_dir, nproc=1):
-    return MappingStatsCollector(alignment_file, nproc).to_report(output_dir)
+def to_report(alignment_file, output_dir):
+    return MappingStatsCollector(alignment_file).to_report(output_dir)
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -1017,10 +998,9 @@ def summarize_report(report_file, out=sys.stdout):
     W("  SUBREADLENGTH_MEAN: {n}".format(n=attr[Constants.A_SUBREAD_LENGTH]))
 
 
-def run_and_write_report(alignment_file, json_report, report_func=to_report,
-                         nproc=1):
+def run_and_write_report(alignment_file, json_report, report_func=to_report):
     output_dir = os.path.dirname(json_report)
-    report = report_func(alignment_file, output_dir, nproc)
+    report = report_func(alignment_file, output_dir)
     report.write_json(json_report)
     log.info("Wrote output to %s" % json_report)
     return 0
@@ -1040,8 +1020,7 @@ def _resolved_tool_contract_runner(resolved_contract):
     """
     return run_and_write_report(
         alignment_file=resolved_contract.task.input_files[0],
-        json_report=resolved_contract.task.output_files[0],
-        nproc=resolved_contract.task.nproc)
+        json_report=resolved_contract.task.output_files[0])
 
 
 def _get_parser():
@@ -1049,7 +1028,7 @@ def _get_parser():
     driver_exe = "python -m pbreports.report.mapping_stats --resolved-tool-contract "
     parser = get_pbparser(Constants.TOOL_ID, __version__,
                           "Mapping Statistics", desc, driver_exe,
-                          nproc=4)
+                          nproc=1)
 
     parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
                                "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
