@@ -56,28 +56,35 @@ def _getPct(percentile, vector):
     return sorted_vector[-1] if index >= len(sorted_vector) else sorted_vector[index]
 
 
-def alignment_info_from_bam(bam_file_name, movie_name):
+class MovieAlignmentInfo(object):
+    def __init__(self, bam_file_name, movie_name):
+        self.bam_file_name = bam_file_name
+        self.movie_name = movie_name
+        self.datum = {}
+        self.unrolled = {}
+        self.max_subread = {}
+
+    def as_tuple(self):
+        return self.datum, self.unrolled, self.max_subread, set([self.movie_name])
+
+
+def alignment_info_from_bam(bam_file_name):
     """
     Extract subread information from an indexed BAM file.  This should be
     relatively fast since it will not access the BAM records directly.
     """
-    datum = {}
-    unrolled = {}
-    max_subread = {}
-    movie_names = set()
-
+    by_movie = {}
     last_zmw_id = None
     with IndexedBamReader(bam_file_name) as bam:
         if len(bam) > 0:
             identities = bam.identity
             subread_lengths = bam.aEnd - bam.aStart
-            # FIXME(nechols)(2016-04-19) can this be done as numpy array ops?
             for i_aln, rgId in enumerate(bam.qId):
-                current_movie_name = bam.readGroupInfo(rgId).MovieName
-                movie_names.add(current_movie_name)
-                if movie_name != current_movie_name:
-                    continue
-
+                movie_name = bam.readGroupInfo(rgId).MovieName
+                if not movie_name in by_movie:
+                    by_movie[movie_name] = MovieAlignmentInfo(bam_file_name,
+                                                              movie_name)
+                m = by_movie[movie_name]
                 hole_number = bam.holeNumber[i_aln]
                 qs, qe = bam.qStart[i_aln], bam.qEnd[i_aln]
                 rstart, rend = bam.aStart[i_aln], bam.aEnd[i_aln]
@@ -89,8 +96,8 @@ def alignment_info_from_bam(bam_file_name, movie_name):
                     qe = rend - rstart
 
                 # Compound ids
-                zmw_id = (current_movie_name, hole_number)
-                subread_id = (current_movie_name, hole_number, qs, qe)
+                zmw_id = (movie_name, hole_number)
+                subread_id = (movie_name, hole_number, qs, qe)
 
                 this_a = []
                 this_a.append(subread_lengths[i_aln])
@@ -106,35 +113,25 @@ def alignment_info_from_bam(bam_file_name, movie_name):
 
                 last_zmw_id = zmw_id
 
-                if subread_id in datum:
+                if subread_id in m.datum:
                     warnings.warn("Duplicate subread %s" % str(subread_id))
 
                 # No Z-score
-                datum[subread_id] = tuple(this_a)
+                m.datum[subread_id] = tuple(this_a)
 
-                if zmw_id not in max_subread or subread_lengths[i_aln] > max_subread[zmw_id][1]:
-                    max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
+                if zmw_id not in m.max_subread or subread_lengths[i_aln] > m.max_subread[zmw_id][1]:
+                    m.max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
 
-                unrolled.setdefault(zmw_id, [99999, 0])
-                unrolled[zmw_id][0] = min(unrolled[zmw_id][0], rstart)
-                unrolled[zmw_id][1] = max(unrolled[zmw_id][1], rend)
+                m.unrolled.setdefault(zmw_id, [99999, 0])
+                m.unrolled[zmw_id][0] = min(m.unrolled[zmw_id][0], rstart)
+                m.unrolled[zmw_id][1] = max(m.unrolled[zmw_id][1], rend)
 
-    return datum, unrolled, max_subread, movie_names
+    return by_movie #datum, unrolled, max_subread
 
 
-def from_alignment_file(movie_name, alignment_file_name):
-
-    log.debug("analyzing Movie {m} in alignment file {a}".format(
-        m=movie_name, a=alignment_file_name))
-
+def from_alignment_file(aln_info): #movie_name, alignment_file_name):
     columns = ["Length", "Concordance", "Read quality", "isFirst", "modStart"]
-
-    datum, unrolled, max_subread, movie_names = alignment_info_from_bam(
-        alignment_file_name, movie_name)
-
-    log.debug("Completed crunching Alignment file. Found {n} movies {m}".format(
-        n=len(movie_names), m=movie_names))
-
+    datum, unrolled, max_subread, movie_names = aln_info.as_tuple()
     return movie_names, unrolled, datum, columns
 
 

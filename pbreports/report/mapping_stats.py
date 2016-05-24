@@ -26,7 +26,8 @@ from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 from pbreports.plot.rainbow import make_rainbow_plot
 from pbreports.plot.helper import get_blue, get_green
 from pbreports.util import compute_n50_from_bins
-from pbreports.io.align import (from_alignment_file, CrunchedAlignments)
+from pbreports.io.align import (alignment_info_from_bam, from_alignment_file,
+                                CrunchedAlignments)
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
@@ -564,23 +565,6 @@ def _movienames_from_bam(aligned_file):
     return movies
 
 
-def analyze_movie(movie, alignment_file, stats_models):
-    """
-    The regions should only correspond to a single Movie
-
-    :type movie: Movie
-    :type stats_models: list
-    """
-    started_at = time.time()
-    movie_names, unrolled, data_, columns = from_alignment_file(
-        movie, alignment_file)
-    _process_movie_data(movie, alignment_file, stats_models,
-                        movie_names, unrolled, data_, columns)
-    run_time = time.time() - started_at
-    _d = dict(n=movie, s=run_time)
-    log.info("Completed analyzing Movie {n} with in {s:.2f} sec.".format(**_d))
-
-
 def _process_movie_data(movie, alignment_file, stats_models, movie_names,
                         unrolled, data, columns):
     if len(data) == 0:
@@ -616,27 +600,36 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
             pass
 
 
+def _harvest_file_data(file_name):
+    log.info("reading {f}.pbi".format(f=file_name))
+    try:
+        return alignment_info_from_bam(file_name)
+    except Exception as err:
+        # multiprocessing does not handle uncaught Exceptions gracefully
+        return err
+
+
 def analyze_movies(movies, alignment_file_names, stats_models, nproc=1):
-    #pool = None
-    #if nproc >= 1:
-    #    # XXX I use nproc-1 here because the callback in the main process
-    #    # actually takes up a lot of time
-    #    log.info("Starting pool of {n} processes".format(n=max(1, nproc-1)))
-    #    pool = multiprocessing.Pool(processes=nproc)
-    for movie in movies:
-        for file_name in alignment_file_names:
-            log.info("Analyzing Movie {n}".format(n=movie))
-            results = from_alignment_file(movie, file_name)
-            _process_movie_data(movie, file_name, stats_models, *results)
-            # FIXME need to re-think this
-            #def __analyze_movie(args):
-            #    return from_alignment_file(*args)
-            #__callback = functools.partial(_process_movie_data, movie,
-            #                               file_name, stats_models)
-            #pool.apply_async(from_alignment_file, (movie, file_name),
-            #                 callback=__callback)
-    #pool.close()
-    #pool.join()
+    all_results = []
+    log.info("collecting data from {n} BAM files...".format(
+             n=len(alignment_file_names)))
+    if nproc > 1:
+        log.info("Starting pool of {n} processes".format(n=nproc))
+        pool = multiprocessing.Pool(processes=nproc)
+        all_results = pool.map(_harvest_file_data, alignment_file_names)
+        pool.close()
+        pool.join()
+    else:
+        all_results = [_harvest_file_data(f) for f in alignment_file_names]
+    for file_name, _results in zip(alignment_file_names, all_results):
+        if isinstance(_results, Exception):
+            raise RuntimeError("Failed on {f} with message '{e}'".format(
+                               f=file_name, e=str(_results)))
+    for file_name, _results in zip(alignment_file_names, all_results):
+        for movie, aln_info in _results.iteritems():
+            log.info("Analyzing Movie {n} in {f}".format(n=movie, f=file_name))
+            args = from_alignment_file(aln_info)
+            _process_movie_data(movie, file_name, stats_models, *args)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
 

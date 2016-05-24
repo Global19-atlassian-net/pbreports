@@ -93,6 +93,7 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
 
 
 class TestMappingStatsReport(unittest.TestCase):
+    NPROC = 1
     ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
     TOTAL_NUMBER_OF_ATTRIBUTES = 12
     TOTAL_NUMBER_OF_PLOT_GROUPS = 4
@@ -120,7 +121,8 @@ class TestMappingStatsReport(unittest.TestCase):
             delete=False, suffix="mapping_report.json")
         t.close()
         cls.report_json = t.name
-        cls.report = to_report(cls._get_input_file(), cls.output_dir)
+        cls.report = to_report(cls._get_input_file(), cls.output_dir,
+                               nproc=cls.NPROC)
         cls.report.write_json(cls.report_json)
         assert isinstance(cls.report, Report)
         log.info(pprint.pformat(cls.report.to_dict()))
@@ -533,3 +535,8 @@ class TestMappingStatsMultipleMovies(TestMappingStatsReportLarge):
             if column.id == "mapped_reads":
                 self.assertTrue(all([x>0 for x in column.values]),
                                 "Not all movies have a mapped read")
+
+
+@skip_if_data_dir_not_present
+class TestMappingStatsReportMP(TestMappingStatsMultipleMovies):
+    NPROC = 2
