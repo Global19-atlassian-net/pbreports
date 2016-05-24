@@ -609,24 +609,14 @@ def _harvest_file_data(file_name):
         return err
 
 
-def analyze_movies(movies, alignment_file_names, stats_models, nproc=1):
+def analyze_movies(movies, alignment_file_names, stats_models):
     all_results = []
     log.info("collecting data from {n} BAM files...".format(
              n=len(alignment_file_names)))
-    if nproc > 1:
-        log.info("Starting pool of {n} processes".format(n=nproc))
-        pool = multiprocessing.Pool(processes=nproc)
-        all_results = pool.map(_harvest_file_data, alignment_file_names)
-        pool.close()
-        pool.join()
-    else:
-        all_results = [_harvest_file_data(f) for f in alignment_file_names]
-    for file_name, _results in zip(alignment_file_names, all_results):
-        if isinstance(_results, Exception):
-            raise RuntimeError("Failed on {f} with message '{e}'".format(
-                               f=file_name, e=str(_results)))
-    for file_name, _results in zip(alignment_file_names, all_results):
-        for movie, aln_info in _results.iteritems():
+    for file_name in alignment_file_names:
+        log.info("reading {f}.pbi".format(f=file_name))
+        results = alignment_info_from_bam(file_name)
+        for movie, aln_info in results.iteritems():
             log.info("Analyzing Movie {n} in {f}".format(n=movie, f=file_name))
             args = from_alignment_file(aln_info)
             _process_movie_data(movie, file_name, stats_models, *args)
@@ -717,9 +707,8 @@ class MappingStatsCollector(object):
         MeanSubreadConcordanceAggregator
     ]
 
-    def __init__(self, alignment_file, nproc=1):
+    def __init__(self, alignment_file):
         self.alignment_file = alignment_file
-        self.nproc = max(nproc, 1)
         self.dataset_uuids = []
         if alignment_file.endswith('.xml'):
             log.debug('Importing alignments from dataset XML')
@@ -912,8 +901,7 @@ class MappingStatsCollector(object):
 
         # Run all the analysis. Now the aggregators can be accessed
 
-        analyze_movies(self.movies, self.alignment_file_list, all_models,
-                       nproc=self.nproc)
+        analyze_movies(self.movies, self.alignment_file_list, all_models)
 
         # temp structure used to create the report table. The order is
         # important
@@ -988,8 +976,8 @@ class MappingStatsCollector(object):
         return report
 
 
-def to_report(alignment_file, output_dir, nproc=1):
-    return MappingStatsCollector(alignment_file, nproc).to_report(output_dir)
+def to_report(alignment_file, output_dir):
+    return MappingStatsCollector(alignment_file).to_report(output_dir)
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -1010,10 +998,9 @@ def summarize_report(report_file, out=sys.stdout):
     W("  SUBREADLENGTH_MEAN: {n}".format(n=attr[Constants.A_SUBREAD_LENGTH]))
 
 
-def run_and_write_report(alignment_file, json_report, report_func=to_report,
-                         nproc=1):
+def run_and_write_report(alignment_file, json_report, report_func=to_report):
     output_dir = os.path.dirname(json_report)
-    report = report_func(alignment_file, output_dir, nproc)
+    report = report_func(alignment_file, output_dir)
     report.write_json(json_report)
     log.info("Wrote output to %s" % json_report)
     return 0
@@ -1033,8 +1020,7 @@ def _resolved_tool_contract_runner(resolved_contract):
     """
     return run_and_write_report(
         alignment_file=resolved_contract.task.input_files[0],
-        json_report=resolved_contract.task.output_files[0],
-        nproc=resolved_contract.task.nproc)
+        json_report=resolved_contract.task.output_files[0])
 
 
 def _get_parser():
@@ -1042,7 +1028,7 @@ def _get_parser():
     driver_exe = "python -m pbreports.report.mapping_stats --resolved-tool-contract "
     parser = get_pbparser(Constants.TOOL_ID, __version__,
                           "Mapping Statistics", desc, driver_exe,
-                          nproc=4)
+                          nproc=1)
 
     parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
                                "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
