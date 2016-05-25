@@ -149,8 +149,7 @@ def _get_contigs_to_plot(alignment_summ_gff, contigs):
     reader = GffReader(alignment_summ_gff)
     for rec in reader:
         if rec.seqid not in contig_ids:
-            log.info(
-                "Unable to find gff '{i}' in alignment contig ids.".format(i=rec.seqid))
+            log.info("Skipping seqid '{i}'.".format(i=rec.seqid))
             continue
 
         try:
