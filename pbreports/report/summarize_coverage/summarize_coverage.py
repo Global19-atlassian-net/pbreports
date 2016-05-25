@@ -36,7 +36,7 @@ class Constants(object):
     REGION_SIZE_ID = "pbreports.task_options.region_size"
     FORCE_NUM_REGIONS = False
     FORCE_NUM_REGIONS_ID = "pbreports.task_options.force_num_regions"
-    MAX_REGION_SIZE = 1000000
+    MAX_REGION_SIZE = 100000
     MAX_REGION_SIZE_ID = "pbreports.task_options.max_region_size"
     TOOL_ID = "pbreports.tasks.summarize_coverage"
     MAX_NUM_REGIONS = 40000  # lucky 40000
