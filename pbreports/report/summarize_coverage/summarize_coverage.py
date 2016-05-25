@@ -36,6 +36,8 @@ class Constants(object):
     REGION_SIZE_ID = "pbreports.task_options.region_size"
     FORCE_NUM_REGIONS = False
     FORCE_NUM_REGIONS_ID = "pbreports.task_options.force_num_regions"
+    MAX_REGION_SIZE = 1000000
+    MAX_REGION_SIZE_ID = "pbreports.task_options.max_region_size"
     TOOL_ID = "pbreports.tasks.summarize_coverage"
     MAX_NUM_REGIONS = 40000  # lucky 40000
     BATCH_SIZE = 100000.0
@@ -92,7 +94,7 @@ def get_metadata_lines(readers, untruncator):
 
 
 def get_region_size(ref_length, num_refs, region_size, num_regions,
-                    force_num_regions):
+                    force_num_regions, max_region_size=0):
     """In the pbpy version of summarizeCoverage, there was some logic spread
     around about the size of regions. This function contains all of that. The
     tricky part is that there are two ways to set region size from the command
@@ -126,6 +128,9 @@ def get_region_size(ref_length, num_refs, region_size, num_regions,
     ugly_region_size = float(ref_length) / regions_per_reference
     pretty_region_size = get_pretty_value(ugly_region_size)
 
+    if max_region_size > 0 and max_region_size < pretty_region_size:
+        log.warn("Automatic region size is {r}, above the maximum allowed value - will reduce to {m}".format(r=pretty_region_size, m=max_region_size))
+        pretty_region_size = max_region_size
     return pretty_region_size
 
 
@@ -383,7 +388,8 @@ def get_name_untruncator(repo_path, truncation_regex='\s'):
 def summarize_coverage(aln_set, aln_summ_gff, ref_set=None,
                        num_regions=Constants.NUM_REGIONS,
                        region_size=Constants.REGION_SIZE,
-                       force_num_regions=Constants.FORCE_NUM_REGIONS):
+                       force_num_regions=Constants.FORCE_NUM_REGIONS,
+                       max_region_size=Constants.MAX_REGION_SIZE):
     """
     Main point of entry
     """
@@ -417,7 +423,8 @@ def summarize_coverage(aln_set, aln_summ_gff, ref_set=None,
     get_region_size_frozen = functools.partial(
         get_region_size, num_refs=len(interval_lists),
         region_size=region_size, num_regions=num_regions,
-        force_num_regions=force_num_regions)
+        force_num_regions=force_num_regions,
+        max_region_size=max_region_size)
 
     # Create Gff records and write them
     for ref_group_id in sorted(interval_lists):
@@ -453,7 +460,8 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         ref_set=rtc.task.input_files[1],
         num_regions=rtc.task.options[Constants.NUM_REGIONS_ID],
         region_size=rtc.task.options[Constants.REGION_SIZE_ID],
-        force_num_regions=rtc.task.options[Constants.FORCE_NUM_REGIONS_ID])
+        force_num_regions=rtc.task.options[Constants.FORCE_NUM_REGIONS_ID],
+        max_region_size=rtc.task.options[Constants.MAX_REGION_SIZE_ID])
     return 0
 
 
@@ -488,6 +496,12 @@ def add_options_to_parser(p, ds_type=FileTypes.DS_ALIGN):
         default=Constants.REGION_SIZE,
         name="Region size",
         description="If supplied, used a fixed genomic region size")
+    p.add_int(
+        option_id=Constants.MAX_REGION_SIZE_ID,
+        option_str="max_region_size",
+        default=Constants.MAX_REGION_SIZE,
+        name="Maximum region size",
+        description="Upper limit for genomic region size (ignored if region_size is set explicitly)")
     p.add_boolean(
         option_id=Constants.FORCE_NUM_REGIONS_ID,
         option_str="force_num_regions",
