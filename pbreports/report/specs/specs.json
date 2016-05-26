@@ -1,0 +1,902 @@
+{
+"_changelist": "",
+"_version": "", 
+"attributes": [
+	{
+	"id": "mapped_subread_read_quality_mean",
+	"label": "",
+	"descr": "",
+	"type": ""
+	},
+	{
+	"id": "mapped_bases_n",
+	"label": "",
+	"descr": "",
+	"type": ""
+	},
+	{
+	"id": "mapped_read_concordance_mean",
+	"label": "",
+	"descr": "",
+	"type": ""
+	},
+	{
+	"id": "mapped_subread_concordance",
+	"label": "Mean Mapped Concordance",
+	"descr": "The mean concordance of subreads that mapped to the reference sequence",
+	"type": ""
+	},
+	{
+	"id": "mapped_reads_n",
+	"label": "Number of Polymerase Reads (mapped)",
+	"descr": "The number of polymerase reads mapped to the reference sequence",
+	"type": "int"
+	},
+	{
+	"id": "mapped_subreads_n",
+	"label": "Number of Subreads (mapped)",
+	"descr": "The number of subreads mapped to the reference sequence",
+	"type": "int"
+	},
+	{
+	"id": "mapped_subread_bases_n",
+	"label": "Number of Subread Bases (mapped)",
+	"descr": "The number of subread bases mapped to the reference sequence",
+	"type": "int"
+	},
+	{
+	"id": "mapped_readlength_mean",
+	"label": "Polymerase Read Length Mean (mapped)",
+	"descr": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
+	"type": ""
+	},
+	{
+	"id": "mapped_subread_readlength_mean",
+	"label": "Subread Length Mean (mapped)",
+	"descr": "The mean length of the mapped portion of subreads which mapped to the reference sequence",
+	"type": ""
+	},
+	{
+	"id": "mapped_readlength_q95",
+	"label": "Polymerase Read Length 95% (mapped)",
+	"descr": "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
+	"type": ""
+	},
+	{
+	"id": "mapped_subreadlength_q95",
+	"label": "Subread Length 95% (mapped)",
+	"descr": "The 95th percentile of length of subreads that mapped to the reference sequence",
+	"type": ""
+	},
+	{
+	"id": "mapped_readlength_max",
+	"label": "Polymerase Read Length Max (mapped)",
+	"descr": "The maximum length of polymerase reads that mapped to the reference sequence",
+	"type": ""
+	},
+	{
+	"id": "mapped_subread_readlength_max",
+	"label": "Subread Length Max (mapped)",
+	"descr": "The maximum length of subreads that mapped to the reference sequence",
+	"type": ""
+	},
+	{
+	"id": "mapped_subreadlength_n50",
+	"label": "Subread Length N50 (mapped)",
+	"descr": "The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value",
+	"type": ""
+	},
+	{
+	"id": "mapped_readlength_n50",
+	"label": "Polymerase Read N50 (mapped)",
+	"descr": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value",
+	"type": ""
+	},
+	{
+        "id": "mean_contig_length",
+        "label": "Reference Contig Length (mean)",
+        "descr": "Mean length of reference sequence contigs",
+        "type": ""
+        },
+	{
+        "id": "weighted_mean_bases_called",
+        "label": "Percent Reference Bases Called (mean)",
+        "descr": "Percentage of the reference sequence for which consensus bases were called",
+        "type": ""
+        },
+	{
+        "id": "weighted_mean_concordance",
+        "label": "Reference Consensus Concordance (mean)",
+        "descr": "The percent accuracy (concordance) of the consensus sequence compared to the reference",
+        "type": ""
+        },
+	{
+        "id": "weighted_mean_coverage",
+        "label": "Reference Coverage (mean)",
+        "descr": "The mean depth of coverage across the reference sequence",
+        "type": ""
+        },
+	{
+        "id": "longest_contig_name",
+        "label": "Longest Reference Contig",
+        "descr": "The FASTA header ID of the longest reference contig",
+        "type": "str"
+        },
+	{
+	"id": "instrument",
+        "label": "Instrument ID",
+        "descr": "ID of the Sequel or RSII instrument on which the data were collected",
+        "type": "str"	
+	},
+	{
+        "id": "coverage",
+        "label": "Genome Coverage",
+        "descr": "Percentage of the genome for which consensus bases were called",
+        "type": ""
+        },
+	{
+        "id": "accuracy",
+        "label": "Consensus Accuracy",
+        "descr": "Percent accuracy of the consensus sequence versus the reference",
+        "type": ""
+        },
+	{
+        "id": "mapped_readlength_mean",
+        "label": "Mean Mapped Read Length",
+        "descr": "Mean length of polymerase reads mapped to the reference genome, including adapters",
+        "type": ""
+        },
+	{
+        "id": "reads_in_cell",
+        "label": "Reads in cell",
+        "descr": "Number of polymerase reads that could be mapped to the reference genome",
+        "type": "int"
+        },
+	{
+	"id": "polished_contigs",
+        "label": "Polished Contigs",
+        "descr": "Number of assembled contigs",
+        "type": "int"
+	},
+	{
+        "id": "max_contig_length",
+        "label": "Maximum Contig Length",
+        "descr": "Length of longest contig",
+        "type": "int"
+        },
+	{
+        "id": "n_50_contig_length",
+        "label": "N50 Contig Length",
+        "descr": "50% of contigs are longer than this value",
+        "type": "int"
+        },
+	{
+        "id": "sum_contig_lengths",
+        "label": "Sum of Contig Lengths",
+        "descr": "Total length of all contigs",
+        "type": "int"
+        },
+	{
+        "id": "depth_coverage_mean",
+        "label": "Mean Coverage",
+        "descr": "Mean depth of coverage over entire reference",
+        "type": ""
+        },
+        {
+        "id": "missing_bases_pct",
+        "label": "Missing Bases (%)",
+        "descr": "Percent of reference bases without coverage",
+        "type": ""
+        },
+	{
+        "id": "number_of_ccs_reads",
+        "label": "CCS reads",
+        "descr": "The number of CCS reads",
+        "type": "int"
+        },
+        {
+        "id": "total_number_of_ccs_bases",
+        "label": "Number of CCS bases",
+        "descr": "Total number of consensus bases in all CCS reads",
+        "type": "int"
+        },
+        {
+        "id": "mean_ccs_readlength",
+        "label": "CCS Read Length (mean)",
+        "descr": "Mean length of CCS reads",
+        "type": ""
+        },
+        {
+        "id": "mean_accuracy",
+        "label": "CCS Read Score (mean)",
+        "descr": "Mean predicted accuracy of CCS reads",
+        "type": ""
+        },
+        {
+        "id": "mean_ccs_num_passes",
+        "label": "Number of Passes (mean)",
+        "descr": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
+        "type": ""
+        },
+        {
+        "id": "nbases",
+        "label": "Polymerase Read Bases",
+        "descr": "",
+        "type": "int"
+        },
+        {
+        "id": "nreads",
+        "label": "Polymerase Reads",
+        "descr": "",
+        "type": "int"
+        },
+        {
+        "id": "read_n50",
+        "label": "Polymerase Read N50",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "read_length",
+        "label": "Polymerase Read Length (mean)",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "insert_length",
+        "label": "Insert Length (mean)",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "adapter_dimers",
+        "label": "Adapter Dimers (0-10bp)",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "short_inserts",
+        "label": "Short Inserts (11-100bp)",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "mean_max_subread_length",
+        "label": "Maximum Subread Length (mean)",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "filter_subread_nbases",
+        "label": "",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "filter_subread_nreads",
+        "label": "",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "filter_subread_mean",
+        "label": "",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "filter_subread_n50",
+        "label": "",
+        "descr": "",
+        "type": ""
+        },
+        {
+        "id": "",
+        "label": "",
+        "descr": "",
+        "type": ""
+        }
+
+],
+
+"tables": [
+	{
+	"id": "mapping_stats_table",
+	"title": "Mapping Statistics Summary",
+	"columns": [
+		{
+                    "id": "mapping_stats.mapping_stats_table.movie",
+                    "header": "Movie", 
+                    "descr": "",
+                    "type": "str"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_reads",
+                    "header": "Mapped Reads", 
+                    "descr": "",
+                    "type": "int"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length",
+                    "header": "Mapped Polymerase Read Length",
+                    "descr": "",
+                    "type": "int"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length_n50",
+                    "header": "Mapped Polymerase Read Length n50", 
+                    "descr": "",
+                    "type": "int"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_subreads",
+                    "header": "Mapped Subreads", 
+                    "descr": "",
+                    "type": "int"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_base",
+                    "header": "Mapped Subread Bases", 
+                    "descr": "",
+                    "type": "int"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_length",
+                    "header": "Mapped Subread Length", 
+                    "descr": "",
+                    "type": "int"
+		}, 
+		{
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_accuracy",
+                    "header": "Mapped Subread Accuracy", 
+                    "descr": "",
+                    "type": "float"
+		}
+		] 
+	},
+	{
+	"id": "ccs_table",
+	"title": "By Movie",
+	"columns": [
+		{
+		   "id": "ccs.ccs_table.movie_name",
+                    "header": "Movie",
+                    "descr": "",
+                    "type": "str"
+		},
+                {
+                   "id": "ccs.ccs_table.number_of_ccs_reads",
+                    "header": "CCS reads",
+                    "descr": "The number of CCS reads",
+                    "type": "int"
+                },
+		{
+		   "id": "ccs.ccs_table.number_of_ccs_bases",
+                    "header": "Number of CCS bases",
+                    "descr": "Total number of consensus bases in all CCS reads",
+                    "type": "int"
+		},
+                {
+                   "id": "ccs.ccs_table.ave_ccs_readlength",
+                    "header": "CCS Read Length (mean)",
+                    "descr": "Mean length of CCS reads",
+                    "type": "int"
+                },
+                {
+                   "id": "ccs.ccs_table.ave_ccs_accuracy",
+                    "header": "CCS Read Score (mean)",
+                    "descr": "Mean predicted accuracy of CCS reads",
+                    "type": "float"
+                },
+                {
+                   "id": "ccs.ccs_table.mean_ccs_num_passes",
+                    "header": "Number of Passes (mean)",
+                    "descr": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
+                    "type": "float"
+                }
+		]
+	},
+	{
+	"id": "motif_records",
+        "title": "motifs",
+        "columns": [
+                {
+                   "id": "motifs.motif_records.motif_id",
+                    "header": "Motif",
+                    "descr": "",
+                    "type": "str"
+                },
+                {
+                   "id": "motifs.motif_records.modified_position",
+                    "header": "Modified Position",
+                    "descr": "",
+                    "type": "int"
+                },
+                {
+                   "id": "motifs.motif_records.modification_type",
+                    "header": "Motification Type",
+                    "descr": "",
+                    "type": "str"
+                },
+                {
+                   "id": "motifs.motif_records.percent_motifs_detected",
+                    "header": "% of Motifs Detected",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "motifs.motif_records.ndetected_motifs",
+                    "header": "# of Motifs Detected",
+                    "descr": "",
+                    "type": "int"
+                },
+                {
+                   "id": "motifs.motif_records.nmotifs_in_genome",
+                    "header": "# of Motifs in Genome",
+                    "descr": "",
+                    "type": "int"
+                },
+                {
+                   "id": "motifs.motif_records.mean_readscore",
+                    "header": "Mean QV",
+                    "descr": "",
+                    "type": "float"
+                },
+                {
+                   "id": "motifs.motif_records.mean_coverage",
+                    "header": "Mean Coverage",
+                    "descr": "",
+                    "type": "float"
+                },
+                {
+                   "id": "motifs.motif_records.partner_motif",
+                    "header": "Partner Motif",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "motifs.motif_records.mean_ipd_ration",
+                    "header": "Mean IPD ratio",
+                    "descr": "",
+                    "type": "float"
+                },
+                {
+                   "id": "motifs.motif_records.group_tag",
+                    "header": "Group Tag",
+                    "descr": "",
+                    "type": "str"
+                },
+                {
+                   "id": "motifs.motif_records.objective_score",
+                    "header": "Objective Score",
+                    "descr": "",
+                    "type": ""
+                }
+		]
+	},
+	{
+	"id": "result_table",
+        "title": "Amplicon Consensus Summary",
+        "columns": [
+                {
+                   "id": "amplicon_analysis_consensus.result_table.barcodename",
+                    "header": "Barcode",
+                    "descr": "",
+                    "type": ""
+                },
+		{
+                   "id": "amplicon_analysis_consensus.result_table.coarsecluster",
+                    "header": "Sequence Cluster",
+                    "descr": "",
+                    "type": ""
+                },
+		{
+                   "id": "amplicon_analysis_consensus.result_table.phase",
+                    "header": "Sequence Phase",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "amplicon_analysis_consensus.result_table.sequencelength",
+                    "header": "Length (bp)",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "amplicon_analysis_consensus.result_table.predictedaccuracy",
+                    "header": "Estimated Accuracy",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "amplicon_analysis_consensus.result_table.totalcoverage",
+                    "header": "Subreads coverage",
+                    "descr": "",
+                    "type": ""
+                }
+		]
+
+	},
+	{
+        "id": "result_table",
+        "title": "Amplicon Analysis Timing Summary",
+        "columns": [
+                {
+                   "id": "amplicon_analysis_timing.result_table.barcode_col",
+                    "header": "Sample",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "amplicon_analysis_timing.result_table.hour_col",
+                    "header": "Hours",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "amplicon_analysis_timing.result_table.minute_col",
+                    "header": "Minutes",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "amplicon_analysis_timing.result_table.second_col",
+                    "header": "Total Time (seconds)",
+                    "descr": "",
+                    "type": ""
+                }
+		]
+	},
+	{
+	"id": "barcode_table",
+        "title": "Barcodes",
+        "columns": [
+                {
+                   "id": "barcode.barcode_table.barcode",
+                    "header": "Barcode Name",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "barcode.barcode_table.number_of_reads",
+                    "header": "Reads",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "barcode.barcode_table.number_of_bases",
+                    "header": "Bases",
+                    "descr": "",
+                    "type": ""
+                }
+		]
+	},
+	{
+	"id": "top_variants_table",
+        "title": "Top Variants",
+        "columns": [
+                {
+                   "id": "top_variants.top_variants_table.sequence",
+                    "header": "Sequence",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_variants_table.position",
+                    "header": "Position",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_variants_table.variant",
+                    "header": "Variant",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_variants_table.type",
+                    "header": "Type",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_variants_table.coverage",
+                    "header": "Coverage",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_variants_table.confidence",
+                    "header": "Confidence",
+                    "descr": "",
+                    "type": ""
+                },
+		                {
+                   "id": "top_variants.top_variants_table.genotype",
+                    "header": "Genotype",
+                    "descr": "",
+                    "type": ""
+                }
+		]
+	},
+        {
+        "id": "top_minor_variants_table",
+        "title": "Top minor variants",
+        "columns": [
+                {
+                   "id": "top_variants.top_minor_variants_table.sequence",
+                    "header": "Sequence",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_minor_variants_table.position",
+                    "header": "Position",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_minor_variants_table.variant",
+                    "header": "Variant",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_minor_variants_table.type",
+                    "header": "Type",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_minor_variants_table.coverage",
+                    "header": "Coverage",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_minor_variants_table.confidence",
+                    "header": "Confidence",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "top_variants.top_minor_variants_table.frequency",
+                    "header": "Frequency",
+                    "descr": "",
+                    "type": ""
+                }
+                ]
+        },
+	{
+        "id": "consensus_table",
+        "title": "Consensus Calling Results",
+        "columns": [
+                {
+                   "id": "variants.consensus_table.contig_name",
+                    "header": "Reference",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "variants.consensus_table.contig_len",
+                    "header": "Reference Length",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "variants.consensus_table.bases_called",
+                    "header": "Bases Called",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "variants.consensus_table.concordance",
+                    "header": "Consensus Accuracy",
+                    "descr": "",
+                    "type": ""
+                },
+                {
+                   "id": "variants.consensus_table.coverage",
+                    "header": "Base Coverage",
+                    "descr": "",
+                    "type": ""
+                }
+		]
+	}
+],
+
+"plotGroups": [
+	{
+            "id": "mapping_stats.subread_concordance_group", 
+            "title": "Mapped Subread Accuracy",
+            "plots": [
+                {
+                   "id": "mapping_stats.subread_concordance_group.subread_concordance_group_concordance_plot",
+                   "caption": null
+                }
+            ]
+        }, 
+        {
+            "id": "mapping_stats.readlength_plot", 
+            "title": "Mapped Polymerase Read Length",
+            "plots": [
+                {
+                   "id": "mapping_stats.readlength_plot.readlength_plot",
+                   "caption": null
+                }
+            ]
+        }, 
+        {
+            "id": "mapping_stats.subreadlength_plot", 
+            "title": "Mapped Subread Length",
+            "plots": [
+                {
+                   "id": "mapping_stats.subreadlength_plot.subreadlength_plot",
+                   "caption": null
+                }
+            ]
+        },
+        {
+           "id": "mapping_stats.rainbow_plot",
+            "title": "",
+            "plots": [
+		{
+		   "id": "mapping_stats.rainbow_plot.rainbow_plot",
+		   "caption": ""
+		}
+            	]
+        },
+        {
+           "id": "mapping_stats.read_concordance_group",
+            "title": "",
+            "plots": [
+		{
+		   "id": "mapping_stats.read_concordance_group."
+		}
+            	]
+        },
+	{
+	    "id": "ccs.readlength_group",
+	    "title": "",
+	    "plots": [
+	    	{
+		   "id": "ccs.readlength_group.readlength_hist",
+		   "caption": null,
+		   "filename": "ccs_readlength_hist.png"
+		}
+		] 
+	},
+	{
+	   "id": "ccs.accuracy_group",
+            "title": "",
+            "plots": [
+		{
+                   "id": "ccs.accuracy_group.accuracy_hist",
+                   "caption": null,
+                   "filename": "ccs_accuracy_hist.png"
+		}
+	        ]
+	},
+	{
+            "id": "ccs.npasses_hist",
+            "title": "",
+            "plots": [
+		{
+		   "id": "ccs.npasses_hist.npasses_hist",
+                   "caption": null,
+                   "filename": "ccs_npasses_hist.png"
+		},
+		{
+		   "id": "ccs.npasses_hist.npasses_vs_accuracy",
+                   "caption": null,
+                   "filename": "ccs_npasses_vs_accuracy.png"
+		}
+            	]
+	},
+	{
+	   "id": "filter_stats_xml.read_length_plot_group",
+            "title": "",
+            "plots": [
+		{
+                   "id": "filter_stats_xml.read_length_plot_group.read_length_plot",
+                   "caption": null,
+                   "x-axis": "Read Length",
+		   "y-axis": ""
+		}
+            	]
+	},
+	{
+           "id": "filter_stats_xml.read_quality_plot_group",
+            "title": "",
+            "plots": [
+		{
+                   "id": "filter_stats_xml.read_quality_plot_group.read_quality_plot",
+                   "caption": null,
+                   "x-axis": "Read Quality",
+                   "y-axis": ""
+		}
+            	]
+        },
+        {
+           "id": "filter_stats_xml.insert_length_plot_group",
+            "title": "",
+            "plots": [
+            	{
+                   "id": "filter_stats_xml.insert_length_plot_group.insert_length_plot",
+                   "caption": null,
+                   "x-axis": "Insert Length",
+                   "y-axis": ""
+		}
+		]
+        },
+        {
+           "id": "filter_stats_xml.insert_quality_plot_group",
+            "title": "",
+            "plots": [
+		{
+                   "id": "filter_stats_xml.insert_quality_plot_group.insert_quality_plot",
+                   "caption": null,
+                   "x-axis": "Insert Quality",
+                   "y-axis": ""
+		}
+            	]
+        },
+        {
+           "id": "filter_subread.subread",
+            "title": "",
+            "plots": [
+            ]
+        },
+        {
+           "id": "isoseq_classify.fulllength_nonchimeric_readlength_group",
+            "title": "",
+            "plots": [
+		{
+		   "id": "isoseq_classify.fulllength_nonchimeric_readlength_group.fulllength_nonchimeric_readlength_hist",
+                   "caption": null
+		}
+            ]
+        },
+        {
+           "id": "isoseq_cluster.consensus_isoforms_readlength_group",
+            "title": "",
+            "plots": [
+		{
+		   "id": "isoseq_cluster.consensus_isoforms_readlength_group.consensus_isoforms_readlength_hist",
+                   "caption": null
+		}
+            ]
+        },
+        {
+           "id": "mapping_stats_ccs.qv_calibration",
+            "title": "",
+            "plots": [
+		{
+		   "id": "mapping_stats_ccs.qv_calibration.qv_calibration_plot",
+                   "caption": null
+		}
+            ]
+        },
+        {
+           "id": "motifs.modification_qvs",
+            "title": "",
+            "plots": [
+            ]
+        },
+        {
+           "id": "motifs.motifs",
+            "title": "",
+            "plots": [
+            ]
+        }
+]
+}
+
+
+
+
+
+
+
+
+
