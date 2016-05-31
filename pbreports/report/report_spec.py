@@ -2,7 +2,7 @@
 
 import json
 
-from pbcommand.models.report import Attribute, PlotGroup, Table, Column, Report
+from pbcommand.models.report import Attribute, PlotGroup, Plot, Table, Column, Report
 
 
 class MetaAttribute(object):
@@ -37,10 +37,7 @@ class MetaColumn(object):
         return MetaColumn(d['id'].split(".")[-1], d['header'],
                           d['description'], d["type"])
 
-    def as_column(self, header, values=()):
-        for value in values:
-            assert type(value).__name__ == self.type, "{v} != {t}".format(
-                v=value, t=self.type)
+    def as_column(self, header=None, values=()):
         return Column(self.id, header=header, values=values)
 
 
@@ -61,24 +58,26 @@ class MetaTable(object):
     def get_meta_column(self, id_):
         return self._col_dict[id_]
 
-    def as_table(self, columns):
+    def as_table(self, title=None, columns=()):
         return Table(self.id, title=title, columns=columns)
 
 
 class MetaPlot(object):
 
-    def __init__(self, id_, title, description, caption):
+    def __init__(self, id_, title, description, caption, xlab, ylab):
         self.id = id_
         self.title = title
         self.description = description
         self.caption = caption
+        self.xlab = xlab
+        self.ylab = ylab
 
     @staticmethod
     def from_dict(d):
-        return MetaPlot(d['id'].split(".")[-1], d['title'], d['description'], d['caption'])
+        return MetaPlot(d['id'].split(".")[-1], d['title'], d['description'], d['caption'], d['xlab'], d['ylab'])
 
-    def as_plot(self, caption=None):
-        return Plot(self.id, caption=caption)
+    def as_plot(self, image, caption=None, thumbnail=None):
+        return Plot(self.id, image=image, caption=caption, thumbnail=thumbnail)
 
 
 class MetaPlotGroup(object):
@@ -117,7 +116,8 @@ class MetaReport(object):
 
     @staticmethod
     def from_json(json_str):
-        d = json.loads(json_str)
+        d = json.load(open(json_str))
+        json.dumps(d)
         return MetaReport(d['id'], d['title'],
                           [MetaAttribute.from_dict(a)
                            for a in d['attributes']],
