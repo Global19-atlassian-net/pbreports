@@ -17,7 +17,6 @@ THUMBNAIL1_FILE = op.relpath(op.join(LOCAL_DATA_DIR, "thumbnail1.png"))
 THUMBNAIL2_FILE = op.relpath(op.join(LOCAL_DATA_DIR, "thumbnail2.png"))
 TEST_JSON = op.join(LOCAL_DATA_DIR, "test.json")
 
-
 # test if all spec files can be read in
 class TestReadingMetaReports(unittest.TestCase):
 
@@ -27,8 +26,6 @@ class TestReadingMetaReports(unittest.TestCase):
 			tmp_meta_rpt = MetaReport.from_json(specfile)
 
 # test if bad input produces appropriate error messages
-
-
 class TestBadInput(unittest.TestCase):
 
 	def setUp(self):
