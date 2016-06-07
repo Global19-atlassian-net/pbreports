@@ -130,14 +130,3 @@ class TestCorrectMetaReportValues(unittest.TestCase):
                 self.assertEqual(self.meta_rpt.get_meta_table('table1').get_meta_column('column1').header, 'Column 1')
                 self.assertEqual(self.meta_rpt.get_meta_table('table1').get_meta_column('column1').description, 'A column of type int')
                 self.assertEqual(self.meta_rpt.get_meta_table('table1').get_meta_column('column1').type, 'int')
-
-
-
-
-
-
-
-
-
-
-
