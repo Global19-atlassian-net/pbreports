@@ -104,7 +104,7 @@ class TestCorrectMetaReportValues(unittest.TestCase):
 	def test_attribute(self):
 		self.assertEqual(self.meta_rpt.get_meta_attribute('attribute1').type, 'int')
 		self.assertEqual(self.meta_rpt.get_meta_attribute('attribute1').description, 'An attribute of type int')
-#		self.assertEqual(self.meta_rpt.get_meta_attribute('atrribute1').name, 'Attribute 1')
+		self.assertEqual(self.meta_rpt.get_meta_attribute('attribute1').name, 'Attribute 1')
 		self.assertEqual(self.meta_rpt.get_meta_attribute('attribute1').id, 'attribute1')
 
 	def test_plotgroup(self):
