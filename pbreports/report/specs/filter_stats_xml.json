@@ -1,0 +1,68 @@
+{
+    "attributes": [],
+    "tables": [],
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlab": "Read Length",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "read_length_plot"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "read_length_plot_group",
+            "title": ""
+        },
+        {
+            "plots": [
+                {
+                    "xlab": "Read Quality",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "read_quality_plot"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "read_quality_plot_group",
+            "title": ""
+        },
+        {
+            "plots": [
+                {
+                    "xlab": "Insert Length",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "insert_length_plot"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "insert_length_plot_group",
+            "title": ""
+        },
+        {
+            "plots": [
+                {
+                    "xlab": "Insert Quality",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "insert_quality_plot"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "insert_quality_plot_group",
+            "title": ""
+        }
+    ],
+    "id": "filter_stats_xml",
+    "title": "Filter Stats XML Report Specifications"
+}

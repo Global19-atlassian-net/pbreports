@@ -1,0 +1,39 @@
+{
+    "attributes": [],
+    "tables": [
+        {
+            "id": "result_table",
+	    "description": "",
+            "columns": [
+                {
+                    "header": "Sample",
+                    "type": "",
+                    "id": "barcode_col",
+                    "description": ""
+                },
+                {
+                    "header": "Hours",
+                    "type": "",
+                    "id": "hour_col",
+                    "description": ""
+                },
+                {
+                    "header": "Minutes",
+                    "type": "",
+                    "id": "minute_col",
+                    "description": ""
+                },
+                {
+                    "header": "Total Time (seconds)",
+                    "type": "",
+                    "id": "second_col",
+                    "description": ""
+                }
+            ],
+            "title": "Amplicon Analysis Timing Summary"
+        }
+    ],
+    "plotgroups": [],
+    "id": "amplicon_analysis_timing",
+    "title": "Amplicon Analysis Timing Report Specifications"
+}

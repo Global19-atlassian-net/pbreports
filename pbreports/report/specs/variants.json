@@ -1,0 +1,76 @@
+{
+    "attributes": [
+        {
+            "description": "The percent accuracy (concordance) of the consensus sequence compared to the reference",
+            "type": "",
+            "id": "weighted_mean_concordance",
+            "name": "Reference Consensus Concordance (mean)"
+        },
+        {
+            "description": "Mean length of reference sequence contigs",
+            "type": "",
+            "id": "mean_contig_length",
+            "name": "Reference Contig Length (mean)"
+        },
+        {
+            "description": "The FASTA header ID of the longest reference contig",
+            "type": "str",
+            "id": "longest_contig_name",
+            "name": "Longest Reference Contig"
+        },
+        {
+            "description": "Percentage of the reference sequence for which consensus bases were called",
+            "type": "",
+            "id": "weighted_mean_bases_called",
+            "name": "Percent Reference Bases Called (mean)"
+        },
+        {
+            "description": "The mean depth of coverage across the reference sequence",
+            "type": "",
+            "id": "weighted_mean_coverage",
+            "name": "Reference Coverage (mean)"
+        }
+    ],
+    "tables": [
+        {
+            "id": "consensus_table",
+	    "description": "",
+            "columns": [
+                {
+                    "header": "Reference",
+                    "type": "",
+                    "id": "contig_name",
+                    "description": ""
+                },
+                {
+                    "header": "Reference Length",
+                    "type": "",
+                    "id": "contig_len",
+                    "description": ""
+                },
+                {
+                    "header": "Bases Called",
+                    "type": "",
+                    "id": "bases_called",
+                    "description": ""
+                },
+                {
+                    "header": "Consensus Accuracy",
+                    "type": "",
+                    "id": "concordance",
+                    "description": ""
+                },
+                {
+                    "header": "Base Coverage",
+                    "type": "",
+                    "id": "coverage",
+                    "description": ""
+                }
+            ],
+            "title": "Consensus Calling Results"
+        }
+    ],
+    "plotgroups": [],
+    "id": "variants",
+    "title": "Variants Report Specifications"
+}

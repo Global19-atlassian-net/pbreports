@@ -1,0 +1,51 @@
+{
+    "attributes": [],
+    "tables": [
+        {
+            "id": "result_table",
+	    "description": "",
+            "columns": [
+                {
+		    "id": "barcodename",
+                    "header": "Barcode",
+                    "description": "",
+		    "type": ""
+                },
+                {
+                    "header": "Sequence Cluster",
+                    "type": "",
+                    "id": "coarsecluster",
+                    "description": ""
+                },
+                {
+                    "header": "Sequence Phase",
+                    "type": "",
+                    "id": "phase",
+                    "description": ""
+                },
+                {
+                    "header": "Length (bp)",
+                    "type": "",
+                    "id": "sequencelength",
+                    "description": ""
+                },
+                {
+                    "header": "Estimated Accuracy",
+                    "type": "",
+                    "id": "predictedaccuracy",
+                    "description": ""
+                },
+                {
+                    "header": "Subreads coverage",
+                    "type": "",
+                    "id": "totalcoverage",
+                    "description": ""
+                }
+            ],
+            "title": "Amplicon Consensus Summary"
+        }
+    ],
+    "plotgroups": [],
+    "id": "amplicon_analysis_consensus",
+    "title": "Amplicon Analysis Consensus Specifications"
+}

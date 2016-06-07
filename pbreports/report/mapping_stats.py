@@ -17,6 +17,10 @@ import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
+
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+					  MetaColumn, MetaTable, MetaReport)
+
 from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log

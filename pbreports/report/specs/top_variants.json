@@ -1,0 +1,106 @@
+{
+    "attributes": [],
+    "tables": [
+        {
+            "id": "top_variants_table",
+	    "description": "",
+            "columns": [
+                {
+                    "header": "Sequence",
+                    "type": "",
+                    "id": "sequence",
+                    "description": ""
+                },
+                {
+                    "header": "Position",
+                    "type": "",
+                    "id": "position",
+                    "description": ""
+                },
+                {
+                    "header": "Variant",
+                    "type": "",
+                    "id": "variant",
+                    "description": ""
+                },
+                {
+                    "header": "Type",
+                    "type": "",
+                    "id": "type",
+                    "description": ""
+                },
+                {
+                    "header": "Coverage",
+                    "type": "",
+                    "id": "coverage",
+                    "description": ""
+                },
+                {
+                    "header": "Confidence",
+                    "type": "",
+                    "id": "confidence",
+                    "description": ""
+                },
+                {
+                    "header": "Genotype",
+                    "type": "",
+                    "id": "genotype",
+                    "description": ""
+                }
+            ],
+            "title": "Top Variants"
+        },
+        {
+            "id": "top_minor_variants_table",
+	    "description": "",
+            "columns": [
+                {
+                    "header": "Sequence",
+                    "type": "",
+                    "id": "sequence",
+                    "description": ""
+                },
+                {
+                    "header": "Position",
+                    "type": "",
+                    "id": "position",
+                    "description": ""
+                },
+                {
+                    "header": "Variant",
+                    "type": "",
+                    "id": "variant",
+                    "description": ""
+                },
+                {
+                    "header": "Type",
+                    "type": "",
+                    "id": "type",
+                    "description": ""
+                },
+                {
+                    "header": "Coverage",
+                    "type": "",
+                    "id": "coverage",
+                    "description": ""
+                },
+                {
+                    "header": "Confidence",
+                    "type": "",
+                    "id": "confidence",
+                    "description": ""
+                },
+                {
+                    "header": "Frequency",
+                    "type": "",
+                    "id": "frequency",
+                    "description": ""
+                }
+            ],
+            "title": "Top minor variants"
+        }
+    ],
+    "plotgroups": [],
+    "id": "top_variants",
+    "title": "Top Variants Report Specifications"
+}
