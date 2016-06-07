@@ -1,0 +1,135 @@
+{
+    "attributes": [
+        {
+            "description": "The number of CCS reads",
+            "type": "int",
+            "id": "number_of_ccs_reads",
+            "name": "CCS reads"
+        },
+        {
+            "description": "Total number of consensus bases in all CCS reads",
+            "type": "int",
+            "id": "total_number_of_ccs_bases",
+            "name": "Number of CCS bases"
+        },
+        {
+            "description": "Mean length of CCS reads",
+            "type": "",
+            "id": "mean_ccs_readlength",
+            "name": "CCS Read Length (mean)"
+        },
+        {
+            "description": "Mean predicted accuracy of CCS reads",
+            "type": "",
+            "id": "mean_accuracy",
+            "name": "CCS Read Score (mean)"
+        },
+        {
+            "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
+            "type": "",
+            "id": "mean_ccs_num_passes",
+            "name": "Number of Passes (mean)"
+        }
+    ],
+    "tables": [
+        {
+            "id": "ccs_table",
+	    "description": "",
+            "columns": [
+                {
+                    "header": "Movie",
+                    "type": "str",
+                    "id": "movie_name",
+                    "description": "Name of movie"
+                },
+                {
+                    "header": "CCS reads",
+                    "type": "int",
+                    "id": "number_of_ccs_reads",
+                    "description": "The number of CCS reads"
+                },
+                {
+                    "header": "Number of CCS bases",
+                    "type": "int",
+                    "id": "number_of_ccs_bases",
+                    "description": "Total number of consensus bases in all CCS reads"
+                },
+                {
+                    "header": "CCS Read Length (mean)",
+                    "type": "int",
+                    "id": "ave_ccs_readlength",
+                    "description": "Mean length of CCS reads"
+                },
+                {
+                    "header": "CCS Read Score (mean)",
+                    "type": "float",
+                    "id": "ave_ccs_accuracy",
+                    "description": "Mean predicted accuracy of CCS reads"
+                },
+                {
+                    "header": "Number of Passes (mean)",
+                    "type": "float",
+                    "id": "mean_ccs_num_passes",
+                    "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer"
+                }
+            ],
+            "title": "By Movie"
+        }
+    ],
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlab": "",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "readlength_hist"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "readlength_group",
+            "title": ""
+        },
+        {
+            "plots": [
+                {
+                    "xlab": "",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "accuracy_hist"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "accuracy_group",
+            "title": ""
+        },
+        {
+            "plots": [
+                {
+                    "xlab": "",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "npasses_hist"
+                },
+                {
+                    "xlab": "",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "npasses_vs_accuracy"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "npasses_hist",
+            "title": ""
+        }
+    ],
+    "id": "ccs",
+    "title": "CCS Report Specifications"
+}

@@ -1,0 +1,20 @@
+{
+    "attributes": [
+        {
+            "description": "Mean depth of coverage over entire reference",
+            "type": "",
+            "id": "depth_coverage_mean",
+            "name": "Mean Coverage"
+        },
+        {
+            "description": "Percent of reference bases without coverage",
+            "type": "",
+            "id": "missing_bases_pct",
+            "name": "Missing Bases (%)"
+        }
+    ],
+    "tables": [],
+    "plotgroups": [],
+    "id": "coverage",
+    "title": "Coverage Report Specifications"
+}

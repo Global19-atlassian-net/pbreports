@@ -1,0 +1,38 @@
+{
+    "attributes": [
+        {
+            "description": "ID of the Sequel or RSII instrument on which the data were collected",
+            "type": "str",
+            "id": "instrument",
+            "name": "Instrument ID"
+        },
+        {
+            "description": "Percentage of the genome for which consensus bases were called",
+            "type": "",
+            "id": "coverage",
+            "name": "Genome Coverage"
+        },
+        {
+            "description": "Percent accuracy of the consensus sequence versus the reference",
+            "type": "",
+            "id": "accuracy",
+            "name": "Consensus Accuracy"
+        },
+        {
+            "description": "Mean length of polymerase reads mapped to the reference genome, including adapters",
+            "type": "",
+            "id": "mapped_readlength_mean",
+            "name": "Mean Mapped Read Length"
+        },
+        {
+            "description": "Number of polymerase reads that could be mapped to the reference genome",
+            "type": "int",
+            "id": "reads_in_cell",
+            "name": "Reads in cell"
+        }
+    ],
+    "tables": [],
+    "plotgroups": [],
+    "id": "sat",
+    "title": "SAT Report Specifications"
+}

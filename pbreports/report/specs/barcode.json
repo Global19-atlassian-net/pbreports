@@ -1,0 +1,33 @@
+{
+    "attributes": [],
+    "tables": [
+        {
+            "id": "barcode_table",
+	    "description": "",
+            "columns": [
+                {
+                    "header": "Barcode Name",
+                    "type": "",
+                    "id": "barcode",
+                    "description": ""
+                },
+                {
+                    "header": "Reads",
+                    "type": "",
+                    "id": "number_of_reads",
+                    "description": ""
+                },
+                {
+                    "header": "Bases",
+                    "type": "",
+                    "id": "number_of_bases",
+                    "description": ""
+                }
+            ],
+            "title": "Barcodes"
+        }
+    ],
+    "plotgroups": [],
+    "id": "barcode",
+    "title": "Barcode Report Specifications"
+}

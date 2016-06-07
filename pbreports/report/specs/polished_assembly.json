@@ -1,0 +1,32 @@
+{
+    "attributes": [
+        {
+            "description": "Number of assembled contigs",
+            "type": "int",
+            "id": "polished_contigs",
+            "name": "Polished Contigs"
+        },
+        {
+            "description": "Length of longest contig",
+            "type": "int",
+            "id": "max_contig_length",
+            "name": "Maximum Contig Length"
+        },
+        {
+            "description": "50% of contigs are longer than this value",
+            "type": "int",
+            "id": "n_50_contig_length",
+            "name": "N50 Contig Length"
+        },
+        {
+            "description": "Total length of all contigs",
+            "type": "int",
+            "id": "sum_contig_lengths",
+            "name": "Sum of Contig Lengths"
+        }
+    ],
+    "tables": [],
+    "plotgroups": [],
+    "id": "polished_assembly",
+    "title": "Polished Assembly Report Specifications"
+}

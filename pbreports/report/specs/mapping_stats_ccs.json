@@ -1,0 +1,66 @@
+{
+    "attributes": [
+        {
+            "description": "The mean concordance of CCS reads that mapped to the reference sequence",
+            "type": "",
+            "id": "mapped_read_concordance_mean",
+            "name": "Mapped CCS Read Mean Concordance"
+        },
+        {
+            "description": "The number of CCS reads that mapped to the reference sequence",
+            "type": "int",
+            "id": "mapped_reads_n",
+            "name": "Number of CCS Reads (mapped)"
+        },
+        {
+            "description": "The number of CCS read bases that mapped to the reference sequence",
+            "type": "",
+            "id": "mapped_bases_n",
+            "name": "Number of CCS Bases (mapped)"
+        },
+        {
+            "description": "The mean length of CCS reads that mapped to the reference sequence",
+            "type": "",
+            "id": "mapped_readlength_mean",
+            "name": "CCS Read Length Mean (mapped)"
+        },
+        {
+            "description": "The read length at which 50% of the bases are in reads longer than, or equal to, this value",
+            "type": "",
+            "id": "mapped_readlength_n50",
+            "name": "CCS Read Length N50 (mapped)"
+        },
+        {
+            "description": "The 95th percentile of length of CCS reads that mapped to the reference sequence",
+            "type": "",
+            "id": "mapped_readlength_q95",
+            "name": "CCS Read Length 95% (mapped)"
+        },
+        {
+            "description": "The maximum length of CCS reads that mapped to the reference sequencee",
+            "type": "",
+            "id": "mapped_readlength_max",
+            "name": "CCS Read Length Max (mapped)"
+        }
+    ],
+    "tables": [],
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlab": "",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "",
+                    "id": "qv_calibration_plot"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "qv_calibration",
+            "title": ""
+        }
+    ],
+    "id": "mapping_stats_ccs",
+    "title": "Mapping Stats CCS Report Specifications"
+}
