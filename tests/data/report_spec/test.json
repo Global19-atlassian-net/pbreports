@@ -1,0 +1,99 @@
+{
+    "id": "test_report",
+    "title": "Example report spec",
+    "attributes": [
+        {
+            "id": "attribute1",
+            "name": "Attribute 1",
+            "description": "An attribute of type int",
+            "type": "int"
+        },
+        {
+            "id": "attribute2",
+            "name": "Attribute 2",
+            "description": "An attribute of type float",
+            "type": "float"
+        },
+	{
+            "id": "attribute3",
+            "name": "Attribute 3",
+            "description": "An attribute of type string",
+            "type": "str"
+	}
+
+    ],
+    "plotgroups": [
+        {
+        "id": "plotgroup1",
+        "title": "Plotgroup 1",
+	"description": "The first plotgroup",
+	"legend": "legend1.png",
+            "plots": [
+                {
+                   "id": "plot1",
+		   "description": "The first plot of the first plotgroup",
+		   "caption": "Plot 1",
+                   "xlab": "x variable",
+                   "ylab": "y variable"
+		   
+                }
+                ]
+        },
+        {
+        "id": "plotgroup2",
+        "title": "Plotgroup 2",
+	"description": "The second plotgroup",
+	"legend": "legend2.png",
+            "plots": [
+                {
+                   "id": "plot1",
+                   "description": "The first plot of the second plotgroup",
+		   "caption": "Plot 1",
+		   "xlab": "x variable",
+		   "ylab": "y variable"
+                },
+                {
+                   "id": "plot2",
+                   "description": "The second plot of the second plotgroup", 
+		   "caption": "Plot 2",
+                   "xlab": "x variable",
+                   "ylab": "y variable"
+                }
+                ]
+        }
+    ],
+    "tables": [
+        {
+        "id": "table1",
+        "title": "Table 1",
+        "description": "The first table",
+        "columns": [
+                {
+                   "id": "column1",
+                    "header": "Column 1",
+                    "description": "A column of type int",
+                    "type": "int"
+                }
+                ]
+        },
+        {
+        "id": "table2",
+        "title": "Table 2",
+        "description": "The second table",
+        "columns": [
+                {
+                   "id": "column1",
+                    "header": "Column 1",
+                    "description": "A column of type float",
+                    "type": "float"
+                },
+                {
+                   "id": "column2",
+                    "header": "Column 2",
+                    "description": "A column of type str",
+                    "type": "str"
+                }
+                ]
+        }
+    ]
+}
