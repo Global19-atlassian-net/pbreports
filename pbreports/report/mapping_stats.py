@@ -19,7 +19,7 @@ from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
 
 from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-					  MetaColumn, MetaTable, MetaReport)
+                                          MetaColumn, MetaTable, MetaReport)
 
 from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -45,8 +45,9 @@ READ_TYPE = 'ReadType'
 
 DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
 
-#Import Mapping MetaReport
+# Import Mapping MetaReport
 meta_rpt = MetaReport.from_json('specs/mapping_stats.json')
+
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.mapping_stats"
@@ -733,8 +734,10 @@ class MappingStatsCollector(object):
                 Constants.PG_SUBREAD_CONCORDANCE,
                 generate_plot,
                 'mapped_subread_concordance_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot('Constants.P_SUBREAD_CONCORDANCE').xlab,
-                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot('Constants.P_SUBREAD_CONCORDANCE').ylab,
+                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot(
+                    'Constants.P_SUBREAD_CONCORDANCE').xlab,
+                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot(
+                    'Constants.P_SUBREAD_CONCORDANCE').ylab,
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
@@ -744,8 +747,10 @@ class MappingStatsCollector(object):
                 Constants.PG_SUBREAD_LENGTH,
                 generate_plot,
                 'mapped_subreadlength_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').get_meta_plot('Constants.P_SUBREAD_LENGTH').xlab,
-                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').get_meta_plot('Constants.P_SUBREAD_LENGTH').ylab,
+                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').get_meta_plot(
+                    'Constants.P_SUBREAD_LENGTH').xlab,
+                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').get_meta_plot(
+                    'Constants.P_SUBREAD_LENGTH').ylab,
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
@@ -755,8 +760,10 @@ class MappingStatsCollector(object):
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_READLENGTH').get_meta_plot('Constants.P_READLENGTH').xlab,
-                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_READLENGTH').get_meta_plot('Constants.P_READLENGTH').ylab,
+                xlabel=meta_rpt.get_meta_plotgroup(
+                    'Constants.PG_READLENGTH').get_meta_plot('Constants.P_READLENGTH').xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(
+                    'Constants.PG_READLENGTH').get_meta_plot('Constants.P_READLENGTH').ylab,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
@@ -784,9 +791,10 @@ class MappingStatsCollector(object):
             (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
             #'mapped_subread_read_quality_mean', MeanSubreadQualityAggregator()),
             (Constants.P_READLENGTH_HIST, ReadLengthHistogram(dx=500)),
-            (Constants.P_SUBREAD_LENGTH_HIST, SubReadlengthHistogram(dx=dx_subreads)),
+            (Constants.P_SUBREAD_LENGTH_HIST,
+             SubReadlengthHistogram(dx=dx_subreads)),
             (Constants.P_SUBREAD_CONCORDANCE_HIST, SubReadConcordanceHistogram(dx=0.005,
-                                                                          nbins=1001))
+                                                                               nbins=1001))
         ])
 
     def _to_table(self, movie_datum):
@@ -804,7 +812,7 @@ class MappingStatsCollector(object):
         mean subread readlength
         mean subread concordance), ...]
         """
-	columns = meta_rpt.get_meta_table(Constants.T_STATS).columns
+        columns = meta_rpt.get_meta_table(Constants.T_STATS).columns
         table = meta_rpt.get_meta_table(Constants.T_STATS).as_table()
 
         for movie_data in movie_datum:
@@ -911,7 +919,7 @@ class MappingStatsCollector(object):
         plot_groups = []
 
 
-#meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot('Constants.P_SUBREAD_CONCORDANCE').xlab
+# meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot('Constants.P_SUBREAD_CONCORDANCE').xlab
 
         ds = openDataFile(self.alignment_file)
         ds.updateCounts()
