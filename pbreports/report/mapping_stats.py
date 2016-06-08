@@ -37,8 +37,8 @@ from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
 #
-from base_test_case import _DIR_NAME
-SPEC_DIR = os.path.join(_DIR_NAME, '../../pbreports/report/specs/')
+#from base_test_case import _DIR_NAME
+#SPEC_DIR = os.path.join(_DIR_NAME, '../../pbreports/report/specs/')
 #
 
 log = logging.getLogger(__name__)
@@ -52,7 +52,8 @@ DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
 
 # Import Mapping MetaReport
 #_DIR_NAME = os.path.dirname(os.path.abspath(__file__))
-#SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 MAPPING_STATS_SPEC = op.join(SPEC_DIR, 'mapping_stats.json')
 meta_rpt = MetaReport.from_json(MAPPING_STATS_SPEC)
 
