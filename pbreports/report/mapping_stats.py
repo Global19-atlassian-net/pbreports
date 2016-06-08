@@ -8,6 +8,7 @@ from collections import OrderedDict
 import multiprocessing
 import sys
 import os
+import os.path as op
 import math
 import time
 import functools
@@ -45,8 +46,12 @@ READ_TYPE = 'ReadType'
 
 DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
 
+
 # Import Mapping MetaReport
-meta_rpt = MetaReport.from_json('specs/mapping_stats.json')
+_DIR_NAME = os.path.dirname(os.path.abspath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+MAPPING_STATS_SPEC = op.join(SPEC_DIR, 'mapping_stats.json')
+meta_rpt = MetaReport.from_json(MAPPING_STATS_SPEC)
 
 
 class Constants(object):
@@ -85,24 +90,23 @@ class Constants(object):
     A_SUBREAD_LENGTH_N50 = "mapped_subreadlength_n50"
     A_SUBREAD_LENGTH_Q95 = "mapped_subreadlength_q95"
 
-    # Plot Groups and Plot Member ids
+    # Plot Group ids
     PG_SUBREAD_CONCORDANCE = "subread_concordance_group"
-    P_SUBREAD_CONCORDANCE = "concordance_plot"
-
     PG_SUBREAD_LENGTH = "subreadlength_plot"
-    P_SUBREAD_LENGTH = "subreadlength_plot"
-
     PG_READLENGTH = "readlength_plot"
-    P_READLENGTH = "readlength_plot"
-
     PG_RAINBOW = "rainbow_plot"
+
+    # Plot ids
+    P_SUBREAD_CONCORDANCE = "concordance_plot"
+    P_SUBREAD_LENGTH = "subreadlength_plot"
+    P_READLENGTH = "readlength_plot"
     P_RAINBOW = "rainbow_plot"
 
     P_SUBREAD_LENGTH_HIST = "subreadlength_histogram"
     P_SUBREAD_CONCORDANCE_HIST = "subread_concordance_histogram"
     P_READLENGTH_HIST = "readlength_histogram"
 
-    # for CCS report - easier to put it here
+    # XXX for CCS report - easier to put it here
     A_READ_CONCORDANCE = "mapped_read_concordance_mean"
     C_READ_CONCORDANCE = "mapped_read_concordance_mean"
     P_READ_CONCORDANCE = "concordance_plot"
@@ -635,14 +639,14 @@ def analyze_movies(movies, alignment_file_names, stats_models):
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
 
-def get_attributes(aggregators_d, meta_rpt):
+def get_attributes(aggregators_d, display_names_d):
 
     attributes = []
 
     for id_, aggregator in aggregators_d.iteritems():
         if isinstance(aggregator, AttributeAble):
-            if id_ in meta_rpt._attr_dict:
-                display_name = meta_rpt.get_meta_attribute(id_).name
+            if id_ in display_names_d:
+                display_name = display_names_d[id_]
             else:
                 display_name = aggregator.__class__.__name__
 
@@ -661,12 +665,27 @@ class MappingStatsCollector(object):
     Wrapper class for generating the report.  This allows us to re-use the
     logic but override the content in the CCS version (mapping_stats_ccs.py).
     """
+    COLUMN_ATTR = [
+        Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
+        Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
+        Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_CONCORDANCE
+    ]
+
+    ATTR_LABELS_LIST = []
+    for id in meta_rpt._attr_dict.keys():
+    	ATTR_LABELS_LIST.append((id, meta_rpt.get_meta_attribute(id).name))
+    ATTR_LABELS = OrderedDict(ATTR_LABELS_LIST)
 
     HISTOGRAM_IDS = {
         Constants.P_SUBREAD_CONCORDANCE: Constants.P_SUBREAD_CONCORDANCE_HIST,
         Constants.PG_SUBREAD_LENGTH: Constants.P_SUBREAD_LENGTH_HIST,
         Constants.P_READLENGTH: Constants.P_READLENGTH_HIST,
     }
+
+    COLUMNS = []
+    for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
+        COLUMNS.append((id, meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(id).header))
+
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
         MeanReadLengthAggregator,
@@ -734,40 +753,40 @@ class MappingStatsCollector(object):
                 Constants.PG_SUBREAD_CONCORDANCE,
                 generate_plot,
                 'mapped_subread_concordance_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot(
-                    'Constants.P_SUBREAD_CONCORDANCE').xlab,
-                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot(
-                    'Constants.P_SUBREAD_CONCORDANCE').ylab,
+                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
+                    Constants.P_SUBREAD_CONCORDANCE).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
+                    Constants.P_SUBREAD_CONCORDANCE).ylab,
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').title),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).title),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
                 generate_plot,
                 'mapped_subreadlength_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').get_meta_plot(
-                    'Constants.P_SUBREAD_LENGTH').xlab,
-                ylabel=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').get_meta_plot(
-                    'Constants.P_SUBREAD_LENGTH').ylab,
+                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
+                    Constants.P_SUBREAD_LENGTH).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
+                    Constants.P_SUBREAD_LENGTH).ylab,
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
-                plot_group_title=meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_LENGTH').title),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).title),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
                 xlabel=meta_rpt.get_meta_plotgroup(
-                    'Constants.PG_READLENGTH').get_meta_plot('Constants.P_READLENGTH').xlab,
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
                 ylabel=meta_rpt.get_meta_plotgroup(
-                    'Constants.PG_READLENGTH').get_meta_plot('Constants.P_READLENGTH').ylab,
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup('Constants.PG_READLENGTH').title),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title),
         ]
         return {v.plot_id: v for v in _p}
 
@@ -791,10 +810,9 @@ class MappingStatsCollector(object):
             (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
             #'mapped_subread_read_quality_mean', MeanSubreadQualityAggregator()),
             (Constants.P_READLENGTH_HIST, ReadLengthHistogram(dx=500)),
-            (Constants.P_SUBREAD_LENGTH_HIST,
-             SubReadlengthHistogram(dx=dx_subreads)),
+            (Constants.P_SUBREAD_LENGTH_HIST, SubReadlengthHistogram(dx=dx_subreads)),
             (Constants.P_SUBREAD_CONCORDANCE_HIST, SubReadConcordanceHistogram(dx=0.005,
-                                                                               nbins=1001))
+                                                                          nbins=1001))
         ])
 
     def _to_table(self, movie_datum):
@@ -812,11 +830,14 @@ class MappingStatsCollector(object):
         mean subread readlength
         mean subread concordance), ...]
         """
-        columns = meta_rpt.get_meta_table(Constants.T_STATS).columns
-        table = meta_rpt.get_meta_table(Constants.T_STATS).as_table()
+        columns = [Column(k, header=h) for k, h in self.COLUMNS]
+        table = Table(Constants.T_STATS,
+                      title="Mapping Statistics Summary",
+                      columns=columns)
 
         for movie_data in movie_datum:
             if len(movie_data) != len(columns):
+                #            if len(movie_data) != 6:
                 log.error(movie_datum)
                 raise ValueError(
                     "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
@@ -883,7 +904,7 @@ class MappingStatsCollector(object):
 
         # add total values
         _to_a = lambda k: _total_aggregators[k].attribute
-        _row = [_to_a(n) for n in meta_rpt._attr_dict.keys()]
+        _row = [_to_a(n) for n in self.COLUMN_ATTR]
         _row.insert(0, 'All Movies')
         movie_datum = [_row]
 
@@ -909,7 +930,7 @@ class MappingStatsCollector(object):
         for a in total_model.aggregators:
             log.info(a)
 
-        attributes = get_attributes(_total_aggregators, meta_rpt)
+        attributes = get_attributes(_total_aggregators, self.ATTR_LABELS)
 
         log.info("Attributes from streaming mapping Report.")
         for a in attributes:
@@ -917,9 +938,6 @@ class MappingStatsCollector(object):
 
         plot_config_views = self._get_plot_view_configs()
         plot_groups = []
-
-
-# meta_rpt.get_meta_plotgroup('Constants.PG_SUBREAD_CONCORDANCE').get_meta_plot('Constants.P_SUBREAD_CONCORDANCE').xlab
 
         ds = openDataFile(self.alignment_file)
         ds.updateCounts()
@@ -931,11 +949,11 @@ class MappingStatsCollector(object):
             plot_groups = to_plot_groups(plot_config_views, output_dir,
                                          id_to_aggregators)
             rb_pg = PlotGroup(Constants.PG_RAINBOW,
-                              title=meta_rpt.get_meta_plotgroup('Constants.PG_RAINBOW').title)
+                              title=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).title)
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, rb_png)
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                          caption=meta_rpt.get_meta_plotgroup('Constants.PG_RAINBOW').get_meta_plot('Constants.P_RAINBOW').caption)
+                          caption=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
         self.add_more_plots(plot_groups, output_dir)

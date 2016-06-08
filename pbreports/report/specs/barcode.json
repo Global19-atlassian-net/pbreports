@@ -29,5 +29,6 @@
     ],
     "plotgroups": [],
     "id": "barcode",
+    "description": "",
     "title": "Barcode Report Specifications"
 }

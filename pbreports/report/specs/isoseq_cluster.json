@@ -50,5 +50,6 @@
         }
     ],
     "id": "isoseq_cluster",
+    "description": "",
     "title": "IsoSeq Cluster Report Specifications"
 }

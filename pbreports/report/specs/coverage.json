@@ -16,5 +16,6 @@
     "tables": [],
     "plotgroups": [],
     "id": "coverage",
+    "description": "",
     "title": "Coverage Report Specifications"
 }

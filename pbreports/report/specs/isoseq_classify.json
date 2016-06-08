@@ -92,5 +92,6 @@
         }
     ],
     "id": "isoseq_classify",
+    "description": "",
     "title": "IsoSeq Classify Report Specifications"
 }

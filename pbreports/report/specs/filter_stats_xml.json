@@ -64,5 +64,6 @@
         }
     ],
     "id": "filter_stats_xml",
+    "description": "",
     "title": "Filter Stats XML Report Specifications"
 }
