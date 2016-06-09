@@ -642,15 +642,14 @@ def analyze_movies(movies, alignment_file_names, stats_models):
             _process_movie_data(movie, file_name, stats_models, *args)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
-
-def get_attributes(aggregators_d, display_names_d):
+def get_attributes(aggregators_d, meta_rpt):
 
     attributes = []
 
     for id_, aggregator in aggregators_d.iteritems():
         if isinstance(aggregator, AttributeAble):
-            if id_ in display_names_d:
-                display_name = display_names_d[id_]
+            if id_ in meta_rpt._attr_dict:
+                display_name = meta_rpt.get_meta_attribute(id_).name
             else:
                 display_name = aggregator.__class__.__name__
 
@@ -674,11 +673,6 @@ class MappingStatsCollector(object):
         Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
         Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_CONCORDANCE
     ]
-
-    ATTR_LABELS_LIST = []
-    for id in meta_rpt._attr_dict.keys():
-    	ATTR_LABELS_LIST.append((id, meta_rpt.get_meta_attribute(id).name))
-    ATTR_LABELS = OrderedDict(ATTR_LABELS_LIST)
 
     HISTOGRAM_IDS = {
         Constants.P_SUBREAD_CONCORDANCE: Constants.P_SUBREAD_CONCORDANCE_HIST,
@@ -934,7 +928,7 @@ class MappingStatsCollector(object):
         for a in total_model.aggregators:
             log.info(a)
 
-        attributes = get_attributes(_total_aggregators, self.ATTR_LABELS)
+	attributes = get_attributes(_total_aggregators, meta_rpt)
 
         log.info("Attributes from streaming mapping Report.")
         for a in attributes:
