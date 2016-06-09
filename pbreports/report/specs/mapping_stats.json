@@ -93,10 +93,10 @@
             "id": "readlength_plot",
             "plots": [
                 {
-                    "xlab": "",
+                    "xlab": "Read Length",
                     "description": "",
                     "caption": "",
-                    "ylab": "",
+                    "ylab": "Reads",
                     "id": "readlength_plot"
                 }
             ],
@@ -108,10 +108,10 @@
             "id": "subreadlength_plot",
             "plots": [
                 {
-                    "xlab": "",
+                    "xlab": "Subread Length",
                     "description": "",
                     "caption": "",
-                    "ylab": "",
+                    "ylab": "Subreads",
                     "id": "subreadlength_plot"
                 }
             ],
@@ -125,12 +125,12 @@
                 {
                     "xlab": "",
                     "description": "",
-                    "caption": "",
+                    "caption": "Mapped Concordance vs. Read Length",
                     "ylab": "",
                     "id": "rainbow_plot"
                 }
             ],
-            "title": "",
+            "title": "Mapped Concordance vs. Read Length",
             "description": "",
             "legend": ""
         },
@@ -150,8 +150,9 @@
             "legend": ""
         }
     ],
-    "title": "Mapping Stats Report Specifications",
-    "id": "mapping_stats",
+    "title": "Mapping Statistics",
+    "id": "mapping_stats_report",
+    "description": "Create a Mapping Report from a Aligned BAM or Alignment DataSet",
     "tables": [
         {
             "id": "mapping_stats_table",

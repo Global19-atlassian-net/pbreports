@@ -8,6 +8,7 @@ from collections import OrderedDict
 import multiprocessing
 import sys
 import os
+import os.path as op
 import math
 import time
 import functools
@@ -19,7 +20,7 @@ from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
 
 from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-					  MetaColumn, MetaTable, MetaReport)
+                                          MetaColumn, MetaTable, MetaReport)
 
 from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -35,6 +36,10 @@ from pbreports.io.align import (alignment_info_from_bam, from_alignment_file,
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
+#
+#from base_test_case import _DIR_NAME
+#SPEC_DIR = os.path.join(_DIR_NAME, '../../pbreports/report/specs/')
+#
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +49,13 @@ SUBREAD_TYPE = 'SubreadType'
 READ_TYPE = 'ReadType'
 
 DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
+
+# Import Mapping MetaReport
+#_DIR_NAME = os.path.dirname(os.path.abspath(__file__))
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+MAPPING_STATS_SPEC = op.join(SPEC_DIR, 'mapping_stats.json')
+meta_rpt = MetaReport.from_json(MAPPING_STATS_SPEC)
 
 
 class Constants(object):
@@ -93,6 +105,10 @@ class Constants(object):
     P_SUBREAD_LENGTH = "subreadlength_plot"
     P_READLENGTH = "readlength_plot"
     P_RAINBOW = "rainbow_plot"
+
+    P_SUBREAD_LENGTH_HIST = "subreadlength_histogram"
+    P_SUBREAD_CONCORDANCE_HIST = "subread_concordance_histogram"
+    P_READLENGTH_HIST = "readlength_histogram"
 
     # XXX for CCS report - easier to put it here
     A_READ_CONCORDANCE = "mapped_read_concordance_mean"
@@ -626,15 +642,14 @@ def analyze_movies(movies, alignment_file_names, stats_models):
             _process_movie_data(movie, file_name, stats_models, *args)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
-
-def get_attributes(aggregators_d, display_names_d):
+def get_attributes(aggregators_d, meta_rpt):
 
     attributes = []
 
     for id_, aggregator in aggregators_d.iteritems():
         if isinstance(aggregator, AttributeAble):
-            if id_ in display_names_d:
-                display_name = display_names_d[id_]
+            if id_ in meta_rpt._attr_dict:
+                display_name = meta_rpt.get_meta_attribute(id_).name
             else:
                 display_name = aggregator.__class__.__name__
 
@@ -658,49 +673,17 @@ class MappingStatsCollector(object):
         Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
         Constants.A_SUBREAD_LENGTH, Constants.A_SUBREAD_CONCORDANCE
     ]
-    ATTR_LABELS = OrderedDict([
-        (Constants.A_SUBREAD_CONCORDANCE, "Mean Mapped Concordance"),
-        (Constants.A_NSUBREADS, "Number of Subreads (mapped)"),
-        (Constants.A_SUBREAD_NBASES, "Number of Subread Bases (mapped)"),
-        (Constants.A_SUBREAD_LENGTH, "Subread Length Mean (mapped)"),
-        (Constants.A_SUBREAD_LENGTH_N50, "Subread Length N50 (mapped)"),
-        (Constants.A_SUBREAD_LENGTH_Q95, "Subread Length 95% (mapped)"),
-        (Constants.A_SUBREAD_LENGTH_MAX, "Subread Length Max (mapped)"),
-        (Constants.A_NREADS, "Number of Polymerase Reads (mapped)"),
-        (Constants.A_READLENGTH, "Polymerase Read Length Mean (mapped)"),
-        (Constants.A_READLENGTH_N50, "Polymerase Read N50 (mapped)"),
-        (Constants.A_READLENGTH_Q95, "Polymerase Read Length 95% (mapped)"),
-        (Constants.A_READLENGTH_MAX, "Polymerase Read Length Max (mapped)"),
-    ])
-    ATTR_DESCRIPTIONS = {
-        Constants.A_SUBREAD_CONCORDANCE: "The mean concordance of subreads that mapped to the reference sequence",
-        Constants.A_NREADS: "The number of polymerase reads mapped to the reference sequence",
-        Constants.A_NSUBREADS: "The number of subreads mapped to the reference sequence",
-        Constants.A_SUBREAD_NBASES: "The number of subread bases mapped to the reference sequence",
-        Constants.A_READLENGTH: "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
-        Constants.A_SUBREAD_LENGTH: "The mean length of the mapped portion of subreads which mapped to the reference sequence",
-        Constants.A_READLENGTH_Q95: "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
-        Constants.A_SUBREAD_LENGTH_Q95: "The 95th percentile of length of subreads that mapped to the reference sequence",
-        Constants.A_READLENGTH_MAX: "The maximum length of polymerase reads that mapped to the reference sequence",
-        Constants.A_SUBREAD_LENGTH_MAX: "The maximum length of subreads that mapped to the reference sequence",
-        Constants.A_SUBREAD_LENGTH_N50: "The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value",
-        Constants.A_READLENGTH_N50: "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value",
-    }
+
     HISTOGRAM_IDS = {
-        Constants.P_SUBREAD_CONCORDANCE: "subread_concordance_histogram",
-        Constants.PG_SUBREAD_LENGTH: "subreadlength_histogram",
-        Constants.P_READLENGTH: "readlength_histogram",
+        Constants.P_SUBREAD_CONCORDANCE: Constants.P_SUBREAD_CONCORDANCE_HIST,
+        Constants.PG_SUBREAD_LENGTH: Constants.P_SUBREAD_LENGTH_HIST,
+        Constants.P_READLENGTH: Constants.P_READLENGTH_HIST,
     }
-    COLUMNS = [
-        (Constants.C_MOVIE, "Movie"),
-        (Constants.C_READS, "Mapped Reads"),
-        (Constants.C_READLENGTH, "Mapped Polymerase Read Length"),
-        (Constants.C_READLENGTH_N50, "Mapped Polymerase Read Length N50"),
-        (Constants.C_SUBREADS, "Mapped Subreads"),
-        (Constants.C_SUBREAD_NBASES, "Mapped Subread Bases"),
-        (Constants.C_SUBREAD_LENGTH, "Mapped Subread Length"),
-        (Constants.C_SUBREAD_CONCORDANCE, "Mapped Subread Concordance")
-    ]
+
+    COLUMNS = []
+    for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
+        COLUMNS.append((id, meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(id).header))
+
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
         MeanReadLengthAggregator,
@@ -768,34 +751,40 @@ class MappingStatsCollector(object):
                 Constants.PG_SUBREAD_CONCORDANCE,
                 generate_plot,
                 'mapped_subread_concordance_histogram.png',
-                xlabel="Concordance",
-                ylabel="Subreads",
+                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
+                    Constants.P_SUBREAD_CONCORDANCE).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
+                    Constants.P_SUBREAD_CONCORDANCE).ylab,
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Subread Concordance"),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).title),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
                 generate_plot,
                 'mapped_subreadlength_histogram.png',
-                xlabel="Subread Length",
-                ylabel="Subreads",
+                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
+                    Constants.P_SUBREAD_LENGTH).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
+                    Constants.P_SUBREAD_LENGTH).ylab,
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
-                plot_group_title="Mapped Subread Length"),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).title),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
-                xlabel="Read Length",
-                ylabel="Reads",
+                xlabel=meta_rpt.get_meta_plotgroup(
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped Polymerase Read Length"),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title),
         ]
         return {v.plot_id: v for v in _p}
 
@@ -818,9 +807,9 @@ class MappingStatsCollector(object):
             (Constants.A_READLENGTH_Q95, MappedReadLengthQ95(dx=10, nbins=10000)),
             (Constants.A_READLENGTH_MAX, MaxReadLengthAggregator()),
             #'mapped_subread_read_quality_mean', MeanSubreadQualityAggregator()),
-            ("readlength_histogram", ReadLengthHistogram(dx=500)),
-            ("subreadlength_histogram", SubReadlengthHistogram(dx=dx_subreads)),
-            ("subread_concordance_histogram", SubReadConcordanceHistogram(dx=0.005,
+            (Constants.P_READLENGTH_HIST, ReadLengthHistogram(dx=500)),
+            (Constants.P_SUBREAD_LENGTH_HIST, SubReadlengthHistogram(dx=dx_subreads)),
+            (Constants.P_SUBREAD_CONCORDANCE_HIST, SubReadConcordanceHistogram(dx=0.005,
                                                                           nbins=1001))
         ])
 
@@ -846,6 +835,7 @@ class MappingStatsCollector(object):
 
         for movie_data in movie_datum:
             if len(movie_data) != len(columns):
+                #            if len(movie_data) != 6:
                 log.error(movie_datum)
                 raise ValueError(
                     "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
@@ -938,7 +928,7 @@ class MappingStatsCollector(object):
         for a in total_model.aggregators:
             log.info(a)
 
-        attributes = get_attributes(_total_aggregators, self.ATTR_LABELS)
+	attributes = get_attributes(_total_aggregators, meta_rpt)
 
         log.info("Attributes from streaming mapping Report.")
         for a in attributes:
@@ -957,11 +947,11 @@ class MappingStatsCollector(object):
             plot_groups = to_plot_groups(plot_config_views, output_dir,
                                          id_to_aggregators)
             rb_pg = PlotGroup(Constants.PG_RAINBOW,
-                              title="Mapped Concordance vs. Read Length")
+                              title=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).title)
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, rb_png)
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                          caption="Mapped Concordance vs. Read Length")
+                          caption=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
         self.add_more_plots(plot_groups, output_dir)

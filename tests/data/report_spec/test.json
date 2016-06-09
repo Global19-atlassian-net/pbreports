@@ -1,6 +1,7 @@
 {
     "id": "test_report",
     "title": "Example report spec",
+    "description": "This is a small test report which is used to ensure report_spec.py is working",
     "attributes": [
         {
             "id": "attribute1",

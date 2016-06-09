@@ -104,9 +104,10 @@ class MetaPlotGroup(object):
 
 class MetaReport(object):
 
-    def __init__(self, id_, title, attributes=(), plotgroups=(), tables=()):
+    def __init__(self, id_, title, description, attributes=(), plotgroups=(), tables=()):
         self.id = id_
         self.title = title
+	self.description = description
         self.attributes = attributes
         self.plotgroups = plotgroups
         self.tables = tables
@@ -118,7 +119,7 @@ class MetaReport(object):
     def from_json(json_str):
         d = json.load(open(json_str))
         json.dumps(d)
-        return MetaReport(d['id'], d['title'],
+        return MetaReport(d['id'], d['title'], d['description'],
                           [MetaAttribute.from_dict(a) for a in d['attributes']],
                           [MetaPlotGroup.from_dict(p) for p in d['plotgroups']],
                           [MetaTable.from_dict(t) for t in d['tables']])
