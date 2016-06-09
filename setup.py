@@ -25,6 +25,7 @@ setup(
     author_email='pbiDevNet@pacificbiosciences.com',
     license='LICENSE.txt',
     packages=find_packages(),
+    package_data={'pbreports': ['reports/specs/*.json']}
     zip_safe=False,
     install_requires=_get_requirements(_get_local_file(_REQUIREMENTS_FILE)),
     entry_points={'console_scripts': [
