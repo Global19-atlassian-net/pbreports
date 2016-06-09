@@ -36,10 +36,6 @@ from pbreports.io.align import (alignment_info_from_bam, from_alignment_file,
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
-#
-#from base_test_case import _DIR_NAME
-#SPEC_DIR = os.path.join(_DIR_NAME, '../../pbreports/report/specs/')
-#
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +47,6 @@ READ_TYPE = 'ReadType'
 DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
 
 # Import Mapping MetaReport
-#_DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 _DIR_NAME = os.path.dirname(os.path.realpath(__file__))
 SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 MAPPING_STATS_SPEC = op.join(SPEC_DIR, 'mapping_stats.json')
@@ -830,7 +825,7 @@ class MappingStatsCollector(object):
         """
         columns = [Column(k, header=h) for k, h in self.COLUMNS]
         table = Table(Constants.T_STATS,
-                      title="Mapping Statistics Summary",
+                      title=meta_rpt.title,
                       columns=columns)
 
         for movie_data in movie_datum:
@@ -983,14 +978,12 @@ def summarize_report(report_file, out=sys.stdout):
     report = load_report_from_json(report_file)
     attr = {a.id: a.value for a in report.attributes}
     W("%s:" % report_file)
-    W("  MEAN CONCORDANCE: {f}".format(
-        f=attr[Constants.A_SUBREAD_CONCORDANCE]))
-    W("  NSUBREADS: {n}".format(n=attr[Constants.A_NSUBREADS]))
-    W("  NREADS: {n}".format(n=attr[Constants.A_NREADS]))
-    W("  NBASES: {n}".format(n=attr[Constants.A_SUBREAD_NBASES]))
-    W("  READLENGTH_MEAN: {n}".format(n=attr[Constants.A_READLENGTH]))
-    W("  SUBREADLENGTH_MEAN: {n}".format(n=attr[Constants.A_SUBREAD_LENGTH]))
-
+    W(meta_rpt.get_meta_attribute(Constants.A_SUBREAD_CONCORDANCE).name.upper() +  ": {a}".format(a=attr[Constants.A_SUBREAD_CONCORDANCE]))
+    W(meta_rpt.get_meta_attribute(Constants.A_NSUBREADS).name.upper() + ": {a}".format(a=attr[Constants.A_NSUBREADS]))
+    W(meta_rpt.get_meta_attribute(Constants.A_NREADS).name.upper() + ": {a}".format(a=attr[Constants.A_NREADS]))
+    W(meta_rpt.get_meta_attribute(Constants.A_SUBREAD_NBASES).name.upper() + ": {a}".format(a=attr[Constants.A_SUBREAD_NBASES]))
+    W(meta_rpt.get_meta_attribute(Constants.A_READLENGTH).name.upper() + ": {a}".format(a=attr[Constants.A_READLENGTH]))
+    W(meta_rpt.get_meta_attribute(Constants.A_SUBREAD_LENGTH).name.upper() + ": {a}".format(a=attr[Constants.A_SUBREAD_LENGTH]))
 
 def run_and_write_report(alignment_file, json_report, report_func=to_report):
     output_dir = os.path.dirname(json_report)
@@ -1027,7 +1020,7 @@ def _get_parser():
     parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
                                "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
     parser.add_output_file_type(FileTypes.REPORT, "report_json", "PacBio Json Report",
-                                "Output report JSON file.", "mapping_stats_report")
+                                "Output report JSON file.", meta_rpt.id)
 
     return parser
 
