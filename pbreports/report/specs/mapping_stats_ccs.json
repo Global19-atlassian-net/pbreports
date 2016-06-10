@@ -135,7 +135,7 @@
             "title": "Mapped CCS Read Length"
         }
     ],
-    "id": "mapping_stats_ccs",
+    "id": "mapping_stats_report",
     "description": "",
-    "title": "Mapping Stats CCS Report Specifications"
+    "title": "CCS Mapping Statistics"
 }
