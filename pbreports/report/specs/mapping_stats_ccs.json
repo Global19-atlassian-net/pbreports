@@ -15,7 +15,7 @@
         {
             "description": "The number of CCS read bases that mapped to the reference sequence",
             "type": "",
-            "id": "mapped_bases_n",
+            "id": "mappeds_bases_n",
             "name": "Number of CCS Bases (mapped)"
         },
         {
@@ -43,25 +43,99 @@
             "name": "CCS Read Length Max (mapped)"
         }
     ],
-    "tables": [],
+    "tables": [
+        {
+            "id": "mapping_stats_ccs_table",
+            "description": "",
+            "columns": [
+                {
+                    "header": "Movie",
+                    "type": "str",
+                    "id": "movie",
+                    "description": ""
+                },
+                {
+                    "header": "Number of CCS Reads (mapped)",
+                    "type": "int",
+                    "id": "mapped_reads",
+                    "description": ""
+                },
+                {
+                    "header": "Number of CCS Bases (mapped)",
+                    "type": "int",
+                    "id": "mapped_bases",
+                    "description": ""
+                },
+                {
+                    "header": "CCS Read Length Mean (mapped)",
+                    "type": "float",
+                    "id": "mapped_read_length_mean",
+                    "description": ""
+                },
+                {
+                    "header": "CCS Read Length N50 (mapped)",
+                    "type": "int",
+                    "id": "mapped_read_length_n50",
+                    "description": ""
+                },
+                {
+                    "header": "Mapped CCS Read Mean Concordance",
+                    "type": "float",
+                    "id": "mapped_read_concordance_mean",
+                    "description": ""
+                }
+	      ],
+            "title": "CCS Mapping Statistics Summary"
+	}
+    ],
     "plotgroups": [
         {
             "plots": [
                 {
-                    "xlab": "",
+                    "xlab": "CCS Read Score",
                     "description": "",
                     "caption": "",
-                    "ylab": "",
+                    "ylab": "Mapped Concordance",
                     "id": "qv_calibration_plot"
                 }
             ],
             "description": "",
             "legend": "",
-            "id": "qv_calibration",
-            "title": ""
+            "id": "qv_calibration_group",
+            "title": "Mapped QV Calibration"
+        },
+	{
+	            "plots": [
+                {
+                    "xlab": "Concordance",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "CCS Reads",
+                    "id": "concordance_plot"
+               }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "ccs_read_concordance_group",
+            "title": "Mapped CCS Read Concordance"
+	},
+        {
+                    "plots": [
+                {
+                    "xlab": "Read Length",
+                    "description": "",
+                    "caption": "",
+                    "ylab": "Reads",
+                    "id": "readlength_plot"
+                }
+            ],
+            "description": "",
+            "legend": "",
+            "id": "ccs_readlength_group",
+            "title": "Mapped CCS Read Length"
         }
     ],
-    "id": "mapping_stats_ccs",
+    "id": "mapping_stats_report",
     "description": "",
-    "title": "Mapping Stats CCS Report Specifications"
+    "title": "CCS Mapping Statistics"
 }
