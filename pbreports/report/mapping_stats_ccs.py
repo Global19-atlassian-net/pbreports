@@ -7,6 +7,9 @@ with Blasr/pbalign.
 from collections import OrderedDict
 import logging
 import sys
+import os
+import os.path as op
+import numpy as np
 
 from pbcommand.models import get_pbparser, FileTypes
 
@@ -16,22 +19,46 @@ from pbreports.report.mapping_stats import *
 from pbreports.report.mapping_stats import Constants as BaseConstants
 from pbreports.report.ccs import create_plot
 
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
+
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+MAPPING_STATS_CCS_SPEC = op.join(SPEC_DIR, 'mapping_stats_ccs.json')
+meta_rpt = MetaReport.from_json(MAPPING_STATS_CCS_SPEC)
+
+
 class Constants(BaseConstants):
     TOOL_ID = "pbreports.tasks.mapping_stats_ccs"
     DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
+
+    T_STATS = "mapping_stats_ccs_table"
+    PG_READ_CONCORDANCE = "ccs_read_concordance_group"
+    P_READ_CONCORDANCE = "concordance_plot"
+    PG_READLENGTH = "ccs_readlength_group"
+    PG_QV_CALIBRATION = "qv_calibration_group"
+    P_QV_CALIBRATION = "qv_calibration_plot"
+
+    A_NREADS = "mapped_reads_n"
+    A_READLENGTH = "mapped_readlength_mean"
+    A_READLENGTH_N50 = "mapped_readlength_n50"
+    A_NBASES = "mapped_bases_n"
+    A_READ_CONCORDANCE = "mapped_read_concordance_mean"
 
 __version__ = "0.1"
 log = logging.getLogger(__name__)
 
 
-def scatter_plot_accuracy_vs_concordance(
+def scatter_plot_readscore_vs_concordance(
         data,
-        axis_labels=("Predicted accuracy", "Mapped concordance"),
+        axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlab,
+                     meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylab),
         nbins=None,
         barcolor=None):
-    accuracy, concordance = data
+    readscore, concordance = data
     fig, ax = get_fig_axes_lpr()
-    data = [Line(xData=accuracy,
+    data = [Line(xData=readscore,
                  yData=concordance,
                  style='+')]
     apply_line_data(
@@ -50,36 +77,16 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
         Constants.A_NBASES, Constants.A_READ_CONCORDANCE
     ]
-    ATTR_LABELS = OrderedDict([
-        (Constants.A_READ_CONCORDANCE, "Mapped CCS Read Mean Concordance"),
-        (Constants.A_NREADS, "Number of CCS Reads (mapped)"),
-        (Constants.A_NBASES, "Number of CCS Bases (mapped)"),
-        (Constants.A_READLENGTH, "CCS Read Length Mean (mapped)"),
-        (Constants.A_READLENGTH_N50, "CCS Read Length N50 (mapped)"),
-        (Constants.A_READLENGTH_Q95, "CCS Read Length 95% (mapped)"),
-        (Constants.A_READLENGTH_MAX, "CCS Read Length Max (mapped)"),
-    ])
-    ATTR_DESCRIPTIONS = {
-        Constants.A_READ_CONCORDANCE: "The mean concordance of CCS reads that mapped to the reference sequence",
-        Constants.A_NREADS: "The number of CCS reads that mapped to the reference sequence",
-        Constants.A_NBASES: "The number of CCS read bases that mapped to the reference sequence",
-        Constants.A_READLENGTH: "The mean length of CCS reads that mapped to the reference sequence",
-        Constants.A_READLENGTH_Q95: "The 95th percentile of length of CCS reads that mapped to the reference sequence",
-        Constants.A_READLENGTH_MAX: "The maximum length of CCS reads that mapped to the reference sequence",
-        Constants.A_READLENGTH_N50: "The read length at which 50% of the bases are in reads longer than, or equal to, this value"
-    }
     HISTOGRAM_IDS = {
         Constants.P_READ_CONCORDANCE: "read_concordance_histogram",
         Constants.P_READLENGTH: "readlength_histogram",
     }
-    COLUMNS = [
-        (Constants.C_MOVIE, "Movie"),
-        (Constants.C_READS, "Number of CCS Reads (mapped)"),
-        (Constants.C_READ_NBASES, "Number of CCS Bases (mapped)"),
-        (Constants.C_READLENGTH, "CCS Read Length Mean (mapped)"),
-        (Constants.C_READLENGTH_N50, "CCS Read Length N50 (mapped)"),
-        (Constants.C_READ_CONCORDANCE, "Mapped CCS Read Mean Concordance")
-    ]
+
+    COLUMNS = []
+    for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
+        COLUMNS.append((id, meta_rpt.get_meta_table(
+            Constants.T_STATS).get_meta_column(id).header))
+
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
         MeanReadLengthAggregator,
@@ -87,8 +94,6 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         NumberSubreadBasesAggregator,
         MeanSubreadConcordanceAggregator
     ]
-    PG_QV_CALIBRATION = "qv_calibration"
-    P_QV_CALIBRATION = "qv_calibration_plot"
 
     def _get_plot_view_configs(self):
         """
@@ -103,23 +108,27 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 Constants.PG_READ_CONCORDANCE,
                 generate_plot,
                 'mapped_read_concordance_histogram.png',
-                xlabel="Concordance",
-                ylabel="CCS Reads",
+                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).get_meta_plot(
+                    Constants.P_READ_CONCORDANCE).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).get_meta_plot(
+                    Constants.P_READ_CONCORDANCE).ylab,
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped CCS Read Concordance"),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).title),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
-                xlabel="Read Length",
-                ylabel="Reads",
+                xlabel=meta_rpt.get_meta_plotgroup(
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
+                ylabel=meta_rpt.get_meta_plotgroup(
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title="Mapped CCS Read Length")
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title)
         ]
         return {v.plot_id: v for v in _p}
 
@@ -142,21 +151,23 @@ class CCSMappingStatsCollector(MappingStatsCollector):
     def add_more_plots(self, plot_groups, output_dir):
         try:
             ds = ConsensusAlignmentSet(self.alignment_file)
-            accuracy, concordance = [], []
+            readscore, concordance = [], []
             for bam in ds.resourceReaders():
-                accuracy.extend(list(bam.pbi.readQual))
+                readscore.extend(list(bam.pbi.readQual))
                 concordance.extend(list(bam.identity))
             qv_validation_plot = create_plot(
-                _make_plot_func=scatter_plot_accuracy_vs_concordance,
-                plot_id=self.P_QV_CALIBRATION,
-                axis_labels=("Predicted accuracy", "Mapped concordance"),
+                _make_plot_func=scatter_plot_readscore_vs_concordance,
+                plot_id=Constants.P_QV_CALIBRATION,
+                axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlab,
+                             meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylab),
                 nbins=None,
                 plot_name="mapped_qv_calibration.png",
                 barcolor="#A0A0FF",
-                data=(accuracy, concordance),
+                data=(readscore, concordance),
                 output_dir=output_dir)
-            pg = PlotGroup(self.PG_QV_CALIBRATION,
-                           title="Mapped QV Calibration",
+            pg = PlotGroup(Constants.PG_QV_CALIBRATION,
+                           title=meta_rpt.get_meta_plotgroup(
+                               Constants.PG_QV_CALIBRATION).title,
                            plots=[qv_validation_plot],
                            thumbnail=qv_validation_plot.thumbnail)
             plot_groups.append(pg)
@@ -196,7 +207,7 @@ def _resolved_tool_contract_runner(resolved_contract):
 
 def _get_parser():
     parser = get_pbparser(Constants.TOOL_ID, __version__,
-                          "CCS Mapping Statistics", __doc__,
+                          meta_rpt.title, __doc__,
                           Constants.DRIVER_EXE)
     parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
                                "ConsensusAlignment XML DataSet",
@@ -204,7 +215,7 @@ def _get_parser():
     parser.add_output_file_type(FileTypes.REPORT, "report_json",
                                 "PacBio Json Report",
                                 "Output report JSON file.",
-                                default_name="mapping_stats_report")
+                                default_name=meta_rpt.id)
     return parser
 
 
