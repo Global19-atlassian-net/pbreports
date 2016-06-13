@@ -92,7 +92,7 @@
         {
             "plots": [
                 {
-                    "xlab": "CCS Read Score",
+                    "xlab": "Predicted Accuracy",
                     "description": "",
                     "caption": "",
                     "ylab": "Mapped Concordance",
