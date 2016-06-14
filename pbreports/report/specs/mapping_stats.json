@@ -79,75 +79,75 @@
             "plots": [
                 {
                     "xlab": "Concordance",
-                    "description": "",
-                    "caption": "",
+                    "description": null,
+                    "caption": null,
                     "ylab": "Subreads",
                     "id": "concordance_plot"
                 }
             ],
             "title": "Mapped Subread Accuracy",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         },
         {
             "id": "readlength_plot",
             "plots": [
                 {
                     "xlab": "Read Length",
-                    "description": "",
-                    "caption": "",
+                    "description": null,
+                    "caption": null,
                     "ylab": "Reads",
                     "id": "readlength_plot"
                 }
             ],
             "title": "Mapped Polymerase Read Length",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         },
         {
             "id": "subreadlength_plot",
             "plots": [
                 {
                     "xlab": "Subread Length",
-                    "description": "",
-                    "caption": "",
+                    "description": null,
+                    "caption": null,
                     "ylab": "Subreads",
                     "id": "subreadlength_plot"
                 }
             ],
             "title": "Mapped Subread Length",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         },
         {
             "id": "rainbow_plot",
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
+                    "xlab": null,
+                    "description": null,
                     "caption": "Mapped Concordance vs. Read Length",
-                    "ylab": "",
+                    "ylab": null,
                     "id": "rainbow_plot"
                 }
             ],
             "title": "Mapped Concordance vs. Read Length",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         },
         {
             "id": "read_concordance_group",
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlab": null,
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "read_concordance_plot"
                 }
             ],
-            "title": "",
-            "description": "",
-            "legend": ""
+            "title": null,
+            "description": null,
+            "legend": null
         }
     ],
     "title": "Mapping Statistics",
@@ -156,55 +156,55 @@
     "tables": [
         {
             "id": "mapping_stats_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Movie",
                     "type": "str",
                     "id": "movie",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Reads",
                     "type": "int",
                     "id": "mapped_reads",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Polymerase Read Length",
                     "type": "int",
                     "id": "mapped_polymerase_read_length",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Polymerase Read Length n50",
                     "type": "int",
                     "id": "mapped_polymerase_read_length_n50",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Subreads",
                     "type": "int",
                     "id": "mapped_subreads",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Subread Bases",
                     "type": "int",
                     "id": "mapped_subread_base",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Subread Length",
                     "type": "int",
                     "id": "mapped_subread_length",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mapped Subread Accuracy",
                     "type": "float",
                     "id": "mapped_subread_accuracy",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Mapping Statistics Summary"

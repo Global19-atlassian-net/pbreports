@@ -20,33 +20,33 @@
             "plots": [
                 {
                     "xlab": "Reference Start Position",
-                    "description": "",
-                    "caption": "",
+                    "description": null,
+                    "caption": null,
                     "ylab": "Coverage",
                     "id": "coverage_contig"
                 }
             ],
             "title": "Coverage Across Reference",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         },
         {
             "id": "coverage_histogram_plot_group",
             "plots": [
                 {
                     "xlab": "Coverage",
-                    "description": "",
+                    "description": null,
                     "caption": "Depth of coverage distribution ",
                     "ylab": "Reference Regions",
                     "id": "coverage_histogram"
                 }
             ],
             "title": "Depth of Coverage",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         }
     ],
     "id": "coverage_report",
-    "description": "",
+    "description": null,
     "title": "Coverage Report"
 }

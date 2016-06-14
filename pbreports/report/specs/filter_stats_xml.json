@@ -6,64 +6,64 @@
             "plots": [
                 {
                     "xlab": "Read Length",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "read_length_plot"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "read_length_plot_group",
-            "title": ""
+            "title": null
         },
         {
             "plots": [
                 {
                     "xlab": "Read Quality",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "read_quality_plot"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "read_quality_plot_group",
-            "title": ""
+            "title": null
         },
         {
             "plots": [
                 {
                     "xlab": "Insert Length",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "insert_length_plot"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "insert_length_plot_group",
-            "title": ""
+            "title": null
         },
         {
             "plots": [
                 {
                     "xlab": "Insert Quality",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "insert_quality_plot"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "insert_quality_plot_group",
-            "title": ""
+            "title": null
         }
     ],
     "id": "filter_stats_xml",
-    "description": "",
+    "description": null,
     "title": "Filter Stats XML Report Specifications"
 }

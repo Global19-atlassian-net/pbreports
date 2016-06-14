@@ -3,98 +3,98 @@
     "tables": [
         {
             "id": "top_variants_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Sequence",
-                    "type": "",
+                    "type": null,
                     "id": "sequence",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Position",
-                    "type": "",
+                    "type": null,
                     "id": "position",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Variant",
-                    "type": "",
+                    "type": null,
                     "id": "variant",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Type",
-                    "type": "",
+                    "type": null,
                     "id": "type",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Coverage",
-                    "type": "",
+                    "type": null,
                     "id": "coverage",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Confidence",
-                    "type": "",
+                    "type": null,
                     "id": "confidence",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Genotype",
-                    "type": "",
+                    "type": null,
                     "id": "genotype",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Top Variants"
         },
         {
             "id": "top_minor_variants_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Sequence",
-                    "type": "",
+                    "type": null,
                     "id": "sequence",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Position",
-                    "type": "",
+                    "type": null,
                     "id": "position",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Variant",
-                    "type": "",
+                    "type": null,
                     "id": "variant",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Type",
-                    "type": "",
+                    "type": null,
                     "id": "type",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Coverage",
-                    "type": "",
+                    "type": null,
                     "id": "coverage",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Confidence",
-                    "type": "",
+                    "type": null,
                     "id": "confidence",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Frequency",
-                    "type": "",
+                    "type": null,
                     "id": "frequency",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Top minor variants"
@@ -102,6 +102,6 @@
     ],
     "plotgroups": [],
     "id": "top_variants",
-    "description": "",
+    "description": null,
     "title": "Top Variants Report Specifications"
 }

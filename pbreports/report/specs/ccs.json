@@ -14,19 +14,19 @@
         },
         {
             "description": "Mean length of CCS reads",
-            "type": "",
+            "type": null,
             "id": "mean_ccs_readlength",
             "name": "CCS Read Length (mean)"
         },
         {
             "description": "Mean predicted accuracy of CCS reads",
-            "type": "",
+            "type": null,
             "id": "mean_accuracy",
             "name": "CCS Read Score (mean)"
         },
         {
             "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
-            "type": "",
+            "type": null,
             "id": "mean_ccs_num_passes",
             "name": "Number of Passes (mean)"
         }
@@ -34,7 +34,7 @@
     "tables": [
         {
             "id": "ccs_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Movie",
@@ -80,57 +80,57 @@
         {
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlab": null,
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "readlength_hist"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "readlength_group",
-            "title": ""
+            "title": null
         },
         {
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlab": null,
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "accuracy_hist"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "accuracy_group",
-            "title": ""
+            "title": null
         },
         {
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlab": null,
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "npasses_hist"
                 },
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlab": null,
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "npasses_vs_accuracy"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "npasses_hist",
-            "title": ""
+            "title": null
         }
     ],
     "id": "ccs",
-    "description": "",
+    "description": null,
     "title": "CCS Report Specifications"
 }

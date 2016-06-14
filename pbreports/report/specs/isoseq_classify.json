@@ -2,73 +2,73 @@
     "attributes": [
         {
             "description": "Total number of CCS reads in the input file; this will be identical to the value in the CCS report",
-            "type": "",
+            "type": null,
             "id": "num_reads",
             "name": "Number of consensus reads"
         },
         {
             "description": "The number of CCS reads with a 5-prime signal detected",
-            "type": "",
+            "type": null,
             "id": "num_5_seen",
             "name": "Number of five prime reads"
         },
         {
             "description": "The number of CCS reads with a 3-prime signal detected",
-            "type": "",
+            "type": null,
             "id": "num_3_seen",
             "name": "Number of three prime reads"
         },
         {
             "description": "The number of CCS reads with poly-A and 3-prime signals detected",
-            "type": "",
+            "type": null,
             "id": "num_polya_seen",
             "name": "Number of poly-A reads"
         },
         {
             "description": "The number of CCS reads whose read length is less than the specified minimum sequence length",
-            "type": "",
+            "type": null,
             "id": "num_filtered_short_reads",
             "name": "Number of filtered short reads"
         },
         {
             "description": "The number of non-full-length CCS reads; these are missing the poly-A tail and/or a terminal signal",
-            "type": "",
+            "type": null,
             "id": "num_nfl",
             "name": "Number of non-full-length reads"
         },
         {
             "description": "The number of full-length CCS reads. (Full-length reads are reads which have both prime signals and poly-A detected.)",
-            "type": "",
+            "type": null,
             "id": "num_fl",
             "name": "Number of full-length reads"
         },
         {
             "description": "The number of full-length CCS reads that are not artificial concatemers",
-            "type": "",
+            "type": null,
             "id": "num_flnc",
             "name": "Number of full-length non-chimeric reads"
         },
         {
             "description": "Mean length of full-length, non-artificial-concatemer CCS reads",
-            "type": "",
+            "type": null,
             "id": "avg_flnc_len",
             "name": "Mean full-length non-chimeric read length"
         },
         {
             "description": "The number of non-full-length non-artificial-concatemer CCS reads",
-            "type": "",
+            "type": null,
             "id": "num_nflnc",
             "name": "Number of non-full-length non-chimeric reads"
         },
         {
             "description": "The number of non-full-length reads that are artificial concatemers",
-            "type": "",
+            "type": null,
             "id": "num_nflc",
             "name": "Number of non-full-length chimeric reads"
         },
         {
             "description": "Total number of bases in full-length non-artificial-concatemer CCS reads",
-            "type": "",
+            "type": null,
             "id": "num_flnc_bases",
             "name": "Number of full-length non-chimeric bases"
         }
@@ -78,20 +78,20 @@
         {
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlab": null,
+                    "description": null,
+                    "caption": null,
+                    "ylab": null,
                     "id": "fulllength_nonchimeric_readlength_hist"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "fulllength_nonchimeric_readlength_group",
-            "title": ""
+            "title": null
         }
     ],
     "id": "isoseq_classify",
-    "description": "",
+    "description": null,
     "title": "IsoSeq Classify Report Specifications"
 }

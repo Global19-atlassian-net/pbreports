@@ -3,79 +3,79 @@
     "tables": [
         {
             "id": "motif_records",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Motif",
                     "type": "str",
                     "id": "motif_id",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Modified Position",
                     "type": "int",
                     "id": "modified_position",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Motification Type",
                     "type": "str",
                     "id": "modification_type",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "% of Motifs Detected",
-                    "type": "",
+                    "type": null,
                     "id": "percent_motifs_detected",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "# of Motifs Detected",
                     "type": "int",
                     "id": "ndetected_motifs",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "# of Motifs in Genome",
                     "type": "int",
                     "id": "nmotifs_in_genome",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mean QV",
                     "type": "float",
                     "id": "mean_readscore",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mean Coverage",
                     "type": "float",
                     "id": "mean_coverage",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Partner Motif",
-                    "type": "",
+                    "type": null,
                     "id": "partner_motif",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Mean IPD ratio",
                     "type": "float",
                     "id": "mean_ipd_ratio",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Group Tag",
                     "type": "str",
                     "id": "group_tag",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Objective Score",
-                    "type": "",
+                    "type": null,
                     "id": "objective_score",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "motifs"
@@ -83,6 +83,6 @@
     ],
     "plotgroups": [],
     "id": "motifs",
-    "description": "",
+    "description": null,
     "title": "Motifs Report Specifications"
 }

@@ -3,43 +3,43 @@
     "tables": [
         {
             "id": "result_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
 		    "id": "barcodename",
                     "header": "Barcode",
-                    "description": "",
-		    "type": ""
+                    "description": null,
+		    "type": null
                 },
                 {
                     "header": "Sequence Cluster",
-                    "type": "",
+                    "type": null,
                     "id": "coarsecluster",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Sequence Phase",
-                    "type": "",
+                    "type": null,
                     "id": "phase",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Length (bp)",
-                    "type": "",
+                    "type": null,
                     "id": "sequencelength",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Estimated Accuracy",
-                    "type": "",
+                    "type": null,
                     "id": "predictedaccuracy",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Subreads coverage",
-                    "type": "",
+                    "type": null,
                     "id": "totalcoverage",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Amplicon Consensus Summary"
@@ -48,5 +48,5 @@
     "plotgroups": [],
     "id": "amplicon_analysis_consensus",
     "title": "Amplicon Analysis Consensus Specifications",
-    "description": ""
+    "description": null
 }

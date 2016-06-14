@@ -2,13 +2,13 @@
     "attributes": [
         {
             "description": "The percent accuracy (concordance) of the consensus sequence compared to the reference",
-            "type": "",
+            "type": null,
             "id": "weighted_mean_concordance",
             "name": "Reference Consensus Concordance (mean)"
         },
         {
             "description": "Mean length of reference sequence contigs",
-            "type": "",
+            "type": null,
             "id": "mean_contig_length",
             "name": "Reference Contig Length (mean)"
         },
@@ -20,13 +20,13 @@
         },
         {
             "description": "Percentage of the reference sequence for which consensus bases were called",
-            "type": "",
+            "type": null,
             "id": "weighted_mean_bases_called",
             "name": "Percent Reference Bases Called (mean)"
         },
         {
             "description": "The mean depth of coverage across the reference sequence",
-            "type": "",
+            "type": null,
             "id": "weighted_mean_coverage",
             "name": "Reference Coverage (mean)"
         }
@@ -34,37 +34,37 @@
     "tables": [
         {
             "id": "consensus_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Reference",
-                    "type": "",
+                    "type": null,
                     "id": "contig_name",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Reference Length",
-                    "type": "",
+                    "type": null,
                     "id": "contig_len",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Bases Called",
-                    "type": "",
+                    "type": null,
                     "id": "bases_called",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Consensus Accuracy",
-                    "type": "",
+                    "type": null,
                     "id": "concordance",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Base Coverage",
-                    "type": "",
+                    "type": null,
                     "id": "coverage",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Consensus Calling Results"
@@ -72,6 +72,6 @@
     ],
     "plotgroups": [],
     "id": "variants",
-    "description": "",
+    "description": null,
     "title": "Variants Report Specifications"
 }
