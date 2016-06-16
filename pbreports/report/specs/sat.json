@@ -8,19 +8,19 @@
         },
         {
             "description": "Percentage of the genome for which consensus bases were called",
-            "type": null,
+            "type": "float",
             "id": "coverage",
             "name": "Genome Coverage"
         },
         {
-            "description": "Percent accuracy of the consensus sequence versus the reference",
-            "type": null,
-            "id": "accuracy",
-            "name": "Consensus Accuracy"
+            "description": "Percent concordance of the consensus sequence versus the reference",
+            "type": "float",
+            "id": "concordance",
+            "name": "Consensus Concordance"
         },
         {
-            "description": "Mean length of polymerase reads mapped to the reference genome, including adapters",
-            "type": null,
+            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
+            "type": "int",
             "id": "mapped_readlength_mean",
             "name": "Mean Mapped Read Length"
         },
@@ -34,6 +34,6 @@
     "tables": [],
     "plotgroups": [],
     "id": "sat",
-    "description": null,
-    "title": "SAT Report Specifications"
+    "description": "Generates the SAT metric performance attributes",
+    "title": "SAT Report"
 }

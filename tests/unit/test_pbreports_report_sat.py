@@ -46,7 +46,7 @@ class TestCoreFunctions(unittest.TestCase):
         rpt = os.path.join(DATA, 'variants_report.json')
         d = _get_variants_data(rpt)
         self.assertEqual(1, d['coverage'])
-        self.assertEqual(1, d['accuracy'])
+        self.assertEqual(1, d['concordance'])
 
     def test_mapping_stats_rpt_atts(self):
         rpt = os.path.join(DATA, 'mapping_stats_report.json')
@@ -116,7 +116,7 @@ class TestSatRpt(unittest.TestCase):
         rpt = load_report_from_json(rpt_file)
         self.assertEqual('sidney', rpt.get_attribute_by_id('instrument').value)
         self.assertEqual(1, rpt.get_attribute_by_id('coverage').value)
-        self.assertEqual(1, rpt.get_attribute_by_id('accuracy').value)
+        self.assertEqual(1, rpt.get_attribute_by_id('concordance').value)
         self.assertEqual(1328, rpt.get_attribute_by_id(
             'mapped_readlength_mean').value)
         self.assertEqual(48, rpt.get_attribute_by_id('reads_in_cell').value)

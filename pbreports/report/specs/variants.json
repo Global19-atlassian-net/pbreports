@@ -1,7 +1,7 @@
 {
     "attributes": [
         {
-            "description": "The percent accuracy (concordance) of the consensus sequence compared to the reference",
+            "description": "The percent concordance of the consensus sequence compared to the reference",
             "type": "float",
             "id": "weighted_mean_concordance",
             "name": "Reference Consensus Concordance (mean)"
