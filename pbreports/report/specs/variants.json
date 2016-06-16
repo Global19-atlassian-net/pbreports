@@ -2,13 +2,13 @@
     "attributes": [
         {
             "description": "The percent accuracy (concordance) of the consensus sequence compared to the reference",
-            "type": null,
+            "type": "float",
             "id": "weighted_mean_concordance",
             "name": "Reference Consensus Concordance (mean)"
         },
         {
             "description": "Mean length of reference sequence contigs",
-            "type": null,
+            "type": "float",
             "id": "mean_contig_length",
             "name": "Reference Contig Length (mean)"
         },
@@ -20,13 +20,13 @@
         },
         {
             "description": "Percentage of the reference sequence for which consensus bases were called",
-            "type": null,
+            "type": "float",
             "id": "weighted_mean_bases_called",
             "name": "Percent Reference Bases Called (mean)"
         },
         {
             "description": "The mean depth of coverage across the reference sequence",
-            "type": null,
+            "type": "float",
             "id": "weighted_mean_coverage",
             "name": "Reference Coverage (mean)"
         }
@@ -38,31 +38,31 @@
             "columns": [
                 {
                     "header": "Reference",
-                    "type": null,
+                    "type": "str",
                     "id": "contig_name",
                     "description": null
                 },
                 {
                     "header": "Reference Length",
-                    "type": null,
+                    "type": "float",
                     "id": "contig_len",
                     "description": null
                 },
                 {
                     "header": "Bases Called",
-                    "type": null,
+                    "type": "float",
                     "id": "bases_called",
                     "description": null
                 },
                 {
                     "header": "Consensus Accuracy",
-                    "type": null,
+                    "type": "float",
                     "id": "concordance",
                     "description": null
                 },
                 {
                     "header": "Base Coverage",
-                    "type": null,
+                    "type": "float",
                     "id": "coverage",
                     "description": null
                 }
@@ -70,8 +70,24 @@
             "title": "Consensus Calling Results"
         }
     ],
-    "plotgroups": [],
+    "plotgroups": [
+         {
+            "id": "variants_plots",
+            "plots": [
+                {
+                    "xlab": "Reference Start Position",
+                    "description": null,
+                    "caption": null,
+                    "ylab": "Variants",
+                    "id": "variants_plot"
+                }
+            ],
+            "title": "Variants Across Reference",
+            "description": null,
+            "legend": null
+        }
+    ],
     "id": "variants",
     "description": null,
-    "title": "Variants Report Specifications"
+    "title": "Variants Report"
 }
