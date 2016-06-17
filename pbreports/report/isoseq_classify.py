@@ -5,6 +5,7 @@ non-chimeric, full-length reads and a classify summary.
 """
 import functools
 import os
+import os.path as op
 import sys
 import logging
 import argparse
@@ -15,6 +16,8 @@ import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
@@ -30,12 +33,18 @@ log = logging.getLogger(__name__)
 __version__ = '0.1.0.132615'  # The last 6 digits is changelist
 
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+ISOSEQ_CLASSIFY_SPEC = op.join(SPEC_DIR, 'isoseq_classify.json')
+meta_rpt = MetaReport.from_json(ISOSEQ_CLASSIFY_SPEC)
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.isoseq_classify"
     DRIVER_EXE = "python -m pbreports.report.isoseq_classify --resolved-tool-contract "
 
     """Names used within plot groups."""
-    R_ID = "isoseq_classify"
+    R_ID = meta_rpt.id
 
     # PlotGroup
     PG_READLENGTH = "fulllength_nonchimeric_readlength_group"
@@ -67,14 +76,18 @@ def _summary_to_attributes(summary_txt):
                 attr_id = "_".join(attr.split(' '))
                 # Make attribute id match '^[a-z0-9_]+$'
                 attr_id = attr_id.lower().replace('-', '_')
-                attributes.append(Attribute(attr_id, val, name=attr))
-
+#                attributes.append(Attribute(attr_id, val, name=attr))
+		attributes.append(meta_rpt.get_meta_attribute(attr_id).as_attribute(int(val)))
+		
     return attributes
 
 
 def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
-    return report.attributes
+    attributes = []
+    for attr in report.attributes:
+    	attributes.append(meta_rpt.get_meta_attribute(attr.id).as_attribute(attr.value))
+    return attributes
 
 
 def _attributes_to_table(attributes):
@@ -176,8 +189,10 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
 
 create_readlength_plot = functools.partial(
     __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
-    ("Read Length", "Reads", "Reads > Read Length"), 80,
-    "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
+    (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab["L"],
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab["R"]),
+     80, "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
 
 
 def make_report(contig_set, summary_txt, output_dir):
@@ -222,7 +237,7 @@ def make_report(contig_set, summary_txt, output_dir):
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, output_dir)
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title="Read Length of Full-length Non-Chimeric Reads",
+                                 title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title,
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
 
@@ -284,7 +299,7 @@ def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Iso-Seq Classify Report",
+        meta_rpt.title,
         __doc__,
         Constants.DRIVER_EXE)
 
