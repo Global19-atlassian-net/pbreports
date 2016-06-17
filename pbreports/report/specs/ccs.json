@@ -14,19 +14,19 @@
         },
         {
             "description": "Mean length of CCS reads",
-            "type": null,
+            "type": "int",
             "id": "mean_ccs_readlength",
             "name": "CCS Read Length (mean)"
         },
         {
-            "description": "Mean predicted accuracy of CCS reads",
-            "type": null,
+            "description": "Mean CCS read score",
+            "type": "float",
             "id": "mean_accuracy",
             "name": "CCS Read Score (mean)"
         },
         {
             "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
-            "type": null,
+            "type": "int",
             "id": "mean_ccs_num_passes",
             "name": "Number of Passes (mean)"
         }
@@ -51,7 +51,7 @@
                 {
                     "header": "Number of CCS bases",
                     "type": "int",
-                    "id": "number_of_ccs_bases",
+                    "id": "total_number_of_ccs_bases",
                     "description": "Total number of consensus bases in all CCS reads"
                 },
                 {
@@ -80,57 +80,66 @@
         {
             "plots": [
                 {
-                    "xlab": null,
+                    "xlab": "Quality",
                     "description": null,
                     "caption": null,
-                    "ylab": null,
-                    "id": "readlength_hist"
-                }
-            ],
-            "description": null,
-            "legend": null,
-            "id": "readlength_group",
-            "title": null
-        },
-        {
-            "plots": [
-                {
-                    "xlab": null,
-                    "description": null,
-                    "caption": null,
-                    "ylab": null,
+                    "ylab": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
                     "id": "accuracy_hist"
                 }
             ],
             "description": null,
             "legend": null,
             "id": "accuracy_group",
-            "title": null
+            "title": "CCS Read Score"
         },
         {
             "plots": [
                 {
-                    "xlab": null,
+                    "xlab": "Number of Passes",
                     "description": null,
                     "caption": null,
-                    "ylab": null,
+                    "ylab": "Reads",
                     "id": "npasses_hist"
-                },
-                {
-                    "xlab": null,
-                    "description": null,
-                    "caption": null,
-                    "ylab": null,
-                    "id": "npasses_vs_accuracy"
                 }
             ],
             "description": null,
             "legend": null,
             "id": "npasses_hist",
-            "title": null
-        }
+            "title": "Number of Passes"
+        },
+	{
+	    "plots": [
+                {
+                    "xlab": "Read Length",
+                    "description": null,
+                    "caption": null,
+                    "ylab": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
+                    "id": "readlength_hist"
+                }
+	             ],
+            "description": null,
+            "legend": null,
+            "id": "readlength_group",
+            "title": "CCS Read Length"
+	},
+	{
+            "plots": [
+		{
+                    "xlab": "Number of passes",
+                    "description": null,
+                    "caption": null,
+                    "ylab": "Read Score as Phred QV",
+                    "id": "npasses_vs_accuracy"
+                }
+                     ],
+            "description": null,
+            "legend": null,
+            "id": "npasses_vs_accuracy",
+            "title": "Number of Passes vs. Read Score"
+	}
     ],
     "id": "ccs",
     "description": null,
     "title": "CCS Report Specifications"
 }
+
