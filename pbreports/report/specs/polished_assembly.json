@@ -26,8 +26,24 @@
         }
     ],
     "tables": [],
-    "plotgroups": [],
+    "plotgroups": [
+        {
+            "id": "coverage_based",
+            "plots": [
+                {
+                    "xlab": "Mean Coverage Depth",
+                    "description": null,
+                    "caption": null,
+                    "ylab": "Mean Confidence (QV)",
+                    "id": "cov_vs_qual"
+                }
+            ],
+            "title": "Contig Coverage vs Confidence",
+            "description": null,
+            "legend": null
+        }
+		  ],
     "id": "polished_assembly",
     "description": null,
-    "title": "Polished Assembly Report Specifications"
+    "title": "Polished Assembly"
 }
