@@ -52,6 +52,8 @@ class Constants(object):
     # Plots
     P_READLENGTH = "fulllength_nonchimeric_readlength_hist"
 
+    # Table
+    T_ATTR = "isoseq_classify_table"
 
 def _summary_to_attributes(summary_txt):
     """Extract attributes from inSummaryFN."""
@@ -96,8 +98,8 @@ def _attributes_to_table(attributes):
     """
     columns = [Column(x.id, header=x.name) for x in attributes]
 
-    table = Table('isoseq_classify_table',
-                  title="Iso-Seq Transcript Classification",
+    table = Table(meta_rpt.get_meta_table(Constants.T_ATTR).id,
+                  title=meta_rpt.get_meta_table(Constants.T_ATTR).title,
                   columns=columns)
 
     for x in attributes:

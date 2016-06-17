@@ -73,7 +73,14 @@
             "name": "Number of full-length non-chimeric bases"
         }
     ],
-    "tables": [],
+        "tables": [
+        {
+            "id": "isoseq_classify_table",
+            "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES",
+            "columns": [],
+            "title": "Iso-Seq Transcript Classification"
+        }
+                  ],
     "plotgroups": [
         {
             "plots": [
