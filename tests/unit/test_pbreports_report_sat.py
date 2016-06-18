@@ -14,7 +14,8 @@ import pbcommand.testkit
 from pbcommand.pb_io.report import load_report_from_json
 from pbcore.util.Process import backticks
 from pbcore.io import AlignmentSet
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.util import get_top_contigs_from_ref_entry, movie_to_cell
 from pbreports.report.sat import (_validate_inputs, _get_read_hole_data,
@@ -66,7 +67,7 @@ class TestSatRpt(unittest.TestCase):
         self._output_dir = tempfile.mkdtemp(suffix="sat")
 
     def getAlignmentSet(self):
-        return pbcore.data.getBamAndCmpH5()[0]
+        return pbtestdata.get_file("aligned-bam")
 
     def tearDown(self):
         """
@@ -126,15 +127,8 @@ class TestSatRpt(unittest.TestCase):
 
 class TestSatRptDatasetXml(TestSatRpt):
 
-    @classmethod
-    def setUpClass(cls):
-        ds = AlignmentSet(pbcore.data.getBamAndCmpH5()[0], strict=True)
-        cls.alignment_set_xml = tempfile.NamedTemporaryFile(
-            suffix=".alignmentset.xml").name
-        ds.write(cls.alignment_set_xml)
-
     def getAlignmentSet(self):
-        return self.alignment_set_xml
+        return pbtestdata.get_file("aligned-xml")
 
 
 class TestSatRptToolContract(pbcommand.testkit.PbTestApp):
@@ -143,7 +137,7 @@ class TestSatRptToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
     INPUT_FILES = [
-        pbcore.data.getBamAndCmpH5()[0],
+        pbtestdata.get_file("aligned-xml"),
         os.path.join(DATA, 'variants_report.json'),
         os.path.join(DATA, 'mapping_stats_report.json'),
     ]

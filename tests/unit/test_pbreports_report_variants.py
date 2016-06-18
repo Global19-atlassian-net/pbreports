@@ -15,7 +15,8 @@ from pbcommand.models.report import PbReportError
 import pbcommand.testkit
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.util import openReference
 from pbreports.util import get_top_contigs_from_ref_entry
@@ -154,10 +155,9 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
     Base test case using local lambda data.
     """
     CONTIG_ID = "lambda_NEB3011"
-    DATA_DIR = op.join(LOCAL_DATA, "variants")
-    REFERENCE = pbcore.data.getLambdaFasta()
-    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary.gff")
-    VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
+    REFERENCE = pbtestdata.get_file("lambda-fasta")
+    ALIGNMENT_SUMMARY = pbtestdata.get_file("consensus-summary-gff")
+    VARIANTS_GFF = pbtestdata.get_file("variants-gff")
     TEST_VALUES = {
         "contig_len": 48502,
         "bases_called": 1.0,
@@ -316,10 +316,9 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
 @skip_if_data_dir_not_present
 class TestVariantsReportEcoli(TestVariantsReport):
     CONTIG_ID = "ecoliK12_pbi_March2013"
-    DATA_DIR = VARIANTS_DATA
     REFERENCE = "/pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta"
-    ALIGNMENT_SUMMARY = op.join(DATA_DIR, "alignment_summary.gff")
-    VARIANTS_GFF = op.join(DATA_DIR, "variants.gff.gz")
+    ALIGNMENT_SUMMARY = op.join(VARIANTS_DATA, "alignment_summary.gff")
+    VARIANTS_GFF = op.join(VARIANTS_DATA, "variants.gff.gz")
     TEST_VALUES = {
         "contig_len": 4642522,
         "concordance": 0.99999,
@@ -374,9 +373,9 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
     INPUT_FILES = [
-        pbcore.data.getLambdaFasta(),
-        op.join(DATA_DIR, "alignment_summary.gff"),
-        op.join(DATA_DIR, "variants.gff.gz"),
+        pbtestdata.get_file("lambda-fasta"),
+        pbtestdata.get_file("consensus-summary-gff"),
+        pbtestdata.get_file("variants-gff")
     ]
     TASK_OPTIONS = {
         "pbreports.task_options.max_contigs": 25,

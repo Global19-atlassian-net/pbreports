@@ -14,7 +14,8 @@ from pbcommand.pb_io.report import dict_to_report
 import pbcommand.testkit
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.report.top_variants import (make_topvariants_report, VariantFinder,
                                            MinorVariantTableBuilder, VariantTableBuilder)
@@ -28,8 +29,8 @@ log = logging.getLogger(__name__)
 class TestTopVariantsReport(unittest.TestCase):
     CONTIG_ID = "lambda_NEB3011"
     DATA_DIR = op.join(LOCAL_DATA, "topvariants")
-    REFERENCE = pbcore.data.getLambdaFasta()
-    VARIANTS_GFF = op.join(LOCAL_DATA, "variants", "variants.gff.gz")
+    REFERENCE = pbtestdata.get_file("lambda-fasta")
+    VARIANTS_GFF = pbtestdata.get_file("variants-gff")
     RARE_VARIANTS_GFF = op.join(DATA_DIR, "rare_variants.gff.gz")
     N_TOP_VARIANTS = 5
     TABLE_ROW_FIRST = [CONTIG_ID, 19183L,
@@ -321,8 +322,8 @@ class TestPbreportTopVariants(pbcommand.testkit.PbTestApp):
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
     INPUT_FILES = [
-        os.path.join(LOCAL_DATA, "variants", "variants.gff.gz"),
-        pbcore.data.getLambdaFasta(),
+        pbtestdata.get_file("variants-gff"),
+        pbtestdata.get_file("lambda-fasta")
     ]
     TASK_OPTIONS = {
         Constants.HOW_MANY_ID: Constants.HOW_MANY_DEFAULT,

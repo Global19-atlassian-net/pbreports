@@ -13,7 +13,8 @@ from pbcommand.models.report import Report
 import pbcommand.testkit
 from pbcommand.pb_io.report import load_report_from_json
 from pbcore.io import ConsensusReadSet
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.report.ccs import to_report, Constants
 from base_test_case import run_backticks, LOCAL_DATA
@@ -39,31 +40,13 @@ EXPECTED_VALUES = {
 }
 
 
-class TestCCSBase(object):
-
-    @classmethod
-    def setUpData(cls):
-        cls.bam_file_name = pbcore.data.getCCSBAM()
-        cls.xml_file_name = tempfile.NamedTemporaryFile(
-            suffix=".consensusreadset.xml").name
-        ds = ConsensusReadSet(cls.bam_file_name)
-        ds.write(cls.xml_file_name)
-
-    @classmethod
-    def tearDownData(cls):
-        os.remove(cls.xml_file_name)
-
-
-class TestCCSCommand(unittest.TestCase, TestCCSBase):
+class TestCCSCommand(unittest.TestCase):
+    XML_FILE = pbtestdata.get_file("rsii-ccs")
+    BAM_FILE = pbtestdata.get_file("ccs-bam")
 
     @classmethod
     def setUpClass(cls):
-        cls.setUpData()
-        cls.ccs_set = ConsensusReadSet(cls.xml_file_name)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.tearDownData()
+        cls.ccs_set = ConsensusReadSet(cls.XML_FILE, strict=True)
 
     def test_basic(self):
         """Basic smoke test"""
@@ -74,11 +57,11 @@ class TestCCSCommand(unittest.TestCase, TestCCSBase):
 
     def test_integration_bam(self):
         """Run cmdline tool with .bam input"""
-        self._run_cmd(self.bam_file_name)
+        self._run_cmd(self.BAM_FILE)
 
     def test_integration_ds(self):
         """Run cmdline tool with .xml input"""
-        self._run_cmd(self.xml_file_name)
+        self._run_cmd(self.XML_FILE)
 
     def _run_cmd(self, file_name):
         """Run an subprocess of the command and verify that report is present"""
@@ -103,19 +86,17 @@ class TestCCSCommand(unittest.TestCase, TestCCSBase):
         os.remove(json_report_file_name)
 
 
-class TestCCSMetrics(unittest.TestCase, TestCCSBase):
+class TestCCSMetrics(unittest.TestCase):
+    XML_FILE = pbtestdata.get_file("rsii-ccs")
 
     @classmethod
     def setUpClass(cls):
-        cls.setUpData()
-        output_dir = tempfile.mkdtemp()
-        cls.ccs_set = ConsensusReadSet(cls.xml_file_name)
-        cls.report = to_report(cls.ccs_set, output_dir)
-        cls.output_dir = output_dir
+        cls.output_dir = tempfile.mkdtemp()
+        cls.ccs_set = ConsensusReadSet(cls.XML_FILE)
+        cls.report = to_report(cls.ccs_set, cls.output_dir)
 
     @classmethod
     def tearDownClass(cls):
-        cls.tearDownData()
         shutil.rmtree(cls.output_dir)
 
     def _get_attribute_value_by_id(self, i):
@@ -174,19 +155,7 @@ class TestCCSMetrics(unittest.TestCase, TestCCSBase):
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.ccs"
-    INPUT_FILES = [
-        tempfile.NamedTemporaryFile(suffix=".consensusreadset.xml").name
-    ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestToolContract, cls).setUpClass()
-        ds = ConsensusReadSet(pbcore.data.getCCSBAM(), strict=True)
-        ds.write(cls.INPUT_FILES[0])
-
-    @classmethod
-    def tearDownClass(cls):
-        os.remove(cls.INPUT_FILES[0])
+    INPUT_FILES = [pbtestdata.get_file("rsii-ccs")]
 
     def run_after(self, rtc, output_dir):
         report = load_report_from_json(rtc.task.output_files[0])
@@ -196,7 +165,7 @@ class TestToolContract(pbcommand.testkit.PbTestApp):
 
 
 class TestCCSMultipleMovies(unittest.TestCase):
-    CCS_BAM = op.join(LOCAL_DATA, "ccs", "ccs_mixed.bam")
+    CCS_BAM = pbtestdata.get_file("rsii-ccs-multi-cell")
 
     def test_ccs_mulitple_movies_single_bam(self):
         """
