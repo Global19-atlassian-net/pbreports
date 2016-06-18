@@ -5,6 +5,7 @@ cluster summary.
 """
 import functools
 import os
+import os.path as op
 import sys
 import time
 import logging
@@ -15,6 +16,8 @@ import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
@@ -30,19 +33,32 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1.0.132615'  # The last 6 digits is changelist
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+ISOSEQ_CLUSTER_SPEC = op.join(SPEC_DIR, 'isoseq_cluster.json')
+meta_rpt = MetaReport.from_json(ISOSEQ_CLUSTER_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.isoseq_cluster"
     DRIVER_EXE = "python -m pbreports.report.isoseq_cluster --resolved-tool-contract"
 
     """Names used within plot groups."""
-    R_ID = "isoseq_cluster"
+    R_ID = meta_rpt.id
+
+    # Attributes
+    A_AVGLENGTH = "isoseq_average_consensus_isoform_length"
+    A_NUMISOFORMS = "isoseq_numconsensusisoforms"
+    A_TOTBASES = "isoseq_numtotalbases"    
 
     # PlotGroup
     PG_READLENGTH = "consensus_isoforms_readlength_group"
 
     # Plots
     P_READLENGTH = "consensus_isoforms_readlength_hist"
+
+    #Table
+    T_ATTR = "isoseq_classify_table"
 
 
 def summaryToAttributes(inSummaryFN):
@@ -63,7 +79,7 @@ def summaryToAttributes(inSummaryFN):
                 attr_id = "_".join(attr.split(' '))
                 # Make attribute id match '^[a-z0-9_]+$'
                 attr_id = attr_id.lower().replace('-', '_')
-                attributes.append(Attribute(attr_id, val, name=attr))
+                attributes.append(meta_rpt.get_meta_attribute(attr_id).as_attribute(int(val)))
 
     return attributes
 
@@ -71,11 +87,10 @@ def summaryToAttributes(inSummaryFN):
 def _report_to_attributes(report_file):
     report = load_report_from_json(report_file)
     attr = {a.id: a.value for a in report.attributes}
-    if attr.get("isoseq_numconsensusisoforms", 0) > 0:
-        avg = attr["isoseq_numtotalbases"] / \
-            attr["isoseq_numconsensusisoforms"]
-        report.attributes.append(Attribute(
-            "isoseq_average_consensus_isoform_length", avg, name="Mean consensus isoform length"))
+    if attr.get(Constants.A_NUMISOFORMS, 0) > 0:
+        avg = attr[Constants.A_TOTBASES] / \
+            attr[Constants.A_NUMISOFORMS]
+    	report.attributes.append(meta_rpt.get_meta_attribute(Constants.A_AVGLENGTH).as_attribute(float(avg)))
     return report.attributes
 
 
@@ -83,8 +98,8 @@ def attributesToTable(attributes):
     """Build a report table from Iso-Seq cluster attributes."""
     columns = [Column(x.id, header=x.name) for x in attributes]
 
-    table = Table('isoseq_cluster_table',
-                  title="Iso-Seq Cluster",
+    table = Table(Constants.T_ATTR,
+                  title=meta_rpt.get_meta_table(Constants.T_ATTR).title,
                   columns=columns)
 
     for x in attributes:
@@ -176,8 +191,11 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
 
 create_readlength_plot = functools.partial(
     __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
-    ("Read Length", "Reads", "Reads > Read Length"), 80,
-    "consensus_isoforms_readlength_hist.png", get_blue(3))
+    (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab["L"],
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab["R"]), 
+     80,
+     "consensus_isoforms_readlength_hist.png", get_blue(3))
 
 
 def makeReport(inReadsFN, inSummaryFN, outDir):
@@ -209,7 +227,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, outDir)
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title="Read Length of Consensus Isoforms Reads",
+                                 title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title,
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
 
@@ -230,7 +248,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
 
     # A report is consist of ID, tables, attributes, and plotgroups.
     report = Report(Constants.R_ID,
-                    title="Transcript Clustering",
+                    title=meta_rpt.title,
                     attributes=attributes,
                     plotgroups=[readlength_group],
                     dataset_uuids=dataset_uuids)

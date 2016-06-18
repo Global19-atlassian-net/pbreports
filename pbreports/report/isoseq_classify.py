@@ -78,7 +78,6 @@ def _summary_to_attributes(summary_txt):
                 attr_id = "_".join(attr.split(' '))
                 # Make attribute id match '^[a-z0-9_]+$'
                 attr_id = attr_id.lower().replace('-', '_')
-#                attributes.append(Attribute(attr_id, val, name=attr))
 		attributes.append(meta_rpt.get_meta_attribute(attr_id).as_attribute(int(val)))
 		
     return attributes
@@ -98,7 +97,7 @@ def _attributes_to_table(attributes):
     """
     columns = [Column(x.id, header=x.name) for x in attributes]
 
-    table = Table(meta_rpt.get_meta_table(Constants.T_ATTR).id,
+    table = Table(Constants.T_ATTR,
                   title=meta_rpt.get_meta_table(Constants.T_ATTR).title,
                   columns=columns)
 
