@@ -14,62 +14,24 @@ from pbcore.util.Process import backticks
 from pbcore.io import BarcodeSet, SubreadSet, FastaWriter
 import pbcommand.testkit
 
+import pbtestdata
+
 from pbreports.report.barcode import run_to_report
 
-from base_test_case import LOCAL_DATA
-
 log = logging.getLogger(__name__)
-
-LOCAL_DATA_DIR = op.join(LOCAL_DATA, "barcode")
-# TODO need to make sure this is okay to push to GitHub
-BAM_FILE = op.join(LOCAL_DATA_DIR, "barcoded.subreads.bam")
-
-
-def _make_dataset(file_name=None, barcodes=None):
-    if file_name is None:
-        file_name = tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name
-    ds = SubreadSet(BAM_FILE, strict=True)
-    if barcodes is not None:
-        for er in ds.externalResources:
-            er.barcodes = barcodes
-    ds.write(file_name)
-    return file_name
-
-
-def _make_barcodes(file_name=None):
-    if file_name is None:
-        file_name = tempfile.NamedTemporaryFile(suffix=".barcodeset.xml").name
-    fasta_file_name = file_name
-    if file_name.endswith(".barcodeset.xml"):
-        fasta_file_name = re.sub(".barcodeset.xml", ".fasta", file_name)
-    with FastaWriter(fasta_file_name) as fa_out:
-        for i in range(1010):
-            fa_out.writeRecord("%04d_Forward" % i, "A" * 16)
-    pysam.faidx(fasta_file_name, catch_stdout=False)
-    ds = BarcodeSet(fasta_file_name, strict=True)
-    ds.write(file_name)
-    return file_name
 
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.barcode"
-    INPUT_FILES = [
-        tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name,
-        tempfile.NamedTemporaryFile(suffix=".barcodeset.xml").name
-    ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestToolContract, cls).setUpClass()
-        bc_file = _make_barcodes(cls.INPUT_FILES[1])
-        _make_dataset(cls.INPUT_FILES[0], barcodes=bc_file)
+    INPUT_FILES = [pbtestdata.get_file("barcoded-subreadset"),
+                   pbtestdata.get_file("barcodeset")]
 
 
 class TestBarcodeReportBasic(unittest.TestCase):
 
     def setUp(self):
-        self.barcodes = _make_barcodes()
-        self.subreads = _make_dataset(barcodes=self.barcodes)
+        self.barcodes = pbtestdata.get_file("barcodeset")
+        self.subreads = pbtestdata.get_file("barcoded-subreadset")
 
     def test_basic(self):
         report = run_to_report(self.subreads, self.barcodes, subreads=True)
@@ -82,8 +44,8 @@ class TestBarcodeReportBasic(unittest.TestCase):
 class TestBarcodeIntegration(unittest.TestCase):
 
     def setUp(self):
-        self.barcodes = _make_barcodes()
-        self.subreads = _make_dataset(barcodes=self.barcodes)
+        self.barcodes = pbtestdata.get_file("barcodeset")
+        self.subreads = pbtestdata.get_file("barcoded-subreadset")
         self.ccs = False
 
     def test_integration(self):

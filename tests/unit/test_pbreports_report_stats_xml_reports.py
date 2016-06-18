@@ -1,4 +1,6 @@
 
+# FIXME use dataset subreads-sequel in PacBioTestData
+
 import os
 import logging
 import traceback
@@ -12,7 +14,6 @@ from numpy import ndarray
 from pbcore.io.dataset.DataSetIO import InvalidDataSetIOError
 from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
-import pbcore.data
 from pbcore.io import SubreadSet
 
 from pbreports.util import dist_shaper, continuous_dist_shaper

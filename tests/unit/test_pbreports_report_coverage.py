@@ -13,7 +13,8 @@ from pbcommand.models.report import PbReportError
 import pbcommand.testkit.core
 from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet, FastaReader, FastaWriter, GffReader, GffWriter
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.util import get_top_contigs
 from pbreports.report.coverage import (make_coverage_report,
@@ -29,8 +30,8 @@ log = logging.getLogger(__name__)
 
 
 class TestCoverageRpt(unittest.TestCase):
-    REFERENCE = pbcore.data.getLambdaFasta()
-    GFF = op.join(LOCAL_DATA, "summarize_coverage", "alignment_summary.gff")
+    REFERENCE = pbtestdata.get_file("lambda-fasta")
+    GFF = pbtestdata.get_file("alignment-summary-gff")
     CONTIG_ID = "lambda_NEB3011"
     PLOT_FILE_NAME = "coverage_plot_lambda_NEB3011.png"
 
@@ -347,8 +348,8 @@ class TestManyContigs(unittest.TestCase):
 class TestToolContract(pbcommand.testkit.core.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.coverage"
     INPUT_FILES = [
-        pbcore.data.getLambdaFasta(),
-        op.join(LOCAL_DATA, "summarize_coverage", "alignment_summary.gff")
+        pbtestdata.get_file("lambda-fasta"),
+        pbtestdata.get_file("alignment-summary-gff")
     ]
     IS_DISTRIBUTED = True
     RESOLVED_IS_DISTRIBUTED = True

@@ -14,7 +14,8 @@ from pbcommand.pb_io.report import dict_to_report, load_report_from_json
 from pbcommand.models.report import Report
 import pbcommand.testkit
 from pbcore.io import AlignmentSet, ConsensusAlignmentSet
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.report import mapping_stats_ccs
 from pbreports.report.mapping_stats import to_report, Constants
@@ -64,7 +65,7 @@ def _to_cmd(aligned_bam, report_json):
 
 
 class TestIntegrationMappingStatsReport(unittest.TestCase):
-    ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
+    ALIGNMENTS = pbtestdata.get_file("aligned-bam")
 
     def setUp(self):
         self.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
@@ -93,7 +94,7 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
 
 
 class TestMappingStatsReport(unittest.TestCase):
-    ALIGNMENTS = pbcore.data.getBamAndCmpH5()[0]
+    ALIGNMENTS = pbtestdata.get_file("aligned-bam")
     TOTAL_NUMBER_OF_ATTRIBUTES = 12
     TOTAL_NUMBER_OF_PLOT_GROUPS = 4
     EXPECTED_VALUES = {
@@ -407,8 +408,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.output_dir = tempfile.mkdtemp(suffix="_mapping_stats")
-        cls.aligned_reads_xml = op.join(_CCS_DATA_DIR,
-                                             'aligned.consensusalignmentset.xml')
+        cls.aligned_reads_xml = pbtestdata.get_file("rsii-ccs-aligned")
         t = tempfile.NamedTemporaryFile(
             delete=False, suffix="mapping_report.json")
         t.close()
@@ -481,16 +481,8 @@ class TestMappingStatsCCSReport(unittest.TestCase):
 class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats "
     REQUIRES_PBCORE = True
-    INPUT_FILES = [
-        tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name
-    ]
+    INPUT_FILES = [pbtestdata.get_file("aligned-xml")]
     TASK_OPTIONS = {}
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestPbreportMappingStats, cls).setUpClass()
-        ds = AlignmentSet(pbcore.data.getBamAndCmpH5()[0], strict=True)
-        ds.write(cls.INPUT_FILES[0])
 
     def run_after(self, rtc, output_dir):
         r = load_report_from_json(rtc.task.output_files[0])
@@ -501,8 +493,7 @@ class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
 class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.mapping_stats_ccs "
     REQUIRES_PBCORE = True
-    INPUT_FILES = [op.join(LOCAL_DATA, "mapping_stats_ccs",
-                           "aligned.consensusalignmentset.xml")]
+    INPUT_FILES = [pbtestdata.get_file("rsii-ccs-aligned")]
     TASK_OPTIONS = {}
 
     def run_after(self, rtc, output_dir):

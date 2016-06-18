@@ -10,25 +10,16 @@ import os
 
 import pbcommand.testkit
 from pbcore.io import CmpH5Reader, GffIO, AlignmentSet, IndexedBamReader
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.report.summarize_coverage import interval_tree, summarize_coverage
 
-from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present, \
-    LOCAL_DATA
+from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
 
 SC_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'summarize_coverage')
 
 log = logging.getLogger(__name__)
-
-
-def _make_alignmentset(file_name=None):
-    bam = pbcore.data.getBamAndCmpH5()[0]
-    ds = AlignmentSet(bam)
-    if file_name is None:
-        file_name = tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name
-    ds.write(file_name)
-    return file_name
 
 
 class TestCompareToPbpy(unittest.TestCase):
@@ -42,10 +33,9 @@ class TestCompareToPbpy(unittest.TestCase):
         return ds_reader, ds_reader.resourceReaders()
 
     def setUp(self):
-        self.aln_path = _make_alignmentset()
-        self.gff_path = os.path.join(LOCAL_DATA, "summarize_coverage",
-                                     "alignment_summary.gff")
-        self.ref_path = pbcore.data.getLambdaFasta()
+        self.aln_path = pbtestdata.get_file("aligned-xml")
+        self.gff_path = pbtestdata.get_file("alignment-summary-gff")
+        self.ref_path = pbtestdata.get_file("lambda-fasta")
         self.selected_reference = None
 
     def test_metadata(self):
@@ -158,9 +148,9 @@ class TestBuildIntervalLists(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.bam_path = _make_alignmentset()
-        cls.ds_reader = AlignmentSet(cls.bam_path, strict=True,
-                                     reference=pbcore.data.getLambdaFasta())
+        cls.xml_path = pbtestdata.get_file("aligned-xml")
+        cls.ds_reader = AlignmentSet(cls.xml_path, strict=True,
+                                     reference=pbtestdata.get_file("lambda-fasta"))
         cls.bam_readers = cls.ds_reader.resourceReaders()
         cls.interval_lists = summarize_coverage.build_interval_lists(
             cls.bam_readers)
@@ -225,11 +215,8 @@ class TestRegionSize(unittest.TestCase):
         """
         from pbcore.util.Process import backticks
         import tempfile
-#         als = os.path.join(self._data_dir, 'alignment_summary.gff')
-#         variants = os.path.join(self._data_dir, 'variants.gff.gz')
-#         ref = os.path.join(self._data_dir, 'ecoliK12_pbi_March2013')
-        ref = pbcore.data.getLambdaFasta()
-        tiny_reads = _make_alignmentset()
+        ref = pbtestdata.get_file("lambda-fasta")
+        tiny_reads = pbtestdata.get_file("aligned-xml")
         out = os.path.join(tempfile.mkdtemp(suffix="summ_cov"), 'gff')
         cmd = 'summarize_coverage --region_size=0 --num_regions=500 {a} {r} {g}'.format(
             a=tiny_reads, r=ref, g=out)
@@ -399,23 +386,17 @@ class TestSummarizeCoverage(pbcommand.testkit.PbTestApp):
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
     INPUT_FILES = [
-        tempfile.NamedTemporaryFile(suffix=".alignmentset.xml").name,
-        pbcore.data.getLambdaFasta()
+        pbtestdata.get_file("aligned-xml"),
+        pbtestdata.get_file("lambda-fasta")
     ]
     TASK_OPTIONS = {}
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestSummarizeCoverage, cls).setUpClass()
-        _make_alignmentset(cls.INPUT_FILES[0])
 
 
 class TestSummarizeCoverageCCS(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.summarize_coverage.ccs"
     INPUT_FILES = [
-        os.path.join(LOCAL_DATA, "summarize_coverage",
-                     "mapped.consensusalignmentset.xml"),
-        pbcore.data.getLambdaFasta()
+        pbtestdata.get_file("rsii-ccs-aligned"),
+        pbtestdata.get_file("lambda-fasta")
     ]
 
 

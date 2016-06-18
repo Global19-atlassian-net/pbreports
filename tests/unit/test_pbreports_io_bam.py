@@ -5,7 +5,8 @@ import subprocess
 import unittest
 
 from pbcore.io import IndexedBamReader
-import pbcore.data
+
+import pbtestdata
 
 from pbreports.io.align import from_alignment_file, alignment_info_from_bam
 
@@ -21,7 +22,7 @@ class TestBam(unittest.TestCase):
     Test the from_alignment_file function that does
     all the alignment file reading for mapping_stats.py
     """
-    BAM_PATH = pbcore.data.getBamAndCmpH5()[0]
+    BAM_PATH = pbtestdata.get_file("aligned-bam")
     MOVIE = "m140905_042212_sidney_c100564852550000001823085912221377_s1_X0"
     EXPECTED_VALUES = {
         "nmovies": 1,
