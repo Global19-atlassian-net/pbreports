@@ -88,7 +88,7 @@ def alignment_info_from_bam(bam_file_name):
                 hole_number = bam.holeNumber[i_aln]
                 qs, qe = bam.qStart[i_aln], bam.qEnd[i_aln]
                 rstart, rend = bam.aStart[i_aln], bam.aEnd[i_aln]
-                identity = None
+
                 if (qs, qe) == (-1, -1):
                     qs = 0
                     # XXX This is only used to key subreads so the exact value is
@@ -99,17 +99,11 @@ def alignment_info_from_bam(bam_file_name):
                 zmw_id = (movie_name, hole_number)
                 subread_id = (movie_name, hole_number, qs, qe)
 
-                this_a = []
-                this_a.append(subread_lengths[i_aln])
-
-                this_a.append(identities[i_aln])
-                this_a.append(bam.readQual[i_aln])
-
-                this_a.append(1.0 if zmw_id != last_zmw_id else 0.0)  # isFirst
-
-                # modStart, a value without a clear meaning, so just write some
-                # garbage
-                this_a.append(99999)
+                subread_length = subread_lengths[i_aln]
+                identity = identities[i_aln]
+                read_qual = bam.readQual[i_aln]
+                is_first = 1.0 if zmw_id != last_zmw_id else 0.0
+                mod_start = 99999
 
                 last_zmw_id = zmw_id
 
@@ -117,7 +111,7 @@ def alignment_info_from_bam(bam_file_name):
                     warnings.warn("Duplicate subread %s" % str(subread_id))
 
                 # No Z-score
-                m.datum[subread_id] = tuple(this_a)
+                m.datum[subread_id] = (subread_length, identity, read_qual, is_first, mod_start)
 
                 if zmw_id not in m.max_subread or subread_lengths[i_aln] > m.max_subread[zmw_id][1]:
                     m.max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
