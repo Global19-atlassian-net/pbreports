@@ -3,38 +3,32 @@
         {
             "description": "Total number of consensus isoforms, both high- and low-quality",
             "type": "int",
-            "id": "isoseq_numconsensusisoforms",
+            "id": "num_consensus_isoforms",
             "name": "Number of unpolished consensus isoforms"
         },
         {
             "description": "The number of consensus isoforms that have an estimated accuracy above the specified cutoff (0.99 default)",
             "type": "int",
-            "id": "isoseq_numpolishedhqisoforms",
+            "id": "num_polished_hq_isoforms",
             "name": "Number of polished high-quality isoforms"
         },
         {
             "description": "The number of consensus isoforms that have an estimated accuracy below the specified cutoff",
             "type": "int",
-            "id": "isoseq_numpolishedlqisoforms",
+            "id": "num_polished_lq_isoforms",
             "name": "Number of polished low-quality isoforms"
         },
         {
             "description": "The average length of all consensus isoforms, both high- and low-quality",
             "type": "int",
-            "id": "isoseq_avgconsensusisoformlength",
+            "id": "avg_consensus_isoform_length",
             "name": "Mean unpolished consensus isoforms read length"
         },
         {
             "description": "Total number of bases in unpolished consensus isoforms",
             "type": "int",
-            "id": "isoseq_numtotalbases",
+            "id": "num_total_bases",
             "name": "Total number of bases in unpolished consensus isoforms"
-        },
-        {
-            "description": "",
-            "type": "float",
-            "id": "isoseq_average_consensus_isoform_length",
-            "name": "Mean consensus isoform length"
         }
     ],
     "tables": [

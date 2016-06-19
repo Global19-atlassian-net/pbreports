@@ -1,0 +1,155 @@
+{
+    "_changelist": "UNKNOWN", 
+    "_version": "0.3.25", 
+    "attributes": [
+        {
+            "id": "isoseq_classify.num_reads", 
+            "name": "Number of consensus reads", 
+            "value": 235798
+        }, 
+        {
+            "id": "isoseq_classify.num_5_seen", 
+            "name": "Number of five prime reads", 
+            "value": 151107
+        }, 
+        {
+            "id": "isoseq_classify.num_3_seen", 
+            "name": "Number of three prime reads", 
+            "value": 192372
+        }, 
+        {
+            "id": "isoseq_classify.num_polya_seen", 
+            "name": "Number of poly-A reads", 
+            "value": 169300
+        }, 
+        {
+            "id": "isoseq_classify.num_filtered_short_reads", 
+            "name": "Number of filtered short reads", 
+            "value": 236
+        }, 
+        {
+            "id": "isoseq_classify.num_nfl", 
+            "name": "Number of non-full-length reads", 
+            "value": 101890
+        }, 
+        {
+            "id": "isoseq_classify.num_fl", 
+            "name": "Number of full-length reads", 
+            "value": 133672
+        }, 
+        {
+            "id": "isoseq_classify.num_flnc", 
+            "name": "Number of full-length non-chimeric reads", 
+            "value": 133593
+        }, 
+        {
+            "id": "isoseq_classify.num_flnc_bases", 
+            "name": "Number of full-length non-chimeric bases", 
+            "value": 402074452
+        }, 
+        {
+            "id": "isoseq_classify.avg_flnc_len", 
+            "name": "Mean full-length non-chimeric read length", 
+            "value": 3009
+        }
+    ], 
+    "dataset_uuids": [
+        "43b66313-264d-c381-d2d5-b223ea23db58"
+    ], 
+    "id": "isoseq_classify", 
+    "plotGroups": [
+        {
+            "id": "isoseq_classify.fulllength_nonchimeric_readlength_group", 
+            "legend": null, 
+            "plots": [
+                {
+                    "caption": null, 
+                    "id": "isoseq_classify.fulllength_nonchimeric_readlength_group.fulllength_nonchimeric_readlength_hist", 
+                    "image": "fulllength_nonchimeric_readlength_hist.png"
+                }
+            ], 
+            "thumbnail": "fulllength_nonchimeric_readlength_hist_thumb.png", 
+            "title": "Read Length of Full-length Non-Chimeric Reads"
+        }
+    ], 
+    "tables": [
+        {
+            "columns": [
+                {
+                    "header": "Number of consensus reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_reads", 
+                    "values": [
+                        235798
+                    ]
+                }, 
+                {
+                    "header": "Number of five prime reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_5_seen", 
+                    "values": [
+                        151107
+                    ]
+                }, 
+                {
+                    "header": "Number of three prime reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_3_seen", 
+                    "values": [
+                        192372
+                    ]
+                }, 
+                {
+                    "header": "Number of poly-A reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_polya_seen", 
+                    "values": [
+                        169300
+                    ]
+                }, 
+                {
+                    "header": "Number of filtered short reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_filtered_short_reads", 
+                    "values": [
+                        236
+                    ]
+                }, 
+                {
+                    "header": "Number of non-full-length reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_nfl", 
+                    "values": [
+                        101890
+                    ]
+                }, 
+                {
+                    "header": "Number of full-length reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_fl", 
+                    "values": [
+                        133672
+                    ]
+                }, 
+                {
+                    "header": "Number of full-length non-chimeric reads", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_flnc", 
+                    "values": [
+                        133593
+                    ]
+                }, 
+                {
+                    "header": "Number of full-length non-chimeric bases", 
+                    "id": "isoseq_classify.isoseq_classify_table.num_flnc_bases", 
+                    "values": [
+                        402074452
+                    ]
+                }, 
+                {
+                    "header": "Mean full-length non-chimeric read length", 
+                    "id": "isoseq_classify.isoseq_classify_table.avg_flnc_len", 
+                    "values": [
+                        3009
+                    ]
+                }
+            ], 
+            "id": "isoseq_classify.isoseq_classify_table", 
+            "title": "IsoSeq Transcript Classification"
+        }
+    ], 
+    "title": "Report isoseq_classify", 
+    "uuid": "46f1997c-34f0-4b50-82e2-a0f4900dd2b7"
+}

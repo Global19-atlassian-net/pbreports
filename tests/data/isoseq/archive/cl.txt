@@ -1,0 +1,3 @@
+#new datasets came from here:
+/pbi/dept/secondary/siv/smrtlink/smrtlink-alpha/smrtsuite_170220/userdata/jobs_root/000/000352/tasks/pbreports.tasks.isoseq_cluster-0/isoseq_cluster_report.json
+/pbi/dept/secondary/siv/smrtlink/smrtlink-alpha/smrtsuite_170220/userdata/jobs_root/000/000352/tasks/pbreports.tasks.isoseq_classify-0/isoseq_classify_report.json

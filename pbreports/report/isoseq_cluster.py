@@ -47,9 +47,9 @@ class Constants(object):
     R_ID = meta_rpt.id
 
     # Attributes
-    A_AVGLENGTH = "isoseq_average_consensus_isoform_length"
-    A_NUMISOFORMS = "isoseq_numconsensusisoforms"
-    A_TOTBASES = "isoseq_numtotalbases"    
+    A_AVGLENGTH = "average_consensus_isoform_length"
+    A_NUMISOFORMS = "num_consensus_isoforms"
+    A_TOTBASES = "num_total_bases"    
 
     # PlotGroup
     PG_READLENGTH = "consensus_isoforms_readlength_group"
