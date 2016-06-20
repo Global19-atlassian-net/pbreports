@@ -47,9 +47,9 @@ class Constants(object):
     R_ID = meta_rpt.id
 
     # Attributes
-    A_AVGLENGTH = "average_consensus_isoform_length"
-    A_NUMISOFORMS = "num_consensus_isoforms"
-    A_TOTBASES = "num_total_bases"    
+    A_LENGTH = "avg_consensus_isoform_length"
+    A_CONSENSUS = "num_consensus_isoforms"
+    A_BASES = "num_total_bases"    
 
     # PlotGroup
     PG_READLENGTH = "consensus_isoforms_readlength_group"
@@ -61,36 +61,13 @@ class Constants(object):
     T_ATTR = "isoseq_classify_table"
 
 
-def summaryToAttributes(inSummaryFN):
-    """Extract attributes from inSummaryFN."""
-    attributes = []
-    with open(inSummaryFN, 'r') as f:
-        for line in f.readlines():
-            # attr:
-            # number of consensus isoforms
-            # average consensus isoform read length
-            line = line.strip()
-            if line != "" and line[0] != "#":
-                attr, val = line.split("=")
-                try:
-                    val = int(val)
-                except ValueError:
-                    pass
-                attr_id = "_".join(attr.split(' '))
-                # Make attribute id match '^[a-z0-9_]+$'
-                attr_id = attr_id.lower().replace('-', '_')
-                attributes.append(meta_rpt.get_meta_attribute(attr_id).as_attribute(int(val)))
-
-    return attributes
-
-
 def _report_to_attributes(report_file):
     report = load_report_from_json(report_file)
     attr = {a.id: a.value for a in report.attributes}
-    if attr.get(Constants.A_NUMISOFORMS, 0) > 0:
-        avg = attr[Constants.A_TOTBASES] / \
-            attr[Constants.A_NUMISOFORMS]
-    	report.attributes.append(meta_rpt.get_meta_attribute(Constants.A_AVGLENGTH).as_attribute(float(avg)))
+    if attr.get(Constants.A_CONSENSUS, 0) > 0:
+        avg = attr[Constants.A_BASES] / \
+            attr[Constants.A_CONSENSUS]
+    	report.attributes.append(meta_rpt.get_meta_attribute(Constants.A_LENGTH).as_attribute(int(avg)))
     return report.attributes
 
 
@@ -235,13 +212,10 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
              format(f=inSummaryFN))
     # Produce attributes based on summary.
     dataset_uuids = [ContigSet(inReadsFN).uuid]
-    if inSummaryFN.endswith(".json"):
-        attributes = _report_to_attributes(inSummaryFN)
-        r = load_report_from_json(inSummaryFN)
+    attributes = _report_to_attributes(inSummaryFN)
+    r = load_report_from_json(inSummaryFN)
         # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
         # reports; should we be?
-    else:
-        attributes = summaryToAttributes(inSummaryFN)
 
     table = attributesToTable(attributes)
     log.info(str(table))

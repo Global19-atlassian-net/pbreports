@@ -55,34 +55,6 @@ class Constants(object):
     # Table
     T_ATTR = "isoseq_classify_table"
 
-def _summary_to_attributes(summary_txt):
-    """Extract attributes from inSummaryFN."""
-    attributes = []
-
-    with open(summary_txt, 'r') as f:
-        for line in f.readlines():
-            # six attributes:
-            # number of consensus reads
-            # number of five prime reads,
-            # number of three prime reads,
-            # number of poly-A reads,
-            # number of full-length non-chimeric reads,
-            # average full-length non-chimeric read length
-            line = line.strip()
-            if line != "" and line[0] != "#":
-                attr, val = line.split("=")
-                try:
-                    val = int(val)
-                except ValueError:
-                    pass
-                attr_id = "_".join(attr.split(' '))
-                # Make attribute id match '^[a-z0-9_]+$'
-                attr_id = attr_id.lower().replace('-', '_')
-		attributes.append(meta_rpt.get_meta_attribute(attr_id).as_attribute(int(val)))
-		
-    return attributes
-
-
 def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
     attributes = []
@@ -246,13 +218,10 @@ def make_report(contig_set, summary_txt, output_dir):
              format(f=summary_txt))
     dataset_uuids = [ContigSet(contig_set).uuid]
     # Produce attributes based on summary.
-    if summary_txt.endswith(".json"):
-        attributes = _report_to_attributes(summary_txt)
-        r = load_report_from_json(summary_txt)
+    attributes = _report_to_attributes(summary_txt)
+    r = load_report_from_json(summary_txt)
         # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
         # reports; should we be?
-    else:
-        attributes = _summary_to_attributes(summary_txt)
 
     table = _attributes_to_table(attributes)
     log.info(str(table))

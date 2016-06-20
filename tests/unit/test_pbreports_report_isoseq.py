@@ -38,11 +38,12 @@ class _TestIsoSeqBase(unittest.TestCase):
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.report_constants = pbreports.report.isoseq_classify.Constants
         cls.input_fasta = os.path.join(_DATA_DIR, 'isoseq_flnc.fasta')
-        cls.output_summary_txt = os.path.join(
-            _DATA_DIR, 'isoseq_classify_summary.txt')
+        cls.output_summary_json = os.path.join(
+            _DATA_DIR, 'isoseq_classify_summary.json')
         cls.report_json = os.path.join(cls.results_dir, "isoseq_classify.json")
         _d = dict(o=cls.results_dir, f=cls.input_fasta,
-                  s=cls.output_summary_txt, j=cls.report_json)
+                  s=cls.output_summary_json,
+                  j=cls.report_json)
         cmd = 'isoseq_classify_report --debug {f} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
 
@@ -95,11 +96,12 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
         cls.report_constants = pbreports.report.isoseq_cluster.Constants
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.input_fasta = os.path.join(_DATA_DIR, 'isoseq_flnc.fasta')
-        cls.output_summary_txt = os.path.join(
-            _DATA_DIR, 'isoseq_cluster_summary.txt')
+        cls.output_summary_json = os.path.join(
+            _DATA_DIR, 'isoseq_cluster_summary.json')
         cls.report_json = os.path.join(cls.results_dir, "isoseq_cluster.json")
         _d = dict(o=cls.results_dir, f=cls.input_fasta,
-                  s=cls.output_summary_txt, j=cls.report_json)
+                  s=cls.output_summary_json,
+                  j=cls.report_json)
         cmd = 'isoseq_cluster_report --debug {f} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
 
