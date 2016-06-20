@@ -81,7 +81,7 @@ def alignment_info_from_bam(bam_file_name):
             subread_lengths = bam.aEnd - bam.aStart
             for i_aln, rgId in enumerate(bam.qId):
                 movie_name = bam.readGroupInfo(rgId).MovieName
-                if not movie_name in by_movie:
+                if movie_name not in by_movie:
                     by_movie[movie_name] = MovieAlignmentInfo(bam_file_name,
                                                               movie_name)
                 m = by_movie[movie_name]
@@ -129,6 +129,33 @@ def from_alignment_file(aln_info): #movie_name, alignment_file_name):
     return movie_names, unrolled, datum, columns
 
 
+def to_read_subreads(movie_names, unrolled, datum, columns):
+    rl = []
+    # subread list
+    sl = []
+
+    for name in movie_names:
+        # index the reads
+        l = [v[1] - v[0] for k, v in unrolled.iteritems() if k[0] == name]
+        rl.extend(l)
+
+        l = [v for k, v in datum.iteritems() if k[0] == name]
+        sl.extend(l)
+
+    if len(sl[0]) != len(columns):
+        msg = "Length of sl {n} len of columns {c} is incompatible.".format(
+            n=len(sl[0]), c=len(columns))
+        sys.stderr.write(msg + "\n")
+        raise IndexError(msg)
+
+    # Reads
+    reads = np.array(rl)
+    subreads = np.array(
+        sl, dtype=[(col, np.float64) for col in columns])
+
+    return reads, subreads
+
+
 class CrunchedAlignments(object):
 
     """
@@ -171,32 +198,20 @@ class CrunchedAlignments(object):
 
     def _numpify(self):
         """ Create numpy representations of the data """
-        # read offset, subread offset
-        rOffs, sOffs = 0, 0
         # read list
         rl = []
         # subread list
         sl = []
 
         for name in self._movieNames:
-            m = MovieIdx(name)
-
             # index the reads
-            m.rOffs = rOffs
-            l = [v[1] - v[0]
-                 for k, v in self._reads.iteritems() if k[0] == name]
-            m.rLen = len(l)
-            rOffs = rOffs + m.rLen
+            l = [v[1] - v[0] for k, v in self._reads.iteritems() if k[0] == name]
             rl.extend(l)
 
-            # index the sub-reads
-            m.sOffs = sOffs
             l = [v for k, v in self._subreads.iteritems() if k[0] == name]
-            m.sLen = len(l)
-            sOffs = sOffs + m.sLen
             sl.extend(l)
 
-            self._movies.append(m)
+            #self._movies.append(m)
 
         self._nReads = np.array(rl)
         if len(sl[0]) != len(self._cols):
@@ -208,24 +223,14 @@ class CrunchedAlignments(object):
         self._nSubreads = np.array(
             sl, dtype=[(col, np.float64) for col in self._cols])
 
-    def reads(self, movie=None):
+    def reads(self):
         """
         Numpy representation of reads, optionally by movie.
         """
-        if movie:
-            s = movie.rOffs
-            e = movie.rOffs + movie.rLen
-            return self._nReads[s:e]
-        else:
-            return self._nReads
+        return self._nReads
 
-    def subreads(self, movie=None):
+    def subreads(self):
         """
         Numpy representation of subreads, optionally by movie.  Array of alignment lengths.
         """
-        if movie:
-            s = movie.sOffs
-            e = movie.sOffs + movie.sLen
-            return self._nSubreads[s:e]
-        else:
-            return self._nSubreads
+        return self._nSubreads

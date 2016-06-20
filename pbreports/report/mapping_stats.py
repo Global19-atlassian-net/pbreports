@@ -32,7 +32,7 @@ from pbreports.plot.rainbow import make_rainbow_plot
 from pbreports.plot.helper import get_blue, get_green
 from pbreports.util import compute_n50_from_bins
 from pbreports.io.align import (alignment_info_from_bam, from_alignment_file,
-                                CrunchedAlignments)
+                                CrunchedAlignments, to_read_subreads)
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
@@ -587,15 +587,14 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
         log.warn(msg)
         return
 
-    crunched = CrunchedAlignments(movie_names, unrolled, data, columns)
+    # crunched = CrunchedAlignments(movie_names, unrolled, data, columns)
+
+    reads, subreads = to_read_subreads(movie_names, unrolled, data, columns)
 
     log.debug("Movie names from crunched {m}.".format(m=movie_names))
 
-    reads = crunched.reads()
-
     # subreads recarray
     # ["Length", "Concordance", "isFirst", "modStart", "isFullSubread", "isMaxSubread"]
-    subreads = crunched.subreads()
 
     log.info("Movie")
     log.info(movie)
