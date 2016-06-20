@@ -1,4 +1,7 @@
 
+# FIXME we might want to move this to kineticsTools someday, just to keep the
+# HDF5 dependency contained (but as long as it's in pbcore it doesn't matter)
+
 """
 Generates plots showing the distribution of kinetics across all bases, taken
 from ipdSummary output.
@@ -67,6 +70,8 @@ def plot_kinetics_scatter(basemods_h5, ax):
             pl = ax.scatter(cov, score, c=color, label=base,
                             lw=0, alpha=0.3, s=12)
             handles.append(pl)
+        else:
+            log.warn("Base {b} not found".format(b=base))
 
     ax.set_xlabel('Per-Strand Coverage')
     ax.set_ylabel('Modification QV')
@@ -95,10 +100,12 @@ def plot_kinetics_hist(basemods_h5, ax):
     bins = arange(0, binLim, step=binLim / 75)
 
     for base, color in zip(bases, colors):
-        baseHits = basemods_h5['base'] == base
+        baseHits = basemods_h5['base'].__array__() == base
         if np.count_nonzero(baseHits) > 0:
             pl = ax.hist(basemods_h5['score'][baseHits], color=color,
                          label=base, bins=bins, histtype="step", log=True)
+        else:
+            log.warn("Base {b} not found".format(b=base))
 
     ax.set_ylabel('Bases')
     ax.set_xlabel('Modification QV')
