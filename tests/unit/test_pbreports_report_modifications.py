@@ -39,9 +39,9 @@ class TestModificationsRpt(unittest.TestCase):
         """
         Create a report object, do assertions on its properties, then assert that it gets written
         """
-        csv = os.path.join(self._data_dir, 'modifications.csv.gz')
+        h5 = os.path.join(self._data_dir, "basemods.h5")
 
-        make_modifications_report(csv, 'rpt.json', self._output_dir, 60, False)
+        make_modifications_report(h5, 'rpt.json', self._output_dir, 60)
 
         # deserialize report
 
@@ -75,11 +75,11 @@ class TestModificationsRpt(unittest.TestCase):
         Like a cram test. Assert exits with 0.
         """
 
-        csv = os.path.join(self._data_dir, 'modifications.csv.gz')
-        cmd = 'python -m pbreports.report.modifications {c} {o} {r}'.format(
+        h5 = os.path.join(self._data_dir, "basemods.h5")
+        cmd = 'python -m pbreports.report.modifications {h} {o} {r}'.format(
             o=self._output_dir,
             r='rpt.json',
-            c=csv)
+            h=h5)
 
         o, c, m = backticks(cmd)
         log.info(cmd)
@@ -107,7 +107,7 @@ class TestPbreportModifications(pbcommand.testkit.PbTestApp):
     DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
     REQUIRES_PBCORE = True
-    INPUT_FILES = [os.path.join(DATA, "modifications.csv.gz")]
+    INPUT_FILES = [os.path.join(DATA, "basemods.h5")]
     TASK_OPTIONS = {
         "pbreports.task_options.dpi": 60,
         "pbreports.task_options.dumpdata": True,
