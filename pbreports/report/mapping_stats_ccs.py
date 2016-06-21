@@ -50,15 +50,15 @@ __version__ = "0.1"
 log = logging.getLogger(__name__)
 
 
-def scatter_plot_readscore_vs_concordance(
+def scatter_plot_accuracy_vs_concordance(
         data,
         axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlab,
                      meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylab),
         nbins=None,
         barcolor=None):
-    readscore, concordance = data
+    accuracy, concordance = data
     fig, ax = get_fig_axes_lpr()
-    data = [Line(xData=readscore,
+    data = [Line(xData=accuracy,
                  yData=concordance,
                  style='+')]
     apply_line_data(
@@ -151,19 +151,19 @@ class CCSMappingStatsCollector(MappingStatsCollector):
     def add_more_plots(self, plot_groups, output_dir):
         try:
             ds = ConsensusAlignmentSet(self.alignment_file)
-            readscore, concordance = [], []
+            accuracy, concordance = [], []
             for bam in ds.resourceReaders():
-                readscore.extend(list(bam.pbi.readQual))
+                accuracy.extend(list(bam.pbi.readQual))
                 concordance.extend(list(bam.identity))
             qv_validation_plot = create_plot(
-                _make_plot_func=scatter_plot_readscore_vs_concordance,
+                _make_plot_func=scatter_plot_accuracy_vs_concordance,
                 plot_id=Constants.P_QV_CALIBRATION,
                 axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlab,
                              meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylab),
                 nbins=None,
                 plot_name="mapped_qv_calibration.png",
                 barcolor="#A0A0FF",
-                data=(readscore, concordance),
+                data=(accuracy, concordance),
                 output_dir=output_dir)
             pg = PlotGroup(Constants.PG_QV_CALIBRATION,
                            title=meta_rpt.get_meta_plotgroup(
