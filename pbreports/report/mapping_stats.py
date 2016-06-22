@@ -637,17 +637,13 @@ def analyze_movies(movies, alignment_file_names, stats_models):
             _process_movie_data(movie, file_name, stats_models, *args)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
-def get_attributes(aggregators_d, meta_rpt):
+def get_attributes(aggregators_d, meta_report):
 
     attributes = []
 
     for id_, aggregator in aggregators_d.iteritems():
         if isinstance(aggregator, AttributeAble):
-            if id_ in meta_rpt._attr_dict:
-                display_name = meta_rpt.get_meta_attribute(id_).name
-            else:
-                display_name = aggregator.__class__.__name__
-
+            display_name = meta_report.get_meta_attribute(id_).name
             a = Attribute(id_, aggregator.attribute, name=display_name)
             attributes.append(a)
         else:
@@ -663,6 +659,10 @@ class MappingStatsCollector(object):
     Wrapper class for generating the report.  This allows us to re-use the
     logic but override the content in the CCS version (mapping_stats_ccs.py).
     """
+    META_REPORT = meta_rpt
+    TABLE_ID = Constants.T_STATS
+
+    # FIXME we should get rid of this
     COLUMN_ATTR = [
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
         Constants.A_NSUBREADS, Constants.A_SUBREAD_NBASES,
@@ -675,10 +675,9 @@ class MappingStatsCollector(object):
         Constants.P_READLENGTH: Constants.P_READLENGTH_HIST,
     }
 
-    COLUMNS = []
-    for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
-        COLUMNS.append((id, meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(id).header))
+    COLUMNS = [ (c.id, c.header) for c in meta_rpt.get_meta_table(Constants.T_STATS).columns]
 
+    # FIXME this is coupled to the report spec
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
         MeanReadLengthAggregator,
@@ -823,9 +822,10 @@ class MappingStatsCollector(object):
         mean subread readlength
         mean subread concordance), ...]
         """
-        columns = [Column(k, header=h) for k, h in self.COLUMNS]
-        table = Table(Constants.T_STATS,
-                      title=meta_rpt.title,
+        meta_table = self.META_REPORT.get_meta_table(self.TABLE_ID)
+        columns = [Column(id_, header=header) for id_, header in self.COLUMNS]
+        table = Table(self.TABLE_ID,
+                      title=meta_table.title,
                       columns=columns)
 
         for movie_data in movie_datum:
@@ -923,7 +923,7 @@ class MappingStatsCollector(object):
         for a in total_model.aggregators:
             log.info(a)
 
-	attributes = get_attributes(_total_aggregators, meta_rpt)
+        attributes = get_attributes(_total_aggregators, self.META_REPORT)
 
         log.info("Attributes from streaming mapping Report.")
         for a in attributes:
@@ -942,11 +942,11 @@ class MappingStatsCollector(object):
             plot_groups = to_plot_groups(plot_config_views, output_dir,
                                          id_to_aggregators)
             rb_pg = PlotGroup(Constants.PG_RAINBOW,
-                              title=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).title)
+                              title=self.META_REPORT.get_meta_plotgroup(Constants.PG_RAINBOW).title)
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, rb_png)
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                          caption=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
+                          caption=self.META_REPORT.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
         self.add_more_plots(plot_groups, output_dir)

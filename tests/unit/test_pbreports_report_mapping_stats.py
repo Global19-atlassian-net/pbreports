@@ -18,10 +18,10 @@ from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 import pbtestdata
 
 from pbreports.report import mapping_stats_ccs
-from pbreports.report.mapping_stats import to_report, Constants
+from pbreports.report.mapping_stats import to_report, Constants, meta_rpt
 
 from base_test_case import ROOT_DATA_DIR, run_backticks, \
-    skip_if_data_dir_not_present, LOCAL_DATA
+    skip_if_data_dir_not_present, LOCAL_DATA, validate_report_metadata
 
 log = logging.getLogger(__name__)
 
@@ -77,20 +77,17 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
 
     def test_basic(self):
         cmd = _to_cmd(self.ALIGNMENTS, self.report_json)
-
         rcode = run_backticks(cmd)
         self.assertEqual(rcode, 0)
-
         with open(self.report_json, 'r') as f:
             s = json.load(f)
             log.info("JsonReport: ")
             log.info(pprint.pformat(s, indent=4))
-
         report = dict_to_report(s)
         self.assertIsNotNone(report)
         self.assertEqual(len(report.tables), 1)
-
         log.info(str(report.tables[0]))
+        validate_report_metadata(self, report, meta_rpt)
 
 
 class TestMappingStatsReport(unittest.TestCase):
@@ -127,6 +124,9 @@ class TestMappingStatsReport(unittest.TestCase):
         log.info(pprint.pformat(cls.report.to_dict()))
         for table in cls.report.tables:
             log.info(str(table))
+
+    def test_report_metadata(self):
+        validate_report_metadata(self, self.report, meta_rpt)
 
     def test_number_of_attributes(self):
         value = self.TOTAL_NUMBER_OF_ATTRIBUTES
@@ -443,6 +443,9 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         value = 1
         self.assertEqual(len(self.report.tables), value)
 
+    def test_report_metadata(self):
+        validate_report_metadata(self, self.report, mapping_stats_ccs.meta_rpt)
+
     def _compare_metric_values(self, metric_id):
         value = self.EXPECTED_VALUES[metric_id]
         self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
@@ -488,6 +491,7 @@ class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
         r = load_report_from_json(rtc.task.output_files[0])
         with AlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
+        validate_report_metadata(self, r, meta_rpt)
 
 
 class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
@@ -501,6 +505,7 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
         with ConsensusAlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
             self.assertEqual(len(r.plotGroups), 4)
+        validate_report_metadata(self, r, mapping_stats_ccs.meta_rpt)
 
 
 @skip_if_data_dir_not_present

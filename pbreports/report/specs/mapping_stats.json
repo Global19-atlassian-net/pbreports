@@ -133,21 +133,6 @@
             "title": "Mapped Concordance vs. Read Length",
             "description": "",
             "legend": ""
-        },
-        {
-            "id": "read_concordance_group",
-            "plots": [
-                {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
-                    "id": "read_concordance_plot"
-                }
-            ],
-            "title": "",
-            "description": "",
-            "legend": ""
         }
     ],
     "title": "Mapping Statistics",
@@ -156,7 +141,7 @@
     "tables": [
         {
             "id": "mapping_stats_table",
-	    "description": "",
+            "description": "",
             "columns": [
                 {
                     "header": "Movie",
