@@ -16,6 +16,8 @@ from pbcore.util.Process import backticks
 import pbcore.data.datasets as data
 from pbcore.io import SubreadSet
 
+import pbtestdata
+
 from pbreports.util import dist_shaper, continuous_dist_shaper
 from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
@@ -43,13 +45,12 @@ def get_fixed_bin_dataset():
     return sset
 
 
-class TestXMLstatsRpts(unittest.TestCase):
-
+class XMLStatsRptsBase(unittest.TestCase):
     def setUp(self):
         """
         Before *every* test
         """
-        super(TestXMLstatsRpts, self).setUp()
+        super(XMLStatsRptsBase, self).setUp()
         self.cwd = os.getcwd()
         self.tmpdir = tempfile.mkdtemp()
         os.chdir(self.tmpdir)
@@ -63,12 +64,22 @@ class TestXMLstatsRpts(unittest.TestCase):
         """
         os.chdir(self.cwd)
         shutil.rmtree(self.tmpdir)
-        super(TestXMLstatsRpts, self).tearDown()
+        super(XMLStatsRptsBase, self).tearDown()
 
-    def test_loading_exit_code_0(self):
-        log.info(TestXMLstatsRpts.test_loading_exit_code_0.__doc__)
-        sts_xml = data.getStats(0)
-        cmd = 'loading_xml {c} {r}'.format(
+    def _compare_attribute_values(self, report_d, expected_d):
+        attr = report_d['attributes']
+        attr_d = {a_['id'].split(".")[-1]:a_['value'] for a_ in attr}
+        for id_, val in expected_d.iteritems():
+            self.assertEqual(attr_d[id_], val)
+
+
+class TestRawDataRpt(XMLStatsRptsBase):
+
+    def test_filter_exit_code_0(self):
+        tmpdir = tempfile.mkdtemp()
+        cwd = os.getcwd()
+        sts_xml = pbtestdata.get_file("subreads-sequel")
+        cmd = 'filter_stats_xml {c} {r}'.format(
             r='foo.json',
             c=sts_xml)
         o, c, m = backticks(cmd)
@@ -82,29 +93,78 @@ class TestXMLstatsRpts(unittest.TestCase):
             log.error(o)
         self.assertEquals(0, c)
 
-    def test_adapter_exit_code_0(self):
-        log.info(TestXMLstatsRpts.test_adapter_exit_code_0.__doc__)
-        subreads_xml = data.getXmlWithStats()
-        cmd = 'adapter_xml {c} {r}'.format(
-            r='foo.json',
-            c=subreads_xml)
-        o, c, m = backticks(cmd)
-        print "COMMAND: {c}".format(c=cmd)
-        log.info(cmd)
-        print "o: {o}".format(o=o)
-        print "c: {c}".format(c=c)
-        print "m: {m}".format(m=m)
-        if c is not 0:
-            log.error(m)
-            log.error(o)
-        self.assertEquals(0, c)
+    def test_make_filter_stats_report_sts_xml(self):
+        """
+        Test the content of the filter report generated from an sts.xml
+        """
+        sts_xml = pbtestdata.get_file("stats-xml")
+        rpt = make_filter_report(sts_xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        self._compare_attribute_values(
+            report_d=d,
+            expected_d={
+                Constants.A_NBASES:  1672335649,
+                Constants.A_NREADS: 394658,
+                Constants.A_READ_N50: 7750,
+                Constants.A_READ_LENGTH: 4237
+            })
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'readLenDist0.png')))
+        #self.assertTrue(os.path.exists(os.path.join(
+        #    self.get_output_dir(),
+        #    'readQualDist0.png')))
 
-    def test_filter_exit_code_0(self):
-        log.info(TestXMLstatsRpts.test_filter_exit_code_0.__doc__)
-        tmpdir = tempfile.mkdtemp()
-        cwd = os.getcwd()
-        sts_xml = data.getStats(0)
-        cmd = 'filter_stats_xml {c} {r}'.format(
+        # these are from a raw STS file
+        self.assertEqual(len(rpt._dataset_uuids), 0,
+                         "Incorrect report datasets uuids")
+
+    def test_make_filter_stats_report_dataset(self):
+        """
+        Test the content of the filter report generated from a dataset
+        """
+        sts_xml = pbtestdata.get_file("subreads-sequel")
+        rpt = make_filter_report(sts_xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        self._compare_attribute_values(
+            report_d=d,
+            expected_d={
+                Constants.A_NBASES:  1672335649,
+                Constants.A_NREADS: 394658,
+                Constants.A_READ_N50: 7750,
+                Constants.A_READ_LENGTH: 4237
+            })
+
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'readLenDist0.png')))
+
+    # FIXME would be good to remove that input from pbcore
+    def test_make_filter_stats_report_dataset_multiple_chips(self):
+        sts_xml = data.getXmlWithStats()
+        rpt = make_filter_report(sts_xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        self._compare_attribute_values(
+            report_d=d,
+            expected_d={
+                Constants.A_NBASES:  342348413,
+                Constants.A_NREADS: 25123,
+                Constants.A_READ_N50: 21884,
+                Constants.A_READ_LENGTH: 13627
+            })
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'readLenDist0.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'readLenDist1.png')))
+
+
+class TestLoadingRpt(XMLStatsRptsBase):
+
+    def test_loading_exit_code_0(self):
+        sts_xml = pbtestdata.get_file("stats-xml")
+        cmd = 'loading_xml {c} {r}'.format(
             r='foo.json',
             c=sts_xml)
         o, c, m = backticks(cmd)
@@ -120,21 +180,16 @@ class TestXMLstatsRpts(unittest.TestCase):
 
     def test_make_loading_report_no_csv(self):
         """
-        Test that an IOError is thrown if no csv exists.
+        Test that an IOError is thrown if the specified path does not exist
         """
-        log.info(TestXMLstatsRpts.test_make_loading_report_no_csv.__doc__)
-
         def _test_ioerror():
             make_loading_report('foo')
-
         self.assertRaises((InvalidDataSetIOError, IOError), _test_ioerror)
 
     def test_make_loading_report_with_sts_xml(self):
         """
         Test the content of the loading report generated from a sts.xml
         """
-        log.info(
-            TestXMLstatsRpts.test_make_loading_report_with_sts_xml.__doc__)
         sts_xml = data.getStats(0)
 
         rpt = make_loading_report(sts_xml)
@@ -182,8 +237,6 @@ class TestXMLstatsRpts(unittest.TestCase):
         """
         Test the content of the loading report generated from a dataset
         """
-        log.info(
-            TestXMLstatsRpts.test_make_loading_report_with_dataset.__doc__)
         sts_xml = data.getXmlWithStats()
 
         rpt = make_loading_report(sts_xml)
@@ -240,14 +293,31 @@ class TestXMLstatsRpts(unittest.TestCase):
         self.assertAlmostEqual(13.873, c4['values'][1], delta=.0003)
         self.assertAlmostEqual(4.436, c4['values'][2], delta=.0003)
 
+
+class TestAdapterReport(XMLStatsRptsBase):
+
+    def test_adapter_exit_code_0(self):
+        subreads_xml = pbtestdata.get_file("subreads-sequel")
+        cmd = 'adapter_xml {c} {r}'.format(
+            r='foo.json',
+            c=subreads_xml)
+        o, c, m = backticks(cmd)
+        print "COMMAND: {c}".format(c=cmd)
+        log.info(cmd)
+        print "o: {o}".format(o=o)
+        print "c: {c}".format(c=c)
+        print "m: {m}".format(m=m)
+        if c is not 0:
+            log.error(m)
+            log.error(o)
+        self.assertEquals(0, c)
+
     def test_make_adapter_report_dataset(self):
         """
         Test make_adapter_report with a dataset
         """
         # All of the histogram generation code should be tested in
         # pbcore.io.dataset, not here. Just test the report.
-        log.info(
-            TestXMLstatsRpts.test_make_adapter_report_dataset.__doc__)
         sts_xml = data.getXmlWithStats()
         rpt = make_adapter_report(sts_xml, self.get_output_dir())
         d = json.loads(rpt.to_json())
@@ -262,79 +332,8 @@ class TestXMLstatsRpts(unittest.TestCase):
             self.get_output_dir(),
             'interAdapterDist1.png')))
 
-    def _compare_attribute_values(self, report_d, expected_d):
-        attr = report_d['attributes']
-        attr_d = {a_['id'].split(".")[-1]:a_['value'] for a_ in attr}
-        for id_, val in expected_d.iteritems():
-            self.assertEqual(attr_d[id_], val)
 
-
-    def test_make_filter_stats_report_sts_xml(self):
-        """
-        Test the content of the filter report generated from an sts.xml
-        """
-        log.info(
-            TestXMLstatsRpts.test_make_filter_stats_report_sts_xml.__doc__)
-        sts_xml = data.getStats(0)
-
-        rpt = make_filter_report(sts_xml, self.get_output_dir())
-
-        d = json.loads(rpt.to_json())
-        self._compare_attribute_values(
-            report_d=d,
-            expected_d={
-                Constants.A_NBASES:  4080353,
-                Constants.A_NREADS: 901,
-                Constants.A_READ_N50: 6570,
-                Constants.A_READ_LENGTH: 4529,
-        #        Constants.A_READ_QUALITY: 0.83
-            })
-
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
-            'readLenDist0.png')))
-        #self.assertTrue(os.path.exists(os.path.join(
-        #    self.get_output_dir(),
-        #    'readQualDist0.png')))
-
-        # these are from a raw STS file
-        self.assertEqual(len(rpt._dataset_uuids), 0,
-                         "Incorrect report datasets uuids")
-
-    def test_make_filter_stats_report_dataset(self):
-        """
-        Test the content of the filter report generated from a dataset
-        """
-        log.info(
-            TestXMLstatsRpts.test_make_filter_stats_report_dataset.__doc__)
-        sts_xml = data.getXmlWithStats()
-
-        rpt = make_filter_report(sts_xml, self.get_output_dir())
-
-        d = json.loads(rpt.to_json())
-        self._compare_attribute_values(
-            report_d=d,
-            expected_d={
-                Constants.A_NBASES:  342348413,
-                Constants.A_NREADS: 25123,
-                Constants.A_READ_N50: 21884,
-                Constants.A_READ_LENGTH: 13627,
-         #       Constants.A_READ_QUALITY: 0.86
-            })
-
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
-            'readLenDist0.png')))
-        # FIXME temporarily disabled
-        #self.assertTrue(os.path.exists(os.path.join(
-        #    self.get_output_dir(),
-        #    'readQualDist0.png')))
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
-            'readLenDist1.png')))
-        #self.assertTrue(os.path.exists(os.path.join(
-        #    self.get_output_dir(),
-        #    'readQualDist1.png')))
+class TestBinning(unittest.TestCase):
 
     @unittest.skipIf(not _internal_data(),
                      "Internal data not available")
