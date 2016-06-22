@@ -73,6 +73,8 @@ def scatter_plot_accuracy_vs_concordance(
 
 
 class CCSMappingStatsCollector(MappingStatsCollector):
+    META_REPORT = meta_rpt
+    TABLE_ID = Constants.T_STATS
     COLUMN_ATTR = [
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
         Constants.A_NBASES, Constants.A_READ_CONCORDANCE
@@ -82,10 +84,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         Constants.P_READLENGTH: "readlength_histogram",
     }
 
-    COLUMNS = []
-    for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
-        COLUMNS.append((id, meta_rpt.get_meta_table(
-            Constants.T_STATS).get_meta_column(id).header))
+    COLUMNS = [ (c.id, c.header) for c in meta_rpt.get_meta_table(Constants.T_STATS).columns]
 
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
