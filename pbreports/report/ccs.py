@@ -438,7 +438,7 @@ def to_report(ccs_subread_set, output_dir):
                                 npasses_group, scatter_group],
                     dataset_uuids=(ccs_subread_set.uuid,))
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def run_report(

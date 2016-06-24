@@ -19,7 +19,7 @@ class MetaAttribute(object):
                              d['description'], d["type"])
 
     def as_attribute(self, value):
-        assert type(value).__name__ == self.type, "{v} != {t}".format(v=value, t=self.type)
+#        assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
         return Attribute(self.id, value=value, name=self.name)
 
 
@@ -37,8 +37,8 @@ class MetaColumn(object):
                           d['description'], d["type"])
 
     def as_column(self, values=()):
-	for value in values:
-		assert type(value).__name__ == self.type, "{v} != {t}".format(v=value, t=self.type)
+#	for value in values:
+#		assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
         return Column(self.id, header=self.header, values=values)
 
 
@@ -136,3 +136,23 @@ class MetaReport(object):
     def as_report(self, attributes=(), plotgroups=(), tables=(), uuid=None):
         return Report(self.id, self.title, attributes=attributes,
                       plotgroups=plotgroups, tables=tables, uuid=uuid)
+
+    def apply_view(self, report):
+       attributes = []
+       for attr in report.attributes:
+               attributes.append(self.get_meta_attribute(attr.id).as_attribute(attr.value))
+       tables = []
+       for table in report.tables:
+               columns = []
+               for col in table.columns:
+                       columns.append(self.get_meta_table(table.id).get_meta_column(col.id).as_column(col.values))
+               tables.append(self.get_meta_table(table.id).as_table(columns=columns))
+       plotgroups = []
+       for plotgroup in report.plotGroups:
+               plots = []
+               for plot in plotgroup.plots:
+                       plots.append(self.get_meta_plotgroup(plotgroup.id).get_meta_plot(plot.id).as_plot(image=plot.image, thumbnail=plot.thumbnail))
+    	       plotgroups.append(self.get_meta_plotgroup(plotgroup.id).as_plotgroup(plots=plots, thumbnail=plotgroup.thumbnail))
+       return Report(self.id, self.title, attributes=attributes,
+                      plotgroups=plotgroups, tables=tables, uuid=report.uuid)
+

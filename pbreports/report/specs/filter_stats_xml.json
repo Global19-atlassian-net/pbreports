@@ -38,7 +38,7 @@
                     "xlab": "Insert Length",
                     "description": null,
                     "caption": null,
-                    "ylab": null,
+                    "ylab": "Number of Reads",
                     "id": "insert_length_plot"
                 }
             ],
@@ -63,7 +63,7 @@
             "title": null
         }
     ],
-    "id": "filter_stats_xml",
+    "id": "raw_data_report",
     "description": null,
-    "title": "Filter Stats XML Report Specifications"
+    "title": "Raw Data Report"
 }

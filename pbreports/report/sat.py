@@ -70,6 +70,7 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     rpt.add_attribute(meta_rpt.get_meta_attribute(Constants.A_CONCORDANCE).as_attribute(d_var[Constants.A_CONCORDANCE]))
     rpt.add_attribute(meta_rpt.get_meta_attribute(Constants.A_READLENGTH).as_attribute(d_map[Constants.A_READLENGTH]))
     rpt.add_attribute(meta_rpt.get_meta_attribute(Constants.A_READS).as_attribute(d_bam[Constants.A_READS]))
+    meta_rpt.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
 
 
