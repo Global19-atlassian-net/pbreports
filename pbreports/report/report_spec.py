@@ -147,12 +147,12 @@ class MetaReport(object):
                for col in table.columns:
                        columns.append(self.get_meta_table(table.id).get_meta_column(col.id).as_column(col.values))
                tables.append(self.get_meta_table(table.id).as_table(columns=columns))
-       plotgroups = []
-       for plotgroup in report.plotGroups:
-               plots = []
-               for plot in plotgroup.plots:
-                       plots.append(self.get_meta_plotgroup(plotgroup.id).get_meta_plot(plot.id).as_plot(image=plot.image, thumbnail=plot.thumbnail))
-    	       plotgroups.append(self.get_meta_plotgroup(plotgroup.id).as_plotgroup(plots=plots, thumbnail=plotgroup.thumbnail))
+#       plotgroups = []
+#       for plotgroup in report.plotGroups:
+#               plots = []
+#               for plot in plotgroup.plots:
+#                       plots.append(self.get_meta_plotgroup(plotgroup.id).get_meta_plot(plot.id).as_plot(image=plot.image, thumbnail=plot.thumbnail))
+#    	       plotgroups.append(self.get_meta_plotgroup(plotgroup.id).as_plotgroup(plots=plots, thumbnail=plotgroup.thumbnail))
        return Report(self.id, self.title, attributes=attributes,
-                      plotgroups=plotgroups, tables=tables, uuid=report.uuid)
+                      plotgroups=report.plotGroups, tables=tables, uuid=report.uuid)
 

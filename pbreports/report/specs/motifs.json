@@ -81,7 +81,46 @@
             "title": "motifs"
         }
     ],
-    "plotgroups": [],
+    "plotgroups": [
+        {
+            "id": "modifications",
+            "plots": [
+                {
+                    "xlab": "Per-Strand Coverage",
+                    "description": null,
+                    "caption": null,
+                    "ylab": "Modification QV",
+                    "id": "mod_qv_coverage"
+                },
+                {
+                    "xlab": "Modification QV",
+                    "description": null,
+                    "caption": null,
+                    "ylab": "Bases",
+                    "id": "qmod_hist"
+                }
+
+            ],
+            "title": "Modifications",
+            "description": null,
+            "legend": null
+        },
+        {
+            "id": "modification_qvs",
+            "plots": [
+                {
+                    "xlab": "Modification QV",
+                    "description": null,
+                    "caption": null,
+                    "ylab": "Motif Sites",
+                    "id": "motifs"
+                }
+            ],
+            "title": "Modification QVs",
+            "description": null,
+            "legend": null
+        }
+],
     "id": "motifs",
     "description": null,
     "title": "Motifs Report Specifications"

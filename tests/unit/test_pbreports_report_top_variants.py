@@ -111,13 +111,6 @@ class TestTopVariantsReport(unittest.TestCase):
         self.assertEqual('top_variants_table', tb.table.id)
 
         self.assertEqual(7, len(columns))
-        self.assertEqual('Sequence', columns[0].header)
-        self.assertEqual('Position', columns[1].header)
-        self.assertEqual('Variant', columns[2].header)
-        self.assertEqual('Type', columns[3].header)
-        self.assertEqual('Coverage', columns[4].header)
-        self.assertEqual('Confidence', columns[5].header)
-        self.assertEqual('Genotype', columns[6].header)
 
         ref = self.REFERENCE
         gff = self.VARIANTS_GFF
@@ -146,14 +139,6 @@ class TestTopVariantsReport(unittest.TestCase):
 
         columns = tb.table.columns
         self.assertEqual(7, len(columns))
-        self.assertEqual('Sequence', columns[0].header)
-        self.assertEqual('Position', columns[1].header)
-        self.assertEqual('Variant', columns[2].header)
-        self.assertEqual('Type', columns[3].header)
-#        self.assertEqual('Frequency', columns[4].header)
-        self.assertEqual('Coverage', columns[4].header)
-        self.assertEqual('Confidence', columns[5].header)
-        self.assertEqual('Frequency', columns[6].header)
 
         ref = self.REFERENCE
         gff = self.RARE_VARIANTS_GFF

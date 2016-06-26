@@ -2,6 +2,7 @@
 """Summarizes the Long Amplicon Analysis"""
 
 import os
+import os.path as op
 import sys
 import logging
 from pprint import pformat
@@ -9,6 +10,8 @@ from pprint import pformat
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -22,6 +25,12 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.3.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+AAC_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_consensus.json')
+meta_rpt = MetaReport.from_json(AAC_SPEC)
+
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_consensus"
@@ -33,15 +42,15 @@ def create_table(d, barcode):
     columns = []
 
     if barcode:
-        columns.append(Column("barcodename", header="Barcode"))
+        columns.append(Column("barcodename", header = ""))
 
-    columns.append(Column("coarsecluster", header="Sequence Cluster"))
-    columns.append(Column("phase", header="Sequence Phase"))
-    columns.append(Column("sequencelength", header="Length (bp)"))
-    columns.append(Column("predictedaccuracy", header="Estimated Accuracy"))
-    columns.append(Column("totalcoverage", header="Subreads coverage"))
+    columns.append(Column("coarsecluster", header = ""))
+    columns.append(Column("phase", header = ""))
+    columns.append(Column("sequencelength", header = ""))
+    columns.append(Column("predictedaccuracy", header = ""))
+    columns.append(Column("totalcoverage", header = ""))
 
-    t = Table("result_table", title="Amplicon Consensus Summary",
+    t = Table("result_table",
               columns=columns)
 
     for fastaname in sorted(d.fastaname):
@@ -78,9 +87,9 @@ def run_to_report(summary_file):
 
     # Convert the data to a table and the report
     table = create_table(s, barcode)
-    r = Report("amplicon_analysis_consensus", tables=[table])
+    r = Report(meta_rpt.id, tables=[table])
 
-    return r
+    return meta_rpt.apply_view(r)
 
 
 def amplicon_analysis_consensus(incsv, outjson):
@@ -140,7 +149,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Amplicon Analysis Consensus",
+        meta_rpt.title,
         __doc__,
         driver_exe)
     return p

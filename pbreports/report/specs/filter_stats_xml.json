@@ -1,5 +1,36 @@
 {
-    "attributes": [],
+    "attributes": [
+        {
+            "type": "",
+            "description": "",
+            "name": "Polymerase Read Bases",
+            "id": "nbases"
+        },
+        {
+            "type": "",
+            "description": "",
+            "name": "Polymerase Reads",
+            "id": "nreads"
+        },
+        {
+            "type": "",
+            "description": "",
+            "name": "Polymerase Read N50",
+            "id": "read_n50"
+        },
+        {
+            "type": "",
+            "description": "",
+            "name": "Polymerase Read Length (mean)",
+            "id": "read_length"
+        },
+        {
+            "type": "",
+            "description": "",
+            "name": "Insert Length (mean)",
+            "id": "insert_length"
+        }
+],
     "tables": [],
     "plotgroups": [
         {
@@ -8,14 +39,14 @@
                     "xlab": "Read Length",
                     "description": null,
                     "caption": null,
-                    "ylab": null,
+                    "ylab": "Number Of Reads",
                     "id": "read_length_plot"
                 }
             ],
             "description": null,
             "legend": null,
             "id": "read_length_plot_group",
-            "title": null
+            "title": "Polymerase Read Length"
         },
         {
             "plots": [
@@ -23,7 +54,7 @@
                     "xlab": "Read Quality",
                     "description": null,
                     "caption": null,
-                    "ylab": null,
+                    "ylab": "Number Of Reads",
                     "id": "read_quality_plot"
                 }
             ],
@@ -45,7 +76,7 @@
             "description": null,
             "legend": null,
             "id": "insert_length_plot_group",
-            "title": null
+            "title": "Estimated Insert Length"
         },
         {
             "plots": [
@@ -53,7 +84,7 @@
                     "xlab": "Insert Quality",
                     "description": null,
                     "caption": null,
-                    "ylab": null,
+                    "ylab": "Number Of Reads",
                     "id": "insert_quality_plot"
                 }
             ],

@@ -6,12 +6,15 @@ from pprint import pformat
 import datetime
 import logging
 import os
+import os.path as op
 import re
 import sys
 
 from numpy import median
 
 from pbcommand.models.report import Report, Table, Column
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -24,6 +27,11 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+AAT_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_timing.json')
+meta_rpt = MetaReport.from_json(AAT_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_timing"
@@ -67,13 +75,13 @@ def create_table(timings):
     """Long Amplicon Analysis Timing Result table"""
 
     columns = []
-    columns.append(Column("barcode_col", header="Sample"))
-    columns.append(Column("hour_col", header="Hours"))
-    columns.append(Column("minute_col", header="Minutes"))
-    columns.append(Column("second_col", header="Total Time (seconds)"))
+    columns.append(Column("barcode_col", header=""))
+    columns.append(Column("hour_col", header=""))
+    columns.append(Column("minute_col", header=""))
+    columns.append(Column("second_col", header=""))
 
     t = Table("result_table",
-              title="Amplicon Analysis Timing Summary", columns=columns)
+              title="", columns=columns)
 
     seconds = []
     for barcode in sorted(timings):
@@ -119,9 +127,9 @@ def run_to_report(log_file):
     table = create_table(timings)
 
     # ids must be lowercase.
-    r = Report("amplicon_analysis_timing", tables=[table])
+    r = Report(meta_rpt.id, tables=[table])
 
-    return r
+    return meta_rpt.apply_view(r)
 
 
 def amplicon_analysis_timing(log_file, report_json):
@@ -181,7 +189,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Amplicon Analysis Timing",
+        meta_rpt.title,
         __doc__,
         driver_exe)
     return p
