@@ -34,7 +34,7 @@ class TestAmpliconAnalysisConsensus(pbcommand.testkit.PbTestApp):
 class TestAmpliconAnalysisInput(pbcommand.testkit.PbTestApp):
     name = 'amplicon_analysis_summary.csv'
     csv_file_name = os.path.join(LOCAL_DATA, "amplicon_analysis_input", name)
-    zmw_name = 'amplicon_analysis_zmws.csv'
+    zmw_name = 'amplicon_analysis_zmws.json'
     zmw_file = os.path.join(LOCAL_DATA, "amplicon_analysis_input", zmw_name)
     t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
     t.close()

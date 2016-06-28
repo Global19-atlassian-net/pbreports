@@ -7,7 +7,8 @@ from pprint import pformat
 
 from pbcommand.models.report import Report
 
-from pbreports.report.amplicon_analysis_input import run_to_report
+from pbreports.report.amplicon_analysis_input import (run_to_report,
+                                                      parse_summary)
 from base_test_case import LOCAL_DATA, run_backticks
 
 log = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ class TestLongAmpliconAnalysisPcrReport(unittest.TestCase):
     def setUpClass(cls):
         summary_name = 'amplicon_analysis_summary.csv'
         cls.summary_file = os.path.join(DATA_DIR, summary_name)
-        zmw_name = 'amplicon_analysis_zmws.csv'
+        zmw_name = 'amplicon_analysis_zmws.json'
         cls.zmw_file = os.path.join(DATA_DIR, zmw_name)
         log.info("Using {s} and {z}".format(
             s=cls.summary_file, z=cls.zmw_file))
@@ -32,6 +33,11 @@ class TestLongAmpliconAnalysisPcrReport(unittest.TestCase):
         self.assertTrue(isinstance(report, Report))
         log.info(pformat(report.to_dict()))
         self.assertIsNotNone(report)
+
+
+    def test_parse_summary(self):
+        s = parse_summary(self.summary_file)
+        print s
 
 
 class TestIntegrationLongAmpliconAnalysisPcrReport(TestLongAmpliconAnalysisPcrReport):
