@@ -22,6 +22,7 @@ class Constants(object):
     TOOL_ID = "pbreports.tasks.loading_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.loading_xml "
                   "--resolved-tool-contract ")
+    DECIMALS = 3
 
 
 log = logging.getLogger(__name__)
@@ -68,10 +69,12 @@ def to_report(stats_xml):
         productive_zmws = int(dset.metadata.summaryStats.numSequencingZmws)
         empty, productive, other, _ = dset.metadata.summaryStats.prodDist.bins
 
-        prod0 = np.round(100.0 * empty / float(productive_zmws), decimals=2)
-        prod1 = np.round(100.0 * productive /
-                         float(productive_zmws), decimals=2)
-        prod2 = np.round(100.0 * other / float(productive_zmws), decimals=2)
+        prod0 = np.round(100.0 * empty / float(productive_zmws),
+                         decimals=Constants.DECIMALS)
+        prod1 = np.round(100.0 * productive / float(productive_zmws),
+                         decimals=Constants.DECIMALS)
+        prod2 = np.round(100.0 * other / float(productive_zmws),
+                         decimals=Constants.DECIMALS)
         this_row = [movie_name, productive_zmws, prod0, prod1, prod2]
         map(lambda (x, y): x.append(y), zip(col_values, this_row))
     columns = [Column(cn.translate(None, '(%)').strip().replace(' ',

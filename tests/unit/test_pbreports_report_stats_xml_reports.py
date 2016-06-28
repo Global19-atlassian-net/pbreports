@@ -161,21 +161,21 @@ class TestXMLstatsRpts(unittest.TestCase):
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_0',
                          c2['id'])
-        self.assertAlmostEqual(54.80, c2['values'][0], delta=.0003)
+        self.assertAlmostEqual(54.798, c2['values'][0], delta=.0003)
 
         self.assertEqual('Productivity 1 (%)',
                          c3['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_1',
                          c3['id'])
-        self.assertAlmostEqual(31.33, c3['values'][0], delta=.0003)
+        self.assertAlmostEqual(31.328, c3['values'][0], delta=.0003)
 
         self.assertEqual('Productivity 2 (%)',
                          c4['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_2',
                          c4['id'])
-        self.assertAlmostEqual(13.87, c4['values'][0], delta=.0003)
+        self.assertAlmostEqual(13.873, c4['values'][0], delta=.0003)
 
     def test_make_loading_report_with_dataset(self):
         """
@@ -217,27 +217,27 @@ class TestXMLstatsRpts(unittest.TestCase):
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_0',
                          c2['id'])
-        self.assertAlmostEqual(78.98, c2['values'][0], delta=.0003)
-        self.assertAlmostEqual(54.80, c2['values'][1], delta=.0003)
-        self.assertAlmostEqual(79.45, c2['values'][2], delta=.0003)
+        self.assertAlmostEqual(78.985, c2['values'][0], delta=.0003)
+        self.assertAlmostEqual(54.798, c2['values'][1], delta=.0003)
+        self.assertAlmostEqual(79.447, c2['values'][2], delta=.0003)
 
         self.assertEqual('Productivity 1 (%)',
                          c3['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_1',
                          c3['id'])
-        self.assertAlmostEqual(16.4, c3['values'][0], delta=.0003)
-        self.assertAlmostEqual(31.33, c3['values'][1], delta=.0003)
-        self.assertAlmostEqual(16.12, c3['values'][2], delta=.0003)
+        self.assertAlmostEqual(16.402, c3['values'][0], delta=.0003)
+        self.assertAlmostEqual(31.328, c3['values'][1], delta=.0003)
+        self.assertAlmostEqual(16.117, c3['values'][2], delta=.0003)
 
         self.assertEqual('Productivity 2 (%)',
                          c4['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_2',
                          c4['id'])
-        self.assertAlmostEqual(4.61, c4['values'][0], delta=.0003)
-        self.assertAlmostEqual(13.87, c4['values'][1], delta=.0003)
-        self.assertAlmostEqual(4.44, c4['values'][2], delta=.0003)
+        self.assertAlmostEqual(4.613, c4['values'][0], delta=.0003)
+        self.assertAlmostEqual(13.873, c4['values'][1], delta=.0003)
+        self.assertAlmostEqual(4.436, c4['values'][2], delta=.0003)
 
     def test_make_adapter_report_dataset(self):
         """
