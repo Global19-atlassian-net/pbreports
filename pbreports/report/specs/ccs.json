@@ -80,11 +80,11 @@
         {
             "plots": [
                 {
-                    "xlab": "Quality",
+                    "xlabel": "Quality",
                     "description": null,
                     "caption": null,
                     "title": null,
-                    "ylab": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
+                    "ylabel": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
                     "id": "accuracy_hist"
                 }
             ],
@@ -96,11 +96,11 @@
         {
             "plots": [
                 {
-                    "xlab": "Number of Passes",
+                    "xlabel": "Number of Passes",
                     "description": null,
                     "caption": null,
                     "title": null,
-                    "ylab": "Reads",
+                    "ylabel": "Reads",
                     "id": "npasses_hist"
                 }
             ],
@@ -112,11 +112,11 @@
 	{
 	    "plots": [
                 {
-                    "xlab": "Read Length",
+                    "xlabel": "Read Length",
                     "description": null,
                     "caption": null,
                     "title": null,
-                    "ylab": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
+                    "ylabel": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
                     "id": "readlength_hist"
                 }
 	             ],
@@ -128,11 +128,11 @@
 	{
             "plots": [
 		{
-                    "xlab": "Number of passes",
+                    "xlabel": "Number of passes",
                     "description": null,
                     "caption": null,
                     "title": null,
-                    "ylab": "Read Score as Phred QV",
+                    "ylabel": "Read Score as Phred QV",
                     "id": "npasses_vs_accuracy"
                 }
                      ],

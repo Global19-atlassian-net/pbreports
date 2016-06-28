@@ -137,10 +137,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Concordance", 
+                    "xlabel": "Concordance", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Subreads", 
+                    "ylabel": "Subreads", 
                     "title": null, 
                     "id": "concordance_plot"
                 }
@@ -153,10 +153,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Read Length", 
+                    "xlabel": "Read Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Reads", 
+                    "ylabel": "Reads", 
                     "title": null, 
                     "id": "readlength_plot"
                 }
@@ -169,10 +169,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Subread Length", 
+                    "xlabel": "Subread Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Subreads", 
+                    "ylabel": "Subreads", 
                     "title": null, 
                     "id": "subreadlength_plot"
                 }
@@ -185,10 +185,10 @@
         {
             "plots": [
                 {
-                    "xlab": null, 
+                    "xlabel": null, 
                     "description": null, 
                     "caption": "Mapped Concordance vs. Read Length", 
-                    "ylab": null, 
+                    "ylabel": null, 
                     "title": null, 
                     "id": "rainbow_plot"
                 }
@@ -201,10 +201,10 @@
         {
             "plots": [
                 {
-                    "xlab": null, 
+                    "xlabel": null, 
                     "description": null, 
                     "caption": null, 
-                    "ylab": null, 
+                    "ylabel": null, 
                     "title": null, 
                     "id": "read_concordance_plot"
                 }

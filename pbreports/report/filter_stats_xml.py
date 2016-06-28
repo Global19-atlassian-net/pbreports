@@ -167,8 +167,8 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlab)
-        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylab)
+        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
+        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_LENGTH_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
@@ -194,8 +194,8 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlab)
-        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylab)
+        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
+        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_QUAL_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,

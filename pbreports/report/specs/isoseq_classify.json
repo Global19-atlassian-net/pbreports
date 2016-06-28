@@ -162,10 +162,10 @@
             "id": "fulllength_nonchimeric_readlength_group", 
             "plots": [
                 {
-                    "xlab": "Read Length", 
+                    "xlabel": "Read Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": {
+                    "ylabel": {
                         "R": "Reads > Read Length", 
                         "L": "Reads"
                     }, 

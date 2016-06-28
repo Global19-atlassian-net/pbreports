@@ -85,17 +85,17 @@ class MetaTable(object):
 
 class MetaPlot(object):
 
-    def __init__(self, id_, description, caption, title, xlab, ylab):
+    def __init__(self, id_, description, caption, title, xlabel, ylabel):
         self.id = id_
         self.description = description
         self.caption = caption
         self.title = title
-        self.xlab = xlab
-        self.ylab = ylab
+        self.xlabel = xlabel
+        self.ylabel = ylabel
 
     @staticmethod
     def from_dict(d):
-        return MetaPlot(d['id'].split(".")[-1], d['description'], d['caption'], d['title'], d['xlab'], d['ylab'])
+        return MetaPlot(d['id'].split(".")[-1], d['description'], d['caption'], d['title'], d['xlabel'], d['ylabel'])
 
     def as_plot(self, image, thumbnail):
         return Plot(self.id, image=image, caption=self.caption, title=self.title, thumbnail=thumbnail)

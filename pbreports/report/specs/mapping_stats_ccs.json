@@ -96,10 +96,10 @@
             "id": "qv_calibration_group", 
             "plots": [
                 {
-                    "xlab": "Predicted Accuracy", 
+                    "xlabel": "Predicted Accuracy", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Mapped Concordance", 
+                    "ylabel": "Mapped Concordance", 
                     "title": null, 
                     "id": "qv_calibration_plot"
                 }
@@ -112,10 +112,10 @@
             "id": "ccs_read_concordance_group", 
             "plots": [
                 {
-                    "xlab": "Concordance", 
+                    "xlabel": "Concordance", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "CCS Reads", 
+                    "ylabel": "CCS Reads", 
                     "title": null, 
                     "id": "concordance_plot"
                 }
@@ -127,10 +127,10 @@
         {
             "plots": [
                 {
-                    "xlab": null,
+                    "xlabel": null,
                     "description": null,
                     "caption": "Mapped Concordance vs. Read Length",
-                    "ylab": null,
+                    "ylabel": null,
                     "title": null,
                     "id": "rainbow_plot"
                 }
@@ -144,10 +144,10 @@
             "id": "ccs_readlength_group", 
             "plots": [
                 {
-                    "xlab": "Read Length", 
+                    "xlabel": "Read Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Reads", 
+                    "ylabel": "Reads", 
                     "title": null, 
                     "id": "readlength_plot"
                 }

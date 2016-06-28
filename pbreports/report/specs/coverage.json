@@ -19,11 +19,11 @@
             "id": "coverage_plots",
             "plots": [
                 {
-                    "xlab": "Reference Start Position",
+                    "xlabel": "Reference Start Position",
                     "description": null,
                     "caption": null,
                     "title": null,
-                    "ylab": "Coverage",
+                    "ylabel": "Coverage",
                     "id": "coverage_contig"
                 }
             ],
@@ -35,11 +35,11 @@
             "id": "coverage_histogram_plot_group",
             "plots": [
                 {
-                    "xlab": "Coverage",
+                    "xlabel": "Coverage",
                     "description": null,
                     "caption": "Depth of coverage distribution ",
                     "title": "Depth of coverage distribution ",
-                    "ylab": "Reference Regions",
+                    "ylabel": "Reference Regions",
                     "id": "coverage_histogram"
                 }
             ],

@@ -77,10 +77,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Reference Start Position", 
+                    "xlabel": "Reference Start Position", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Variants", 
+                    "ylabel": "Variants", 
                     "title": null, 
                     "id": "variants_plot"
                 }

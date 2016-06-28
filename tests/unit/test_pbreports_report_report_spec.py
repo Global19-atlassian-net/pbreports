@@ -112,8 +112,8 @@ class TestCorrectMetaReportValues(unittest.TestCase):
 		self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').id, 'plot1')
 		self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').description, 'The first plot of the first plotgroup')
 		self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').caption, 'Plot 1')
-                self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').xlab, 'x variable')
-                self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').ylab, 'y variable')
+                self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').xlabel, 'x variable')
+                self.assertEqual(self.meta_rpt.get_meta_plotgroup('plotgroup1').get_meta_plot('plot1').ylabel, 'y variable')
 
 	def test_table(self):
                 self.assertEqual(self.meta_rpt.get_meta_table('table1').id, 'table1')

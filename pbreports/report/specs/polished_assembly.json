@@ -33,10 +33,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Mean Coverage Depth", 
+                    "xlabel": "Mean Coverage Depth", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Mean Confidence (QV)", 
+                    "ylabel": "Mean Confidence (QV)", 
                     "title": null, 
                     "id": "cov_vs_qual"
                 }

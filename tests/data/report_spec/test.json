@@ -35,8 +35,8 @@
 		   "description": "The first plot of the first plotgroup",
 		   "caption": "Plot 1",
                    "title": "Plot 1",
-                   "xlab": "x variable",
-                   "ylab": "y variable"
+                   "xlabel": "x variable",
+                   "ylabel": "y variable"
 		   
                 }
                 ]
@@ -52,16 +52,16 @@
                    "description": "The first plot of the second plotgroup",
 		   "caption": "Plot 1",
                    "title": "Plot 1",
-		   "xlab": "x variable",
-		   "ylab": "y variable"
+		   "xlabel": "x variable",
+		   "ylabel": "y variable"
                 },
                 {
                    "id": "plot2",
                    "description": "The second plot of the second plotgroup", 
 		   "caption": "Plot 2",
                    "title": "Plot 2",
-                   "xlab": "x variable",
-                   "ylab": "y variable"
+                   "xlabel": "x variable",
+                   "ylabel": "y variable"
                 }
                 ]
         }

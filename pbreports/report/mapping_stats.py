@@ -742,9 +742,9 @@ class MappingStatsCollector(object):
                 generate_plot,
                 'mapped_subread_concordance_histogram.png',
                 xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
-                    Constants.P_SUBREAD_CONCORDANCE).xlab,
+                    Constants.P_SUBREAD_CONCORDANCE).xlabel,
                 ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
-                    Constants.P_SUBREAD_CONCORDANCE).ylab,
+                    Constants.P_SUBREAD_CONCORDANCE).ylabel,
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
@@ -755,9 +755,9 @@ class MappingStatsCollector(object):
                 generate_plot,
                 'mapped_subreadlength_histogram.png',
                 xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                    Constants.P_SUBREAD_LENGTH).xlab,
+                    Constants.P_SUBREAD_LENGTH).xlabel,
                 ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                    Constants.P_SUBREAD_LENGTH).ylab,
+                    Constants.P_SUBREAD_LENGTH).ylabel,
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
@@ -768,9 +768,9 @@ class MappingStatsCollector(object):
                 generate_plot,
                 'mapped_readlength_histogram.png',
                 xlabel=meta_rpt.get_meta_plotgroup(
-                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
                 ylabel=meta_rpt.get_meta_plotgroup(
-                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab,
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,

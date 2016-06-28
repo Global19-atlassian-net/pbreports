@@ -184,7 +184,7 @@ def _create_contig_plot(contig_coverage):
     lines_fills = [line_fill]
     fig, ax = get_fig_axes_lpr()
     apply_line_data(ax, lines_fills, (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(
-        Constants.P_COVERAGE).xlab, meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylab))
+        Constants.P_COVERAGE).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel))
     apply_line_fill_data(ax, lines_fills)
     return fig, ax
 
@@ -202,8 +202,8 @@ def _create_histogram(stats):
     bins = np.arange(0, m, binSize)
     fig, ax = get_fig_axes_lpr()
     apply_histogram_data(ax, stats.means, bins,
-                         (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).xlab,
-                          meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).ylab),
+                         (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).xlabel,
+                          meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).ylabel),
                          barcolor=Constants.COLOR_STEEL_BLUE_DARK,
                          showEdges=False)
     return fig, ax

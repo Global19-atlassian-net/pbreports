@@ -39,10 +39,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Read Length", 
+                    "xlabel": "Read Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Number Of Reads", 
+                    "ylabel": "Number Of Reads", 
                     "title": null, 
                     "id": "read_length_plot"
                 }
@@ -55,10 +55,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Read Quality", 
+                    "xlabel": "Read Quality", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Number Of Reads", 
+                    "ylabel": "Number Of Reads", 
                     "title": null, 
                     "id": "read_quality_plot"
                 }
@@ -71,10 +71,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Insert Length", 
+                    "xlabel": "Insert Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Number of Reads", 
+                    "ylabel": "Number of Reads", 
                     "title": null, 
                     "id": "insert_length_plot"
                 }
@@ -87,10 +87,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Insert Quality", 
+                    "xlabel": "Insert Quality", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Number Of Reads", 
+                    "ylabel": "Number Of Reads", 
                     "title": null, 
                     "id": "insert_quality_plot"
                 }

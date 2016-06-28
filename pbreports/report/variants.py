@@ -243,7 +243,7 @@ def _create_contig_fig_ax(bars, xlabels):
     """
     fig, ax = PH.get_fig_axes_lpr()
     PH.apply_bar_data(
-        ax, bars, xlabels, (meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).xlab, meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).ylab))
+        ax, bars, xlabels, (meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).ylabel))
     return fig, ax
 
 

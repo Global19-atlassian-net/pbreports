@@ -88,18 +88,18 @@
         {
             "plots": [
                 {
-                    "xlab": "Per-Strand Coverage", 
+                    "xlabel": "Per-Strand Coverage", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Modification QV", 
+                    "ylabel": "Modification QV", 
                     "title": null, 
                     "id": "mod_qv_coverage"
                 }, 
                 {
-                    "xlab": "Modification QV", 
+                    "xlabel": "Modification QV", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Bases", 
+                    "ylabel": "Bases", 
                     "title": null, 
                     "id": "qmod_hist"
                 }
@@ -112,10 +112,10 @@
         {
             "plots": [
                 {
-                    "xlab": "Modification QV", 
+                    "xlabel": "Modification QV", 
                     "description": null, 
                     "caption": null, 
-                    "ylab": "Motif Sites", 
+                    "ylabel": "Motif Sites", 
                     "title": null, 
                     "id": "motifs"
                 }

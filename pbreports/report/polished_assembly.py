@@ -130,8 +130,8 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     fig, axes = PH.get_fig_axes_lpr()
     axes = fig.add_subplot(111)
     axes.set_axisbelow(True)
-    axes.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylab)
-    axes.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).xlab)
+    axes.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel)
+    axes.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).xlabel)
     PH.set_tick_label_font_size(axes, 12, 12)
     PH.set_axis_label_font_size(axes, 16)
 
