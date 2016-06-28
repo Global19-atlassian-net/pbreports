@@ -185,7 +185,7 @@ def _add_options_to_parser(p):
         name="JSON per-ZMW info",
         description="JSON file containing per-ZMW info")
     p.add_output_file_type(
-        FileTypes.JSON,
+        FileTypes.REPORT,
         file_id="report_json",
         name="LAA input report",
         description="Long Amplicon Analysis input report JSON",
