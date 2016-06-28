@@ -19,9 +19,15 @@ class MetaAttribute(object):
                              d['description'], d["type"])
 
     def as_attribute(self, value):
-#        assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
+        #        assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
         return Attribute(self.id, value=value, name=self.name)
-
+   
+    def apply_attribute_view(self, attr):
+    	if attr.name is None:
+    		name = self.name
+    	else:
+    		name = attr.name
+    	return Attribute(self.id, value=attr.value, name=name)
 
 class MetaColumn(object):
 
@@ -37,9 +43,16 @@ class MetaColumn(object):
                           d['description'], d["type"])
 
     def as_column(self, values=()):
-#	for value in values:
-#		assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
+        #	for value in values:
+        #		assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
         return Column(self.id, header=self.header, values=values)
+
+    def apply_column_view(self, col):
+        if col.header is None:
+                header = self.header
+        else:
+                header = col.header
+        return Column(self.id, values=col.values, header=header)
 
 
 class MetaTable(object):
@@ -62,6 +75,13 @@ class MetaTable(object):
     def as_table(self, columns=()):
         return Table(self.id, title=self.title, columns=columns)
 
+    def apply_table_view(self, table):
+        if table.title is None:
+                title = self.title
+        else:
+                title = table.title
+        return Table(self.id, title=title, columns=[self.get_meta_column(c.id).apply_column_view(c) for c in table.columns])
+
 
 class MetaPlot(object):
 
@@ -69,7 +89,7 @@ class MetaPlot(object):
         self.id = id_
         self.description = description
         self.caption = caption
-   	self.title = title
+        self.title = title
         self.xlab = xlab
         self.ylab = ylab
 
@@ -79,6 +99,15 @@ class MetaPlot(object):
 
     def as_plot(self, image, thumbnail):
         return Plot(self.id, image=image, caption=self.caption, title=self.title, thumbnail=thumbnail)
+
+    def apply_plot_view(self, plot):
+    	caption = plot.caption
+   	title = plot.title
+        if caption is None:
+                caption = self.caption
+    	if title is None:
+                title = self.title
+    	return Plot(self.id, image=plot.image, caption=caption, title=title, thumbnail=plot.thumbnail)
 
 
 class MetaPlotGroup(object):
@@ -102,13 +131,22 @@ class MetaPlotGroup(object):
     def as_plotgroup(self, thumbnail, plots=()):
         return PlotGroup(self.id, title=self.title, legend=self.legend, thumbnail=thumbnail, plots=plots)
 
+    def apply_plotgroup_view(self, plotgroup):
+        legend = plotgroup.legend
+        title = plotgroup.title
+        if legend is None:
+                legend = self.legend
+        if title is None:
+                title = self.title
+        return PlotGroup(self.id, title=title, legend=legend, thumbnail=plotgroup.thumbnail, plots=[self.get_meta_plot(p.id).apply_plot_view(p) for p in plotgroup.plots])
+
 
 class MetaReport(object):
 
     def __init__(self, id_, title, description, attributes=(), plotgroups=(), tables=()):
         self.id = id_
         self.title = title
-	self.description = description
+        self.description = description
         self.attributes = attributes
         self.plotgroups = plotgroups
         self.tables = tables
@@ -121,8 +159,10 @@ class MetaReport(object):
         d = json.load(open(json_str))
         json.dumps(d)
         return MetaReport(d['id'], d['title'], d['description'],
-                          [MetaAttribute.from_dict(a) for a in d['attributes']],
-                          [MetaPlotGroup.from_dict(p) for p in d['plotgroups']],
+                          [MetaAttribute.from_dict(a)
+                           for a in d['attributes']],
+                          [MetaPlotGroup.from_dict(p)
+                           for p in d['plotgroups']],
                           [MetaTable.from_dict(t) for t in d['tables']])
 
     def get_meta_attribute(self, id_):
@@ -139,21 +179,10 @@ class MetaReport(object):
                       plotgroups=plotgroups, tables=tables, uuid=uuid)
 
     def apply_view(self, report):
-       attributes = []
-       for attr in report.attributes:
-               attributes.append(self.get_meta_attribute(attr.id).as_attribute(attr.value))
-       tables = []
-       for table in report.tables:
-               columns = []
-               for col in table.columns:
-                       columns.append(self.get_meta_table(table.id).get_meta_column(col.id).as_column(col.values))
-               tables.append(self.get_meta_table(table.id).as_table(columns=columns))
-       plotgroups = []
-       for plotgroup in report.plotGroups:
-#               plots = []
-#               for plot in plotgroup.plots:
-#                       plots.append(self.get_meta_plotgroup(plotgroup.id).get_meta_plot(plot.id).as_plot(image=plot.image, thumbnail=plot.thumbnail))
-    	       plotgroups.append(self.get_meta_plotgroup(plotgroup.id).as_plotgroup(plots=plotgroup.plots, thumbnail=plotgroup.thumbnail))
-       return Report(self.id, self.title, attributes=attributes,
-                      plotgroups=report.plotGroups, tables=tables, dataset_uuids=report.dataset_uuids, uuid=report.uuid)
+    	return Report(self.id, self.title, 
+                      attributes=[self.get_meta_attribute(a.id).apply_attribute_view(a) for a in report.attributes],
+                      tables=[self.get_meta_table(t.id).apply_table_view(t) for t in report.tables],
+#                      plotgroups=[self.get_meta_plotgroup(p.id).apply_plotgroup_view(p) for p in report.plotGroups],
+    		      plotgroups=report.plotGroups,
+                      dataset_uuids=report.dataset_uuids, uuid=report.uuid)
 

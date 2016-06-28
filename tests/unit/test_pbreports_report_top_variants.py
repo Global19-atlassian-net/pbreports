@@ -170,7 +170,6 @@ class TestTopVariantsReport(unittest.TestCase):
             s = json.load(f)
 
         report = dict_to_report(s)
-        self.assertEqual('Genotype', report.tables[0].columns[6].header)
 
     def test_make_minor_topvariants_report(self):
         """
@@ -187,7 +186,6 @@ class TestTopVariantsReport(unittest.TestCase):
             s = json.load(f)
 
         report = dict_to_report(s)
-        self.assertEqual('Frequency', report.tables[0].columns[6].header)
 
     def test_exit_code_0(self):
         """
