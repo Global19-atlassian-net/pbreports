@@ -60,8 +60,6 @@ class Constants(object):
 class ReadStatsPlots(object):
     P_LENGTH = "read_length_plot"
     P_LENGTH_PREFIX = "readLenDist"
-    P_LENGTH_X_AXIS = "Read Length"
-    P_QUAL_X_AXIS = "Read Quality"
     P_QUAL = "read_quality_plot"
     P_QUAL_PREFIX = "readQualDist"
     PG_LENGTH = "read_length_plot_group"
@@ -71,8 +69,6 @@ class ReadStatsPlots(object):
 class InsertStatsPlots(object):
     P_LENGTH_PREFIX = "insertLenDist"
     P_LENGTH = "insert_length_plot"
-    P_LENGTH_X_AXIS = "Insert Length"
-    P_QUAL_X_AXIS = "Insert Quality"
     P_QUAL = "insert_quality_plot"
     P_QUAL_PREFIX = "insertQualDist"
     PG_LENGTH = "insert_length_plot_group"
@@ -171,8 +167,8 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(PlotConstants.P_LENGTH_X_AXIS)
-        len_axes.set_ylabel("Number Of Reads")
+        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlab)
+        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylab)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_LENGTH_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
@@ -183,7 +179,6 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
     plot_groups = [
         PlotGroup(PlotConstants.PG_LENGTH,
-                  title=title,
                   plots=length_plots,
                   thumbnail=os.path.relpath(thumbnail_base, output_dir))
     ]
@@ -199,8 +194,8 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(PlotConstants.P_QUAL_X_AXIS)
-        qual_axes.set_ylabel("Number Of Reads")
+        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlab)
+        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylab)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_QUAL_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,
@@ -211,7 +206,6 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
     plot_groups.append(
         PlotGroup(PlotConstants.PG_QUAL,
-                  title=Constants.ATTR_LABELS[PlotConstants.P_QUAL_X_AXIS],
                   plots=qual_plots))
     return plot_groups
 
@@ -264,7 +258,7 @@ def to_report(stats_xml, output_dir, dpi=72):
                     plotgroups=plot_groups,
                     dataset_uuids=dataset_uuids)
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):

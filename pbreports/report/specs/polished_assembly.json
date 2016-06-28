@@ -1,49 +1,50 @@
 {
+    "tables": [], 
+    "description": null, 
+    "title": "Polished Assembly", 
     "attributes": [
         {
-            "description": "Number of assembled contigs",
-            "type": "int",
-            "id": "polished_contigs",
-            "name": "Polished Contigs"
-        },
+            "type": "int", 
+            "description": "Number of assembled contigs", 
+            "name": "Polished Contigs", 
+            "id": "polished_contigs"
+        }, 
         {
-            "description": "Length of longest contig",
-            "type": "int",
-            "id": "max_contig_length",
-            "name": "Maximum Contig Length"
-        },
+            "type": "int", 
+            "description": "Length of longest contig", 
+            "name": "Maximum Contig Length", 
+            "id": "max_contig_length"
+        }, 
         {
-            "description": "50% of contigs are longer than this value",
-            "type": "int",
-            "id": "n_50_contig_length",
-            "name": "N50 Contig Length"
-        },
+            "type": "int", 
+            "description": "50% of contigs are longer than this value", 
+            "name": "N50 Contig Length", 
+            "id": "n_50_contig_length"
+        }, 
         {
-            "description": "Total length of all contigs",
-            "type": "int",
-            "id": "sum_contig_lengths",
-            "name": "Sum of Contig Lengths"
+            "type": "int", 
+            "description": "Total length of all contigs", 
+            "name": "Sum of Contig Lengths", 
+            "id": "sum_contig_lengths"
         }
-    ],
-    "tables": [],
+    ], 
+    "id": "polished_assembly", 
     "plotgroups": [
         {
-            "id": "coverage_based",
             "plots": [
                 {
-                    "xlab": "Mean Coverage Depth",
-                    "description": null,
-                    "caption": null,
-                    "ylab": "Mean Confidence (QV)",
+                    "xlab": "Mean Coverage Depth", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": "Mean Confidence (QV)", 
+                    "title": null, 
                     "id": "cov_vs_qual"
                 }
-            ],
-            "title": "Contig Coverage vs Confidence",
-            "description": null,
-            "legend": null
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "coverage_based", 
+            "title": "Contig Coverage vs Confidence"
         }
-		  ],
-    "id": "polished_assembly",
-    "description": null,
-    "title": "Polished Assembly"
+    ]
 }

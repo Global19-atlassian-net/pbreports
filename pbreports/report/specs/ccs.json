@@ -83,6 +83,7 @@
                     "xlab": "Quality",
                     "description": null,
                     "caption": null,
+                    "title": null,
                     "ylab": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
                     "id": "accuracy_hist"
                 }
@@ -98,6 +99,7 @@
                     "xlab": "Number of Passes",
                     "description": null,
                     "caption": null,
+                    "title": null,
                     "ylab": "Reads",
                     "id": "npasses_hist"
                 }
@@ -113,6 +115,7 @@
                     "xlab": "Read Length",
                     "description": null,
                     "caption": null,
+                    "title": null,
                     "ylab": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
                     "id": "readlength_hist"
                 }
@@ -128,6 +131,7 @@
                     "xlab": "Number of passes",
                     "description": null,
                     "caption": null,
+                    "title": null,
                     "ylab": "Read Score as Phred QV",
                     "id": "npasses_vs_accuracy"
                 }

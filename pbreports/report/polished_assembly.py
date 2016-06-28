@@ -69,12 +69,11 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
     cvqp = _coverage_vs_quality_plot(contigs, output_dir)
 
     pgrp = PlotGroup(Constants.PG_COVERAGE,
-                     title=meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).title,
                      thumbnail=cvqp.thumbnail,
                      plots=[cvqp])
 
     rep = Report(meta_rpt.id)
-    rep.add_attribute(meta_rpt.get_meta_attribute(Constants.A_N_CONTIGS).as_attribute(len(contigs)))
+    rep.add_attribute(Attribute(Constants.A_N_CONTIGS, len(contigs)))
     read_lengths = [c.length for c in contigs.values()]
     read_lengths.sort()
     rep.add_attribute(_get_att_max_contig_length(read_lengths))
@@ -163,14 +162,14 @@ def _get_att_max_contig_length(read_lengths):
         val = 0
     else:
         val = read_lengths[l - 1]
-    return meta_rpt.get_meta_attribute(Constants.A_MAX_LEN).as_attribute(val)
+    return Attribute(Constants.A_MAX_LEN, val)
 
 def _get_att_sum_contig_lengths(read_lengths):
     """
     Return the last member of the sorted list. 0 if read_lengths is empty.
     :param read_lengths: sorted list
     """
-    return meta_rpt.get_meta_attribute(Constants.A_SUM_LEN).as_attribute(sum(read_lengths))
+    return Attribute(Constants.A_SUM_LEN, sum(read_lengths))
 
 def _get_att_n_50_contig_length(read_lengths):
     """
@@ -178,7 +177,7 @@ def _get_att_n_50_contig_length(read_lengths):
     :param read_lengths: sorted list
     """
     n50 = compute_n50(read_lengths)
-    return meta_rpt.get_meta_attribute(Constants.A_N50_LEN).as_attribute(int(n50))
+    return Attribute(Constants.A_N50_LEN, int(n50))
 
 def _validate_inputs(infile, desc="input file"):
     """

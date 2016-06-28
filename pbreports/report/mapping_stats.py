@@ -637,18 +637,13 @@ def analyze_movies(movies, alignment_file_names, stats_models):
             _process_movie_data(movie, file_name, stats_models, *args)
     log.info("Completed analyzing {n} movies.".format(n=len(movies)))
 
-def get_attributes(aggregators_d, meta_rpt):
+def get_attributes(aggregators_d):
 
     attributes = []
 
     for id_, aggregator in aggregators_d.iteritems():
         if isinstance(aggregator, AttributeAble):
-            if id_ in meta_rpt._attr_dict:
-                display_name = meta_rpt.get_meta_attribute(id_).name
-            else:
-                display_name = aggregator.__class__.__name__
-
-            a = Attribute(id_, aggregator.attribute, name=display_name)
+            a = Attribute(id_, aggregator.attribute)
             attributes.append(a)
         else:
             # log.warn("Skipping attribute {i} for
@@ -677,7 +672,7 @@ class MappingStatsCollector(object):
 
     COLUMNS = []
     for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
-        COLUMNS.append((id, meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(id).header))
+        COLUMNS.append((id, ""))
 
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
@@ -753,7 +748,7 @@ class MappingStatsCollector(object):
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).title),
+                plot_group_title=""),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
@@ -766,7 +761,7 @@ class MappingStatsCollector(object):
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).title),
+                plot_group_title=""),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -779,7 +774,7 @@ class MappingStatsCollector(object):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title),
+                plot_group_title=""),
         ]
         return {v.plot_id: v for v in _p}
 
@@ -823,11 +818,10 @@ class MappingStatsCollector(object):
         mean subread readlength
         mean subread concordance), ...]
         """
-        columns = [Column(k, header=h) for k, h in self.COLUMNS]
+        columns = [Column(k, h) for k, h in self.COLUMNS]
         table = Table(Constants.T_STATS,
-                      title=meta_rpt.title,
                       columns=columns)
-
+ 
         for movie_data in movie_datum:
             if len(movie_data) != len(columns):
                 #            if len(movie_data) != 6:
@@ -923,7 +917,7 @@ class MappingStatsCollector(object):
         for a in total_model.aggregators:
             log.info(a)
 
-	attributes = get_attributes(_total_aggregators, meta_rpt)
+	attributes = get_attributes(_total_aggregators)
 
         log.info("Attributes from streaming mapping Report.")
         for a in attributes:
@@ -941,8 +935,7 @@ class MappingStatsCollector(object):
                                  for k, v in self.HISTOGRAM_IDS.iteritems()}
             plot_groups = to_plot_groups(plot_config_views, output_dir,
                                          id_to_aggregators)
-            rb_pg = PlotGroup(Constants.PG_RAINBOW,
-                              title=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).title)
+            rb_pg = PlotGroup(Constants.PG_RAINBOW)
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, rb_png)
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
@@ -966,7 +959,7 @@ class MappingStatsCollector(object):
 
 
 def to_report(alignment_file, output_dir):
-    return MappingStatsCollector(alignment_file).to_report(output_dir)
+    return meta_rpt.apply_view(MappingStatsCollector(alignment_file).to_report(output_dir))
 
 
 def summarize_report(report_file, out=sys.stdout):

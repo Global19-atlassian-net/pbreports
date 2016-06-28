@@ -1,62 +1,66 @@
 {
+    "tables": [
+        {
+            "title": "Iso-Seq Cluster", 
+            "id": "isoseq_classify_table", 
+            "columns": [], 
+            "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES"
+        }
+    ], 
+    "description": null, 
+    "title": "Transcript Clustering", 
     "attributes": [
         {
-            "description": "Total number of consensus isoforms, both high- and low-quality",
-            "type": "int",
-            "id": "num_consensus_isoforms",
-            "name": "Number of unpolished consensus isoforms"
-        },
+            "type": "int", 
+            "description": "Total number of consensus isoforms, both high- and low-quality", 
+            "name": "Number of unpolished consensus isoforms", 
+            "id": "num_consensus_isoforms"
+        }, 
         {
-            "description": "The number of consensus isoforms that have an estimated accuracy above the specified cutoff (0.99 default)",
-            "type": "int",
-            "id": "num_polished_hq_isoforms",
-            "name": "Number of polished high-quality isoforms"
-        },
+            "type": "int", 
+            "description": "The number of consensus isoforms that have an estimated accuracy above the specified cutoff (0.99 default)", 
+            "name": "Number of polished high-quality isoforms", 
+            "id": "num_polished_hq_isoforms"
+        }, 
         {
-            "description": "The number of consensus isoforms that have an estimated accuracy below the specified cutoff",
-            "type": "int",
-            "id": "num_polished_lq_isoforms",
-            "name": "Number of polished low-quality isoforms"
-        },
+            "type": "int", 
+            "description": "The number of consensus isoforms that have an estimated accuracy below the specified cutoff", 
+            "name": "Number of polished low-quality isoforms", 
+            "id": "num_polished_lq_isoforms"
+        }, 
         {
-            "description": "The average length of all consensus isoforms, both high- and low-quality",
-            "type": "int",
-            "id": "avg_consensus_isoform_length",
-            "name": "Mean unpolished consensus isoforms read length"
-        },
+            "type": "int", 
+            "description": "The average length of all consensus isoforms, both high- and low-quality", 
+            "name": "Mean unpolished consensus isoforms read length", 
+            "id": "avg_consensus_isoform_length"
+        }, 
         {
-            "description": "Total number of bases in unpolished consensus isoforms",
-            "type": "int",
-            "id": "num_total_bases",
-            "name": "Total number of bases in unpolished consensus isoforms"
+            "type": "int", 
+            "description": "Total number of bases in unpolished consensus isoforms", 
+            "name": "Total number of bases in unpolished consensus isoforms", 
+            "id": "num_total_bases"
         }
-    ],
-    "tables": [
-	{
-            "id": "isoseq_classify_table",
-            "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES",
-            "columns": [],
-            "title": "Iso-Seq Cluster"
-        }
-	      ],
+    ], 
+    "id": "isoseq_cluster", 
     "plotgroups": [
         {
+            "id": "consensus_isoforms_readlength_group", 
             "plots": [
                 {
-                    "xlab": "Read Length",
-                    "description": null,
-                    "caption": null,
-                    "ylab": {"L": "Reads", "R": "Reads > Read Length"},
+                    "xlab": "Read Length", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": {
+                        "R": "Reads > Read Length", 
+                        "L": "Reads"
+                    }, 
+                    "title": null, 
                     "id": "consensus_isoforms_readlength_hist"
                 }
-            ],
-            "description": null,
-            "legend": null,
-            "id": "consensus_isoforms_readlength_group",
-            "title": "Read Length of Consensus Isoforms Reads"
+            ], 
+            "title": "Read Length of Consensus Isoforms Reads", 
+            "description": null, 
+            "legend": null
         }
-    ],
-    "id": "isoseq_cluster",
-    "description": null,
-    "title": "Transcript Clustering"
+    ]
 }

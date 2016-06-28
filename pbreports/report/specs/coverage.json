@@ -22,6 +22,7 @@
                     "xlab": "Reference Start Position",
                     "description": null,
                     "caption": null,
+                    "title": null,
                     "ylab": "Coverage",
                     "id": "coverage_contig"
                 }
@@ -37,6 +38,7 @@
                     "xlab": "Coverage",
                     "description": null,
                     "caption": "Depth of coverage distribution ",
+                    "title": "Depth of coverage distribution ",
                     "ylab": "Reference Regions",
                     "id": "coverage_histogram"
                 }

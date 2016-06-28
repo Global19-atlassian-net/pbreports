@@ -67,16 +67,15 @@ def _report_to_attributes(report_file):
     if attr.get(Constants.A_CONSENSUS, 0) > 0:
         avg = attr[Constants.A_BASES] / \
             attr[Constants.A_CONSENSUS]
-    	report.attributes.append(meta_rpt.get_meta_attribute(Constants.A_LENGTH).as_attribute(int(avg)))
+    	report.attributes.append(Attribute(Constants.A_LENGTH, int(avg)))
     return report.attributes
 
 
 def attributesToTable(attributes):
     """Build a report table from Iso-Seq cluster attributes."""
-    columns = [Column(x.id, header=x.name) for x in attributes]
+    columns = [Column(x.id, header="") for x in attributes]
 
     table = Table(Constants.T_ATTR,
-                  title=meta_rpt.get_meta_table(Constants.T_ATTR).title,
                   columns=columns)
 
     for x in attributes:
@@ -204,7 +203,6 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, outDir)
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title,
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
 
@@ -227,7 +225,7 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
                     plotgroups=[readlength_group],
                     dataset_uuids=dataset_uuids)
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def _run(fasta_file, summary_txt, json_report, outDir):

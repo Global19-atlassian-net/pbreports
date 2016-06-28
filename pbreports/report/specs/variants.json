@@ -1,93 +1,94 @@
 {
-    "attributes": [
-        {
-            "description": "The percent concordance of the consensus sequence compared to the reference",
-            "type": "float",
-            "id": "weighted_mean_concordance",
-            "name": "Reference Consensus Concordance (mean)"
-        },
-        {
-            "description": "Mean length of reference sequence contigs",
-            "type": "float",
-            "id": "mean_contig_length",
-            "name": "Reference Contig Length (mean)"
-        },
-        {
-            "description": "The FASTA header ID of the longest reference contig",
-            "type": "str",
-            "id": "longest_contig_name",
-            "name": "Longest Reference Contig"
-        },
-        {
-            "description": "Percentage of the reference sequence for which consensus bases were called",
-            "type": "float",
-            "id": "weighted_mean_bases_called",
-            "name": "Percent Reference Bases Called (mean)"
-        },
-        {
-            "description": "The mean depth of coverage across the reference sequence",
-            "type": "float",
-            "id": "weighted_mean_coverage",
-            "name": "Reference Coverage (mean)"
-        }
-    ],
     "tables": [
         {
-            "id": "consensus_table",
-	    "description": null,
+            "title": "Consensus Calling Results", 
+            "id": "consensus_table", 
             "columns": [
                 {
-                    "header": "Reference",
-                    "type": "str",
-                    "id": "contig_name",
+                    "header": "Reference", 
+                    "type": "str", 
+                    "id": "contig_name", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Reference Length",
-                    "type": "float",
-                    "id": "contig_len",
+                    "header": "Reference Length", 
+                    "type": "float", 
+                    "id": "contig_len", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Bases Called",
-                    "type": "float",
-                    "id": "bases_called",
+                    "header": "Bases Called", 
+                    "type": "float", 
+                    "id": "bases_called", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Consensus Accuracy",
-                    "type": "float",
-                    "id": "concordance",
+                    "header": "Consensus Accuracy", 
+                    "type": "float", 
+                    "id": "concordance", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Base Coverage",
-                    "type": "float",
-                    "id": "coverage",
+                    "header": "Base Coverage", 
+                    "type": "float", 
+                    "id": "coverage", 
                     "description": null
                 }
-            ],
-            "title": "Consensus Calling Results"
+            ], 
+            "description": null
         }
-    ],
+    ], 
+    "description": null, 
+    "title": "Variants Report", 
+    "attributes": [
+        {
+            "type": "float", 
+            "description": "The percent concordance of the consensus sequence compared to the reference", 
+            "name": "Reference Consensus Concordance (mean)", 
+            "id": "weighted_mean_concordance"
+        }, 
+        {
+            "type": "float", 
+            "description": "Mean length of reference sequence contigs", 
+            "name": "Reference Contig Length (mean)", 
+            "id": "mean_contig_length"
+        }, 
+        {
+            "type": "str", 
+            "description": "The FASTA header ID of the longest reference contig", 
+            "name": "Longest Reference Contig", 
+            "id": "longest_contig_name"
+        }, 
+        {
+            "type": "float", 
+            "description": "Percentage of the reference sequence for which consensus bases were called", 
+            "name": "Percent Reference Bases Called (mean)", 
+            "id": "weighted_mean_bases_called"
+        }, 
+        {
+            "type": "float", 
+            "description": "The mean depth of coverage across the reference sequence", 
+            "name": "Reference Coverage (mean)", 
+            "id": "weighted_mean_coverage"
+        }
+    ], 
+    "id": "variants", 
     "plotgroups": [
-         {
-            "id": "variants_plots",
+        {
             "plots": [
                 {
-                    "xlab": "Reference Start Position",
-                    "description": null,
-                    "caption": null,
-                    "ylab": "Variants",
+                    "xlab": "Reference Start Position", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": "Variants", 
+                    "title": null, 
                     "id": "variants_plot"
                 }
-            ],
-            "title": "Variants Across Reference",
-            "description": null,
-            "legend": null
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "variants_plots", 
+            "title": "Variants Across Reference"
         }
-    ],
-    "id": "variants",
-    "description": null,
-    "title": "Variants Report"
+    ]
 }

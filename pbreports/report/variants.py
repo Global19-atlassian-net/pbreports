@@ -286,12 +286,12 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     mean_coverage = 0
 
     columns = []
-    columns.append(meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(Constants.C_CONTIG_NAME).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(Constants.C_CONTIG_LEN).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(Constants.C_BASES_CALLED).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(Constants.C_CONCORDANCE).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_STATS).get_meta_column(Constants.C_COVERAGE).as_column(values=[]))
-    table = meta_rpt.get_meta_table(Constants.T_STATS).as_table(columns=columns)    
+    columns.append(Column(Constants.C_CONTIG_NAME))
+    columns.append(Column(Constants.C_CONTIG_LEN))
+    columns.append(Column(Constants.C_BASES_CALLED))
+    columns.append(Column(Constants.C_CONCORDANCE))
+    columns.append(Column(Constants.C_COVERAGE))
+    table = Table(Constants.T_STATS, columns=columns)    
 
     for seqid in ordered_ids:
         contig = reference_entry.get_contig(seqid)
@@ -336,11 +336,11 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     mean_coverage = mean_coverage / sum_lengths
 
     attributes = []
-    attributes.append(meta_rpt.get_meta_attribute(Constants.MEAN_CONCORDANCE).as_attribute(mean_concord))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.MEAN_CONTIG_LENGTH).as_attribute(mean_contig_length))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.LONGEST_CONTIG).as_attribute(ordered_ids[0]))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.MEAN_BASES_CALLED).as_attribute(mean_bases_called))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.MEAN_COVERAGE).as_attribute(mean_coverage))
+    attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
+    attributes.append(Attribute(Constants.MEAN_CONTIG_LENGTH, mean_contig_length))
+    attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
+    attributes.append(Attribute(Constants.MEAN_BASES_CALLED, mean_bases_called))
+    attributes.append(Attribute(Constants.MEAN_COVERAGE, mean_coverage))
 
     return table, attributes
 

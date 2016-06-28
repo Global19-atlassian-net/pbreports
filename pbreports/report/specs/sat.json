@@ -1,39 +1,39 @@
 {
+    "tables": [], 
+    "description": "Generates the SAT metric performance attributes", 
+    "title": "SAT Report", 
     "attributes": [
         {
-            "description": "ID of the Sequel or RSII instrument on which the data were collected",
-            "type": "str",
-            "id": "instrument",
-            "name": "Instrument ID"
-        },
+            "type": "str", 
+            "description": "ID of the Sequel or RSII instrument on which the data were collected", 
+            "name": "Instrument ID", 
+            "id": "instrument"
+        }, 
         {
-            "description": "Percentage of the genome for which consensus bases were called",
-            "type": "float",
-            "id": "coverage",
-            "name": "Genome Coverage"
-        },
+            "type": "float", 
+            "description": "Percentage of the genome for which consensus bases were called", 
+            "name": "Genome Coverage", 
+            "id": "coverage"
+        }, 
         {
-            "description": "Percent concordance of the consensus sequence versus the reference",
-            "type": "float",
-            "id": "concordance",
-            "name": "Consensus Concordance"
-        },
+            "type": "float", 
+            "description": "Percent concordance of the consensus sequence versus the reference", 
+            "name": "Consensus Concordance", 
+            "id": "concordance"
+        }, 
         {
-            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
-            "type": "int",
-            "id": "mapped_readlength_mean",
-            "name": "Mean Mapped Read Length"
-        },
+            "type": "int", 
+            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)", 
+            "name": "Mean Mapped Read Length", 
+            "id": "mapped_readlength_mean"
+        }, 
         {
-            "description": "Number of polymerase reads that could be mapped to the reference genome",
-            "type": "int",
-            "id": "reads_in_cell",
-            "name": "Reads in cell"
+            "type": "int", 
+            "description": "Number of polymerase reads that could be mapped to the reference genome", 
+            "name": "Reads in cell", 
+            "id": "reads_in_cell"
         }
-    ],
-    "tables": [],
-    "plotgroups": [],
-    "id": "sat",
-    "description": "Generates the SAT metric performance attributes",
-    "title": "SAT Report"
+    ], 
+    "id": "sat", 
+    "plotgroups": []
 }

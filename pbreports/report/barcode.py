@@ -10,11 +10,14 @@ import argparse
 import logging
 import time
 import os
+import os.path as op
 import re
 import sys
 
 from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
@@ -23,12 +26,20 @@ from pbcore.io import openDataSet, BarcodeSet
 log = logging.getLogger(__name__)
 __version__ = '0.6'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+BC_SPEC = op.join(SPEC_DIR, 'barcode.json')
+meta_rpt = MetaReport.from_json(BC_SPEC)
+
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.barcode_report"
     TOOL_NAME = "barcode_report"
     DRIVER_EXE = "python -m pbreports.report.barcode --resolved-tool-contract"
-
+    C_BARCODE = 'barcode'
+    C_NREADS = 'number_of_reads'
+    C_NBASES = 'number_of_bases'
 
 def _labels_reads_iterator(reads, barcodes, subreads=True):
     with openDataSet(reads) as ds:
@@ -85,21 +96,21 @@ def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
         label2row[label].bases += len(read)
         label2row[label].reads += 1
 
-    columns = [Column('barcode', header="Barcode Name"),
-               Column('number_of_reads', header="Reads"),
-               Column('number_of_bases', header="Bases")]
+    columns = [Column(Constants.C_BARCODE),
+               Column(Constants.C_NREADS),
+               Column(Constants.C_NBASES)]
 
-    table = Table('barcode_table', title='Barcodes', columns=columns)
+    table = Table('barcode_table', columns=columns)
     labels = sorted(label2row.keys())
     for label in labels:
         row = label2row[label]
-        table.add_data_by_column_id('barcode', label)
-        table.add_data_by_column_id('number_of_reads', row.reads)
-        table.add_data_by_column_id('number_of_bases', row.bases)
+        table.add_data_by_column_id(Constants.C_BARCODE, label)
+        table.add_data_by_column_id(Constants.C_NREADS, row.reads)
+        table.add_data_by_column_id(Constants.C_NBASES, row.bases)
 
-    report = Report('barcode', tables=[table],
+    report = Report(meta_rpt.id, tables=[table],
                     dataset_uuids=dataset_uuids)
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):

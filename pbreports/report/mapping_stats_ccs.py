@@ -33,7 +33,7 @@ class Constants(BaseConstants):
     TOOL_ID = "pbreports.tasks.mapping_stats_ccs"
     DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
 
-    T_STATS = "mapping_stats_ccs_table"
+    T_STATS = "mapping_stats_table"
     PG_READ_CONCORDANCE = "ccs_read_concordance_group"
     P_READ_CONCORDANCE = "concordance_plot"
     PG_READLENGTH = "ccs_readlength_group"
@@ -73,6 +73,7 @@ def scatter_plot_accuracy_vs_concordance(
 
 
 class CCSMappingStatsCollector(MappingStatsCollector):
+#    meta_rpt = MetaReport.from_json(MAPPING_STATS_CCS_SPEC)
     COLUMN_ATTR = [
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
         Constants.A_NBASES, Constants.A_READ_CONCORDANCE
@@ -115,7 +116,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).title),
+                plot_group_title=""),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -128,7 +129,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title)
+                plot_group_title="")
         ]
         return {v.plot_id: v for v in _p}
 
@@ -166,8 +167,6 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 data=(accuracy, concordance),
                 output_dir=output_dir)
             pg = PlotGroup(Constants.PG_QV_CALIBRATION,
-                           title=meta_rpt.get_meta_plotgroup(
-                               Constants.PG_QV_CALIBRATION).title,
                            plots=[qv_validation_plot],
                            thumbnail=qv_validation_plot.thumbnail)
             plot_groups.append(pg)
@@ -177,7 +176,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
 
 
 def to_report(alignment_file, output_dir):
-    return CCSMappingStatsCollector(alignment_file).to_report(output_dir)
+    return meta_rpt.apply_view(CCSMappingStatsCollector(alignment_file).to_report(output_dir))
 
 
 def _args_runner(args):

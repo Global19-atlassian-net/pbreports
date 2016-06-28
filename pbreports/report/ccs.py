@@ -163,11 +163,11 @@ def _movie_results_to_attributes(movie_results):
     #m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
     attributes = []
-    attributes.append(meta_rpt.get_meta_attribute(Constants.A_NREADS).as_attribute(read_lengths.shape[0]))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.A_TOTAL_BASES).as_attribute(int(read_lengths.sum())))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.A_MEAN_READLENGTH).as_attribute(m_readlength))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.A_MEAN_ACCURACY).as_attribute(float(m_accuracy)))
-    attributes.append(meta_rpt.get_meta_attribute(Constants.A_MEAN_NPASSES).as_attribute(int(m_npasses)))
+    attributes.append(Attribute(Constants.A_NREADS, read_lengths.shape[0]))
+    attributes.append(Attribute(Constants.A_TOTAL_BASES, int(read_lengths.sum())))
+    attributes.append(Attribute(Constants.A_MEAN_READLENGTH, m_readlength))
+    attributes.append(Attribute(Constants.A_MEAN_ACCURACY, float(m_accuracy)))
+    attributes.append(Attribute(Constants.A_MEAN_NPASSES, m_npasses))
 
     return attributes
 
@@ -180,13 +180,13 @@ def _movie_results_to_table(movie_results):
     """
 
     columns = []
-    columns.append(meta_rpt.get_meta_table(Constants.T_ID).get_meta_column(Constants.C_MOVIE_NAME).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_ID).get_meta_column(Constants.C_NREADS).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_ID).get_meta_column(Constants.C_TOTAL_BASES).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_ID).get_meta_column(Constants.C_MEAN_READLENGTH).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_ID).get_meta_column(Constants.C_MEAN_ACCURACY).as_column(values=[]))
-    columns.append(meta_rpt.get_meta_table(Constants.T_ID).get_meta_column(Constants.C_MEAN_NPASSES).as_column(values=[]))
-    table = meta_rpt.get_meta_table(Constants.T_ID).as_table(columns=columns)
+    columns.append(Column(Constants.C_MOVIE_NAME, values=[], header = ''))
+    columns.append(Column(Constants.C_NREADS, values=[], header = ''))
+    columns.append(Column(Constants.C_TOTAL_BASES, values=[], header = ''))
+    columns.append(Column(Constants.C_MEAN_READLENGTH, values=[], header = ''))
+    columns.append(Column(Constants.C_MEAN_ACCURACY, values=[], header = ''))
+    columns.append(Column(Constants.C_MEAN_NPASSES, values=[], header = ''))
+    table = Table(Constants.T_ID, columns=columns)
 
     movie_names = {m.movie_name for m in movie_results}
 
@@ -413,20 +413,16 @@ def to_report(ccs_subread_set, output_dir):
     scatter_plot = create_scatter_plot((num_passes, accuracies), output_dir)
 
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title,
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
     accuracy_group = PlotGroup(Constants.PG_ACCURACY, plots=[accuracy_plot],
-                               thumbnail=accuracy_plot.thumbnail,
-                               title=meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).title)
+                               thumbnail=accuracy_plot.thumbnail)
 
     npasses_group = PlotGroup(Constants.PG_NPASSES, plots=[npasses_plot],
-                              thumbnail=npasses_plot.thumbnail,
-                              title=meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).title)
+                              thumbnail=npasses_plot.thumbnail)
 
     scatter_group = PlotGroup(Constants.PG_SCATTER, plots=[scatter_plot],
-                              thumbnail=scatter_plot.thumbnail,
-                              title=meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).title)
+                              thumbnail=scatter_plot.thumbnail)
 
     table = _movie_results_to_table(movie_results)
     log.info(str(table))

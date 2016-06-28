@@ -1,213 +1,218 @@
 {
-    "attributes": [
-        {
-            "type": "float",
-            "description": "The mean concordance of subreads that mapped to the reference sequence",
-            "name": "Mean Mapped Concordance",
-            "id": "mapped_subread_concordance_mean"
-        },
-        {
-            "type": "int",
-            "description": "The number of subreads mapped to the reference sequence",
-            "name": "Number of Subreads (mapped)",
-            "id": "mapped_subreads_n"
-        },
-        {
-            "type": "int",
-            "description": "The number of subread bases mapped to the reference sequence",
-            "name": "Number of Subread Bases (mapped)",
-            "id": "mapped_subread_bases_n"
-        },
-        {
-            "type": "float",
-            "description": "The mean length of the mapped portion of subreads which mapped to the reference sequence",
-            "name": "Subread Length Mean (mapped)",
-            "id": "mapped_subread_readlength_mean"
-        },
-        {
-            "type": "int",
-            "description": "The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value",
-            "name": "Subread Length N50 (mapped)",
-            "id": "mapped_subreadlength_n50"
-        },
-        {
-            "type": "int",
-            "description": "The 95th percentile of length of subreads that mapped to the reference sequence",
-            "name": "Subread Length 95% (mapped)",
-            "id": "mapped_subreadlength_q95"
-        },
-        {
-            "type": "int",
-            "description": "The maximum length of subreads that mapped to the reference sequence",
-            "name": "Subread Length Max (mapped)",
-            "id": "mapped_subread_readlength_max"
-        },
-        {
-            "type": "int",
-            "description": "The number of polymerase reads mapped to the reference sequence",
-            "name": "Number of Polymerase Reads (mapped)",
-            "id": "mapped_reads_n"
-        },
-        {
-            "type": "float",
-            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)",
-            "name": "Polymerase Read Length Mean (mapped)",
-            "id": "mapped_readlength_mean"
-        },
-        {
-            "type": "int",
-            "description": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value",
-            "name": "Polymerase Read N50 (mapped)",
-            "id": "mapped_readlength_n50"
-        },
-        {
-            "type": "int",
-            "description": "The 95th percentile of read length of polymerase reads that mapped to the reference sequence",
-            "name": "Polymerase Read Length 95% (mapped)",
-            "id": "mapped_readlength_q95"
-        },
-        {
-            "type": "int",
-            "description": "The maximum length of polymerase reads that mapped to the reference sequence",
-            "name": "Polymerase Read Length Max (mapped)",
-            "id": "mapped_readlength_max"
-        }
-    ],
-    "plotgroups": [
-        {
-            "id": "subread_concordance_group",
-            "plots": [
-                {
-                    "xlab": "Concordance",
-                    "description": null,
-                    "caption": null,
-                    "ylab": "Subreads",
-                    "id": "concordance_plot"
-                }
-            ],
-            "title": "Mapped Subread Accuracy",
-            "description": null,
-            "legend": null
-        },
-        {
-            "id": "readlength_plot",
-            "plots": [
-                {
-                    "xlab": "Read Length",
-                    "description": null,
-                    "caption": null,
-                    "ylab": "Reads",
-                    "id": "readlength_plot"
-                }
-            ],
-            "title": "Mapped Polymerase Read Length",
-            "description": null,
-            "legend": null
-        },
-        {
-            "id": "subreadlength_plot",
-            "plots": [
-                {
-                    "xlab": "Subread Length",
-                    "description": null,
-                    "caption": null,
-                    "ylab": "Subreads",
-                    "id": "subreadlength_plot"
-                }
-            ],
-            "title": "Mapped Subread Length",
-            "description": null,
-            "legend": null
-        },
-        {
-            "id": "rainbow_plot",
-            "plots": [
-                {
-                    "xlab": null,
-                    "description": null,
-                    "caption": "Mapped Concordance vs. Read Length",
-                    "ylab": null,
-                    "id": "rainbow_plot"
-                }
-            ],
-            "title": "Mapped Concordance vs. Read Length",
-            "description": null,
-            "legend": null
-        },
-        {
-            "id": "read_concordance_group",
-            "plots": [
-                {
-                    "xlab": null,
-                    "description": null,
-                    "caption": null,
-                    "ylab": null,
-                    "id": "read_concordance_plot"
-                }
-            ],
-            "title": null,
-            "description": null,
-            "legend": null
-        }
-    ],
-    "title": "Mapping Statistics",
-    "id": "mapping_stats_report",
-    "description": "Create a Mapping Report from a Aligned BAM or Alignment DataSet",
     "tables": [
         {
-            "id": "mapping_stats_table",
-	    "description": null,
+            "title": "Mapping Statistics Summary", 
+            "id": "mapping_stats_table", 
             "columns": [
                 {
-                    "header": "Movie",
-                    "type": "str",
-                    "id": "movie",
+                    "header": "Movie", 
+                    "type": "str", 
+                    "id": "movie", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Reads",
-                    "type": "int",
-                    "id": "mapped_reads",
+                    "header": "Mapped Reads", 
+                    "type": "int", 
+                    "id": "mapped_reads", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Polymerase Read Length",
-                    "type": "int",
-                    "id": "mapped_polymerase_read_length",
+                    "header": "Mapped Polymerase Read Length", 
+                    "type": "int", 
+                    "id": "mapped_polymerase_read_length", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Polymerase Read Length n50",
-                    "type": "int",
-                    "id": "mapped_polymerase_read_length_n50",
+                    "header": "Mapped Polymerase Read Length n50", 
+                    "type": "int", 
+                    "id": "mapped_polymerase_read_length_n50", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Subreads",
-                    "type": "int",
-                    "id": "mapped_subreads",
+                    "header": "Mapped Subreads", 
+                    "type": "int", 
+                    "id": "mapped_subreads", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Subread Bases",
-                    "type": "int",
-                    "id": "mapped_subread_base",
+                    "header": "Mapped Subread Bases", 
+                    "type": "int", 
+                    "id": "mapped_subread_base", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Subread Length",
-                    "type": "int",
-                    "id": "mapped_subread_length",
+                    "header": "Mapped Subread Length", 
+                    "type": "int", 
+                    "id": "mapped_subread_length", 
                     "description": null
-                },
+                }, 
                 {
-                    "header": "Mapped Subread Accuracy",
-                    "type": "float",
-                    "id": "mapped_subread_accuracy",
+                    "header": "Mapped Subread Accuracy", 
+                    "type": "float", 
+                    "id": "mapped_subread_accuracy", 
                     "description": null
                 }
-            ],
-            "title": "Mapping Statistics Summary"
+            ], 
+            "description": null
+        }
+    ], 
+    "description": "Create a Mapping Report from a Aligned BAM or Alignment DataSet", 
+    "title": "Mapping Statistics", 
+    "attributes": [
+        {
+            "id": "mapped_subread_concordance_mean", 
+            "type": "float", 
+            "description": "The mean concordance of subreads that mapped to the reference sequence", 
+            "name": "Mean Mapped Concordance"
+        }, 
+        {
+            "id": "mapped_subreads_n", 
+            "type": "int", 
+            "description": "The number of subreads mapped to the reference sequence", 
+            "name": "Number of Subreads (mapped)"
+        }, 
+        {
+            "id": "mapped_subread_bases_n", 
+            "type": "int", 
+            "description": "The number of subread bases mapped to the reference sequence", 
+            "name": "Number of Subread Bases (mapped)"
+        }, 
+        {
+            "id": "mapped_subread_readlength_mean", 
+            "type": "float", 
+            "description": "The mean length of the mapped portion of subreads which mapped to the reference sequence", 
+            "name": "Subread Length Mean (mapped)"
+        }, 
+        {
+            "id": "mapped_subreadlength_n50", 
+            "type": "int", 
+            "description": "The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value", 
+            "name": "Subread Length N50 (mapped)"
+        }, 
+        {
+            "id": "mapped_subreadlength_q95", 
+            "type": "int", 
+            "description": "The 95th percentile of length of subreads that mapped to the reference sequence", 
+            "name": "Subread Length 95% (mapped)"
+        }, 
+        {
+            "id": "mapped_subread_readlength_max", 
+            "type": "int", 
+            "description": "The maximum length of subreads that mapped to the reference sequence", 
+            "name": "Subread Length Max (mapped)"
+        }, 
+        {
+            "id": "mapped_reads_n", 
+            "type": "int", 
+            "description": "The number of polymerase reads mapped to the reference sequence", 
+            "name": "Number of Polymerase Reads (mapped)"
+        }, 
+        {
+            "id": "mapped_readlength_mean", 
+            "type": "float", 
+            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)", 
+            "name": "Polymerase Read Length Mean (mapped)"
+        }, 
+        {
+            "id": "mapped_readlength_n50", 
+            "type": "int", 
+            "description": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value", 
+            "name": "Polymerase Read N50 (mapped)"
+        }, 
+        {
+            "id": "mapped_readlength_q95", 
+            "type": "int", 
+            "description": "The 95th percentile of read length of polymerase reads that mapped to the reference sequence", 
+            "name": "Polymerase Read Length 95% (mapped)"
+        }, 
+        {
+            "id": "mapped_readlength_max", 
+            "type": "int", 
+            "description": "The maximum length of polymerase reads that mapped to the reference sequence", 
+            "name": "Polymerase Read Length Max (mapped)"
+        }
+    ], 
+    "id": "mapping_stats_report", 
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlab": "Concordance", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": "Subreads", 
+                    "title": null, 
+                    "id": "concordance_plot"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "subread_concordance_group", 
+            "title": "Mapped Subread Accuracy"
+        }, 
+        {
+            "plots": [
+                {
+                    "xlab": "Read Length", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": "Reads", 
+                    "title": null, 
+                    "id": "readlength_plot"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "readlength_plot", 
+            "title": "Mapped Polymerase Read Length"
+        }, 
+        {
+            "plots": [
+                {
+                    "xlab": "Subread Length", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": "Subreads", 
+                    "title": null, 
+                    "id": "subreadlength_plot"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "subreadlength_plot", 
+            "title": "Mapped Subread Length"
+        }, 
+        {
+            "plots": [
+                {
+                    "xlab": null, 
+                    "description": null, 
+                    "caption": "Mapped Concordance vs. Read Length", 
+                    "ylab": null, 
+                    "title": null, 
+                    "id": "rainbow_plot"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "rainbow_plot", 
+            "title": "Mapped Concordance vs. Read Length"
+        }, 
+        {
+            "plots": [
+                {
+                    "xlab": null, 
+                    "description": null, 
+                    "caption": null, 
+                    "ylab": null, 
+                    "title": null, 
+                    "id": "read_concordance_plot"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "read_concordance_group", 
+            "title": null
         }
     ]
 }

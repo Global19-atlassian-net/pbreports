@@ -59,7 +59,7 @@ def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
     attributes = []
     for attr in report.attributes:
-    	attributes.append(meta_rpt.get_meta_attribute(attr.id).as_attribute(attr.value))
+    	attributes.append(Attribute(attr.id, attr.value))
     return attributes
 
 
@@ -67,10 +67,9 @@ def _attributes_to_table(attributes):
     """Build a report table from Iso-Seq Classify attributes.
 
     """
-    columns = [Column(x.id, header=x.name) for x in attributes]
+    columns = [Column(x.id, header='') for x in attributes]
 
     table = Table(Constants.T_ATTR,
-                  title=meta_rpt.get_meta_table(Constants.T_ATTR).title,
                   columns=columns)
 
     for x in attributes:
@@ -210,7 +209,6 @@ def make_report(contig_set, summary_txt, output_dir):
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, output_dir)
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title,
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
 
@@ -233,7 +231,7 @@ def make_report(contig_set, summary_txt, output_dir):
                     plotgroups=[readlength_group],
                     dataset_uuids=dataset_uuids)
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def _run(contig_set, summary_txt, output_dir, json_report):
