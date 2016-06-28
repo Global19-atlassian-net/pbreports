@@ -1,11 +1,12 @@
-#!/usr/bin/env python
 """Summarize the Long Amplicon Analysis using the ZMW results"""
+
+from collections import defaultdict
+from pprint import pformat
+import argparse
+import logging
+import json
 import os
 import sys
-import logging
-import argparse
-from pprint import pformat
-from collections import defaultdict
 
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
@@ -20,10 +21,8 @@ __version__ = '0.1.1'
 
 
 class Constants(object):
-    TOOL_ID = "pbreports.tasks.amplicon_analysis_consensus"
-
-# TODO: I really shouldn't have this much logic in a report file.
-#    this should be moved into FSharp as soon as reasonable
+    TOOL_ID = "pbreports.tasks.amplicon_analysis_input"
+    DRIVER_EXE = "python -m pbreports.report.amplicon_analysis_input --resolved-tool-contract "
 
 
 def parse_summary(summary):
@@ -32,15 +31,16 @@ def parse_summary(summary):
         parts = header.strip().split(',')
         name = parts.index("FastaName")
         barcode = parts.index("BarcodeName")
-        noise = parts.index("NoiseSequence")
+        # FIXME this isn't available in LAA output yet
+        #noise = parts.index("NoiseSequence")
         chimera = parts.index("IsChimera")
-        return name, barcode, noise, chimera
+        return name, barcode, chimera #, noise
 
     # Parse the summary file
     summary_data = {}
     with open(summary) as handle:
         # Read the summary header to find the location of important fields
-        name, barcode, noise, chimera = parse_summary_header(
+        name, barcode, chimera = parse_summary_header(
             handle.next().strip())
 
         for line in handle:
@@ -48,7 +48,7 @@ def parse_summary(summary):
             parts = line.split(',')
             seq_name = parts[name]
             barcode_name = parts[barcode]
-            noise_flag = True if parts[noise] == "True" else False
+            #noise_flag = True if parts[noise] == "True" else False
             chimera_flag = True if parts[chimera] == "True" else False
 
             # Catch whether it's a new barcode for summary setup
@@ -59,7 +59,7 @@ def parse_summary(summary):
             # Add the current sequence to the appropriate bin
             if chimera_flag:
                 summary_data[barcode_name]['chimera'].add(seq_name)
-            elif noise_flag:
+            elif False: #noise_flag:
                 summary_data[barcode_name]['noise'].add(seq_name)
             else:
                 summary_data[barcode_name]['good'].add(seq_name)
@@ -67,29 +67,12 @@ def parse_summary(summary):
 
 
 def parse_mappings(mappings_file):
-    # Declare a helper function for parsing the heading of the ZMW mappings
-    # file
-    def parse_mappings_header(header):
-        parts = header.strip().split(',')
-        return {i: v for i, v in enumerate(parts[1:])}
-
-    # Parse and sum the mapping weights from each ZMW
-    position_sums = {}
-    with open(mappings_file) as handle:
-        consensus_positions = parse_mappings_header(handle.next())
-        for line in handle:
-            weights = [float(w) for w in line.strip().split(',')[1:]]
-            for i, w in enumerate(weights):
-                try:
-                    position_sums[i] += w
-                except:
-                    position_sums[i] = w
-
-    # Convert the sums-by-position into sums-by-consensus and return
-    consensus_sums = {}
-    for key, weight_sum in position_sums.iteritems():
-        consensus = consensus_positions[key]
-        consensus_sums[consensus] = weight_sum
+    consensus_sums = defaultdict(float)
+    with open(mappings_file) as json_in:
+        for barcode_id, zmws_d in json.load(json_in).iteritems():
+            for zmw_id, consensus_d in zmws_d.iteritems():
+                for consensus_id, weight in consensus_d.iteritems():
+                    consensus_sums[consensus_id] += weight
     return consensus_sums
 
 
@@ -116,8 +99,6 @@ def tabulate_results(summary_data, consensus_sums):
             final_data[barcode][sequence_type] = int(value)
             final_data[barcode][sequence_type + '_pct'] = value / total
     return final_data
-
-# TODO: See note above this section
 
 
 def create_table(tabulated_data):
@@ -148,15 +129,15 @@ def create_table(tabulated_data):
     return t
 
 
-def run_to_report(summary_csv, zmw_csv):
+def run_to_report(summary_csv, zmws_json):
     log.info("Generating PCR report v{v} from summary '{s}' "
-             "and ZMW mappings '{m}'".format(v=__version__,
+             "and ZMW mappings '{j}'".format(v=__version__,
                                              s=summary_csv,
-                                             m=zmw_csv))
+                                             j=zmws_json))
 
     # Parse the data into dictionaries
     summary_data = parse_summary(summary_csv)
-    consensus_sums = parse_mappings(zmw_csv)
+    consensus_sums = parse_mappings(zmws_json)
 
     # Tabulate the values for each category
     tabulated_data = tabulate_results(summary_data, consensus_sums)
@@ -170,17 +151,17 @@ def run_to_report(summary_csv, zmw_csv):
     return r
 
 
-def amplicon_analysis_input(summary_csv, zmws_csv, report_json):
+def amplicon_analysis_input(summary_csv, zmws_json, report_json):
     log.info("Running {f} v{v}.".format(
         f=os.path.basename(__file__), v=__version__))
-    report = run_to_report(summary_csv, zmws_csv)
+    report = run_to_report(summary_csv, zmws_json)
     log.info(pformat(report.to_dict()))
     report.write_json(report_json)
     return 0
 
 
 def args_runner(args):
-    amplicon_analysis_input(args.report_csv, args.zmw_csv, args.report_json)
+    amplicon_analysis_input(args.report_csv, args.zmws_json, args.report_json)
     return 0
 
 
@@ -199,16 +180,16 @@ def _add_options_to_parser(p):
         name="ConsensusReportCSV",
         description="Consensus Report CSV")
     p.add_input_file_type(
-        FileTypes.CSV,
-        file_id="zmw_csv",
-        name="ZMWReportCSV",
-        description="ZMW Report CSV")
+        FileTypes.JSON,
+        file_id="zmws_json",
+        name="JSON per-ZMW info",
+        description="JSON file containing per-ZMW info")
     p.add_output_file_type(
         FileTypes.JSON,
         file_id="report_json",
-        name="ConsensusReportJSON",
-        description="Consensus Report JSON",
-        default_name="consensus_input_report")
+        name="LAA input report",
+        description="Long Amplicon Analysis input report JSON",
+        default_name="amplicon_input_report")
 
 
 def add_options_to_parser(p):
@@ -226,15 +207,12 @@ def add_options_to_parser(p):
 
 
 def _get_parser_core():
-    driver_exe = ("python -m "
-                  "pbreports.report.amplicon_analysis_input "
-                  "--resolved-tool-contract ")
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
         "Amplicon Analysis Input",
         __doc__,
-        driver_exe)
+        Constants.DRIVER_EXE)
     return p
 
 
