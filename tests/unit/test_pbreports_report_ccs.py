@@ -174,3 +174,13 @@ class TestCCSMultipleMovies(unittest.TestCase):
         """
         ds = ConsensusReadSet(self.CCS_BAM)
         r = to_report(ds, tempfile.mkdtemp())
+
+
+class TestCCSBarcoded(unittest.TestCase):
+    CCS_DS = pbtestdata.get_file("ccs-barcoded")
+
+    def test_ccs_barcodes_table(self):
+        ds = ConsensusReadSet(self.CCS_DS)
+        r = to_report(ds, tempfile.mkdtemp())
+        self.assertEqual([c.values for c in r.tables[1].columns],
+                         [["lbc1", "lbc3"], [1,1], [1958,1954]])

@@ -1,9 +1,13 @@
 
+# FIXME ideally we would use the .pbi as much as possible here.  however, among
+# other problems, the pbi does not currently give us any way to retrieve CCS
+# read length, since qStart/qEnd are always -1.
+
 """
 Generate a report summarizing Circular Consensus Read (CCS) results.
 """
 
-from collections import OrderedDict
+from collections import OrderedDict, Counter, defaultdict
 import functools
 import os
 import sys
@@ -20,7 +24,7 @@ from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcore.io import ConsensusReadSet
+from pbcore.io import ConsensusReadSet, BarcodeSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue, get_green, Line, apply_line_data)
@@ -65,6 +69,7 @@ class Constants(object):
 
     # Table
     T_ID = 'ccs_table'
+    T_BARCODES = "ccs_barcodes"
 
     # Columns
     C_MOVIE_NAME = 'movie_name'
@@ -74,6 +79,10 @@ class Constants(object):
     C_MEAN_ACCURACY = 'ave_ccs_accuracy'
     #C_MEAN_QV = 'mean_ccs_qv'
     C_MEAN_NPASSES = 'mean_ccs_num_passes'
+
+    C_BARCODE_ID = "barcode_name"
+    C_BARCODE_COUNTS = "number_of_ccs_reads"
+    C_BARCODE_NBASES = "total_number_of_ccs_bases"
 
     ATTR_LABELS = OrderedDict([
         (A_NREADS, "CCS reads"),
@@ -242,6 +251,40 @@ def _movie_results_to_table(movie_results):
     return table
 
 
+def make_barcode_table(ccs_set):
+    """
+    Generate a table of per-barcode results
+    """
+    assert ccs_set.isBarcoded
+    barcode_counts = defaultdict(int)
+    barcode_nbases = defaultdict(int)
+    barcode_ids = {}
+    for er, rr in zip(ccs_set.externalResources, ccs_set.resourceReaders()):
+        for i_rec in range(len(rr)):
+            rec = rr[i_rec]
+            bc_id = rr.pbi.bcForward[i_rec]
+            barcode_counts[bc_id] += 1
+            barcode_nbases[bc_id] += rec.qLen
+        bcs = er.barcodes
+        if bcs is not None:
+            with BarcodeSet(bcs) as bc_set:
+                for i_bc, rec in enumerate(bc_set):
+                    if i_bc in barcode_ids:
+                        assert barcode_ids[i_bc] == rec.id, "Barcode ID mismatch: {l} versus {r}".format(l=barcode_ids[i_bc], r=rec.id)
+                    else:
+                        barcode_ids[i_bc] = rec.id
+    counts = [barcode_counts[i_bc] for i_bc in sorted(barcode_counts.keys())]
+    nbases = [barcode_nbases[i_bc] for i_bc in sorted(barcode_nbases.keys())]
+    labels = [str(barcode_ids[i_bc]) for i_bc in sorted(barcode_counts.keys())]
+    assert len(labels) == len(counts) == len(nbases)
+    columns = [
+        Column(Constants.C_BARCODE_ID, values=labels, header="Barcode ID"),
+        Column(Constants.C_BARCODE_COUNTS, values=counts, header="CCS reads"),
+        Column(Constants.C_BARCODE_NBASES, values=nbases, header="Number of CCS bases")
+    ]
+    return Table(Constants.T_BARCODES, columns=columns, title="By Barcode")
+
+
 def _make_histogram(data, axis_labels, nbins, barcolor):
     """Create a fig, ax instance and generate a histogram.
 
@@ -406,8 +449,8 @@ create_scatter_plot = functools.partial(create_plot,
                                         Constants.I_CCS_SCATTER_PLOT, get_blue(3))
 
 
-def to_report(ccs_subread_set, output_dir):
-    bam_files = list(ccs_subread_set.toExternalFiles())
+def to_report(ccs_set, output_dir):
+    bam_files = list(ccs_set.toExternalFiles())
     log.info("Generating report from files: {f}".format(f=bam_files))
     movie_results = []
     for fn in bam_files:
@@ -442,15 +485,18 @@ def to_report(ccs_subread_set, output_dir):
                               thumbnail=scatter_plot.thumbnail,
                               title="Number of Passes vs. Read Score")
 
-    table = _movie_results_to_table(movie_results)
-    log.info(str(table))
+    movie_table = _movie_results_to_table(movie_results)
+    log.info(str(movie_table))
+    tables = [movie_table]
+    if ccs_set.isBarcoded:
+        tables.append(make_barcode_table(ccs_set))
 
     attributes = _movie_results_to_attributes(movie_results)
 
-    report = Report(Constants.R_ID, tables=[table], attributes=attributes,
+    report = Report(Constants.R_ID, tables=tables, attributes=attributes,
                     plotgroups=[readlength_group, accuracy_group,
                                 npasses_group, scatter_group],
-                    dataset_uuids=(ccs_subread_set.uuid,))
+                    dataset_uuids=(ccs_set.uuid,))
 
     return report
 
