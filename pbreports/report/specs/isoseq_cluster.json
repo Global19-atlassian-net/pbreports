@@ -1,7 +1,7 @@
 {
     "tables": [
         {
-            "title": "Iso-Seq Cluster", 
+            "title": "Transcript Clustering", 
             "id": "isoseq_classify_table", 
             "columns": [], 
             "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES"

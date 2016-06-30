@@ -48,7 +48,7 @@
             "legend": null
         }
     ],
-    "id": "coverage_report",
+    "id": "coverage",
     "description": null,
-    "title": "Coverage Report"
+    "title": "Coverage"
 }

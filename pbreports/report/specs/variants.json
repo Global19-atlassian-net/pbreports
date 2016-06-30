@@ -39,7 +39,7 @@
         }
     ], 
     "description": null, 
-    "title": "Variants Report", 
+    "title": "Consensus Variants", 
     "attributes": [
         {
             "type": "float", 

@@ -102,6 +102,6 @@
     "description": null, 
     "title": "Top Variants Report", 
     "attributes": [], 
-    "id": "top_variants", 
+    "id": "topvariants", 
     "plotgroups": []
 }

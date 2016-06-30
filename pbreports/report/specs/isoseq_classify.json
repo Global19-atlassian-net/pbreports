@@ -81,7 +81,7 @@
         }
     ], 
     "description": null, 
-    "title": "Iso-Seq Classify Report", 
+    "title": "Transcript Classification", 
     "attributes": [
         {
             "type": "int", 

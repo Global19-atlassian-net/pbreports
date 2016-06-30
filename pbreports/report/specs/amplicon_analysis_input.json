@@ -51,7 +51,7 @@
         }
 ], 
     "description": null, 
-    "title": null, 
+    "title": "Amplicon Inputs", 
     "attributes":[], 
     "id": "amplicon_analysis_input", 
     "plotgroups": []

@@ -1,7 +1,7 @@
 {
     "tables": [], 
     "description": "Generates the SAT metric performance attributes", 
-    "title": "SAT Report", 
+    "title": "Site Acceptance Test Report", 
     "attributes": [
         {
             "type": "str", 

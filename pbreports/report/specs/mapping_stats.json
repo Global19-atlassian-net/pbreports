@@ -57,7 +57,7 @@
         }
     ], 
     "description": "Create a Mapping Report from a Aligned BAM or Alignment DataSet", 
-    "title": "Mapping Statistics", 
+    "title": "Mapping Report", 
     "attributes": [
         {
             "id": "mapped_subread_concordance_mean", 
@@ -132,7 +132,7 @@
             "name": "Polymerase Read Length Max (mapped)"
         }
     ], 
-    "id": "mapping_stats_report", 
+    "id": "mapping_stats", 
     "plotgroups": [
         {
             "plots": [

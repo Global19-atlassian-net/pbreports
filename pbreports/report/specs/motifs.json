@@ -1,7 +1,7 @@
 {
     "tables": [
         {
-            "title": "motifs", 
+            "title": "Modified Base Motifs", 
             "id": "motif_records", 
             "columns": [
                 {
