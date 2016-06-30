@@ -83,6 +83,7 @@ class Constants(object):
     C_BARCODE_ID = "barcode_name"
     C_BARCODE_COUNTS = "number_of_ccs_reads"
     C_BARCODE_NBASES = "total_number_of_ccs_bases"
+    C_BARCODE_QUALITY = "mean_accuracy"
 
     ATTR_LABELS = OrderedDict([
         (A_NREADS, "CCS reads"),
@@ -258,6 +259,7 @@ def make_barcode_table(ccs_set):
     assert ccs_set.isBarcoded
     barcode_counts = defaultdict(int)
     barcode_nbases = defaultdict(int)
+    barcode_readscores = defaultdict(list)
     barcode_ids = {}
     for er, rr in zip(ccs_set.externalResources, ccs_set.resourceReaders()):
         for i_rec in range(len(rr)):
@@ -265,6 +267,7 @@ def make_barcode_table(ccs_set):
             bc_id = rr.pbi.bcForward[i_rec]
             barcode_counts[bc_id] += 1
             barcode_nbases[bc_id] += rec.qLen
+            barcode_readscores[bc_id].append(rr.pbi.readQual[i_rec])
         bcs = er.barcodes
         if bcs is not None:
             with BarcodeSet(bcs) as bc_set:
@@ -276,11 +279,14 @@ def make_barcode_table(ccs_set):
     counts = [barcode_counts[i_bc] for i_bc in sorted(barcode_counts.keys())]
     nbases = [barcode_nbases[i_bc] for i_bc in sorted(barcode_nbases.keys())]
     labels = [str(barcode_ids[i_bc]) for i_bc in sorted(barcode_counts.keys())]
+    readquals = [sum(barcode_readscores[i_bc])/len(barcode_readscores[i_bc])
+                 for i_bc in sorted(barcode_counts.keys())]
     assert len(labels) == len(counts) == len(nbases)
     columns = [
         Column(Constants.C_BARCODE_ID, values=labels, header="Barcode ID"),
         Column(Constants.C_BARCODE_COUNTS, values=counts, header="CCS reads"),
-        Column(Constants.C_BARCODE_NBASES, values=nbases, header="Number of CCS bases")
+        Column(Constants.C_BARCODE_NBASES, values=nbases, header="Number of CCS bases"),
+        Column(Constants.C_BARCODE_QUALITY, values=readquals, header="CCS Read Score (mean)")
     ]
     return Table(Constants.T_BARCODES, columns=columns, title="By Barcode")
 

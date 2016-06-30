@@ -182,5 +182,9 @@ class TestCCSBarcoded(unittest.TestCase):
     def test_ccs_barcodes_table(self):
         ds = ConsensusReadSet(self.CCS_DS)
         r = to_report(ds, tempfile.mkdtemp())
-        self.assertEqual([c.values for c in r.tables[1].columns],
+        self.assertEqual([c.values for c in r.tables[1].columns[0:3]],
                          [["lbc1", "lbc3"], [1,1], [1958,1954]])
+        self.assertAlmostEqual(r.tables[1].columns[3].values[0], 0.9724,
+                               places=4)
+        self.assertAlmostEqual(r.tables[1].columns[3].values[1], 0.9926,
+                               places=4)
