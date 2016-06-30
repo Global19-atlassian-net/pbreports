@@ -1,0 +1,44 @@
+{
+    "tables": [], 
+    "description": null, 
+    "title": "Adapter Report", 
+    "attributes": [
+        {
+            "type": null, 
+            "description": null, 
+            "name": "Adapter Dimers (0-10bp)",
+            "id": "adapter_dimers"
+        },
+        {
+            "type": null,
+            "description": null,
+            "name": "Short Inserts (11-100bp)",
+            "id": "short_inserts"
+        },
+        {
+            "type": null,
+            "description": null,
+            "name": "Maximum Subread Length (mean)",
+            "id": "mean_max_subread_length"
+        }
+    ], 
+    "id": "adapter_xml_report",
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlabel": "Reads",
+                    "description": null, 
+                    "caption": null,
+                    "ylabel": "Median Distance Between Adapters",
+                    "title": null,
+                    "id": "adapter_xml_plot"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "adapter_xml_plot_group",
+            "title": "Observed Insert Length Distribution"
+        }
+]
+}

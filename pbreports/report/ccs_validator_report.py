@@ -5,12 +5,15 @@ import functools
 import argparse
 import logging
 import os
+import os.path as op
 import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import Table, Column, Report, Plot, PlotGroup
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.validators import validate_dir, validate_file
 from pbcommand.cli.core import pacbio_args_runner
 from pbcommand.utils import setup_log
@@ -20,6 +23,26 @@ from pbreports.plot.helper import get_fig_axes_lpr
 
 log = logging.getLogger(__name__)
 __version__ = '1.2'
+
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+CCS_VAL_SPEC = op.join(SPEC_DIR, 'ccs_validator_report.json')
+meta_rpt = MetaReport.from_json(CCS_VAL_SPEC)
+
+
+class Constants(object):
+
+    PG_CCS = "ccs_validator_group"
+    P_RL = "readlength_hist"
+    P_QV = "qv_hist"
+    T_FASTQ = "fastq_table"
+    C_FN = 'file_name'
+    C_NREADS = 'n_reads'
+    C_TOT_BASES = 'total_bases'
+    C_READLENGTH = 'mean_readlength'
+    C_QV = 'mean_qv'
+
 
 
 class FastqStats(object):
@@ -79,29 +102,31 @@ def __generate_histogram_comparison(method_name, title, xlabel, list_fastq_stats
     return fig, ax
 
 to_qv_histogram = functools.partial(
-    __generate_histogram_comparison, 'qvs', "Quality Values", "Quality Values")
+    __generate_histogram_comparison, 'qvs', meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_QV).title, 
+                                            meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_QV).xlabel)
 to_read_length_histogram = functools.partial(
-    __generate_histogram_comparison, 'reads', "Read Length", "Read Length")
+    __generate_histogram_comparison, 'reads', meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_RL).title, 
+                                              meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_RL).xlabel)
 
 
 def _generate_table(list_fastq_stats):
-    columns = [Column('file_name', header='File Name'),
-               Column('n_reads', header="Number of Reads"),
-               Column('total_bases', header="Total Bases"),
-               Column('mean_readlength', header="Mean Read Length"),
-               Column('mean_qv', header="Mean Quality Values")]
+    columns = [Column(Constants.C_FN, header=''),
+               Column(Constants.C_NREADS, header=""),
+               Column(Constants.C_TOT_BASES, header=""),
+               Column(Constants.C_READLENGTH, header=""),
+               Column(Constants.C_QV, header="")]
 
-    table = Table('fastq_table', columns=columns)
+    table = Table(Constants.T_FASTQ, columns=columns)
 
     for fastq_stat in list_fastq_stats:
         table.add_data_by_column_id(
-            'file_name', os.path.basename(fastq_stat.file_name))
-        table.add_data_by_column_id('n_reads', fastq_stat.reads.shape[0])
+            Constants.C_FN, os.path.basename(fastq_stat.file_name))
+        table.add_data_by_column_id(Constants.C_NREADS, fastq_stat.reads.shape[0])
         table.add_data_by_column_id(
-            'total_bases', int(np.sum(fastq_stat.reads)))
+            Constants.C_TOT_BASES, int(np.sum(fastq_stat.reads)))
         table.add_data_by_column_id(
-            'mean_readlength', int(fastq_stat.reads.mean()))
-        table.add_data_by_column_id('mean_qv', np.round(
+            Constants.C_READLENGTH, int(fastq_stat.reads.mean()))
+        table.add_data_by_column_id(Constants.C_QV, np.round(
             fastq_stat.qvs.mean(), decimals=2))
 
     return table
@@ -127,11 +152,11 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
         fig, ax = to_read_length_histogram(fastq_stats.values())
         fig.savefig(readlength_hist)
     plt.close(fig)
-    readlength_hist_plot = Plot('readlength_hist', readlength_hist)
-    plotgroup = PlotGroup('readlength_group', title="Read Length Histogram", plots=[
+    readlength_hist_plot = Plot(Constants.P_RL, readlength_hist)
+    plotgroup = PlotGroup(Constants.PG_RL, plots=[
                           readlength_hist_plot])
-    report = Report('ccs_validator', tables=[table], plotgroups=[plotgroup])
-    return report
+    report = Report(meta_rpt.title, tables=[table], plotgroups=[plotgroup])
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):

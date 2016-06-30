@@ -4,11 +4,15 @@
 Counts the number of movies and cells in the input dataset.
 """
 
+import os
+import os.path as op
 import sys
 import argparse
 import logging
 
 from pbcommand.models.report import Report, Attribute
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -20,12 +24,18 @@ log = logging.getLogger(__name__)
 
 __version__ = '2.0'
 
+# Import Mapping MetaReport
+_DIR_NAME = op.dirname(op.realpath(__file__))
+SPEC_DIR = op.join(_DIR_NAME, 'specs/')
+OV_SPEC = op.join(SPEC_DIR, 'overview.json')
+meta_rpt = MetaReport.from_json(OV_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.overview"
     TOOL_NAME = "Overview report"
     DRIVER_EXE = "python -m pbreports.report.overview --resolved-tool-contract "
-
+    A_NCELLS = "ncells"
+    A_NMOVIES = "nmovies"
 
 def run(dataset_file):
     """Reads in the input.fofn and counts movies and cells. Outputs in XML."""
@@ -41,11 +51,11 @@ def run(dataset_file):
                     for rg in bam.peer.header["RG"]:
                         movies.add(rg["PU"])
         cells = set([movie_to_cell(movie) for movie in movies])
-        ncells_attr = Attribute('ncells', len(cells), name="SMRT Cells")
-        nmovies_attr = Attribute('nmovies', len(movies), name="Movies")
+        ncells_attr = Attribute(Constants.A_NCELLS, len(cells))
+        nmovies_attr = Attribute(Constants.A_NMOVIES, len(movies))
         attrs = [ncells_attr, nmovies_attr]
-        report = Report('overview', attributes=attrs)
-        return report
+        report = Report(meta_rpt.id, attributes=attrs)
+        return meta_rpt.apply_view(report)
 
 
 def make_report(input_ds, output_json):

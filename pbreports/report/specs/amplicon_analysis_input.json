@@ -1,0 +1,59 @@
+{
+    "tables": [
+        {
+            "title": "Amplicon Input Molecule Summary", 
+            "id": "result_table", 
+            "columns": [
+                {
+                    "header": "Sample", 
+                    "type": null, 
+                    "id": "barcode_col", 
+                    "description": null
+                },
+                {
+                    "header": "Good",
+                    "type": null,
+                    "id": "good",
+                    "description": null
+                },
+                {
+                    "header": "Good (%)",
+                    "type": null,
+                    "id": "good_pct",
+                    "description": null
+                },
+                {
+                    "header": "Chimeric",
+                    "type": null,
+                    "id": "chimera",
+                    "description": null
+                },
+                {
+                    "header": "Chimeric (%)",
+                    "type": null,
+                    "id": "chimera_pct",
+                    "description": null
+                },
+                {
+                    "header": "Noise",
+                    "type": null,
+                    "id": "noise",
+                    "description": null
+                },
+                {
+                    "header": "Noise (%)",
+                    "type": null,
+                    "id": "noise_pct",
+                    "description": null
+                }
+            ], 
+            "description": null
+        }
+], 
+    "description": null, 
+    "title": null, 
+    "attributes":[], 
+    "id": "amplicon_analysis_input", 
+    "plotgroups": []
+}
+
