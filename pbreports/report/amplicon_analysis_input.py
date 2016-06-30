@@ -31,16 +31,15 @@ def parse_summary(summary):
         parts = header.strip().split(',')
         name = parts.index("FastaName")
         barcode = parts.index("BarcodeName")
-        # FIXME this isn't available in LAA output yet
-        #noise = parts.index("NoiseSequence")
+        noise = parts.index("NoiseSequence")
         chimera = parts.index("IsChimera")
-        return name, barcode, chimera #, noise
+        return name, barcode, chimera, noise
 
     # Parse the summary file
     summary_data = {}
     with open(summary) as handle:
         # Read the summary header to find the location of important fields
-        name, barcode, chimera = parse_summary_header(
+        name, barcode, chimera, noise = parse_summary_header(
             handle.next().strip())
 
         for line in handle:
@@ -48,8 +47,8 @@ def parse_summary(summary):
             parts = line.split(',')
             seq_name = parts[name]
             barcode_name = parts[barcode]
-            #noise_flag = True if parts[noise] == "True" else False
-            chimera_flag = True if parts[chimera] == "True" else False
+            noise_flag = parts[noise] == "True"
+            chimera_flag = parts[chimera] == "True"
 
             # Catch whether it's a new barcode for summary setup
             if barcode_name not in summary_data:
@@ -59,7 +58,7 @@ def parse_summary(summary):
             # Add the current sequence to the appropriate bin
             if chimera_flag:
                 summary_data[barcode_name]['chimera'].add(seq_name)
-            elif False: #noise_flag:
+            elif noise_flag:
                 summary_data[barcode_name]['noise'].add(seq_name)
             else:
                 summary_data[barcode_name]['good'].add(seq_name)

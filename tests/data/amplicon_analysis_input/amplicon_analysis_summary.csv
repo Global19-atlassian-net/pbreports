@@ -1,3 +1,4 @@
-BarcodeName,FastaName,CoarseCluster,Phase,TotalCoverage,SequenceLength,PredictedAccuracy,ConsensusConverged,IsChimera,ChimeraScore,ParentSequenceA,ParentSequenceB,CrossoverPosition
-0--1,Barcode0--1_Cluster0_Phase1_NumReads78,0,1,78,3449,0.999901,1,0,-1,N/A,N/A,-1
-0--1,Barcode0--1_Cluster0_Phase2_NumReads72,0,2,72,3448,0.999998,1,0,-1,N/A,N/A,-1
+BarcodeName,FastaName,CoarseCluster,Phase,TotalCoverage,SequenceLength,PredictedAccuracy,ConsensusConverged,NoiseSequence,IsChimera,ChimeraScore,ParentSequenceA,ParentSequenceB,CrossoverPosition
+0--0,Barcode0--0_Cluster0_Phase0_NumReads99,0,0,99,1924,0.999928,1,0,0,-1,N/A,N/A,-1
+1--1,Barcode1--1_Cluster0_Phase0_NumReads100,0,0,100,1934,0.999787,1,0,0,-1,N/A,N/A,-1
+2--2,Barcode2--2_Cluster0_Phase0_NumReads97,0,0,97,1924,1,1,0,0,-1,N/A,N/A,-1
