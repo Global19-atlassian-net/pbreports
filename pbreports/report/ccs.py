@@ -7,7 +7,7 @@
 Generate a report summarizing Circular Consensus Read (CCS) results.
 """
 
-from collections import OrderedDict, Counter, defaultdict
+from collections import OrderedDict, Counter, defaultdict, namedtuple
 import functools
 import os
 import sys
@@ -83,7 +83,9 @@ class Constants(object):
     C_BARCODE_ID = "barcode_name"
     C_BARCODE_COUNTS = "number_of_ccs_reads"
     C_BARCODE_NBASES = "total_number_of_ccs_bases"
-    C_BARCODE_QUALITY = "mean_accuracy"
+    C_BARCODE_QUALITY = "mean_ccs_accuracy"
+    C_BARCODE_NPASSES = "mean_ccs_num_passes"
+    C_BARCODE_READLENGTH = "mean_ccs_readlength"
 
     ATTR_LABELS = OrderedDict([
         (A_NREADS, "CCS reads"),
@@ -103,63 +105,56 @@ class Constants(object):
     }
 
 
-class MovieResult(object):
-
-    """Simple container class to hold the results of Movie (bax)"""
-
-    def __init__(self, file_name, movie_name, read_lengths, accuracies, num_passes):
-        self.file_name = file_name
-        self.movie_name = movie_name
-        # these are all np.array
-        self.read_lengths = read_lengths
-        self.accuracies = accuracies
-        self.num_passes = num_passes
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__,
-                  m=self.movie_name,
-                  f=os.path.basename(self.file_name))
-        return "{k} {m} {f}".format(**_d)
-
-    def __repr__(self):
-        return "<" + str(self) + " > "
+MovieResult = namedtuple("MovieResult", ["movie_name", "read_lengths",
+                                         "accuracies", "num_passes"])
+BamStats = namedtuple("BamStats", ["qLen", "numPasses", "readScore",
+                                   "movieName", "bc"])
 
 
-# FIXME(nechols)(2016-02-18): this is very inefficient
-def _bam_file_to_movie_results(file_name):
-    """
-    Read what is assumed to be a single BAM file (as a ConsensusReadSet).
-    """
-    from pbcore.io import IndexedBamReader
+def _stats_from_dataset(ccs_set):
     results = []
-    with IndexedBamReader(file_name) as bam:
+    movie_names = set()
+    for bam in ccs_set.resourceReaders():
         for rg in bam.readGroupTable:
             assert rg["ReadType"] == "CCS"
+            movie_names.add(rg["MovieName"])
+        is_barcoded = hasattr(bam.pbi, "bcForward")
+        for k, r in enumerate(bam):
+            bc = bam.pbi.bcForward[k] if is_barcoded else None
+            results.append(BamStats(r.qLen, r.numPasses, r.readScore,
+                                    r.movieName, bc))
+    return results, movie_names
 
-        movies = list(set([rg["MovieName"] for rg in bam.readGroupTable]))
-        for movie_name in movies:
-            def _base_calls():
-                for r in bam:
-                    if r.movieName == movie_name:
-                        yield r.peer.query_length
 
-            def _num_passes():
-                for r in bam:
-                    if r.movieName == movie_name:
-                        yield r.numPasses
+def _stats_to_movie_results(bam_stats, movie_names):
+    """
+    Separate out per-movie results from process stats.
+    """
+    results = []
+    movies = sorted(list(movie_names))
+    for movie_name in movies:
+        def _base_calls():
+            for r in bam_stats:
+                if r.movieName == movie_name:
+                    yield r.qLen
 
-            def _accuracy():
-                for r in bam:
-                    if r.movieName == movie_name:
-                        yield r.readScore
+        def _num_passes():
+            for r in bam_stats:
+                if r.movieName == movie_name:
+                    yield r.numPasses
 
-            read_lengths = np.fromiter(_base_calls(), dtype=np.int64, count=-1)
-            num_passes = np.fromiter(_num_passes(), dtype=np.int64, count=-1)
-            accuracy = np.fromiter(_accuracy(), dtype=np.float, count=-1)
+        def _accuracy():
+            for r in bam_stats:
+                if r.movieName == movie_name:
+                    yield r.readScore
 
-            results.append(MovieResult(
-                file_name, movie_name, read_lengths, accuracy, num_passes))
-        return results
+        read_lengths = np.fromiter(_base_calls(), dtype=np.int64, count=-1)
+        num_passes = np.fromiter(_num_passes(), dtype=np.int64, count=-1)
+        accuracy = np.fromiter(_accuracy(), dtype=np.float, count=-1)
+
+        results.append(MovieResult(
+            movie_name, read_lengths, accuracy, num_passes))
+    return results
 
 
 def _movie_results_to_attributes(movie_results):
@@ -252,41 +247,46 @@ def _movie_results_to_table(movie_results):
     return table
 
 
-def make_barcode_table(ccs_set):
+def _make_barcode_table(bam_stats, ccs_set):
     """
     Generate a table of per-barcode results
     """
-    assert ccs_set.isBarcoded
     barcode_counts = defaultdict(int)
     barcode_nbases = defaultdict(int)
+    barcode_npasses = defaultdict(list)
     barcode_readscores = defaultdict(list)
-    barcode_ids = {}
-    for er, rr in zip(ccs_set.externalResources, ccs_set.resourceReaders()):
-        for i_rec in range(len(rr)):
-            rec = rr[i_rec]
-            bc_id = rr.pbi.bcForward[i_rec]
-            barcode_counts[bc_id] += 1
-            barcode_nbases[bc_id] += rec.qLen
-            barcode_readscores[bc_id].append(rr.pbi.readQual[i_rec])
+    for r in bam_stats:
+        barcode_counts[r.bc] += 1
+        barcode_nbases[r.bc] += r.qLen
+        barcode_npasses[r.bc].append(r.numPasses)
+        barcode_readscores[r.bc].append(r.readScore)
+    barcode_labels = {}
+    for er in ccs_set.externalResources:
         bcs = er.barcodes
         if bcs is not None:
             with BarcodeSet(bcs) as bc_set:
                 for i_bc, rec in enumerate(bc_set):
-                    if i_bc in barcode_ids:
-                        assert barcode_ids[i_bc] == rec.id, "Barcode ID mismatch: {l} versus {r}".format(l=barcode_ids[i_bc], r=rec.id)
+                    if i_bc in barcode_labels:
+                        assert barcode_labels[i_bc] == rec.id, "Barcode ID mismatch: {l} versus {r}".format(l=barcode_labels[i_bc], r=rec.id)
                     else:
-                        barcode_ids[i_bc] = rec.id
-    counts = [barcode_counts[i_bc] for i_bc in sorted(barcode_counts.keys())]
-    nbases = [barcode_nbases[i_bc] for i_bc in sorted(barcode_nbases.keys())]
-    labels = [str(barcode_ids[i_bc]) for i_bc in sorted(barcode_counts.keys())]
+                        barcode_labels[i_bc] = rec.id
+    barcode_ids = sorted(barcode_counts.keys())
+    counts = [barcode_counts[i_bc] for i_bc in barcode_ids]
+    nbases = [barcode_nbases[i_bc] for i_bc in barcode_ids]
+    mean_length = [int(float(n)/c) for (c, n) in zip(counts, nbases)]
+    labels = [str(barcode_labels.get(i_bc, i_bc)) for i_bc in barcode_ids]
+    npasses = [sum(barcode_npasses[i_bc])/len(barcode_npasses[i_bc])
+               for i_bc in barcode_ids]
     readquals = [sum(barcode_readscores[i_bc])/len(barcode_readscores[i_bc])
-                 for i_bc in sorted(barcode_counts.keys())]
+                 for i_bc in barcode_ids]
     assert len(labels) == len(counts) == len(nbases)
     columns = [
         Column(Constants.C_BARCODE_ID, values=labels, header="Barcode ID"),
         Column(Constants.C_BARCODE_COUNTS, values=counts, header="CCS reads"),
         Column(Constants.C_BARCODE_NBASES, values=nbases, header="Number of CCS bases"),
-        Column(Constants.C_BARCODE_QUALITY, values=readquals, header="CCS Read Score (mean)")
+        Column(Constants.C_BARCODE_READLENGTH, values=mean_length, header="CCS Read Length (mean)"),
+        Column(Constants.C_BARCODE_QUALITY, values=readquals, header="CCS Read Score (mean)"),
+        Column(Constants.C_BARCODE_NPASSES, values=npasses, header="Number of Passes (mean)")
     ]
     return Table(Constants.T_BARCODES, columns=columns, title="By Barcode")
 
@@ -458,9 +458,8 @@ create_scatter_plot = functools.partial(create_plot,
 def to_report(ccs_set, output_dir):
     bam_files = list(ccs_set.toExternalFiles())
     log.info("Generating report from files: {f}".format(f=bam_files))
-    movie_results = []
-    for fn in bam_files:
-        movie_results.extend(_bam_file_to_movie_results(fn))
+    bam_stats, movie_names = _stats_from_dataset(ccs_set)
+    movie_results = _stats_to_movie_results(bam_stats, movie_names)
     log.debug("\n" + pformat(movie_results))
 
     rs = [m.read_lengths for m in movie_results]
@@ -495,7 +494,7 @@ def to_report(ccs_set, output_dir):
     log.info(str(movie_table))
     tables = [movie_table]
     if ccs_set.isBarcoded:
-        tables.append(make_barcode_table(ccs_set))
+        tables.append(_make_barcode_table(bam_stats, ccs_set))
 
     attributes = _movie_results_to_attributes(movie_results)
 
