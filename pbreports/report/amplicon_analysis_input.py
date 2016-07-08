@@ -47,8 +47,8 @@ def parse_summary(summary):
             parts = line.split(',')
             seq_name = parts[name]
             barcode_name = parts[barcode]
-            noise_flag = parts[noise] == "True"
-            chimera_flag = parts[chimera] == "True"
+            noise_flag = parts[noise] == "1"
+            chimera_flag = parts[chimera] == "1"
 
             # Catch whether it's a new barcode for summary setup
             if barcode_name not in summary_data:
