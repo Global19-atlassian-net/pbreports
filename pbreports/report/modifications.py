@@ -155,7 +155,9 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
                    title='Kinetic Detections',
                    thumbnail=scatter.thumbnail,
                    plots=[scatter, hist])
-    rpt = Report('modifications', plotgroups=[pg])
+    rpt = Report('modifications',
+                 title="Base Modifications",
+                 plotgroups=[pg])
     rpt.write_json(os.path.join(output_dir, report))
     return 0
 

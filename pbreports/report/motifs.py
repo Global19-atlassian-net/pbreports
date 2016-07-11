@@ -546,7 +546,10 @@ def to_motifs_report(gff_file, motif_summary_csv, output_dir):
     motif_records = _motif_csv_to_records(motif_summary_csv)
     table = to_table(motif_records)
 
-    r = Report(Constants.R_ID, plotgroups=plot_groups, tables=[table])
+    r = Report(Constants.R_ID,
+               title="Modified Base Motifs",
+               plotgroups=plot_groups,
+               tables=[table])
     log.debug(pformat(r.to_dict(), indent=4))
     return r
 

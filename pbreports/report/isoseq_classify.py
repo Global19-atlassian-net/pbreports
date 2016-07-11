@@ -243,6 +243,7 @@ def make_report(contig_set, summary_txt, output_dir):
 
     # A report is consist of ID, tables, attributes, and plotgroups.
     report = Report(Constants.R_ID,
+                    title="Transcript Classification",
                     tables=[table],
                     attributes=attributes,
                     plotgroups=[readlength_group],
