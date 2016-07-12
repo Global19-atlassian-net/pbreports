@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+
+# TODO modernize or delete
 
 """
 Counts the number of movies and cells in the input dataset.
@@ -44,7 +45,7 @@ def run(dataset_file):
         ncells_attr = Attribute('ncells', len(cells), name="SMRT Cells")
         nmovies_attr = Attribute('nmovies', len(movies), name="Movies")
         attrs = [ncells_attr, nmovies_attr]
-        report = Report('overview', attributes=attrs)
+        report = Report('overview', title="Overview", attributes=attrs)
         return report
 
 

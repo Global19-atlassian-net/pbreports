@@ -1,3 +1,6 @@
+
+# TODO modernize this or delete
+
 """Create a CSV file of Subread from the *.rgn.h5 file
 
 TODO: An API to  *.rgn.h5 file should replace the raw calls to the *.h5 files.

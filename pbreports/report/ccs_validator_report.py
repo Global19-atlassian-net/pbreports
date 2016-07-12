@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+
+# TODO modernize or delete
 
 from collections import OrderedDict
 import functools
@@ -130,7 +131,10 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
     readlength_hist_plot = Plot('readlength_hist', readlength_hist)
     plotgroup = PlotGroup('readlength_group', title="Read Length Histogram", plots=[
                           readlength_hist_plot])
-    report = Report('ccs_validator', tables=[table], plotgroups=[plotgroup])
+    report = Report('ccs_validator',
+                    title="CCS Validation",
+                    tables=[table],
+                    plotgroups=[plotgroup])
     return report
 
 
