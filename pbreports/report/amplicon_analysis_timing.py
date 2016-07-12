@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+
+# TODO modernize this
+
 """Amplicon Analysis Timing Report"""
 
 from collections import defaultdict
@@ -119,7 +121,9 @@ def run_to_report(log_file):
     table = create_table(timings)
 
     # ids must be lowercase.
-    r = Report("amplicon_analysis_timing", tables=[table])
+    r = Report("amplicon_analysis_timing",
+               title="Amplicon Analysis Timing",
+               tables=[table])
 
     return r
 

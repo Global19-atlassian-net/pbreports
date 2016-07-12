@@ -953,6 +953,7 @@ class MappingStatsCollector(object):
 
         tables = [table]
         report = Report(Constants.R_ID,
+                        title="Mapping Report",
                         attributes=attributes,
                         plotgroups=plot_groups,
                         tables=tables,

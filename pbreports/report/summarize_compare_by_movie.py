@@ -1,6 +1,7 @@
-#!/usr/bin/env python
 
-__doc__ = """Script to break down post-mapping statistics by movie.
+# TODO modernize or delete
+
+"""Script to break down post-mapping statistics by movie.
 
 OLD Pre-bax files
 

@@ -61,7 +61,9 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     d_var = _get_variants_data(variants_report)
 
     ds = AlignmentSet(aligned_reads_file)
-    rpt = Report('sat', dataset_uuids=(ds.uuid,))
+    rpt = Report('sat',
+                 title="Site Acceptance Test Report",
+                 dataset_uuids=(ds.uuid,))
     rpt.add_attribute(Attribute('instrument', d_bam['instrument'],
                                 Constants.ATTR_LABELS["instrument"]))
     rpt.add_attribute(Attribute('coverage', d_var['coverage'],

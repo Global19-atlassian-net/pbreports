@@ -78,7 +78,9 @@ def run_to_report(summary_file):
 
     # Convert the data to a table and the report
     table = create_table(s, barcode)
-    r = Report("amplicon_analysis_consensus", tables=[table])
+    r = Report("amplicon_analysis_consensus",
+               title="Amplicon Consensus",
+               tables=[table])
 
     return r
 

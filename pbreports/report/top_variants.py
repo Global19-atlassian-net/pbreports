@@ -57,7 +57,9 @@ def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
     for v in top:
         table_builder.add_variant(v)
 
-    r = Report('topvariants', tables=[table_builder.table],
+    r = Report('topvariants',
+               title="Top Variants",
+               tables=[table_builder.table],
                dataset_uuids=(ReferenceSet(reference).uuid,))
     r.write_json(os.path.join(output_dir, report))
     return 0

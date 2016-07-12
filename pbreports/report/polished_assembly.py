@@ -77,7 +77,8 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
                      thumbnail=cvqp.thumbnail,
                      plots=[cvqp])
 
-    rep = Report('polished_assembly')
+    rep = Report('polished_assembly',
+                 title="Polished Assembly")
     rep.add_attribute(
         Attribute(Constants.A_N_CONTIGS, len(contigs),
                   Constants.ATTR_LABELS[Constants.A_N_CONTIGS]))

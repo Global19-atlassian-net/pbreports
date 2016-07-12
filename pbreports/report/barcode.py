@@ -97,7 +97,9 @@ def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
         table.add_data_by_column_id('number_of_reads', row.reads)
         table.add_data_by_column_id('number_of_bases', row.bases)
 
-    report = Report('barcode', tables=[table],
+    report = Report('barcode',
+                    title="Barcodes",
+                    tables=[table],
                     dataset_uuids=dataset_uuids)
     return report
 

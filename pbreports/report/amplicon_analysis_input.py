@@ -145,7 +145,9 @@ def run_to_report(summary_csv, zmws_json):
     table = create_table(tabulated_data)
 
     # ids must be lowercase.
-    r = Report("amplicon_analysis_input", tables=[table])
+    r = Report("amplicon_analysis_input",
+               title="Amplicon Inputs",
+               tables=[table])
 
     return r
 

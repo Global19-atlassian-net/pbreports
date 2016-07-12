@@ -498,7 +498,8 @@ def to_report(ccs_set, output_dir):
 
     attributes = _movie_results_to_attributes(movie_results)
 
-    report = Report(Constants.R_ID, tables=tables, attributes=attributes,
+    report = Report(Constants.R_ID, title="CCS Report",
+                    tables=tables, attributes=attributes,
                     plotgroups=[readlength_group, accuracy_group,
                                 npasses_group, scatter_group],
                     dataset_uuids=(ccs_set.uuid,))

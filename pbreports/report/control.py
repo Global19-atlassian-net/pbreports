@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+
+# TODO modernize this
+
 import argparse
 import logging
 import os
@@ -60,7 +62,7 @@ def make_control_report(control_cmph5, filtered_subreads_csv, report,
                                  sample_data, output_dir),
            _get_plot_group_length(control_data,
                                   sample_data, output_dir)]
-    r = Report('control', attributes=atts, plotgroups=pgs)
+    r = Report('control', title="Control", attributes=atts, plotgroups=pgs)
     r.write_json(os.path.join(output_dir, report))
 
 
@@ -218,7 +220,7 @@ def _get_error_report():
     log.warn('Returning a report with a warning that 0 controls reads have '
              'been found.')
     a = Attribute('warning', 'No control reads found', 'Warning')
-    return Report('control', attributes=[a])
+    return Report('control', title="Control", attributes=[a])
 
 
 def _create_score_figure(control_data, sample_data):

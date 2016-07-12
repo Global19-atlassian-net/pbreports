@@ -90,6 +90,7 @@ def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_p
         top_contigs, contig_variants, output_dir)
 
     rpt = Report('variants',
+                 title="Consensus Variants",
                  plotgroups=[plotgroup],
                  attributes=atts,
                  tables=[table],
