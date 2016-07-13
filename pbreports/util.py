@@ -469,6 +469,7 @@ def _dist_shaper(bmin, bmax, poolby, dist):
 
     except AssertionError as e:
         log.error("Malformed dist_shaper: " + e.message)
+        return dist
     return (bins, labels)
 
 def _cont_dist_shaper(shape_func, dist):
@@ -479,6 +480,8 @@ def _cont_dist_shaper(shape_func, dist):
     dist.minBinValue = newlabels[0]
     dist.maxBinValue = newlabels[-1]
     dist.numBins = len(newbins)
+    if len(newlabels) > 1:
+        dist.binWidth = newlabels[1] - newlabels[0]
     return dist
 
 def dist_shaper(dist_list, nbins=40):
