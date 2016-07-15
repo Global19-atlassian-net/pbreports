@@ -8,34 +8,34 @@
                     "header": "Reference", 
                     "type": "str", 
                     "id": "contig_name", 
-                    "description": null
+                    "description": "Reference contig name"
                 }, 
                 {
                     "header": "Reference Length", 
                     "type": "float", 
                     "id": "contig_len", 
-                    "description": null
+                    "description": "Length of reference contig"
                 }, 
                 {
                     "header": "Bases Called", 
                     "type": "float", 
                     "id": "bases_called", 
-                    "description": null
+                    "description": "Percentage of the reference sequence for which consensus bases were called"
                 }, 
                 {
-                    "header": "Consensus Accuracy", 
+                    "header": "Consensus Concordance", 
                     "type": "float", 
                     "id": "concordance", 
-                    "description": null
-                }, 
+                    "description": "The percent concordance of the consensus sequence compared to the reference"
+                },
                 {
                     "header": "Base Coverage", 
                     "type": "float", 
                     "id": "coverage", 
-                    "description": null
+                    "description": "The mean depth of coverage across the reference sequence"
                 }
             ], 
-            "description": null
+            "description": "Per-contig statistics"
         }
     ], 
     "description": null, 

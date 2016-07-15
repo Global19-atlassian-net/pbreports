@@ -39,12 +39,6 @@ class Constants(object):
 
     A_DIMERS = "adapter_dimers"
     A_SHORT_INSERTS = "short_inserts"
-    A_MEAN_MAX_SR_LEN = "mean_max_subread_length"
-
-    C_MOVIE_NAME = "movie_name"
-    C_MEAN_MAX_SR_LEN = A_MEAN_MAX_SR_LEN
-
-    T_SUBREAD_STATS = "movie_stats"
 
     PG_ADAPTER = "adapter_xml_plot_group"
     P_ADAPTER = "adapter_xml_plot"

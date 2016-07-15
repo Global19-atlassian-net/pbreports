@@ -8,42 +8,42 @@
                     "header": "Movie", 
                     "type": "str", 
                     "id": "movie", 
-                    "description": null
+                    "description": "Movie name for which the following metrics apply."
                 }, 
                 {
                     "header": "Number of CCS Reads (mapped)", 
                     "type": "int", 
                     "id": "mapped_reads", 
-                    "description": null
+                    "description": "The number of CCS reads that mapped to the reference sequence"
                 }, 
                 {
                     "header": "Number of CCS Bases (mapped)", 
                     "type": "int", 
                     "id": "mapped_bases", 
-                    "description": null
+                    "description": "The number of CCS read bases that mapped to the reference sequence"
                 }, 
                 {
                     "header": "CCS Read Length Mean (mapped)", 
                     "type": "float", 
                     "id": "mapped_read_length_mean", 
-                    "description": null
+                    "description": "The mean length of CCS reads that mapped to the reference sequence"
                 }, 
                 {
                     "header": "CCS Read Length N50 (mapped)", 
                     "type": "int", 
                     "id": "mapped_read_length_n50", 
-                    "description": null
+                    "description": "The read length at which 50% of the bases are in reads longer than, or equal to, this value"
                 }, 
                 {
                     "header": "Mapped CCS Read Mean Concordance", 
                     "type": "float", 
                     "id": "mapped_read_concordance_mean", 
-                    "description": null
+                    "description": "The mean concordance of CCS reads that mapped to the reference sequence"
                 }
             ], 
-            "description": null
+            "description": "Per-movie CCS mapping statistics"
         }
-    ], 
+    ],
     "description": null, 
     "title": "CCS Mapping Statistics", 
     "attributes": [

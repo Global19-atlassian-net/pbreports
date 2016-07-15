@@ -5,21 +5,15 @@
     "attributes": [
         {
             "type": null, 
-            "description": null, 
-            "name": "Adapter Dimers (0-10bp)",
+            "description": "Percentage of Prod1 ZMWs with adapter dimers", 
+            "name": "Adapter Dimers (0-10bp) %",
             "id": "adapter_dimers"
         },
         {
             "type": null,
-            "description": null,
-            "name": "Short Inserts (11-100bp)",
+            "description": "Percentage of Prod1 ZMWs with short inserts",
+            "name": "Short Inserts (11-100bp) %",
             "id": "short_inserts"
-        },
-        {
-            "type": null,
-            "description": null,
-            "name": "Maximum Subread Length (mean)",
-            "id": "mean_max_subread_length"
         }
     ], 
     "id": "adapter_xml_report",

@@ -8,52 +8,52 @@
                     "header": "Movie", 
                     "type": "str", 
                     "id": "movie", 
-                    "description": null
+                    "description": "Movie name for which the following metrics apply."
                 }, 
                 {
                     "header": "Mapped Reads", 
                     "type": "int", 
                     "id": "mapped_reads", 
-                    "description": null
+                    "description": "The number of polymerase reads mapped to the reference sequence."
                 }, 
                 {
                     "header": "Mapped Polymerase Read Length", 
                     "type": "int", 
                     "id": "mapped_polymerase_read_length", 
-                    "description": null
+                    "description": "The approximate mean length of polymerase reads that mapped to the reference sequence starting from the first mapped base of the first mapped subread and ending at the last mapped base of the last mapped subread."
                 }, 
                 {
                     "header": "Mapped Polymerase Read Length n50", 
                     "type": "int", 
                     "id": "mapped_polymerase_read_length_n50", 
-                    "description": null
+                    "description": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value."
                 }, 
                 {
                     "header": "Mapped Subreads", 
                     "type": "int", 
-                    "id": "mapped_subreads", 
-                    "description": null
+                    "id": "mapped_subreads",
+                    "description": "The number of subreads that mapped to the reference sequence."
                 }, 
                 {
                     "header": "Mapped Subread Bases", 
                     "type": "int", 
                     "id": "mapped_subread_base", 
-                    "description": null
+                    "description": "The number of subread bases that mapped to the reference sequence."
                 }, 
                 {
                     "header": "Mapped Subread Length", 
                     "type": "int", 
                     "id": "mapped_subread_length", 
-                    "description": null
+                    "description": "The mean length of post-filter subreads that mapped to the reference sequence."
                 }, 
                 {
-                    "header": "Mapped Subread Accuracy", 
+                    "header": "Mean Mapped Concordance", 
                     "type": "float", 
                     "id": "mapped_subread_accuracy", 
-                    "description": null
+                    "description": "The mean concordance of subreads that mapped to the reference sequence"
                 }
             ], 
-            "description": null
+            "description": "Per-movie mapping statistics."
         }
     ], 
     "description": "Create a Mapping Report from a Aligned BAM or Alignment DataSet", 
@@ -110,7 +110,7 @@
         {
             "id": "mapped_readlength_mean", 
             "type": "float", 
-            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)", 
+            "description": "The approximate mean length of polymerase reads that mapped to the reference sequence starting from the first mapped base of the first mapped subread and ending at the last mapped base of the last mapped subread.", 
             "name": "Polymerase Read Length Mean (mapped)"
         }, 
         {
