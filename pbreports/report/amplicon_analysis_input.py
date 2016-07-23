@@ -23,6 +23,9 @@ __version__ = '0.1.1'
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_input"
     DRIVER_EXE = "python -m pbreports.report.amplicon_analysis_input --resolved-tool-contract "
+    DATA_GOOD = "good"
+    DATA_CHIMERA = "chimera"
+    DATA_NOISE = "noise"
 
 
 def parse_summary(summary):
@@ -53,15 +56,18 @@ def parse_summary(summary):
             # Catch whether it's a new barcode for summary setup
             if barcode_name not in summary_data:
                 summary_data[barcode_name] = {
-                    'chimera': set(), 'noise': set(), 'good': set()}
+                    Constants.DATA_GOOD: set(),
+                    Constants.DATA_CHIMERA: set(),
+                    Constants.DATA_NOISE: set()
+                }
 
             # Add the current sequence to the appropriate bin
             if chimera_flag:
-                summary_data[barcode_name]['chimera'].add(seq_name)
+                summary_data[barcode_name][Constants.DATA_CHIMERA].add(seq_name)
             elif noise_flag:
-                summary_data[barcode_name]['noise'].add(seq_name)
+                summary_data[barcode_name][Constants.DATA_NOISE].add(seq_name)
             else:
-                summary_data[barcode_name]['good'].add(seq_name)
+                summary_data[barcode_name][Constants.DATA_GOOD].add(seq_name)
     return summary_data
 
 
@@ -87,12 +93,11 @@ def tabulate_results(summary_data, consensus_sums):
                 data[sequence_type] += weight
                 tabulated_data['all'][sequence_type] += weight
         tabulated_data[barcode] = data
-
     # Round the final tallys and their percentages to the nearest integer
     final_data = {}
     for barcode, data in tabulated_data.iteritems():
         final_data[barcode] = defaultdict(float)
-        total = data['good'] + data['chimeras'] + data['noise']
+        total = data[Constants.DATA_GOOD] + data[Constants.DATA_CHIMERA] + data[Constants.DATA_NOISE]
         for sequence_type, weight in data.iteritems():
             value = tabulated_data[barcode][sequence_type]
             final_data[barcode][sequence_type] = int(value)
