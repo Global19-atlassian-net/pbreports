@@ -251,7 +251,7 @@ class TestXMLstatsRpts(unittest.TestCase):
         rpt = make_adapter_report(sts_xml, self.get_output_dir())
         d = json.loads(rpt.to_json())
         a = d['attributes']
-        self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp)')
+        self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp) %')
         self.assertEqual(a[0]['value'], 0.0)
         self.assertEqual(a[1]['value'], 0.0)
         self.assertTrue(os.path.exists(os.path.join(
