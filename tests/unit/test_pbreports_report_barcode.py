@@ -37,8 +37,9 @@ class TestBarcodeReportBasic(unittest.TestCase):
         report = run_to_report(self.subreads, self.barcodes, subreads=True)
         d = report.to_dict()
         self.assertIsNotNone(d)
-        log.info(pformat(d))
-        log.info(str(report.tables[0]))
+        self.assertEqual(report.tables[0].columns[0].values, ['0--0', '2--2'])
+        self.assertEqual(report.tables[0].columns[1].values, [1, 1])
+        self.assertEqual(report.tables[0].columns[2].values, [1436, 204])
 
 
 class TestBarcodeIntegration(unittest.TestCase):
