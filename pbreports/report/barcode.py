@@ -32,11 +32,6 @@ class Constants(object):
 
 def _labels_reads_iterator(reads, barcodes, subreads=True):
     with openDataSet(reads) as ds:
-        movies = set()
-        apply(movies.update, [rr.movieNames for rr in ds.resourceReaders()])
-        if len(movies) != 1:  # FIXME
-            raise NotImplementedError("Multiple-movie datasets are not " +
-                                      "supported by this application.")
         for er in ds.externalResources:
             if er.barcodes != barcodes:
                 raise ValueError("Mismatch between external resource "+
@@ -47,15 +42,17 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
         zmws_by_barcode = defaultdict(set)
         reads_by_zmw = defaultdict(list)
         for rr in ds.resourceReaders():
-            for i, (b, z) in enumerate(zip(rr.pbi.bcForward,
-                                           rr.pbi.holeNumber)):
-                zmws_by_barcode[b].add(z)
-                reads_by_zmw[z].append((rr, i))
+            for i, (b, z, q) in enumerate(zip(rr.pbi.bcForward,
+                                              rr.pbi.holeNumber,
+                                              rr.pbi.qId)):
+                movie = rr.readGroupInfo(q).MovieName
+                zmws_by_barcode[b].add((movie, z))
+                reads_by_zmw[(movie,z)].append((rr, i))
         with BarcodeSet(barcodes) as bc:
             for i_bc, barcode in enumerate(bc):
                 zmws = sorted(list(zmws_by_barcode[i_bc]))
-                for zmw in zmws:
-                    for rr, i_read in reads_by_zmw[zmw]:
+                for (movie, zmw) in zmws:
+                    for rr, i_read in reads_by_zmw[(movie, zmw)]:
                         # FIXME(nechols)(2016-03-15) this will not work on CCS
                         qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
                         barcode_id = "{f}--{r}".format(
