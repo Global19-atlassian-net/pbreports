@@ -1,0 +1,34 @@
+{
+    "tables": [],
+    "description": null, 
+    "title": "Base Modifcations", 
+    "attributes": [], 
+    "id": "modifications", 
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlabel": "Modification QV", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Bases", 
+                    "title": null, 
+                    "id": "kinetic_histogram"
+                },
+                {
+                    "xlabel": "Per-Strand Coverage",
+                    "description": null,
+                    "caption": null,
+                    "ylabel": "Modification QV",
+                    "title": null,
+                    "id": "kinetic_scatter"
+                }
+
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "kinetic_detections", 
+            "title": "Kinetic Detections"
+        }
+]
+}

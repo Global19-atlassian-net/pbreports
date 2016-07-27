@@ -1,69 +1,104 @@
 {
-    "attributes": [],
-    "tables": [],
+    "tables": [], 
+    "description": null, 
+    "title": "Raw Data Report", 
+    "attributes": [
+        {
+            "type": "", 
+            "id": "nbases", 
+            "name": "Polymerase Read Bases", 
+            "description": ""
+        }, 
+        {
+            "type": "", 
+            "id": "nreads", 
+            "name": "Polymerase Reads", 
+            "description": ""
+        }, 
+        {
+            "type": "", 
+            "id": "read_n50", 
+            "name": "Polymerase Read N50", 
+            "description": ""
+        }, 
+        {
+            "type": "", 
+            "id": "read_length", 
+            "name": "Polymerase Read Length (mean)", 
+            "description": ""
+        }, 
+        {
+            "type": "", 
+            "id": "insert_length", 
+            "name": "Insert Length (mean)", 
+            "description": ""
+        }
+    ], 
+    "id": "raw_data_report", 
     "plotgroups": [
         {
             "plots": [
                 {
-                    "xlab": "Read Length",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlabel": "Read Length", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Number Of Reads", 
+                    "title": null, 
                     "id": "read_length_plot"
                 }
-            ],
-            "description": "",
-            "legend": "",
-            "id": "read_length_plot_group",
-            "title": ""
-        },
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "read_length_plot_group", 
+            "title": "Polymerase Read Length"
+        }, 
         {
             "plots": [
                 {
-                    "xlab": "Read Quality",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlabel": "Read Quality", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Number Of Reads", 
+                    "title": null, 
                     "id": "read_quality_plot"
                 }
-            ],
-            "description": "",
-            "legend": "",
-            "id": "read_quality_plot_group",
-            "title": ""
-        },
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "read_quality_plot_group", 
+            "title": null
+        }, 
         {
             "plots": [
                 {
-                    "xlab": "Insert Length",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlabel": "Insert Length", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Number of Reads", 
+                    "title": null, 
                     "id": "insert_length_plot"
                 }
-            ],
-            "description": "",
-            "legend": "",
-            "id": "insert_length_plot_group",
-            "title": ""
-        },
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "insert_length_plot_group", 
+            "title": "Estimated Insert Length"
+        }, 
         {
             "plots": [
                 {
-                    "xlab": "Insert Quality",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlabel": "Insert Quality", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Number Of Reads", 
+                    "title": null, 
                     "id": "insert_quality_plot"
                 }
-            ],
-            "description": "",
-            "legend": "",
-            "id": "insert_quality_plot_group",
-            "title": ""
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "insert_quality_plot_group", 
+            "title": null
         }
-    ],
-    "id": "filter_stats_xml",
-    "description": "",
-    "title": "Filter Stats XML Report Specifications"
+    ]
 }

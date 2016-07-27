@@ -33,7 +33,7 @@ class Constants(BaseConstants):
     TOOL_ID = "pbreports.tasks.mapping_stats_ccs"
     DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
 
-    T_STATS = "mapping_stats_ccs_table"
+    T_STATS = "mapping_stats_table"
     PG_READ_CONCORDANCE = "ccs_read_concordance_group"
     P_READ_CONCORDANCE = "concordance_plot"
     PG_READLENGTH = "ccs_readlength_group"
@@ -52,8 +52,8 @@ log = logging.getLogger(__name__)
 
 def scatter_plot_accuracy_vs_concordance(
         data,
-        axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlab,
-                     meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylab),
+        axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlabel,
+                     meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylabel),
         nbins=None,
         barcolor=None):
     accuracy, concordance = data
@@ -73,8 +73,6 @@ def scatter_plot_accuracy_vs_concordance(
 
 
 class CCSMappingStatsCollector(MappingStatsCollector):
-    META_REPORT = meta_rpt
-    TABLE_ID = Constants.T_STATS
     COLUMN_ATTR = [
         Constants.A_NREADS, Constants.A_READLENGTH, Constants.A_READLENGTH_N50,
         Constants.A_NBASES, Constants.A_READ_CONCORDANCE
@@ -108,26 +106,26 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 generate_plot,
                 'mapped_read_concordance_histogram.png',
                 xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).get_meta_plot(
-                    Constants.P_READ_CONCORDANCE).xlab,
+                    Constants.P_READ_CONCORDANCE).xlabel,
                 ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).get_meta_plot(
-                    Constants.P_READ_CONCORDANCE).ylab,
+                    Constants.P_READ_CONCORDANCE).ylabel,
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READ_CONCORDANCE).title),
+                plot_group_title=""),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
                 xlabel=meta_rpt.get_meta_plotgroup(
-                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlab,
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
                 ylabel=meta_rpt.get_meta_plotgroup(
-                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylab,
+                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).title)
+                plot_group_title="")
         ]
         return {v.plot_id: v for v in _p}
 
@@ -157,16 +155,14 @@ class CCSMappingStatsCollector(MappingStatsCollector):
             qv_validation_plot = create_plot(
                 _make_plot_func=scatter_plot_accuracy_vs_concordance,
                 plot_id=Constants.P_QV_CALIBRATION,
-                axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlab,
-                             meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylab),
+                axis_labels=(meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).xlabel,
+                             meta_rpt.get_meta_plotgroup(Constants.PG_QV_CALIBRATION).get_meta_plot(Constants.P_QV_CALIBRATION).ylabel),
                 nbins=None,
                 plot_name="mapped_qv_calibration.png",
                 barcolor="#A0A0FF",
                 data=(accuracy, concordance),
                 output_dir=output_dir)
             pg = PlotGroup(Constants.PG_QV_CALIBRATION,
-                           title=meta_rpt.get_meta_plotgroup(
-                               Constants.PG_QV_CALIBRATION).title,
                            plots=[qv_validation_plot],
                            thumbnail=qv_validation_plot.thumbnail)
             plot_groups.append(pg)
@@ -176,7 +172,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
 
 
 def to_report(alignment_file, output_dir):
-    return CCSMappingStatsCollector(alignment_file).to_report(output_dir)
+    return meta_rpt.apply_view(CCSMappingStatsCollector(alignment_file).to_report(output_dir))
 
 
 def _args_runner(args):

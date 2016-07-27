@@ -6,9 +6,12 @@ import argparse
 import logging
 import json
 import os
+import os.path as op
 import sys
 
 from pbcommand.models.report import Report, Table, Column
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -19,6 +22,11 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = op.dirname(op.realpath(__file__))
+SPEC_DIR = op.join(_DIR_NAME, 'specs/')
+A_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_input.json')
+meta_rpt = MetaReport.from_json(A_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_input"
@@ -26,6 +34,14 @@ class Constants(object):
     DATA_GOOD = "good"
     DATA_CHIMERA = "chimera"
     DATA_NOISE = "noise"
+    T_R = "result_table"
+    C_BC = "barcode_col"
+    C_GOOD = "good"
+    C_GOOD_PCT = "good_pct"
+    C_CHIM = "chimera"
+    C_CHIM_PCT = "chimera_pct"
+    C_NOISE = "noise"
+    C_NOISE_PCT = "noise_pct"
 
 
 def parse_summary(summary):
@@ -109,16 +125,15 @@ def create_table(tabulated_data):
     """Long Amplicon Analysis results table"""
 
     columns = []
-    columns.append(Column("barcode_col", header="Sample"))
-    columns.append(Column("good", header="Good"))
-    columns.append(Column("good_pct", header="Good (%)"))
-    columns.append(Column("chimera", header="Chimeric"))
-    columns.append(Column("chimera_pct", header="Chimeric (%)"))
-    columns.append(Column("noise", header="Noise"))
-    columns.append(Column("noise_pct", header="Noise (%)"))
+    columns.append(Column("barcode_col", header=''))
+    columns.append(Column("good", header=''))
+    columns.append(Column("good_pct", header=''))
+    columns.append(Column("chimera", header=''))
+    columns.append(Column("chimera_pct", header=''))
+    columns.append(Column("noise", header=''))
+    columns.append(Column("noise_pct", header=''))
 
-    t = Table("result_table",
-              title="Amplicon Input Molecule Summary", columns=columns)
+    t = Table(Constants.T_R, columns=columns)
 
     for barcode, data in tabulated_data.iteritems():
         if barcode != 'all':
@@ -150,11 +165,8 @@ def run_to_report(summary_csv, zmws_json):
     table = create_table(tabulated_data)
 
     # ids must be lowercase.
-    r = Report("amplicon_analysis_input",
-               title="Amplicon Inputs",
-               tables=[table])
-
-    return r
+    r = Report(meta_rpt.id, tables=[table])
+    return meta_rpt.apply_view(r)
 
 
 def amplicon_analysis_input(summary_csv, zmws_json, report_json):

@@ -1,0 +1,48 @@
+{
+    "_changelist": "UNKNOWN", 
+    "_version": "0.3.25", 
+    "attributes": [
+        {
+            "id": "isoseq_cluster.num_consensus_isoforms", 
+            "name": "Number of unpolished consensus isoforms", 
+            "value": 96387
+        }, 
+        {
+            "id": "isoseq_cluster.num_polished_hq_isoforms", 
+            "name": "Number of polished high-quality isoforms", 
+            "value": 7880
+        }, 
+        {
+            "id": "isoseq_cluster.num_polished_lq_isoforms", 
+            "name": "Number of polished low-quality isoforms", 
+            "value": 88467
+        }, 
+        {
+            "id": "isoseq_cluster.avg_consensus_isoform_length", 
+            "name": "Mean unpolished consensus isoforms read length", 
+            "value": 3069
+        }
+    ], 
+    "dataset_uuids": [
+        "da76f776-d9cb-50a3-b7b2-6d346b0927a0"
+    ], 
+    "id": "isoseq_cluster", 
+    "plotGroups": [
+        {
+            "id": "isoseq_cluster.consensus_isoforms_readlength_group", 
+            "legend": null, 
+            "plots": [
+                {
+                    "caption": null, 
+                    "id": "isoseq_cluster.consensus_isoforms_readlength_group.consensus_isoforms_readlength_hist", 
+                    "image": "consensus_isoforms_readlength_hist.png"
+                }
+            ], 
+            "thumbnail": "consensus_isoforms_readlength_hist_thumb.png", 
+            "title": "Read Length of Consensus Isoforms Reads"
+        }
+    ], 
+    "tables": [], 
+    "title": "Transcript Clustering", 
+    "uuid": "a2305e74-1a86-4f15-aa07-8f39d49bb327"
+}

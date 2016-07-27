@@ -4,11 +4,14 @@ Generate XML report on ZMW loading and productivity.
 """
 
 import os
+import os.path as op
 import logging
 import sys
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -17,13 +20,24 @@ from pbcore.io import DataSet
 
 __version__ = '0.1.0'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+LOADING_SPEC = op.join(SPEC_DIR, 'loading_xml.json')
+meta_rpt = MetaReport.from_json(LOADING_SPEC)
+
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.loading_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.loading_xml "
                   "--resolved-tool-contract ")
     DECIMALS = 3
-
+    T_LOADING = "loading_xml_table"
+    C_CONTEXT = "collection_context"
+    C_ZMWS = "productive_zmws"
+    C_PROD_0 = "productivity_0"
+    C_PROD_1 = "productivity_1"
+    C_PROD_2 = "productivity_2"
 
 log = logging.getLogger(__name__)
 
@@ -50,11 +64,11 @@ def to_report(stats_xml):
         if subdset.metadata.summaryStats:
             dsets.append(subdset)
 
-    col_names = ["Collection Context",
-                 "Productive ZMWs",
-                 "Productivity 0 (%)",
-                 "Productivity 1 (%)",
-                 "Productivity 2 (%)"]
+    col_ids = [Constants.C_CONTEXT, 
+               Constants.C_ZMWS,
+               Constants.C_PROD_0,
+               Constants.C_PROD_1,
+               Constants.C_PROD_2]
     col_values = [[], [], [], [], []]
     for dset in dsets:
         if len(dsets) > 1 and len(col_values[0]) == 0:
@@ -77,14 +91,11 @@ def to_report(stats_xml):
                          decimals=Constants.DECIMALS)
         this_row = [movie_name, productive_zmws, prod0, prod1, prod2]
         map(lambda (x, y): x.append(y), zip(col_values, this_row))
-    columns = [Column(cn.translate(None, '(%)').strip().replace(' ',
-                                                                '_').lower(),
-                      cn, vals)
-               for cn, vals in zip(col_names, col_values)]
-    tables = [Table("loading_xml_table", "Loading Statistics", columns)]
-    report = Report("loading_xml_report", title="Loading Report",
+    columns = [Column(cid, values=vals) for cid, vals in zip(col_ids, col_values)]
+    tables = [Table(Constants.T_LOADING, columns=columns)]
+    report = Report(meta_rpt.id, title=meta_rpt.title,
                     tables=tables, attributes=None, plotgroups=None)
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):

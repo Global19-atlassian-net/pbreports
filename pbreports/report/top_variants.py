@@ -7,9 +7,12 @@ Generates a report showing a table of top variants sorted by confidence.
 import argparse
 import logging
 import os
+import os.path as op
 import sys
 
 from pbcommand.models.report import Table, Column, Report, PbReportError
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -22,14 +25,32 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+VARS_SPEC = op.join(SPEC_DIR, 'top_variants.json')
+meta_rpt = MetaReport.from_json(VARS_SPEC)
+
 
 class Constants(object):
+    R_ID = meta_rpt.id
     TOOL_ID = "pbreports.tasks.top_variants"
     DRIVER_EXE = "python -m pbreports.report.top_variants --resolved-tool-contract"
     HOW_MANY_ID = "pbreports.task_options.how_many"
     BATCH_SORT_SIZE_ID = "pbreports.task_options.batch_sort_size"
     HOW_MANY_DEFAULT = 100
     BATCH_SORT_SIZE_DEFAULT = 10000
+    T_MINOR = "top_minor_variants_table"
+    C_SEQ = 'sequence'
+    C_POS = 'position'
+    C_VAR = 'variant'
+    C_TYP = 'type'
+    C_COV = 'coverage'
+    C_CON = 'confidence'
+    C_FRE = 'frequency'
+    C_GEN = 'genotype'
+    T_TOP = "top_variants_table"
+
 
 
 def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
@@ -57,10 +78,9 @@ def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
     for v in top:
         table_builder.add_variant(v)
 
-    r = Report('topvariants',
-               title="Top Variants",
-               tables=[table_builder.table],
+    r = Report(Constants.R_ID, tables=[table_builder.table],
                dataset_uuids=(ReferenceSet(reference).uuid,))
+    r = meta_rpt.apply_view(r)
     r.write_json(os.path.join(output_dir, report))
     return 0
 
@@ -97,12 +117,12 @@ class BaseVariantTableBuilder(object):
 
     def __init__(self):
         cols = []
-        cols.append(Column('sequence', 'Sequence'))
-        cols.append(Column('position', 'Position'))
-        cols.append(Column('variant', 'Variant'))
-        cols.append(Column('type', 'Type'))
-        cols.append(Column('coverage', 'Coverage'))
-        cols.append(Column('confidence', 'Confidence'))
+        cols.append(Column(Constants.C_SEQ, ''))
+        cols.append(Column(Constants.C_POS, ''))
+        cols.append(Column(Constants.C_VAR, ''))
+        cols.append(Column(Constants.C_TYP, ''))
+        cols.append(Column(Constants.C_COV, ''))
+        cols.append(Column(Constants.C_CON, ''))
 
         log.debug('# columns {n}'.format(n=len(cols)))
 
@@ -127,46 +147,46 @@ class BaseVariantTableBuilder(object):
         Add variant attributes common to the "top" and "top minor" variant reports.
         :param variant: Variant
         """
-        self._table.add_data_by_column_id('sequence', variant.contig)
-        self._table.add_data_by_column_id('position', variant.position)
-        self._table.add_data_by_column_id('variant', variant.variant)
-        self._table.add_data_by_column_id('type', variant.type)
-        self._table.add_data_by_column_id('coverage', variant.coverage)
-        self._table.add_data_by_column_id('confidence', variant.confidence)
+        self._table.add_data_by_column_id(Constants.C_SEQ, variant.contig)
+        self._table.add_data_by_column_id(Constants.C_POS, variant.position)
+        self._table.add_data_by_column_id(Constants.C_VAR, variant.variant)
+        self._table.add_data_by_column_id(Constants.C_TYP, variant.type)
+        self._table.add_data_by_column_id(Constants.C_COV, variant.coverage)
+        self._table.add_data_by_column_id(Constants.C_CON, variant.confidence)
 
 
 class MinorVariantTableBuilder(BaseVariantTableBuilder):
 
     def __init__(self):
         super(MinorVariantTableBuilder, self).__init__()
-        self._table.columns.append(Column('frequency', 'Frequency'))
+        self._table.columns.append(Column(Constants.C_FRE, ''))
 
     def _get_table_title(self):
-        return "Top minor variants"
+        return ""
 
     def _get_table_id(self):
-        return 'top_minor_variants_table'
+        return Constants.T_MINOR
 
     def add_variant(self, variant):
         self._add_common_variant_atts(variant)
-        self._table.add_data_by_column_id('frequency', variant.frequency)
+        self._table.add_data_by_column_id(Constants.C_FRE, variant.frequency)
 
 
 class VariantTableBuilder(BaseVariantTableBuilder):
 
     def __init__(self):
         super(VariantTableBuilder, self).__init__()
-        self._table.columns.append(Column('genotype', 'Genotype'))
+        self._table.columns.append(Column(Constants.C_GEN, ''))
 
     def _get_table_title(self):
-        return "Top Variants"
+        return ""
 
     def _get_table_id(self):
-        return 'top_variants_table'
+        return Constants.T_TOP
 
     def add_variant(self, variant):
         self._add_common_variant_atts(variant)
-        self._table.add_data_by_column_id('genotype', variant.genotype)
+        self._table.add_data_by_column_id(Constants.C_GEN, variant.genotype)
 
 
 class VariantFinder(object):
@@ -325,7 +345,7 @@ def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Top Variants Report",
+        meta_rpt.title,
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)

@@ -96,7 +96,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
         plots.append(plot)
         idx += 1
 
-    plot_group = PlotGroup(Constants.PG_COVERAGE, title=meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).title,
+    plot_group = PlotGroup(Constants.PG_COVERAGE,
                            thumbnail=thumbnail, plots=plots)
     return plot_group
 
@@ -114,8 +114,6 @@ def _create_coverage_histo_plot_grp(stats, output_dir):
     plot = Plot(Constants.P_COVERAGE_HIST, fname, meta_rpt.get_meta_plotgroup(
         Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).caption)
     plot_group = PlotGroup(Constants.PG_COVERAGE_HIST,
-                           title=meta_rpt.get_meta_plotgroup(
-                               Constants.PG_COVERAGE_HIST).title,
                            thumbnail=thumb, plots=[plot])
     return plot_group
 
@@ -186,7 +184,7 @@ def _create_contig_plot(contig_coverage):
     lines_fills = [line_fill]
     fig, ax = get_fig_axes_lpr()
     apply_line_data(ax, lines_fills, (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(
-        Constants.P_COVERAGE).xlab, meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylab))
+        Constants.P_COVERAGE).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel))
     apply_line_fill_data(ax, lines_fills)
     return fig, ax
 
@@ -204,8 +202,8 @@ def _create_histogram(stats):
     bins = np.arange(0, m, binSize)
     fig, ax = get_fig_axes_lpr()
     apply_histogram_data(ax, stats.means, bins,
-                         (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).xlab,
-                          meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).ylab),
+                         (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).xlabel,
+                          meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).ylabel),
                          barcolor=Constants.COLOR_STEEL_BLUE_DARK,
                          showEdges=False)
     return fig, ax
@@ -220,8 +218,7 @@ def _get_att_mean_coverage(stats):
         v = 'NA'
     else:
         v = stats.mean_depth_of_coverage
-    a = Attribute(Constants.A_COVERAGE, v,
-                  name=meta_rpt.get_meta_attribute(Constants.A_COVERAGE).name)
+    a = Attribute(Constants.A_COVERAGE, v)
     return a
 
 
@@ -234,8 +231,7 @@ def _get_att_percent_missing(stats):
         v = 'NA'
     else:
         v = stats.perc_missing_bases
-    a = Attribute(Constants.A_MISSING, v,
-                  name=meta_rpt.get_meta_attribute(Constants.A_MISSING).name)
+    a = Attribute(Constants.A_MISSING, v)
     return a
 
 
@@ -445,14 +441,14 @@ def make_coverage_report(gff, reference, max_contigs_to_plot, report,
         if plot_grp_histogram.plots:
             plotgroups.append(plot_grp_histogram)
 
-    rpt = Report('coverage',
-                 title="Coverage",
+    rpt = Report(meta_rpt.id,
+                 title=meta_rpt.title,
                  plotgroups=plotgroups,
                  attributes=[a1, a2],
                  dataset_uuids=(ReferenceSet(reference).uuid,))
 
     rpt.write_json(os.path.join(output_dir, report))
-    return rpt
+    return meta_rpt.apply_view(rpt)
 
 
 def args_runner(args):

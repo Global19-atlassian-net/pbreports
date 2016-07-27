@@ -1,0 +1,21 @@
+{
+    "tables": [], 
+    "description": null, 
+    "title": null, 
+    "attributes": [
+        {
+            "type": null, 
+            "description": null, 
+            "name": "SMRT Cells", 
+            "id": "ncells"
+        }, 
+        {
+            "type": "float", 
+            "description": null, 
+            "name": "Movies", 
+            "id": "nmovies"
+        }
+    ], 
+    "id": "overview", 
+    "plotgroups": []
+}

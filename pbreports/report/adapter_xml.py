@@ -5,6 +5,7 @@ Generate XML report of adapter statistics.
 
 from collections import OrderedDict, defaultdict
 import os
+import os.path as op
 import logging
 import sys
 
@@ -12,6 +13,8 @@ import numpy as np
 
 from pbreports.util import continuous_dist_shaper
 from pbcommand.models.report import *
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -23,6 +26,11 @@ from pbreports.plot.helper import (get_fig_axes_lpr,
 
 __version__ = '0.1.0'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+ADAPTER_SPEC = op.join(SPEC_DIR, 'adapter_xml.json')
+meta_rpt = MetaReport.from_json(ADAPTER_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.adapter_report_xml"
@@ -31,19 +39,9 @@ class Constants(object):
 
     A_DIMERS = "adapter_dimers"
     A_SHORT_INSERTS = "short_inserts"
-    A_MEAN_MAX_SR_LEN = "mean_max_subread_length"
 
-    C_MOVIE_NAME = "movie_name"
-    C_MEAN_MAX_SR_LEN = A_MEAN_MAX_SR_LEN
-
-    T_SUBREAD_STATS = "movie_stats"
-
-    ATTR_LABELS = OrderedDict([
-        (A_DIMERS, "Adapter Dimers (0-10bp)"),
-        (A_SHORT_INSERTS, "Short Inserts (11-100bp)"),
-        (A_MEAN_MAX_SR_LEN, "Maximum Subread Length (mean)")
-    ])
-
+    PG_ADAPTER = "adapter_xml_plot_group"
+    P_ADAPTER = "adapter_xml_plot"
 
 log = logging.getLogger(__name__)
 
@@ -85,8 +83,8 @@ def to_report(stats_xml, output_dir, dpi=72):
         ax.bar(map(float, ins_len_dist.labels), ins_len_dist.bins,
                color=get_green(0), edgecolor=get_green(0),
                width=(ins_len_dist.binWidth * 0.75))
-        ax.set_xlabel('Median Distance Between Adapters')
-        ax.set_ylabel('Reads')
+        ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).xlabel)
+        ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).ylabel)
         png_fn = os.path.join(output_dir,
                               "interAdapterDist{i}.png".format(i=i))
         png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn,
@@ -97,23 +95,22 @@ def to_report(stats_xml, output_dir, dpi=72):
                           os.path.relpath(png_base, output_dir),
                           thumbnail=os.path.relpath(thumbnail_base, output_dir)))
 
-    plot_groups = [PlotGroup("adapter_xml_plot_group",
-                             title="Observed Insert Length Distribution",
+    plot_groups = [PlotGroup(Constants.PG_ADAPTER,
                              plots=plots,
                              thumbnail=os.path.relpath(thumbnail_base, output_dir))]
-    attributes = [Attribute(i, v, name=Constants.ATTR_LABELS[i]) for i,v in
+    attributes = [Attribute(i, v) for i,v in
         zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
             [adapter_dimers, short_inserts])]
 
     tables = []
 
-    report = Report("adapter_xml_report",
-                    title="Adapter Report",
+    report = Report(meta_rpt.id,
+                    title=meta_rpt.title,
                     attributes=attributes,
                     tables=tables,
                     )#plotgroups=plot_groups)
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):

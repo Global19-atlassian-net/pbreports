@@ -3,25 +3,25 @@
     "tables": [
         {
             "id": "barcode_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Barcode Name",
-                    "type": "",
+                    "type": null,
                     "id": "barcode",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Reads",
-                    "type": "",
+                    "type": null,
                     "id": "number_of_reads",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Bases",
-                    "type": "",
+                    "type": null,
                     "id": "number_of_bases",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Barcodes"
@@ -29,6 +29,6 @@
     ],
     "plotgroups": [],
     "id": "barcode",
-    "description": "",
-    "title": "Barcode Report Specifications"
+    "description": null,
+    "title": "Barcodes"
 }

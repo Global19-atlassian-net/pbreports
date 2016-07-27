@@ -1,88 +1,129 @@
 {
-    "attributes": [],
     "tables": [
         {
-            "id": "motif_records",
-	    "description": "",
+            "title": "Modified Base Motifs", 
+            "id": "motif_records", 
             "columns": [
                 {
-                    "header": "Motif",
-                    "type": "str",
-                    "id": "motif_id",
-                    "description": ""
-                },
+                    "header": "Motif", 
+                    "type": "str", 
+                    "id": "motif_id", 
+                    "description": null
+                }, 
                 {
-                    "header": "Modified Position",
-                    "type": "int",
-                    "id": "modified_position",
-                    "description": ""
-                },
+                    "header": "Modified Position", 
+                    "type": "int", 
+                    "id": "modified_position", 
+                    "description": null
+                }, 
                 {
-                    "header": "Motification Type",
-                    "type": "str",
-                    "id": "modification_type",
-                    "description": ""
-                },
+                    "header": "Motification Type", 
+                    "type": "str", 
+                    "id": "modification_type", 
+                    "description": null
+                }, 
                 {
-                    "header": "% of Motifs Detected",
-                    "type": "",
-                    "id": "percent_motifs_detected",
-                    "description": ""
-                },
+                    "header": "% of Motifs Detected", 
+                    "type": null, 
+                    "id": "percent_motifs_detected", 
+                    "description": null
+                }, 
                 {
-                    "header": "# of Motifs Detected",
-                    "type": "int",
-                    "id": "ndetected_motifs",
-                    "description": ""
-                },
+                    "header": "# of Motifs Detected", 
+                    "type": "int", 
+                    "id": "ndetected_motifs", 
+                    "description": null
+                }, 
                 {
-                    "header": "# of Motifs in Genome",
-                    "type": "int",
-                    "id": "nmotifs_in_genome",
-                    "description": ""
-                },
+                    "header": "# of Motifs in Genome", 
+                    "type": "int", 
+                    "id": "nmotifs_in_genome", 
+                    "description": null
+                }, 
                 {
-                    "header": "Mean QV",
-                    "type": "float",
-                    "id": "mean_readscore",
-                    "description": ""
-                },
+                    "header": "Mean QV", 
+                    "type": "float", 
+                    "id": "mean_readscore", 
+                    "description": null
+                }, 
                 {
-                    "header": "Mean Coverage",
-                    "type": "float",
-                    "id": "mean_coverage",
-                    "description": ""
-                },
+                    "header": "Mean Coverage", 
+                    "type": "float", 
+                    "id": "mean_coverage", 
+                    "description": null
+                }, 
                 {
-                    "header": "Partner Motif",
-                    "type": "",
-                    "id": "partner_motif",
-                    "description": ""
-                },
+                    "header": "Partner Motif", 
+                    "type": null, 
+                    "id": "partner_motif", 
+                    "description": null
+                }, 
                 {
-                    "header": "Mean IPD ratio",
-                    "type": "float",
-                    "id": "mean_ipd_ratio",
-                    "description": ""
-                },
+                    "header": "Mean IPD ratio", 
+                    "type": "float", 
+                    "id": "mean_ipd_ratio", 
+                    "description": null
+                }, 
                 {
-                    "header": "Group Tag",
-                    "type": "str",
-                    "id": "group_tag",
-                    "description": ""
-                },
+                    "header": "Group Tag", 
+                    "type": "str", 
+                    "id": "group_tag", 
+                    "description": null
+                }, 
                 {
-                    "header": "Objective Score",
-                    "type": "",
-                    "id": "objective_score",
-                    "description": ""
+                    "header": "Objective Score", 
+                    "type": null, 
+                    "id": "objective_score", 
+                    "description": null
                 }
-            ],
-            "title": "motifs"
+            ], 
+            "description": null
         }
-    ],
-    "plotgroups": [],
-    "id": "motifs",
-    "description": "",
-    "title": "Motifs Report Specifications"
+    ], 
+    "description": null, 
+    "title": "Motifs Report Specifications", 
+    "attributes": [], 
+    "id": "motifs", 
+    "plotgroups": [
+        {
+            "plots": [
+                {
+                    "xlabel": "Per-Strand Coverage", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Modification QV", 
+                    "title": null, 
+                    "id": "mod_qv_coverage"
+                }, 
+                {
+                    "xlabel": "Modification QV", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Bases", 
+                    "title": null, 
+                    "id": "qmod_hist"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "modifications", 
+            "title": "Modifications"
+        }, 
+        {
+            "plots": [
+                {
+                    "xlabel": "Modification QV", 
+                    "description": null, 
+                    "caption": null, 
+                    "ylabel": "Motif Sites", 
+                    "title": null, 
+                    "id": "motifs"
+                }
+            ], 
+            "description": null, 
+            "legend": null, 
+            "id": "modification_qvs", 
+            "title": "Modification QVs"
+        }
+    ]
 }

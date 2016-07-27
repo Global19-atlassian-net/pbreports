@@ -19,34 +19,36 @@
             "id": "coverage_plots",
             "plots": [
                 {
-                    "xlab": "Reference Start Position",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "Coverage",
+                    "xlabel": "Reference Start Position",
+                    "description": null,
+                    "caption": null,
+                    "title": null,
+                    "ylabel": "Coverage",
                     "id": "coverage_contig"
                 }
             ],
             "title": "Coverage Across Reference",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         },
         {
             "id": "coverage_histogram_plot_group",
             "plots": [
                 {
-                    "xlab": "Coverage",
-                    "description": "",
+                    "xlabel": "Coverage",
+                    "description": null,
                     "caption": "Depth of coverage distribution ",
-                    "ylab": "Reference Regions",
+                    "title": "Depth of coverage distribution ",
+                    "ylabel": "Reference Regions",
                     "id": "coverage_histogram"
                 }
             ],
             "title": "Depth of Coverage",
-            "description": "",
-            "legend": ""
+            "description": null,
+            "legend": null
         }
     ],
-    "id": "coverage_report",
-    "description": "",
-    "title": "Coverage Report"
+    "id": "coverage",
+    "description": null,
+    "title": "Coverage"
 }

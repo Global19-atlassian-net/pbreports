@@ -12,6 +12,7 @@ import argparse
 import logging
 import gzip
 import os
+import os.path as op
 import sys
 
 from pylab import legend, arange
@@ -19,6 +20,8 @@ import numpy as np
 import h5py
 
 from pbcommand.models.report import Report, PlotGroup, Plot
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -33,11 +36,18 @@ log = logging.getLogger(__name__)
 
 __version__ = '2.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+MOD_SPEC = op.join(SPEC_DIR, 'modifications.json')
+meta_rpt = MetaReport.from_json(MOD_SPEC)
 
 class Constants(BaseConstants):
     TOOL_ID = "pbreports.tasks.modifications_report"
     DRIVER_EXE = "python -m pbreports.report.modifications --resolved-tool-contract"
-
+    PG_KIN = "kinetic_detections"
+    P_SCAT = "kinetic_scatter"
+    P_HIST = "kinetic_histogram"
 
 def _create_fig_template(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
     fig, ax = PH.get_fig_axes_lpr(dims=dims)
@@ -73,8 +83,8 @@ def plot_kinetics_scatter(basemods_h5, ax):
         else:
             log.warn("Base {b} not found".format(b=base))
 
-    ax.set_xlabel('Per-Strand Coverage')
-    ax.set_ylabel('Modification QV')
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).ylabel)
     legend(handles, bases, loc='upper left')
 
     if len(basemods_h5['base']) > 0:
@@ -107,8 +117,9 @@ def plot_kinetics_hist(basemods_h5, ax):
         else:
             log.warn("Base {b} not found".format(b=base))
 
-    ax.set_ylabel('Bases')
-    ax.set_xlabel('Modification QV')
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_HIST).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_HIST).ylabel)
+
 
     if len(d) > 0:
         ax.legend(loc='upper right')
@@ -125,7 +136,7 @@ def get_qmod_plot(basemods_h5, output_dir, dpi):
     png_path = os.path.join(output_dir, "kinetic_detections.png")
     png, thumbpng = PH.save_figure_with_thumbnail(fig, png_path, dpi=dpi)
 
-    return Plot('kinetic_detections', os.path.basename(png),
+    return Plot(Constants.P_SCAT, os.path.basename(png),
                 thumbnail=os.path.basename(thumbpng))
 
 
@@ -140,7 +151,7 @@ def get_qmod_hist(basemods_h5, output_dir, dpi):
     png_path = os.path.join(output_dir, "kinetic_histogram.png")
     png, thumbpng = PH.save_figure_with_thumbnail(fig, png_path, dpi=dpi)
 
-    return Plot('kinetic_histogram', os.path.basename(png),
+    return Plot(Constants.P_HIST, os.path.basename(png),
                 thumbnail=os.path.basename(thumbpng))
 
 
@@ -151,13 +162,11 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     basemods_h5 = h5py.File(modifications_h5)
     scatter = get_qmod_plot(basemods_h5, output_dir, dpi)
     hist = get_qmod_hist(basemods_h5, output_dir, dpi)
-    pg = PlotGroup('kinetic_detections',
-                   title='Kinetic Detections',
+    pg = PlotGroup(Constants.PG_KIN,
                    thumbnail=scatter.thumbnail,
                    plots=[scatter, hist])
-    rpt = Report('modifications',
-                 title="Base Modifications",
-                 plotgroups=[pg])
+    rpt = Report(meta_rpt.id, plotgroups=[pg])
+    rpt = meta_rpt.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
     return 0
 

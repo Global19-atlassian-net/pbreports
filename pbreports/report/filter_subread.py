@@ -37,6 +37,7 @@ Attributes
 """
 
 import os
+import os.path as op
 import sys
 import argparse
 import logging
@@ -47,6 +48,8 @@ import math
 import numpy as np
 
 from pbcommand.models.report import Report, Attribute
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.cli import pacbio_args_runner, \
     get_default_argparser_with_base_opts
 from pbcommand.utils import setup_log
@@ -65,13 +68,19 @@ from pbreports.model.aggregators import (BaseAggregator, SumAggregator,
 log = logging.getLogger(__name__)
 __version__ = '1.2'
 
+# Import Mapping MetaReport
+_DIR_NAME = op.dirname(op.realpath(__file__))
+SPEC_DIR = op.join(_DIR_NAME, 'specs/')
+FS_SPEC = op.join(SPEC_DIR, 'filter_subread.json')
+meta_rpt = MetaReport.from_json(FS_SPEC)
+
 
 class Constants(object):
     """Ids used for Report, Table, PlotGroup, Plot, Attributes,
 
     Using an a prefix for autocomplete
     """
-    R_ID = 'filter_subread'
+    R_ID = meta_rpt.id
 
     # Table
     #T_MY_ID = ''
@@ -290,16 +299,13 @@ def _to_attributes(nreads, nbases, mean_readlength, n50):
     Returns a list of attributes
     """
 
-    attr_nbases = Attribute(Constants.A_NBASES,
-                            nbases, "Total Number of Bases")
+    attr_nbases = Attribute(Constants.A_NBASES, nbases)
 
-    attr_total = Attribute(Constants.A_NREADS, nreads,
-                           "Number of Reads")
+    attr_total = Attribute(Constants.A_NREADS, nreads)
 
-    attr_mean = Attribute(Constants.A_MEAN, int(mean_readlength),
-                          name="Mean Subread length")
+    attr_mean = Attribute(Constants.A_MEAN, int(mean_readlength))
 
-    attr_n50 = Attribute(Constants.A_N50, n50, name="N50")
+    attr_n50 = Attribute(Constants.A_N50, n50)
 
     attributes = [attr_mean, attr_n50, attr_nbases, attr_total]
 
@@ -362,12 +368,12 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
                                    Constants.PG_SUBREAD_LENGTH,
                                    custom_subread_length_histogram,
                                    Constants.I_FILTER_SUBREADS_HIST,
-                                   xlabel="Subread Length",
-                                   ylabel="Subreads",
-                                   rlabel="bp > Subread Length",
+                                   xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(Constants.P_POST_FILTER).xlabel,
+                                   ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(Constants.P_POST_FILTER).ylabel["L"],
+                                   rlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(Constants.P_POST_FILTER).ylabel["R"],
                                    thumb="filtered_subread_report_thmb.png",
                                    use_group_thumb=True,
-                                   plot_group_title="Subread Filtering",
+                                   plot_group_title="",
                                    color=get_green(3),
                                    edgecolor=get_green(2))
 
@@ -389,7 +395,7 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
 
     log.debug(str(report))
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):
