@@ -1,20 +1,36 @@
 {
     "_changelist": "UNKNOWN", 
-    "_version": "0.2.14", 
+    "_version": "0.3.25", 
     "attributes": [
         {
-            "id": "isoseq_cluster.isoseq_numconsensusisoforms", 
-            "name": "numConsensusIsoforms", 
-            "value": 9
+            "id": "pbtranscript_cluster.num_consensus_isoforms", 
+            "name": "Number of unpolished consensus isoforms", 
+            "value": 96387
         }, 
         {
-            "id": "isoseq_cluster.isoseq_numtotalbases", 
-            "name": "numTotalBases", 
-            "value": 35563
+            "id": "pbtranscript_cluster.num_polished_hq_isoforms", 
+            "name": "Number of polished high-quality isoforms", 
+            "value": 7880
+        }, 
+        {
+            "id": "pbtranscript_cluster.num_polished_lq_isoforms", 
+            "name": "Number of polished low-quality isoforms", 
+            "value": 88467
+        },
+        {
+            "id": "pbtranscript_cluster.num_total_bases",
+            "name": "Total number of bases in unpolished consensus isoforms",
+            "value": 12345
         }
     ], 
-    "dataset_uuids": ["ed77fa65-19d4-3cc1-30d1-7640e92ed3ef"], 
-    "id": "isoseq_cluster", 
+    "dataset_uuids": [
+        "da76f776-d9cb-50a3-b7b2-6d346b0927a0", 
+        "8c5538eb-6d5a-a0d8-014e-1dd8d5112e2c", 
+        "5ad7e323-2534-1f9c-446c-41159760e6f8"
+    ], 
+    "id": "pbtranscript_cluster", 
     "plotGroups": [], 
-    "tables": []
+    "tables": [], 
+    "title": "Report pbtranscript_cluster", 
+    "uuid": "0f324fde-28d7-4bf2-a628-44c789a57efb"
 }

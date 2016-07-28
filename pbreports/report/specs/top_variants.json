@@ -1,107 +1,107 @@
 {
-    "attributes": [],
     "tables": [
         {
-            "id": "top_variants_table",
-	    "description": "",
+            "title": "Top Variants", 
+            "id": "top_variants_table", 
             "columns": [
                 {
-                    "header": "Sequence",
-                    "type": "",
-                    "id": "sequence",
-                    "description": ""
-                },
+                    "header": "Sequence", 
+                    "type": null, 
+                    "id": "sequence", 
+                    "description": null
+                }, 
                 {
-                    "header": "Position",
-                    "type": "",
-                    "id": "position",
-                    "description": ""
-                },
+                    "header": "Position", 
+                    "type": null, 
+                    "id": "position", 
+                    "description": null
+                }, 
                 {
-                    "header": "Variant",
-                    "type": "",
-                    "id": "variant",
-                    "description": ""
-                },
+                    "header": "Variant", 
+                    "type": null, 
+                    "id": "variant", 
+                    "description": null
+                }, 
                 {
-                    "header": "Type",
-                    "type": "",
-                    "id": "type",
-                    "description": ""
-                },
+                    "header": "Type", 
+                    "type": null, 
+                    "id": "type", 
+                    "description": null
+                }, 
                 {
-                    "header": "Coverage",
-                    "type": "",
-                    "id": "coverage",
-                    "description": ""
-                },
+                    "header": "Coverage", 
+                    "type": null, 
+                    "id": "coverage", 
+                    "description": null
+                }, 
                 {
-                    "header": "Confidence",
-                    "type": "",
-                    "id": "confidence",
-                    "description": ""
-                },
+                    "header": "Confidence", 
+                    "type": null, 
+                    "id": "confidence", 
+                    "description": null
+                }, 
                 {
-                    "header": "Genotype",
-                    "type": "",
-                    "id": "genotype",
-                    "description": ""
+                    "header": "Genotype", 
+                    "type": null, 
+                    "id": "genotype", 
+                    "description": null
                 }
-            ],
-            "title": "Top Variants"
-        },
+            ], 
+            "description": null
+        }, 
         {
-            "id": "top_minor_variants_table",
-	    "description": "",
+            "title": "Top minor variants", 
+            "id": "top_minor_variants_table", 
             "columns": [
                 {
-                    "header": "Sequence",
-                    "type": "",
-                    "id": "sequence",
-                    "description": ""
-                },
+                    "header": "Sequence", 
+                    "type": null, 
+                    "id": "sequence", 
+                    "description": null
+                }, 
                 {
-                    "header": "Position",
-                    "type": "",
-                    "id": "position",
-                    "description": ""
-                },
+                    "header": "Position", 
+                    "type": null, 
+                    "id": "position", 
+                    "description": null
+                }, 
                 {
-                    "header": "Variant",
-                    "type": "",
-                    "id": "variant",
-                    "description": ""
-                },
+                    "header": "Variant", 
+                    "type": null, 
+                    "id": "variant", 
+                    "description": null
+                }, 
                 {
-                    "header": "Type",
-                    "type": "",
-                    "id": "type",
-                    "description": ""
-                },
+                    "header": "Type", 
+                    "type": null, 
+                    "id": "type", 
+                    "description": null
+                }, 
                 {
-                    "header": "Coverage",
-                    "type": "",
-                    "id": "coverage",
-                    "description": ""
-                },
+                    "header": "Coverage", 
+                    "type": null, 
+                    "id": "coverage", 
+                    "description": null
+                }, 
                 {
-                    "header": "Confidence",
-                    "type": "",
-                    "id": "confidence",
-                    "description": ""
-                },
+                    "header": "Confidence", 
+                    "type": null, 
+                    "id": "confidence", 
+                    "description": null
+                }, 
                 {
-                    "header": "Frequency",
-                    "type": "",
-                    "id": "frequency",
-                    "description": ""
+                    "header": "Frequency", 
+                    "type": null, 
+                    "id": "frequency", 
+                    "description": null
                 }
-            ],
-            "title": "Top minor variants"
+            ], 
+            "description": null
         }
-    ],
-    "plotgroups": [],
-    "id": "top_variants",
-    "description": "",
-    "title": "Top Variants Report Specifications"
+    ], 
+    "description": null, 
+    "title": "Top Variants Report", 
+    "attributes": [], 
+    "id": "topvariants", 
+    "plotgroups": []
 }

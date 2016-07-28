@@ -6,12 +6,15 @@ from collections import OrderedDict
 import logging
 import csv
 import os
+import os.path as op
 import sys
 
 import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, Plot, PlotGroup,
                                      PbReportError)
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -29,6 +32,11 @@ __version__ = '0.4'
 __all__ = ['make_polished_assembly_report', 'ContigInfo',
            'get_parser']
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+POLISHED_ASSEMBLY_SPEC = op.join(SPEC_DIR, 'polished_assembly.json')
+meta_rpt = MetaReport.from_json(POLISHED_ASSEMBLY_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.polished_assembly"
@@ -36,20 +44,8 @@ class Constants(object):
     A_MAX_LEN = "max_contig_length"
     A_N50_LEN = "n_50_contig_length"
     A_SUM_LEN = "sum_contig_lengths"
-
-    ATTR_LABELS = OrderedDict([
-        (A_N_CONTIGS, "Polished Contigs"),
-        (A_MAX_LEN, "Maximum Contig Length"),
-        (A_N50_LEN, "N50 Contig Length"),
-        (A_SUM_LEN, "Sum of Contig Lengths")
-    ])
-    ATTR_DESCRIPTIONS = {
-        A_N_CONTIGS: "Number of assembled contigs",
-        A_MAX_LEN: "Length of longest contig",
-        A_N50_LEN: "50% of contigs are longer than this value",
-        A_SUM_LEN: "Total length of all contigs"
-    }
-
+    PG_COVERAGE = "coverage_based"
+    P_COVERAGE = "cov_vs_qual"
 
 def make_polished_assembly_report(report, gff, fastq, output_dir):
     """
@@ -72,16 +68,12 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
 
     cvqp = _coverage_vs_quality_plot(contigs, output_dir)
 
-    pgrp = PlotGroup('coverage_based',
-                     title='Contig Coverage vs Confidence',
+    pgrp = PlotGroup(Constants.PG_COVERAGE,
                      thumbnail=cvqp.thumbnail,
                      plots=[cvqp])
 
-    rep = Report('polished_assembly',
-                 title="Polished Assembly")
-    rep.add_attribute(
-        Attribute(Constants.A_N_CONTIGS, len(contigs),
-                  Constants.ATTR_LABELS[Constants.A_N_CONTIGS]))
+    rep = Report(meta_rpt.id)
+    rep.add_attribute(Attribute(Constants.A_N_CONTIGS, len(contigs)))
     read_lengths = [c.length for c in contigs.values()]
     read_lengths.sort()
     rep.add_attribute(_get_att_max_contig_length(read_lengths))
@@ -138,8 +130,8 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     fig, axes = PH.get_fig_axes_lpr()
     axes = fig.add_subplot(111)
     axes.set_axisbelow(True)
-    axes.set_ylabel("Mean Confidence (QV)")
-    axes.set_xlabel("Mean Coverage Depth")
+    axes.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel)
+    axes.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).xlabel)
     PH.set_tick_label_font_size(axes, 12, 12)
     PH.set_axis_label_font_size(axes, 16)
 
@@ -154,7 +146,7 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     png_path = os.path.join(output_dir, "polished_coverage_vs_quality.png")
     png, thumbpng = PH.save_figure_with_thumbnail(fig, png_path)
 
-    return Plot('cov_vs_qual', os.path.basename(png),
+    return Plot(Constants.P_COVERAGE, os.path.basename(png),
                 thumbnail=os.path.basename(thumbpng))
 
 
@@ -170,18 +162,14 @@ def _get_att_max_contig_length(read_lengths):
         val = 0
     else:
         val = read_lengths[l - 1]
-    return Attribute(Constants.A_MAX_LEN, val,
-                     Constants.ATTR_LABELS[Constants.A_MAX_LEN])
-
+    return Attribute(Constants.A_MAX_LEN, val)
 
 def _get_att_sum_contig_lengths(read_lengths):
     """
     Return the last member of the sorted list. 0 if read_lengths is empty.
     :param read_lengths: sorted list
     """
-    return Attribute(Constants.A_SUM_LEN, sum(read_lengths),
-                     Constants.ATTR_LABELS[Constants.A_SUM_LEN])
-
+    return Attribute(Constants.A_SUM_LEN, sum(read_lengths))
 
 def _get_att_n_50_contig_length(read_lengths):
     """
@@ -189,9 +177,7 @@ def _get_att_n_50_contig_length(read_lengths):
     :param read_lengths: sorted list
     """
     n50 = compute_n50(read_lengths)
-    return Attribute(Constants.A_N50_LEN, n50,
-                     Constants.ATTR_LABELS[Constants.A_N50_LEN])
-
+    return Attribute(Constants.A_N50_LEN, int(n50))
 
 def _validate_inputs(infile, desc="input file"):
     """
@@ -323,7 +309,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Polished Assembly",
+        meta_rpt.title,
         __doc__,
         driver_exe)
     return p

@@ -13,6 +13,7 @@ from collections import OrderedDict
 import functools
 import logging
 import os
+import os.path as op
 import sys
 
 import numpy as np
@@ -20,6 +21,8 @@ import numpy as np
 from pbcommand.utils import setup_log
 from pbcommand.models.report import (Report, Table, Column, Plot, Attribute,
                                      PlotGroup)
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -31,6 +34,11 @@ from pbreports.util import compute_n50, continuous_dist_shaper
 
 __version__ = '0.1.0'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+FILTER_SPEC = op.join(SPEC_DIR, 'filter_stats_xml.json')
+meta_rpt = MetaReport.from_json(FILTER_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.filter_stats_report_xml"
@@ -41,19 +49,10 @@ class Constants(object):
     A_NREADS = "nreads"
     A_READ_N50 = "read_n50"
     A_READ_LENGTH = "read_length"
-    A_READ_QUALITY = "read_quality"
+#    A_READ_QUALITY = "read_quality"
     A_INSERT_LENGTH = "insert_length"
-    A_INSERT_QUALITY = "insert_quality"
+#    A_INSERT_QUALITY = "insert_quality"
 
-    ATTR_LABELS = OrderedDict([
-        (A_NBASES, "Polymerase Read Bases"),
-        (A_NREADS, "Polymerase Reads"),
-        (A_READ_LENGTH, "Polymerase Read Length (mean)"),
-        (A_READ_N50, "Polymerase Read N50"),
-        #(A_READ_QUALITY, "Polymerase Read Quality"),
-        (A_INSERT_LENGTH, "Insert Length (mean)"),
-        #(A_INSERT_QUALITY, "Insert Quality (mean)")
-    ])
     READ_ATTR = [A_NBASES, A_NREADS, A_READ_LENGTH, A_READ_N50]
     INSERT_ATTR = [A_INSERT_LENGTH]
 
@@ -61,8 +60,6 @@ class Constants(object):
 class ReadStatsPlots(object):
     P_LENGTH = "read_length_plot"
     P_LENGTH_PREFIX = "readLenDist"
-    P_LENGTH_X_AXIS = "Read Length"
-    P_QUAL_X_AXIS = "Read Quality"
     P_QUAL = "read_quality_plot"
     P_QUAL_PREFIX = "readQualDist"
     PG_LENGTH = "read_length_plot_group"
@@ -72,8 +69,6 @@ class ReadStatsPlots(object):
 class InsertStatsPlots(object):
     P_LENGTH_PREFIX = "insertLenDist"
     P_LENGTH = "insert_length_plot"
-    P_LENGTH_X_AXIS = "Insert Length"
-    P_QUAL_X_AXIS = "Insert Quality"
     P_QUAL = "insert_quality_plot"
     P_QUAL_PREFIX = "insertQualDist"
     PG_LENGTH = "insert_length_plot_group"
@@ -144,7 +139,7 @@ def _to_read_stats_attributes(readLenDists, readQualDists):
 
 def _make_attributes(read_attr, attr_values):
     assert len(read_attr) == len(attr_values)
-    return [Attribute(attr_id, value=value, name=Constants.ATTR_LABELS[attr_id])
+    return [Attribute(attr_id, value=value)
             for attr_id, value in zip(read_attr, attr_values)]
 
 
@@ -172,8 +167,8 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(PlotConstants.P_LENGTH_X_AXIS)
-        len_axes.set_ylabel("Number Of Reads")
+        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
+        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_LENGTH_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
@@ -184,7 +179,6 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
     plot_groups = [
         PlotGroup(PlotConstants.PG_LENGTH,
-                  title=title,
                   plots=length_plots,
                   thumbnail=os.path.relpath(thumbnail_base, output_dir))
     ]
@@ -200,8 +194,8 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(PlotConstants.P_QUAL_X_AXIS)
-        qual_axes.set_ylabel("Number Of Reads")
+        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
+        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_QUAL_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,
@@ -212,13 +206,11 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
     plot_groups.append(
         PlotGroup(PlotConstants.PG_QUAL,
-                  title=Constants.ATTR_LABELS[PlotConstants.P_QUAL_X_AXIS],
                   plots=qual_plots))
     return plot_groups
 
-to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots,
-                                        "Polymerase Read Length")
-to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots, "Estimated Insert Length")
+to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots, "")
+to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots, "")
 
 
 def to_report(stats_xml, output_dir, dpi=72):
@@ -260,13 +252,13 @@ def to_report(stats_xml, output_dir, dpi=72):
         output_dir=output_dir))
 
     # build the report:
-    report = Report("raw_data_report",
-                    title="Raw Data Report",
+    report = Report(meta_rpt.id,
+                    title=meta_rpt.title,
                     attributes=attr,
                     plotgroups=plot_groups,
                     dataset_uuids=dataset_uuids)
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def args_runner(args):

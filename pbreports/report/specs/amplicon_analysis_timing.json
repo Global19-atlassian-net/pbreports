@@ -3,31 +3,31 @@
     "tables": [
         {
             "id": "result_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Sample",
-                    "type": "",
+                    "type": null,
                     "id": "barcode_col",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Hours",
-                    "type": "",
+                    "type": null,
                     "id": "hour_col",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Minutes",
-                    "type": "",
+                    "type": null,
                     "id": "minute_col",
-                    "description": ""
+                    "description": null
                 },
                 {
                     "header": "Total Time (seconds)",
-                    "type": "",
+                    "type": null,
                     "id": "second_col",
-                    "description": ""
+                    "description": null
                 }
             ],
             "title": "Amplicon Analysis Timing Summary"
@@ -35,6 +35,6 @@
     ],
     "plotgroups": [],
     "id": "amplicon_analysis_timing",
-    "description": "",
-    "title": "Amplicon Analysis Timing Report Specifications"
+    "description": null,
+    "title": "Amplicon Analysis Timing"
 }

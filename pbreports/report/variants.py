@@ -9,6 +9,7 @@ from collections import OrderedDict
 import argparse
 import logging
 import os
+import os.path as op
 import sys
 import hashlib
 
@@ -17,6 +18,8 @@ import numpy as np
 
 from pbcommand.models.report import (Table, Column, Attribute, Report,
                                      PlotGroup, Plot, PbReportError)
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -32,6 +35,11 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+VARIANTS_SPEC = op.join(SPEC_DIR, 'variants.json')
+meta_rpt = MetaReport.from_json(VARIANTS_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.variants_report"
@@ -43,22 +51,14 @@ class Constants(object):
     MEAN_CONCORDANCE = "weighted_mean_concordance"
     MEAN_COVERAGE = "weighted_mean_coverage"
     LONGEST_CONTIG = "longest_contig_name"
-
-    ATTR_LABELS = OrderedDict([
-        (MEAN_CONCORDANCE, "Reference Consensus Concordance (mean)"),
-        (MEAN_CONTIG_LENGTH, "Reference Contig Length (mean)"),
-        (LONGEST_CONTIG, "Longest Reference Contig"),
-        (MEAN_BASES_CALLED, "Percent Reference Bases Called (mean)"),
-        (MEAN_COVERAGE, "Reference Coverage (mean)"),
-    ])
-    ATTR_DESCRIPTIONS = {
-        MEAN_CONTIG_LENGTH: "Mean length of reference sequence contigs",
-        MEAN_BASES_CALLED: "Percentage of the reference sequence for which consensus bases were called",
-        MEAN_CONCORDANCE: "The percent accuracy (concordance) of the consensus sequence compared to the reference",
-        MEAN_COVERAGE: "The mean depth of coverage across the reference sequence",
-        LONGEST_CONTIG: "The FASTA header ID of the longest reference contig",
-    }
-
+    T_STATS = "consensus_table"
+    C_CONTIG_NAME = "contig_name"
+    C_CONTIG_LEN = "contig_len"
+    C_BASES_CALLED = "bases_called"
+    C_CONCORDANCE = "concordance" 
+    C_COVERAGE = "coverage"
+    PG_VARIANTS = "variants_plots"
+    P_VARIANTS = "variants_plot"
 
 LENGTH, GAPS, ERR, COV = 0, 1, 2, 3
 
@@ -89,8 +89,7 @@ def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_p
     plotgroup = _create_variants_plot_grp(
         top_contigs, contig_variants, output_dir)
 
-    rpt = Report('variants',
-                 title="Consensus Variants",
+    rpt = Report(meta_rpt.id,
                  plotgroups=[plotgroup],
                  attributes=atts,
                  tables=[table],
@@ -197,7 +196,7 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
         idx += 1
         plt.close(fig)
 
-    plot_group = PlotGroup('variants_plots', title='Variants Across Reference', legend=legend,
+    plot_group = PlotGroup(Constants.PG_VARIANTS, title=meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).title, legend=legend,
                            thumbnail=thumbnail, plots=plots)
     return plot_group
 
@@ -244,7 +243,7 @@ def _create_contig_fig_ax(bars, xlabels):
     """
     fig, ax = PH.get_fig_axes_lpr()
     PH.apply_bar_data(
-        ax, bars, xlabels, ('Reference Start Position', 'Variants'))
+        ax, bars, xlabels, (meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).ylabel))
     return fig, ax
 
 
@@ -279,19 +278,20 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     :param reference_entry: reference entry
     :return: tuple (Table, [Attributes])
     """
-    table = Table('consensus_table', 'Consensus Calling Results')
-    table.add_column(Column('contig_name', 'Reference'))
-    table.add_column(Column('contig_len', 'Reference Length'))
-    table.add_column(Column('bases_called', 'Bases Called'))
-    table.add_column(Column('concordance', 'Consensus Accuracy'))
-    table.add_column(Column('coverage', 'Base Coverage'))
-
     ordered_ids = _ref_ids_ordered_by_len(ref_data)
 
     sum_lengths = 0.0
     mean_bases_called = 0
     mean_concord = 'NA'
     mean_coverage = 0
+
+    columns = []
+    columns.append(Column(Constants.C_CONTIG_NAME))
+    columns.append(Column(Constants.C_CONTIG_LEN))
+    columns.append(Column(Constants.C_BASES_CALLED))
+    columns.append(Column(Constants.C_CONCORDANCE))
+    columns.append(Column(Constants.C_COVERAGE))
+    table = Table(Constants.T_STATS, columns=columns)    
 
     for seqid in ordered_ids:
         contig = reference_entry.get_contig(seqid)
@@ -322,11 +322,12 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         mean_coverage += coverage * length
 
         # table shows values for each contig
-        table.add_data_by_column_id('contig_name', contig.name)
-        table.add_data_by_column_id('contig_len', length)
-        table.add_data_by_column_id('bases_called', bases_called)
-        table.add_data_by_column_id('concordance', concord)
-        table.add_data_by_column_id('coverage', coverage)
+        table.add_data_by_column_id(Constants.C_CONTIG_NAME, contig.name)
+        table.add_data_by_column_id(Constants.C_CONTIG_LEN, length)
+        table.add_data_by_column_id(Constants.C_BASES_CALLED, bases_called)
+        table.add_data_by_column_id(Constants.C_CONCORDANCE, concord)
+        table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
+
 
     mean_contig_length = sum_lengths / len(ordered_ids)
     mean_bases_called = mean_bases_called / sum_lengths
@@ -334,14 +335,12 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         mean_concord = mean_concord / sum_lengths
     mean_coverage = mean_coverage / sum_lengths
 
-    attributes = [Attribute(id_, val, Constants.ATTR_LABELS[id_])
-                  for id_, val in [
-        (Constants.MEAN_CONCORDANCE, mean_concord),
-        (Constants.MEAN_CONTIG_LENGTH, mean_contig_length),
-        (Constants.LONGEST_CONTIG, ordered_ids[0]),
-        (Constants.MEAN_BASES_CALLED, mean_bases_called),
-        (Constants.MEAN_COVERAGE, mean_coverage),
-    ]]
+    attributes = []
+    attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
+    attributes.append(Attribute(Constants.MEAN_CONTIG_LENGTH, mean_contig_length))
+    attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
+    attributes.append(Attribute(Constants.MEAN_BASES_CALLED, mean_bases_called))
+    attributes.append(Attribute(Constants.MEAN_COVERAGE, mean_coverage))
 
     return table, attributes
 
@@ -410,7 +409,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 
 def _add_options_to_parser(p):
-    p = add_base_options_pbcommand(p, "Variants report")
+    p = add_base_options_pbcommand(p, meta_rpt.title)
     p.add_input_file_type(FileTypes.DS_REF,
                           file_id="reference",
                           name="Reference dataset",
@@ -448,7 +447,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Variants Report",
+        meta_rpt.title,
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)

@@ -14,19 +14,19 @@
         },
         {
             "description": "Mean length of CCS reads",
-            "type": "",
+            "type": "int",
             "id": "mean_ccs_readlength",
             "name": "CCS Read Length (mean)"
         },
         {
-            "description": "Mean predicted accuracy of CCS reads",
-            "type": "",
+            "description": "Mean CCS read score",
+            "type": "float",
             "id": "mean_accuracy",
             "name": "CCS Read Score (mean)"
         },
         {
             "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
-            "type": "",
+            "type": "int",
             "id": "mean_ccs_num_passes",
             "name": "Number of Passes (mean)"
         }
@@ -34,7 +34,7 @@
     "tables": [
         {
             "id": "ccs_table",
-	    "description": "",
+	    "description": null,
             "columns": [
                 {
                     "header": "Movie",
@@ -51,7 +51,7 @@
                 {
                     "header": "Number of CCS bases",
                     "type": "int",
-                    "id": "number_of_ccs_bases",
+                    "id": "total_number_of_ccs_bases",
                     "description": "Total number of consensus bases in all CCS reads"
                 },
                 {
@@ -74,63 +74,119 @@
                 }
             ],
             "title": "By Movie"
+        },
+	{
+            "id": "ccs_barcodes",
+            "description": null,
+            "columns": [
+                {
+                    "header": "Barcode ID",
+                    "type": null,
+                    "id": "barcode_name",
+                    "description": null
+                },
+                {
+                    "header": "CCS reads",
+                    "type": null,
+                    "id": "number_of_ccs_reads",
+                    "description": null
+                },
+                {
+                    "header": "Number of CCS bases",
+                    "type": null,
+                    "id": "total_number_of_ccs_bases",
+                    "description": null
+                },
+                {
+                    "header": "CCS Read Length (mean)",
+                    "type": null,
+                    "id": "mean_ccs_accuracy",
+                    "description": null
+                },
+                {
+                    "header": "CCS Read Score (mean)",
+                    "type": null,
+                    "id": "mean_ccs_num_passes",
+                    "description": null
+                },
+                {
+                    "header": "Number of Passes (mean)",
+                    "type": null,
+                    "id": "mean_ccs_readlength",
+                    "description": null
+                }
+            ],
+            "title": "By Barcode"
         }
     ],
     "plotgroups": [
         {
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
-                    "id": "readlength_hist"
-                }
-            ],
-            "description": "",
-            "legend": "",
-            "id": "readlength_group",
-            "title": ""
-        },
-        {
-            "plots": [
-                {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlabel": "Quality",
+                    "description": null,
+                    "caption": null,
+                    "title": null,
+                    "ylabel": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
                     "id": "accuracy_hist"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "accuracy_group",
-            "title": ""
+            "title": "CCS Read Score"
         },
         {
             "plots": [
                 {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
+                    "xlabel": "Number of Passes",
+                    "description": null,
+                    "caption": null,
+                    "title": null,
+                    "ylabel": "Reads",
                     "id": "npasses_hist"
-                },
-                {
-                    "xlab": "",
-                    "description": "",
-                    "caption": "",
-                    "ylab": "",
-                    "id": "npasses_vs_accuracy"
                 }
             ],
-            "description": "",
-            "legend": "",
+            "description": null,
+            "legend": null,
             "id": "npasses_hist",
-            "title": ""
-        }
+            "title": "Number of Passes"
+        },
+	{
+	    "plots": [
+                {
+                    "xlabel": "Read Length",
+                    "description": null,
+                    "caption": null,
+                    "title": null,
+                    "ylabel": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
+                    "id": "readlength_hist"
+                }
+	             ],
+            "description": null,
+            "legend": null,
+            "id": "readlength_group",
+            "title": "CCS Read Length"
+	},
+	{
+            "plots": [
+		{
+                    "xlabel": "Number of passes",
+                    "description": null,
+                    "caption": null,
+                    "title": null,
+                    "ylabel": "Read Score as Phred QV",
+                    "id": "npasses_vs_accuracy"
+                }
+                     ],
+            "description": null,
+            "legend": null,
+            "id": "npasses_vs_accuracy",
+            "title": "Number of Passes vs. Read Score"
+	}
     ],
     "id": "ccs",
-    "description": "",
-    "title": "CCS Report Specifications"
+    "description": null,
+    "title": "CCS Report"
 }
+

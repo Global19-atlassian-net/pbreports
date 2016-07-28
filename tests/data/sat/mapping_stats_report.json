@@ -1,181 +1,202 @@
 {
-    "_changelist": "UNKNOWN", 
-    "_version": "0.3.7", 
+    "_comment": "Generated with pbcommand version 0.4.4 at 2016-07-26T04:27:10.438318",
     "attributes": [
         {
-            "id": "mapping_stats.mapped_readlength_max", 
-            "name": "Mapped Polymerase Read Length Max", 
-            "value": 6765
-        }, 
+            "id": "mapping_stats.mapped_subread_concordance_mean",
+            "name": "Mean Mapped Concordance",
+            "value": 0.84850000000000003
+        },
         {
-            "id": "mapping_stats.mapped_subreadlength_n50", 
-            "name": "Mapped Subread N50", 
-            "value": 632
-        }, 
+            "id": "mapping_stats.mapped_subreads_n",
+            "name": "Number of Subreads (mapped)",
+            "value": 220689
+        },
         {
-            "id": "mapping_stats.mapped_bases_n", 
-            "name": "Mapped Polymerase Bases", 
-            "value": 63746
-        }, 
+            "id": "mapping_stats.mapped_subread_bases_n",
+            "name": "Number of Subread Bases (mapped)",
+            "value": 976649665
+        },
         {
-            "id": "mapping_stats.mapped_subread_readlength_mean", 
-            "name": "Mapped Subread Length", 
-            "value": 540
-        }, 
+            "id": "mapping_stats.mapped_subread_readlength_mean",
+            "name": "Subread Length Mean (mapped)",
+            "value": 4425
+        },
         {
-            "id": "mapping_stats.mapped_readlength_n50", 
-            "name": "Mapped N50", 
-            "value": 2151
-        }, 
+            "id": "mapping_stats.mapped_subreadlength_n50",
+            "name": "Subread Length N50 (mapped)",
+            "value": 5991
+        },
         {
-            "id": "mapping_stats.mapped_readlength_q95", 
-            "name": "Mapped Polymerase Read Length 95%", 
-            "value": 5900
-        }, 
+            "id": "mapping_stats.mapped_subreadlength_q95",
+            "name": "Subread Length 95% (mapped)",
+            "value": 8700
+        },
         {
-            "id": "mapping_stats.mapped_subread_bases_n", 
-            "name": "Mapped Subread Bases", 
-            "value": 60467
-        }, 
+            "id": "mapping_stats.mapped_subread_readlength_max",
+            "name": "Subread Length Max (mapped)",
+            "value": 28117.0
+        },
         {
-            "id": "mapping_stats.number_of_aligned_reads", 
-            "name": "Number of Aligned Reads", 
-            "value": 48
-        }, 
+            "id": "mapping_stats.mapped_reads_n",
+            "name": "Number of Polymerase Reads (mapped)",
+            "value": 127999
+        },
         {
-            "id": "mapping_stats.mapped_reads_n", 
-            "name": "Mapped Reads", 
-            "value": 48
-        }, 
+            "id": "mapping_stats.mapped_readlength_mean",
+            "name": "Polymerase Read Length Mean (mapped)",
+            "value": 7752
+        },
         {
-            "id": "mapping_stats.mapped_subread_accuracy_mean", 
-            "name": "Mapped Subread Accuracy", 
-            "value": 0.92830000000000001
-        }, 
+            "id": "mapping_stats.mapped_readlength_n50",
+            "name": "Polymerase Read N50 (mapped)",
+            "value": 14040
+        },
         {
-            "id": "mapping_stats.mapped_subreads_n", 
-            "name": "Mapped Subreads", 
-            "value": 112
-        }, 
+            "id": "mapping_stats.mapped_readlength_q95",
+            "name": "Polymerase Read Length 95% (mapped)",
+            "value": 26580
+        },
         {
-            "id": "mapping_stats.mapped_readlength_mean", 
-            "name": "Mapped Polymerase Read Length", 
-            "value": 1328
+            "id": "mapping_stats.mapped_readlength_max",
+            "name": "Polymerase Read Length Max (mapped)",
+            "value": 43067
         }
-    ], 
-    "dataset_uuids": [], 
-    "id": "mapping_stats", 
+    ],
+    "dataset_uuids": [
+        "e2e5cf70-766d-0901-9b88-a9292b856f97"
+    ],
+    "id": "mapping_stats",
     "plotGroups": [
         {
-            "id": "mapping_stats.subread_accuracy_group", 
-            "legend": null, 
+            "id": "mapping_stats.readlength_plot",
+            "legend": null,
             "plots": [
                 {
-                    "caption": null, 
-                    "id": "mapping_stats.subread_accuracy_group.subread_accuracy_group_accuracy_plot", 
-                    "image": "mapped_subread_accuracy_histogram.png"
+                    "caption": null,
+                    "id": "mapping_stats.readlength_plot.readlength_plot",
+                    "image": "mapped_readlength_histogram.png",
+                    "title": null
                 }
-            ], 
-            "thumbnail": "mapped_subread_accuracy_histogram_thumb.png", 
-            "title": "Mapped Subread Accuracy"
-        }, 
-        {
-            "id": "mapping_stats.readlength_plot", 
-            "legend": null, 
-            "plots": [
-                {
-                    "caption": null, 
-                    "id": "mapping_stats.readlength_plot.readlength_plot", 
-                    "image": "mapped_readlength_histogram.png"
-                }
-            ], 
-            "thumbnail": "mapped_readlength_histogram_thumb.png", 
+            ],
+            "thumbnail": "mapped_readlength_histogram_thumb.png",
             "title": "Mapped Polymerase Read Length"
-        }, 
+        },
         {
-            "id": "mapping_stats.subreadlength_plot", 
-            "legend": null, 
+            "id": "mapping_stats.subread_concordance_group",
+            "legend": null,
             "plots": [
                 {
-                    "caption": null, 
-                    "id": "mapping_stats.subreadlength_plot.subreadlength_plot", 
-                    "image": "mapped_subreadlength_histogram.png"
+                    "caption": null,
+                    "id": "mapping_stats.subread_concordance_group.concordance_plot",
+                    "image": "mapped_subread_concordance_histogram.png",
+                    "title": null
                 }
-            ], 
-            "thumbnail": "mapped_subreadlength_histogram_thumb.png", 
+            ],
+            "thumbnail": "mapped_subread_concordance_histogram_thumb.png",
+            "title": "Mapped Subread Concordance"
+        },
+        {
+            "id": "mapping_stats.subreadlength_plot",
+            "legend": null,
+            "plots": [
+                {
+                    "caption": null,
+                    "id": "mapping_stats.subreadlength_plot.subreadlength_plot",
+                    "image": "mapped_subreadlength_histogram.png",
+                    "title": null
+                }
+            ],
+            "thumbnail": "mapped_subreadlength_histogram_thumb.png",
             "title": "Mapped Subread Length"
+        },
+        {
+            "id": "mapping_stats.rainbow_plot",
+            "legend": null,
+            "plots": [
+                {
+                    "caption": "Mapped Concordance vs. Read Length",
+                    "id": "mapping_stats.rainbow_plot.rainbow_plot",
+                    "image": "mapped_concordance_vs_read_length.png",
+                    "title": null
+                }
+            ],
+            "thumbnail": null,
+            "title": "Mapped Concordance vs. Read Length"
         }
-    ], 
+    ],
     "tables": [
         {
             "columns": [
                 {
-                    "header": "Movie", 
-                    "id": "mapping_stats.mapping_stats_table.movie", 
+                    "header": "Movie",
+                    "id": "mapping_stats.mapping_stats_table.movie",
                     "values": [
-                        "All Movies", 
-                        "m140905_042212_sidney_c100564852550000001823085912221377_s1_X0"
+                        "All Movies",
+                        "m54049_160508_155917"
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Reads", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_reads", 
+                    "header": "Mapped Reads",
+                    "id": "mapping_stats.mapping_stats_table.mapped_reads",
                     "values": [
-                        48, 
-                        48
+                        127999,
+                        127999
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Polymerase Read Length", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length", 
+                    "header": "Mapped Polymerase Read Length",
+                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length",
                     "values": [
-                        1328, 
-                        1328
+                        7752,
+                        7752
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Polymerase Read Length n50", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length_n50", 
+                    "header": "Mapped Polymerase Read Length n50",
+                    "id": "mapping_stats.mapping_stats_table.mapped_polymerase_read_length_n50",
                     "values": [
-                        2151, 
-                        2151
+                        14040,
+                        14040
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Subreads", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_subreads", 
+                    "header": "Mapped Subreads",
+                    "id": "mapping_stats.mapping_stats_table.mapped_subreads",
                     "values": [
-                        112, 
-                        112
+                        220689,
+                        220689
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Subread Bases", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_subread_base", 
+                    "header": "Mapped Subread Bases",
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_base",
                     "values": [
-                        60467, 
-                        60467
+                        976649665,
+                        976649665
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Subread Length", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_subread_length", 
+                    "header": "Mapped Subread Length",
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_length",
                     "values": [
-                        540, 
-                        540
+                        4425,
+                        4425
                     ]
-                }, 
+                },
                 {
-                    "header": "Mapped Subread Accuracy", 
-                    "id": "mapping_stats.mapping_stats_table.mapped_subread_accuracy", 
+                    "header": "Mapped Subread Concordance",
+                    "id": "mapping_stats.mapping_stats_table.mapped_subread_concordance",
                     "values": [
-                        0.92830000000000001, 
-                        0.92830000000000001
+                        0.84850000000000003,
+                        0.84850000000000003
                     ]
                 }
-            ], 
-            "id": "mapping_stats.mapping_stats_table", 
+            ],
+            "id": "mapping_stats.mapping_stats_table",
             "title": "Mapping Statistics Summary"
         }
-    ]
+    ],
+    "title": "Mapping Report",
+    "uuid": "575bcac1-c243-40c9-8567-9c2b41fb665a",
+    "version": "1.0.0"
 }

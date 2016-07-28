@@ -10,6 +10,7 @@ Generate a report summarizing Circular Consensus Read (CCS) results.
 from collections import OrderedDict, Counter, defaultdict, namedtuple
 import functools
 import os
+import os.path as op
 import sys
 import logging
 import argparse
@@ -21,6 +22,10 @@ import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
+
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
+
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -33,6 +38,12 @@ from pbreports.util import accuracy_as_phred_qv
 log = logging.getLogger(__name__)
 __version__ = '0.44'
 
+# Import MetaReport
+_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
+SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
+CCS_SPEC = op.join(SPEC_DIR, 'ccs.json')
+meta_rpt = MetaReport.from_json(CCS_SPEC)
+
 
 class Constants(object):
 
@@ -41,12 +52,13 @@ class Constants(object):
     TOOL_NAME = "ccs_report"
     DRIVER_EXE = "python -m pbreports.report.ccs --resolved-tool-contract"
 
-    R_ID = "ccs"
+    R_ID = meta_rpt.id
 
     # PlotGroup
     PG_READLENGTH = 'readlength_group'
     PG_ACCURACY = "accuracy_group"
     PG_NPASSES = "npasses_hist"
+    PG_SCATTER = "npasses_vs_accuracy"
 
     # Plots
     P_READLENGTH = "readlength_hist"
@@ -73,7 +85,7 @@ class Constants(object):
 
     # Columns
     C_MOVIE_NAME = 'movie_name'
-    C_NBASES = "number_of_ccs_bases"
+    C_NREADS = "number_of_ccs_reads"
     C_TOTAL_BASES = 'total_number_of_ccs_bases'
     C_MEAN_READLENGTH = 'ave_ccs_readlength'
     C_MEAN_ACCURACY = 'ave_ccs_accuracy'
@@ -86,24 +98,6 @@ class Constants(object):
     C_BARCODE_QUALITY = "mean_ccs_accuracy"
     C_BARCODE_NPASSES = "mean_ccs_num_passes"
     C_BARCODE_READLENGTH = "mean_ccs_readlength"
-
-    ATTR_LABELS = OrderedDict([
-        (A_NREADS, "CCS reads"),
-        (A_TOTAL_BASES, "Number of CCS bases"),
-        (A_MEAN_READLENGTH, "CCS Read Length (mean)"),
-        (A_MEAN_ACCURACY, "CCS Read Score (mean)"),
-        #(A_MEAN_QV, "Mean Consensus Predicted QV"),
-        (A_MEAN_NPASSES, "Number of Passes (mean)")
-    ])
-    ATTR_DESCRIPTIONS = {
-        A_NREADS: "The number of CCS reads",
-        A_TOTAL_BASES: "Total number of consensus bases in all CCS reads",
-        A_MEAN_READLENGTH: "Mean length of CCS reads",
-        A_MEAN_ACCURACY: "Mean predicted accuracy of CCS reads",
-        #A_MEAN_QV: "Phred log-scale QV, equivalent to mean accuracy",
-        A_MEAN_NPASSES: "Mean number of complete subreads per CCS read, rounded to the nearest integer"
-    }
-
 
 MovieResult = namedtuple("MovieResult", ["movie_name", "read_lengths",
                                          "accuracies", "num_passes"])
@@ -172,22 +166,12 @@ def _movie_results_to_attributes(movie_results):
     m_npasses = np.round(num_passes.mean()) if num_passes.size > 0 else 0.0
     #m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
-    n_reads_at = Attribute(
-        Constants.A_NREADS, read_lengths.shape[0], name=Constants.ATTR_LABELS[
-            Constants.A_NREADS])
-    t_bases_at = Attribute(
-        Constants.A_TOTAL_BASES, read_lengths.sum(), name=Constants.ATTR_LABELS[Constants.A_TOTAL_BASES])
-    m_readlength_at = Attribute(
-        Constants.A_MEAN_READLENGTH, m_readlength, name=Constants.ATTR_LABELS[Constants.A_MEAN_READLENGTH])
-    m_accuracy_at = Attribute(
-        Constants.A_MEAN_ACCURACY, m_accuracy, name=Constants.ATTR_LABELS[Constants.A_MEAN_ACCURACY])
-    #m_qv = Attribute(
-    #    Constants.A_MEAN_QV, m_qv, name=Constants.ATTR_LABELS[Constants.A_MEAN_QV])
-    m_npasses_at = Attribute(
-        Constants.A_MEAN_NPASSES, m_npasses, name=Constants.ATTR_LABELS[Constants.A_MEAN_NPASSES])
-
-    attributes = [n_reads_at, t_bases_at,
-                  m_readlength_at, m_accuracy_at, m_npasses_at]
+    attributes = []
+    attributes.append(Attribute(Constants.A_NREADS, read_lengths.shape[0]))
+    attributes.append(Attribute(Constants.A_TOTAL_BASES, int(read_lengths.sum())))
+    attributes.append(Attribute(Constants.A_MEAN_READLENGTH, m_readlength))
+    attributes.append(Attribute(Constants.A_MEAN_ACCURACY, float(m_accuracy)))
+    attributes.append(Attribute(Constants.A_MEAN_NPASSES, m_npasses))
 
     return attributes
 
@@ -198,21 +182,15 @@ def _movie_results_to_table(movie_results):
     Table has movie name, # of CCS bases, Total CCS bases,
     mean CCS readlength and mean CCS accuracy.
     """
-    labels = Constants.ATTR_LABELS
-    columns = [Column(Constants.C_MOVIE_NAME, header="Movie"),
-               Column(Constants.A_NREADS, header=labels[Constants.A_NREADS]),
-               Column(Constants.A_TOTAL_BASES,
-                      header=labels[Constants.A_TOTAL_BASES]),
-               Column(Constants.A_MEAN_READLENGTH,
-                      header=labels[Constants.A_MEAN_READLENGTH]),
-               Column(Constants.A_MEAN_ACCURACY,
-                      header=labels[Constants.A_MEAN_ACCURACY]),
-               #Column(Constants.A_MEAN_QV,
-               #       header="Mean Consensus Predicted QV"),
-               Column(Constants.A_MEAN_NPASSES,
-                      header=labels[Constants.A_MEAN_NPASSES])]
 
-    table = Table(Constants.T_ID, title="By Movie", columns=columns)
+    columns = []
+    columns.append(Column(Constants.C_MOVIE_NAME, values=[], header = ''))
+    columns.append(Column(Constants.C_NREADS, values=[], header = ''))
+    columns.append(Column(Constants.C_TOTAL_BASES, values=[], header = ''))
+    columns.append(Column(Constants.C_MEAN_READLENGTH, values=[], header = ''))
+    columns.append(Column(Constants.C_MEAN_ACCURACY, values=[], header = ''))
+    columns.append(Column(Constants.C_MEAN_NPASSES, values=[], header = ''))
+    table = Table(Constants.T_ID, columns=columns)
 
     movie_names = {m.movie_name for m in movie_results}
 
@@ -236,13 +214,12 @@ def _movie_results_to_table(movie_results):
         #m_qv = int(round(accuracy_as_phred_qv(float(accuracies.mean()))))
 
         table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_name)
-        table.add_data_by_column_id(Constants.A_NREADS, read_lengths.shape[0])
-        table.add_data_by_column_id(
-            Constants.A_TOTAL_BASES, read_lengths.sum())
-        table.add_data_by_column_id(Constants.A_MEAN_READLENGTH, m_readlength)
-        table.add_data_by_column_id(Constants.A_MEAN_ACCURACY, m_accuracy)
+        table.add_data_by_column_id(Constants.C_NREADS, read_lengths.shape[0])
+        table.add_data_by_column_id(Constants.C_TOTAL_BASES, int(read_lengths.sum()))
+        table.add_data_by_column_id(Constants.C_MEAN_READLENGTH, m_readlength)
+        table.add_data_by_column_id(Constants.C_MEAN_ACCURACY, m_accuracy)
         #table.add_data_by_column_id(Constants.A_MEAN_QV, m_qv)
-        table.add_data_by_column_id(Constants.A_MEAN_NPASSES, m_npasses)
+        table.add_data_by_column_id(Constants.C_MEAN_NPASSES, m_npasses)
 
     return table
 
@@ -383,8 +360,8 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, data, axis_labels, nbins, 
 
 def scatter_plot_accuracy_vs_numpasses(data,
                                        axis_labels=(
-                                           "Number of passes",
-                                           "Read Score as Phred QV"),
+                                           meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).xlabel,
+                                           meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).ylabel),
                                        nbins=None, barcolor=None):
     """
     """
@@ -432,26 +409,34 @@ def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolo
 
 # These functions create signatures (data, axis_labels, nbins, barcolor
 _custom_read_length_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Read Length", 1000000)
+    _custom_histogram_with_cdf, meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["Custom"], 1000000)
 _custom_read_accuracy_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Read Score", 1000000)
+    _custom_histogram_with_cdf, meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["Custom"], 1000000)
 
 
 # These functions need to generate a function with signature (data,
 # output_dir, dpi=)
 create_readlength_plot = functools.partial(create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
-                                           ("Read Length", "Reads", "bp > Read Length"), 80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
+                                         (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["L"],
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
+                                           80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
 create_accuracy_plot = functools.partial(create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
-                                         ("Quality", "Reads", "bp > Read Score"), 80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
+                                         (meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).xlabel, 
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["L"],
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["R"]), 
+                                          80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
 create_npasses_plot = functools.partial(create_plot, _make_histogram, Constants.P_NPASSES,
-                                        ("Number of Passes", "Reads"), 80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
+                                        (meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).xlabel, 
+                                         meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).ylabel), 
+                                         80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
 
 create_scatter_plot = functools.partial(create_plot,
                                         scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
-                                        ("Number of passes",
-                                         "Read Score as Phred QV"), None,
+                                        (meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).xlabel,
+                                         meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).ylabel), None,
                                         Constants.I_CCS_SCATTER_PLOT, get_blue(3))
 
 
@@ -475,20 +460,16 @@ def to_report(ccs_set, output_dir):
     scatter_plot = create_scatter_plot((num_passes, accuracies), output_dir)
 
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
-                                 title="CCS Read Length",
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
     accuracy_group = PlotGroup(Constants.PG_ACCURACY, plots=[accuracy_plot],
-                               thumbnail=accuracy_plot.thumbnail,
-                               title="CCS Read Score")
+                               thumbnail=accuracy_plot.thumbnail)
 
-    npasses_group = PlotGroup(Constants.P_NPASSES, plots=[npasses_plot],
-                              thumbnail=npasses_plot.thumbnail,
-                              title="Number of Passes")
+    npasses_group = PlotGroup(Constants.PG_NPASSES, plots=[npasses_plot],
+                              thumbnail=npasses_plot.thumbnail)
 
-    scatter_group = PlotGroup(Constants.P_SCATTER, plots=[scatter_plot],
-                              thumbnail=scatter_plot.thumbnail,
-                              title="Number of Passes vs. Read Score")
+    scatter_group = PlotGroup(Constants.PG_SCATTER, plots=[scatter_plot],
+                              thumbnail=scatter_plot.thumbnail)
 
     movie_table = _movie_results_to_table(movie_results)
     log.info(str(movie_table))
@@ -504,7 +485,7 @@ def to_report(ccs_set, output_dir):
                                 npasses_group, scatter_group],
                     dataset_uuids=(ccs_set.uuid,))
 
-    return report
+    return meta_rpt.apply_view(report)
 
 
 def run_report(

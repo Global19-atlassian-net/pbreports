@@ -4,6 +4,7 @@
 import argparse
 import logging
 import os
+import os.path as op
 import math
 import array
 import sys
@@ -13,6 +14,8 @@ import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, PlotGroup, Plot,
                                      PbReportError)
+from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
+                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.cli import (pacbio_args_runner,
                            get_default_argparser_with_base_opts)
 from pbcommand.utils import setup_log
@@ -33,12 +36,30 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
+# Import Mapping MetaReport
+_DIR_NAME = op.dirname(op.realpath(__file__))
+SPEC_DIR = op.join(_DIR_NAME, 'specs/')
+CONTROL_SPEC = op.join(SPEC_DIR, 'control.json')
+meta_rpt = MetaReport.from_json(CONTROL_SPEC)
 
 CSV_COLUMN_MAP = {"ReadId": ("|S128", str),
                   "Readlength": (int, int),
                   "ReadScore": (float, float),
                   "PassedFilter": (int, int)}
 
+class Constants(object):
+    A_CONTROL_SEQ = "control_sequence"
+    A_NCONTROL = "n_control_reads"
+    A_FRAC_CONTROL = "frac_control_reads"
+    A_ACCURACY = "control_subread_accuracy"
+    A_N50  = "control_n50"
+    A_PCT95  = "control_95_percentile_readlength"
+    A_LENGTH = "control_mean_readlength"
+
+    PG_QUAL = "polymerase_read_quality"
+    P_QUAL = "control_noncontrol_readquality"
+    PG_LENGTH = "polymerase_read_length" 
+    P_LENGTH = "control_noncontrol_readlength"
 
 def make_control_report(control_cmph5, filtered_subreads_csv, report,
                         output_dir, dpi, dumpdata):
@@ -62,7 +83,8 @@ def make_control_report(control_cmph5, filtered_subreads_csv, report,
                                  sample_data, output_dir),
            _get_plot_group_length(control_data,
                                   sample_data, output_dir)]
-    r = Report('control', title="Control", attributes=atts, plotgroups=pgs)
+    r = Report(meta_rpt.id, attributes=atts, plotgroups=pgs)
+    r = meta_rpt.apply_view(r)
     r.write_json(os.path.join(output_dir, report))
 
 
@@ -73,9 +95,8 @@ def _get_plot_group_length(control_data, sample_data, output_dir):
     fig = _create_length_figure(control_data, sample_data)
     fname = 'control_non-control_readlength.png'
     thumb = save_figure_with_thumbnail(fig, os.path.join(output_dir, fname))[1]
-    plots = [Plot('control_noncontrol_readlength', fname)]
-    pg = PlotGroup('polymerase_read_length',
-                   title='Polymerase Read Length',
+    plots = [Plot(Constants.P_LENGTH, fname)]
+    pg = PlotGroup(Constants.PG_LENGTH,
                    thumbnail=os.path.basename(thumb), plots=plots)
     return pg
 
@@ -87,9 +108,8 @@ def _get_plot_group_score(control_data, sample_data, output_dir):
     fig = _create_score_figure(control_data, sample_data)
     fname = 'control_non-control_readquality.png'
     thumb = save_figure_with_thumbnail(fig, os.path.join(output_dir, fname))[1]
-    plots = [Plot('control_noncontrol_readquality', fname)]
-    pg = PlotGroup('polymerase_read_quality',
-                   title='Polymerase Read Quality',
+    plots = [Plot(Constants.P_QUAL, fname)]
+    pg = PlotGroup(Constants.PG_QUAL,
                    thumbnail=os.path.basename(thumb), plots=plots)
     return pg
 
@@ -104,7 +124,7 @@ def _get_attributes(name, control_data, sample_data):
     nc = _get_num_control_reads(control_data)
     ns = sample_data.shape[1]
     l = []
-    l.append(Attribute('control_sequence', name, 'Control Sequence'))
+    l.append(Attribute(Constants.A_CONTROL_SEQ, name))
     l.append(_get_attr_n_control_reads(nc))
     l.append(_get_attr_fraction_control_reads(nc, ns))
     l.append(_get_attr_control_subread_acc(control_data))
@@ -308,8 +328,7 @@ def _get_attr_control_95_readlength(control_data):
         val = sorted[-1]
     else:
         val = sorted[index]
-    return Attribute('control_95_percentile_readlength', int(val),
-                     'Control Polymerase Read Length 95%')
+    return Attribute(Constants.A_PCT95, int(val))
 
 
 def _get_attr_control_mean_readlength(control_data):
@@ -317,8 +336,7 @@ def _get_attr_control_mean_readlength(control_data):
     :param control_data: numpy array
     """
     rl = np.mean(control_data[3, :])
-    return Attribute('control_mean_readlength', int(rl),
-                     'Control Polymerase Read Length')
+    return Attribute(Constants.A_LENGTH, int(rl))
 
 
 def _get_attr_control_subread_acc(control_data):
@@ -326,17 +344,15 @@ def _get_attr_control_subread_acc(control_data):
     :param control_data: numpy array
     """
     acc = np.mean(control_data[2, :])
-    return Attribute('control_subread_accuracy', acc, 'Control Subread Accuracy')
+    return Attribute(Constants.A_ACCURACY, acc)
 
 
 def _get_attr_n_control_reads(num_control):
-    return Attribute('n_control_reads', num_control, 'Number of Control Reads')
+    return Attribute(Constants.A_NCONTROL, num_control)
 
 
 def _get_attr_fraction_control_reads(num_control, num_sample):
-    return Attribute(
-        'frac_control_reads', num_control / float(num_sample + num_control),
-        'Fraction Control Reads')
+    return Attribute(Constants.A_FRAC_CONTROL, num_control / float(num_sample + num_control))
 
 
 def _get_attr_n50(control_data):
@@ -352,7 +368,7 @@ def _get_attr_n50(control_data):
             n50 = c
             break
 
-    return Attribute('control_n50', n50, 'Control Polymerase Read Length N50')
+    return Attribute(Constants.A_N50, n50)
 
 
 def _get_pretty_value(raw_value):

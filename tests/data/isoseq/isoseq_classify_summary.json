@@ -1,152 +1,175 @@
 {
     "_changelist": "UNKNOWN", 
-    "_version": "0.2.13", 
+    "_version": "0.3.25", 
     "attributes": [
         {
-            "id": "isoseq_classify.isoseq_number_of_three_prime_reads", 
-            "name": "isoseq_number_of_three_prime_reads", 
-            "value": 13
+            "id": "pbtranscript_classify.num_reads", 
+            "name": "Number of consensus reads", 
+            "value": 235798
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_consensus_reads", 
-            "name": "isoseq_number_of_consensus_reads", 
-            "value": 22
+            "id": "pbtranscript_classify.num_5_seen", 
+            "name": "Number of five prime reads", 
+            "value": 151107
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_non_full_length_reads", 
-            "name": "isoseq_number_of_non_full_length_reads", 
-            "value": 13
+            "id": "pbtranscript_classify.num_3_seen", 
+            "name": "Number of three prime reads", 
+            "value": 192372
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_poly_a_reads", 
-            "name": "isoseq_number_of_poly_a_reads", 
-            "value": 13
+            "id": "pbtranscript_classify.num_polya_seen", 
+            "name": "Number of poly-A reads", 
+            "value": 169300
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_full_length_non_chimeric_bases", 
-            "name": "isoseq_number_of_full_length_non_chimeric_bases", 
-            "value": 35563
+            "id": "pbtranscript_classify.num_filtered_short_reads", 
+            "name": "Number of filtered short reads", 
+            "value": 236
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_filtered_short_reads", 
-            "name": "isoseq_number_of_filtered_short_reads", 
-            "value": 0
+            "id": "pbtranscript_classify.num_nfl", 
+            "name": "Number of non-full-length reads", 
+            "value": 101890
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_full_length_non_chimeric_reads", 
-            "name": "isoseq_number_of_full_length_non_chimeric_reads", 
-            "value": 9
+            "id": "pbtranscript_classify.num_fl", 
+            "name": "Number of full-length reads", 
+            "value": 133672
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_full_length_reads", 
-            "name": "isoseq_number_of_full_length_reads", 
-            "value": 9
+            "id": "pbtranscript_classify.num_flnc", 
+            "name": "Number of full-length non-chimeric reads", 
+            "value": 133593
         }, 
         {
-            "id": "isoseq_classify.isoseq_number_of_five_prime_reads", 
-            "name": "isoseq_number_of_five_prime_reads", 
-            "value": 11
+            "id": "pbtranscript_classify.num_flnc_bases", 
+            "name": "Number of full-length non-chimeric bases", 
+            "value": 402074452
+        }, 
+        {
+            "id": "pbtranscript_classify.avg_flnc_len", 
+            "name": "Mean full-length non-chimeric read length", 
+            "value": 3009
         }
     ], 
-    "dataset_uuids": ["d40a53b2-b84d-224b-87e6-d4311ee37213"], 
-    "id": "isoseq_classify", 
+    "dataset_uuids": [
+        "d99a4ed1-58dc-8443-af7e-aa3315761b9b", 
+        "3572999d-9cf5-246f-4af3-6eff707e4787", 
+        "059fea84-5096-c737-5eb0-9cbecb277ed1", 
+        "6d27cc02-de1f-2fb6-7d0f-4576e32c506e", 
+        "7c571060-74ba-b945-9a89-f99acf406e84"
+    ], 
+    "id": "pbtranscript_classify", 
     "plotGroups": [], 
     "tables": [
         {
             "columns": [
                 {
-                    "header": "isoseq_number_of_three_prime_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_three_prime_reads", 
+                    "header": "Number of consensus reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_reads", 
                     "values": [
-                        2, 
-                        2, 
-                        5, 
-                        4
+                        9824, 
+                        9824, 
+                        9824, 
+                        9824
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_consensus_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_consensus_reads", 
+                    "header": "Number of five prime reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_5_seen", 
                     "values": [
-                        4, 
-                        6, 
-                        6, 
-                        6
+                        6047, 
+                        5915, 
+                        5883, 
+                        5833
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_non_full_length_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_non_full_length_reads", 
+                    "header": "Number of three prime reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_3_seen", 
                     "values": [
-                        2, 
-                        4, 
-                        3, 
-                        4
+                        7850, 
+                        7719, 
+                        7728, 
+                        7752
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_poly_a_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_poly_a_reads", 
+                    "header": "Number of poly-A reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_polya_seen", 
                     "values": [
-                        2, 
-                        2, 
-                        5, 
-                        4
+                        6900, 
+                        6703, 
+                        6733, 
+                        6767
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_full_length_non_chimeric_bases", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_full_length_non_chimeric_bases", 
+                    "header": "Number of filtered short reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_filtered_short_reads", 
                     "values": [
-                        7890, 
-                        8359, 
-                        11687, 
-                        7627
+                        8, 
+                        7, 
+                        11, 
+                        14
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_filtered_short_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_filtered_short_reads", 
+                    "header": "Number of non-full-length reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_nfl", 
                     "values": [
-                        0, 
-                        0, 
-                        0, 
-                        0
+                        4503, 
+                        4674, 
+                        4682, 
+                        4693
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_full_length_non_chimeric_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_full_length_non_chimeric_reads", 
+                    "header": "Number of full-length reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_fl", 
                     "values": [
-                        2, 
-                        2, 
-                        3, 
-                        2
+                        5313, 
+                        5143, 
+                        5131, 
+                        5117
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_full_length_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_full_length_reads", 
+                    "header": "Number of full-length non-chimeric reads", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_flnc", 
                     "values": [
-                        2, 
-                        2, 
-                        3, 
-                        2
+                        5309, 
+                        5142, 
+                        5128, 
+                        5114
                     ]
                 }, 
                 {
-                    "header": "isoseq_number_of_five_prime_reads", 
-                    "id": "isoseq_classify.chunk_metrics.isoseq_number_of_five_prime_reads", 
+                    "header": "Number of full-length non-chimeric bases", 
+                    "id": "pbtranscript_classify.chunk_metrics.num_flnc_bases", 
                     "values": [
-                        2, 
-                        4, 
-                        3, 
-                        2
+                        16002717, 
+                        15591854, 
+                        15543815, 
+                        15520789
+                    ]
+                }, 
+                {
+                    "header": "Mean full-length non-chimeric read length", 
+                    "id": "pbtranscript_classify.chunk_metrics.avg_flnc_len", 
+                    "values": [
+                        3014, 
+                        3032, 
+                        3031, 
+                        3034
                     ]
                 }
             ], 
-            "id": "isoseq_classify.chunk_metrics", 
+            "id": "pbtranscript_classify.chunk_metrics", 
             "title": "Chunk Metrics"
         }
-    ]
+    ], 
+    "title": "Report pbtranscript_classify", 
+    "uuid": "d42f663e-fe0c-4067-aa33-47f0992d5265"
 }
