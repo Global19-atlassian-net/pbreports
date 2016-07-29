@@ -8,6 +8,7 @@ import json
 import unittest
 import tempfile
 import shutil
+import numpy as np
 
 from numpy import ndarray
 
@@ -412,10 +413,16 @@ class TestBinning(unittest.TestCase):
         for nbins in range(1, 100):
             shaper = dist_shaper(dist_list, nbins=nbins)
             for dist in dist_list:
+                #print 'pre'
+                #print dist[0]
                 bins, labels = shaper(dist)
+                #print 'post'
+                #print bins
+                #print labels
                 self.assertEqual(len(bins), len(labels))
                 self.assertEqual(len(bins), nbins)
                 self.assertEqual(sum(bins), sum(dist[0]))
+                #print ""
                 """
                 if nbins > len(merged):
                     self.assertEqual(bins, merged)
@@ -445,3 +452,87 @@ class TestBinning(unittest.TestCase):
                     self.assertEqual(labels,
                                      [i*5 for i in range(len(merged))])
                 """
+
+
+    def test_dist_shaper_leading_and_trailing(self):
+
+        # basic setup:
+        bins = [0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0]
+        labels = [i * 5 for i in range(len(bins))]
+        self.assertEqual(len(bins), len(labels))
+        self.assertEqual(labels[-1], 55)
+
+        # no-op re-binning
+        shaper = dist_shaper([(bins, labels)], nbins=len(bins))
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(bins, ob)
+        self.assertEqual(labels, ol)
+
+        # nbins = npopulated_columns - 1
+        eb = [3, 7, 0]
+        el = [20, 30, 40]
+        nbins = np.count_nonzero(bins) - 1
+        shaper = dist_shaper([(bins, labels)], nbins=nbins)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
+
+        # nbins = npopulated_columns - 1, excess trimmed
+        eb = [3, 7]
+        el = [20, 30]
+        nbins = np.count_nonzero(bins) - 1
+        shaper = dist_shaper([(bins, labels)], nbins=nbins, trim_excess=True)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
+
+        # nbins = npopulated_columns
+        eb = [1, 2, 3, 4]
+        el = [i * 5 for i in range(4, 4 + len(eb))]
+        nbins = np.count_nonzero(bins)
+        shaper = dist_shaper([(bins, labels)], nbins=nbins)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
+
+        # nbins = npopulated_columns + 1
+        eb = [1, 2, 3, 4, 0]
+        el = [i * 5 for i in range(4, 4 + len(eb))]
+        nbins = np.count_nonzero(bins) + 1
+        shaper = dist_shaper([(bins, labels)], nbins=nbins)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
+
+        # nbins = npopulated_columns + 1, excess trimmed
+        eb = [1, 2, 3, 4]
+        el = [i * 5 for i in range(4, 4 + len(eb))]
+        nbins = np.count_nonzero(bins) + 1
+        shaper = dist_shaper([(bins, labels)], nbins=nbins, trim_excess=True)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
+
+        # larger setup:
+        bins = [0, 0, 0, 0, 1, 2, 3, 4, 5, 0, 0, 0]
+        labels = [i * 5 for i in range(len(bins))]
+        self.assertEqual(len(bins), len(labels))
+        self.assertEqual(labels[-1], 55)
+
+        # nbins = npopulated_columns - 1
+        eb = [3, 7, 5, 0]
+        el = [20, 30, 40, 50]
+        nbins = np.count_nonzero(bins) - 1
+        shaper = dist_shaper([(bins, labels)], nbins=nbins)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
+
+        # nbins = npopulated_columns - 1, excess trimmed
+        eb = [3, 7, 5]
+        el = [20, 30, 40]
+        nbins = np.count_nonzero(bins) - 1
+        shaper = dist_shaper([(bins, labels)], nbins=nbins, trim_excess=True)
+        ob, ol = shaper((bins, labels))
+        self.assertEqual(eb, ob)
+        self.assertEqual(el, ol)
