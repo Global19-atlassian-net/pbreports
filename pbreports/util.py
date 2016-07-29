@@ -411,7 +411,7 @@ def compute_n50_from_bins(bins):
     log.warn(msg)
     return 0
 
-def _dist_shaper(bmin, bmax, poolby, dist):
+def _dist_shaper(bmin, bmax, poolby, dist, trim_to=None):
     """Just change the bins and binlabels! Not the sample means etc.
 
     Args:
@@ -460,9 +460,18 @@ def _dist_shaper(bmin, bmax, poolby, dist):
 
         # collapse with poolby
         cbins = [sum(newbins[start:start + poolby])
-                   for start in xrange(0, len(newbins), poolby)]
+                 for start in xrange(0, len(newbins), poolby)]
         clabels = [newlabels[start]
-                     for start in xrange(0, len(newbins), poolby)]
+                   for start in xrange(0, len(newbins), poolby)]
+
+        if not trim_to is None:
+            cutoff = len(clabels)
+            for i, lab in enumerate(clabels):
+                if lab > trim_to:
+                    cutoff = i
+                    break
+            cbins = cbins[:cutoff]
+            clabels = clabels[:cutoff]
 
         bins = cbins
         labels = clabels
@@ -484,7 +493,7 @@ def _cont_dist_shaper(shape_func, dist):
         dist.binWidth = newlabels[1] - newlabels[0]
     return dist
 
-def dist_shaper(dist_list, nbins=40):
+def dist_shaper(dist_list, nbins=40, trim_excess=False):
     """Produce a function to modify a distribution to have a number of bins
     close to or greater than the number provided, such that all dists in the
     dist list can be transformed to have a consistent appearance.
@@ -538,14 +547,19 @@ def dist_shaper(dist_list, nbins=40):
         # poolby should be an int >= 1 before it hits _dist_shaper, so if it is
         # less than that, lets adjust the other values here and now:
         if poolby < 1:
-            # the total to be padded:
-            pad = int(round((1 - poolby) * nbins))
-            pad_left = min(pad/2, (bmin/bwidth))
-            pad_right = pad - pad_left
-            bmin = bmin - (pad_left * bwidth)
-            bmax = bmax + (pad_right * bwidth)
-            curbins = (bmax - bmin)/bwidth + 1
-            poolby = curbins/float(nbins)
+            if trim_excess:
+                poolby = 1.0
+                curbins = (bmax - bmin)/bwidth + 1
+                nbins = curbins
+            else:
+                # the total to be padded:
+                pad = int(round((1 - poolby) * nbins))
+                pad_left = min(pad/2, (bmin/bwidth))
+                pad_right = pad - pad_left
+                bmin = bmin - (pad_left * bwidth)
+                bmax = bmax + (pad_right * bwidth)
+                curbins = (bmax - bmin)/bwidth + 1
+                poolby = curbins/float(nbins)
 
         curbins = int(round(curbins))
         poolby = int(math.ceil(poolby))
@@ -553,6 +567,9 @@ def dist_shaper(dist_list, nbins=40):
         # poolby should be an even divisor of curbins before it hits
         # _dist_shaper, so if it isn't, lets adjust the other values here and
         # now:
+        actual_bmax = None
+        if trim_excess:
+            actual_bmax = bmax
         if poolby > 1:
             # we don't want to end up with fewer bins than predicted, so take
             # the max
@@ -565,12 +582,14 @@ def dist_shaper(dist_list, nbins=40):
         # you have to add on that last bin
         curbins = int(round((bmax - bmin)/bwidth) + 1)
         poolby = int(curbins/nbins)
-        return functools.partial(_dist_shaper, bmin, bmax, poolby)
+        return functools.partial(_dist_shaper, bmin, bmax, poolby,
+                                 trim_to=actual_bmax)
     except AssertionError as e:
         log.error(e.message)
         return lambda x: x
 
-def continuous_dist_shaper(dist_list, nbins=40):
+def continuous_dist_shaper(dist_list, nbins=40, trim_excess=False):
     generic_dist_list = [(d.bins, d.labels) for d in dist_list]
-    shaper = dist_shaper(generic_dist_list, nbins=nbins)
+    shaper = dist_shaper(generic_dist_list, nbins=nbins,
+                         trim_excess=trim_excess)
     return functools.partial(_cont_dist_shaper, shaper)

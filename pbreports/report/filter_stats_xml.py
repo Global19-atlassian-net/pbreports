@@ -157,12 +157,14 @@ def to_insert_stats_attributes(readLenDists, readQualDists):
 
 
 def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
-                         output_dir, dpi=72):
+                         output_dir, dpi=72, lenDistShaper=None):
     length_plots = []
     # ReadLen distribution to barplot:
-    shaper = continuous_dist_shaper(readLenDists)
+    if lenDistShaper is None:
+        lenDistShaper = continuous_dist_shaper(readLenDists, trim_excess=True)
     for i, orig_rlendist in enumerate(readLenDists):
-        rlendist = shaper(orig_rlendist)
+        rlendist = lenDistShaper(orig_rlendist)
+        assert sum(orig_rlendist.bins) == sum(rlendist.bins)
         len_fig, len_axes = get_fig_axes_lpr()
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
@@ -187,7 +189,7 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
     # FIXME these aren't useful yet
     qual_plots = []
     # ReadQual distribution to barplot:
-    shaper = continuous_dist_shaper(readQualDists)
+    shaper = continuous_dist_shaper(readQualDists, trim_excess=True)
     for i, orig_rqualdist in enumerate(readQualDists):
         rqualdist = shaper(orig_rqualdist)
         qual_fig, qual_axes = get_fig_axes_lpr()
@@ -225,6 +227,7 @@ def to_report(stats_xml, output_dir, dpi=72):
     log.info("Analyzing XML {f}".format(f=stats_xml))
     # stats_xml should be a dataset:
     dset = SubreadSet(stats_xml)
+
     dataset_uuids = [dset.uuid]
     # but if it isn't, no problem:
     if not dset.metadata.summaryStats:
@@ -234,6 +237,13 @@ def to_report(stats_xml, output_dir, dpi=72):
     if not dset.metadata.summaryStats.readLenDists:
         raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
                       "key distributions")
+
+
+    # we want all of the length distributions in this report to look the same,
+    # so we make the shaper here and pass it around:
+    alldists = (dset.metadata.summaryStats.readLenDists[:] +
+                dset.metadata.summaryStats.insertReadLenDists[:])
+    len_dist_shaper = continuous_dist_shaper(alldists, trim_excess=True)
 
     attr = to_read_stats_attributes(
         readLenDists=dset.metadata.summaryStats.readLenDists,
@@ -245,11 +255,13 @@ def to_report(stats_xml, output_dir, dpi=72):
     plot_groups = to_read_stats_plots(
         readLenDists=dset.metadata.summaryStats.readLenDists,
         readQualDists=dset.metadata.summaryStats.readQualDists,
-        output_dir=output_dir)
+        output_dir=output_dir,
+        lenDistShaper=len_dist_shaper)
     plot_groups.extend(to_insert_stats_plots(
         readLenDists=dset.metadata.summaryStats.insertReadLenDists,
         readQualDists=dset.metadata.summaryStats.insertReadQualDists,
-        output_dir=output_dir))
+        output_dir=output_dir,
+        lenDistShaper=len_dist_shaper))
 
     # build the report:
     report = Report(meta_rpt.id,
