@@ -63,11 +63,6 @@ class Constants(object):
 
 def _report_to_attributes(report_file):
     report = load_report_from_json(report_file)
-    attr = {a.id: a.value for a in report.attributes}
-    if attr.get(Constants.A_CONSENSUS, 0) > 0:
-        avg = attr[Constants.A_BASES] / \
-            attr[Constants.A_CONSENSUS]
-    	report.attributes.append(Attribute(Constants.A_LENGTH, int(avg)))
     return report.attributes
 
 
