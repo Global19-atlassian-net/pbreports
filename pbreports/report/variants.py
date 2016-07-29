@@ -96,7 +96,7 @@ def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_p
                  dataset_uuids=(ReferenceSet(reference).uuid,))
 
     rpt.write_json(os.path.join(output_dir, report))
-    return rpt
+    return meta_rpt.apply_view(rpt)
 
 
 def _validate_inputs(files):

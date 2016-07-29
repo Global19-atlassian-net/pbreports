@@ -80,6 +80,7 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
     rep.add_attribute(_get_att_n_50_contig_length(read_lengths))
     rep.add_attribute(_get_att_sum_contig_lengths(read_lengths))
     rep.add_plotgroup(pgrp)
+    rep = meta_rpt.apply_view(rep)
 
     rep.write_json(os.path.join(output_dir, report))
     _write_coverage_vs_quality_csv(contigs, output_dir)
