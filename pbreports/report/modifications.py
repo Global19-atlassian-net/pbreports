@@ -61,23 +61,34 @@ def _create_fig_template(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
     return fig, ax
 
 
+def _get_datasets(basemods_h5, ds_id):
+    data = []
+    for ref_name in basemods_h5.keys():
+        data.extend(list(basemods_h5[ref_name][ds_id].__array__()))
+    return np.array(data)
+
+
 def plot_kinetics_scatter(basemods_h5, ax):
 
     handles = []
     colors = ['red', 'green', 'blue', 'magenta']
-    bases = ['A', 'C', 'G', 'T']
+    base_ids = ['A', 'C', 'G', 'T']
 
-    for base, color in zip(bases, colors):
-        baseHits = basemods_h5['base'].__array__() == base
+    coverage = _get_datasets(basemods_h5, 'coverage')
+    score = _get_datasets(basemods_h5, 'score')
+    bases = _get_datasets(basemods_h5, 'base').__array__()
+
+    for base, color in zip(base_ids, colors):
+        baseHits = bases == base
         n_bases = np.count_nonzero(baseHits)
 
         if n_bases > 0:
             # Add a bit of scatter to avoid ugly aliasing in plot due to
             # integer quantization
-            cov = basemods_h5['coverage'][baseHits] + 0.25 * np.random.randn(n_bases)
-            score = basemods_h5['score'][baseHits] + 0.25 * np.random.randn(n_bases)
+            coverage_ = coverage[baseHits] + 0.25 * np.random.randn(n_bases)
+            score_ = score[baseHits] + 0.25 * np.random.randn(n_bases)
 
-            pl = ax.scatter(cov, score, c=color, label=base,
+            pl = ax.scatter(coverage_, score_, c=color, label=base,
                             lw=0, alpha=0.3, s=12)
             handles.append(pl)
         else:
@@ -87,33 +98,34 @@ def plot_kinetics_scatter(basemods_h5, ax):
     ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).ylabel)
     legend(handles, bases, loc='upper left')
 
-    if len(basemods_h5['base']) > 0:
-        ax.set_xlim(0, np.percentile(basemods_h5['coverage'], 95.0) * 1.4)
-        ax.set_ylim(0, np.percentile(basemods_h5['score'], 99.9) * 1.3)
+    if len(coverage) > 0:
+        ax.set_xlim(0, np.percentile(coverage, 95.0) * 1.4)
+        ax.set_ylim(0, np.percentile(score, 99.9) * 1.3)
 
 
 def plot_kinetics_hist(basemods_h5, ax):
 
     colors = ['red', 'green', 'blue', 'magenta']
-    bases = ['A', 'C', 'G', 'T']
+    base_ids = ['A', 'C', 'G', 'T']
 
     # Check for empty or peculiar modifications report:
-    d = basemods_h5['score']
-    if len(d) == 0:
+    bases = _get_datasets(basemods_h5, 'base')
+    scores = _get_datasets(basemods_h5, 'score')
+    if len(scores) == 0:
         binLim = 1.0
-    elif np.isnan(np.sum(d)):
-        binLim = np.nanmax(d)
+    elif np.isnan(np.sum(scores)):
+        binLim = np.nanmax(scores)
     else:
-        binLim = np.percentile(d, 99.9) * 1.2
-
+        binLim = np.percentile(scores, 99.9) * 1.2
+    log.debug("binLim = {l}".format(l=binLim))
     ax.set_xlim(0, binLim)
     bins = arange(0, binLim, step=binLim / 75)
 
-    for base, color in zip(bases, colors):
-        baseHits = basemods_h5['base'].__array__() == base
+    for base, color in zip(base_ids, colors):
+        baseHits = bases == base
         if np.count_nonzero(baseHits) > 0:
-            pl = ax.hist(basemods_h5['score'][baseHits], color=color,
-                         label=base, bins=bins, histtype="step", log=True)
+            pl = ax.hist(scores[baseHits], color=color, label=base,
+                         bins=bins, histtype="step", log=True)
         else:
             log.warn("Base {b} not found".format(b=base))
 
@@ -121,7 +133,7 @@ def plot_kinetics_hist(basemods_h5, ax):
     ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_HIST).ylabel)
 
 
-    if len(d) > 0:
+    if len(scores) > 0:
         ax.legend(loc='upper right')
 
 
