@@ -117,12 +117,12 @@ class BaseVariantTableBuilder(object):
 
     def __init__(self):
         cols = []
-        cols.append(Column(Constants.C_SEQ, ''))
-        cols.append(Column(Constants.C_POS, ''))
-        cols.append(Column(Constants.C_VAR, ''))
-        cols.append(Column(Constants.C_TYP, ''))
-        cols.append(Column(Constants.C_COV, ''))
-        cols.append(Column(Constants.C_CON, ''))
+        cols.append(Column(Constants.C_SEQ))
+        cols.append(Column(Constants.C_POS))
+        cols.append(Column(Constants.C_VAR))
+        cols.append(Column(Constants.C_TYP))
+        cols.append(Column(Constants.C_COV))
+        cols.append(Column(Constants.C_CON))
 
         log.debug('# columns {n}'.format(n=len(cols)))
 
@@ -159,7 +159,7 @@ class MinorVariantTableBuilder(BaseVariantTableBuilder):
 
     def __init__(self):
         super(MinorVariantTableBuilder, self).__init__()
-        self._table.columns.append(Column(Constants.C_FRE, ''))
+        self._table.columns.append(Column(Constants.C_FRE))
 
     def _get_table_title(self):
         return ""

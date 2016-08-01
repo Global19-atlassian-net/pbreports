@@ -34,7 +34,7 @@ meta_rpt = MetaReport.from_json(AAC_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_consensus"
-
+    T_ID = "result_table"
 
 def create_table(d, barcode):
     """Long Amplicon Analysis results table"""
@@ -42,15 +42,15 @@ def create_table(d, barcode):
     columns = []
 
     if barcode:
-        columns.append(Column("barcodename", header = ""))
+        columns.append(Column("barcodename"))
 
-    columns.append(Column("coarsecluster", header = ""))
-    columns.append(Column("phase", header = ""))
-    columns.append(Column("sequencelength", header = ""))
-    columns.append(Column("predictedaccuracy", header = ""))
-    columns.append(Column("totalcoverage", header = ""))
+    columns.append(Column("coarsecluster"))
+    columns.append(Column("phase"))
+    columns.append(Column("sequencelength"))
+    columns.append(Column("predictedaccuracy"))
+    columns.append(Column("totalcoverage"))
 
-    t = Table("result_table",
+    t = Table(Constants.T_ID,
               columns=columns)
 
     for fastaname in sorted(d.fastaname):
@@ -123,7 +123,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
-        name="Amplicon consensus report",
+        name=meta_rpt.title,
         description="Amplicon Consensus Report JSON",
         default_name="consensus_report")
 

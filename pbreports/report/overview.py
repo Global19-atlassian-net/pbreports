@@ -86,7 +86,7 @@ def get_parser():
                           name="SubreadSet",
                           description="Subread dataset")
     p.add_output_file_type(FileTypes.REPORT, "output_json",
-                           name="JSON file",
+                           name=meta_rpt.title,
                            description="Path to write report JSON output",
                            default_name="overview_report")
     return p

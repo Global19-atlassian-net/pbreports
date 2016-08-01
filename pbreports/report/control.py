@@ -240,7 +240,7 @@ def _get_error_report():
     log.warn('Returning a report with a warning that 0 controls reads have '
              'been found.')
     a = Attribute('warning', 'No control reads found', 'Warning')
-    return Report('control', title="Control", attributes=[a])
+    return Report(meta_rpt.id, title=meta_rpt.title, attributes=[a])
 
 
 def _create_score_figure(control_data, sample_data):
@@ -253,7 +253,7 @@ def _create_score_figure(control_data, sample_data):
     x_data = np.arange(min_score, 1.0, 0.02)
     y1_data = control_data[0, :]
     y2_data = sample_data[0, :]
-    labels = ('Read Quality', 'Reads')
+    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).ylabel)
     return _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc='upper left')
 
 
@@ -267,7 +267,7 @@ def _create_length_figure(control_data, sample_data):
     x_data = np.arange(0, len_unit * num_len_bins, len_unit)
     y1_data = control_data[1, :]
     y2_data = sample_data[1, :]
-    labels = ('Read Length', 'Reads')
+    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).ylabel)
     return _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc='upper right')
 
 

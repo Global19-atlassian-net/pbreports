@@ -76,7 +76,7 @@ class MetaTable(object):
         return Table(self.id, title=self.title, columns=columns)
 
     def apply_table_view(self, table):
-        if table.title is None:
+        if (table.title is None) or (not table.title):
                 title = self.title
         else:
                 title = table.title
