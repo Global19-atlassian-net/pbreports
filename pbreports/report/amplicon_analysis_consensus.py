@@ -35,6 +35,12 @@ meta_rpt = MetaReport.from_json(AAC_SPEC)
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_consensus"
     T_ID = "result_table"
+    C_BARCODE = "barcodename"
+    C_CLUSTER = "coarsecluster"
+    C_PHASE = "phase"
+    C_LENGTH = "sequencelength"
+    C_ACCURACY = "predictedaccuracy"
+    C_COVERAGE = "totalcoverage"
 
 def create_table(d, barcode):
     """Long Amplicon Analysis results table"""
@@ -42,13 +48,13 @@ def create_table(d, barcode):
     columns = []
 
     if barcode:
-        columns.append(Column("barcodename"))
+        columns.append(Column(Constants.C_BARCODE))
 
-    columns.append(Column("coarsecluster"))
-    columns.append(Column("phase"))
-    columns.append(Column("sequencelength"))
-    columns.append(Column("predictedaccuracy"))
-    columns.append(Column("totalcoverage"))
+    columns.append(Column(Constants.C_CLUSTER))
+    columns.append(Column(Constants.C_PHASE))
+    columns.append(Column(Constants.C_LENGTH))
+    columns.append(Column(Constants.C_ACCURACY))
+    columns.append(Column(Constants.C_COVERAGE))
 
     t = Table(Constants.T_ID,
               columns=columns)
