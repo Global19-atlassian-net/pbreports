@@ -184,12 +184,12 @@ def _movie_results_to_table(movie_results):
     """
 
     columns = []
-    columns.append(Column(Constants.C_MOVIE_NAME, values=[], header = ''))
-    columns.append(Column(Constants.C_NREADS, values=[], header = ''))
-    columns.append(Column(Constants.C_TOTAL_BASES, values=[], header = ''))
-    columns.append(Column(Constants.C_MEAN_READLENGTH, values=[], header = ''))
-    columns.append(Column(Constants.C_MEAN_ACCURACY, values=[], header = ''))
-    columns.append(Column(Constants.C_MEAN_NPASSES, values=[], header = ''))
+    columns.append(Column(Constants.C_MOVIE_NAME,values=[]))
+    columns.append(Column(Constants.C_NREADS,values=[]))
+    columns.append(Column(Constants.C_TOTAL_BASES,values=[]))
+    columns.append(Column(Constants.C_MEAN_READLENGTH,values=[]))
+    columns.append(Column(Constants.C_MEAN_ACCURACY,values=[]))
+    columns.append(Column(Constants.C_MEAN_NPASSES,values=[]))
     table = Table(Constants.T_ID, columns=columns)
 
     movie_names = {m.movie_name for m in movie_results}
@@ -258,14 +258,14 @@ def _make_barcode_table(bam_stats, ccs_set):
                  for i_bc in barcode_ids]
     assert len(labels) == len(counts) == len(nbases)
     columns = [
-        Column(Constants.C_BARCODE_ID, values=labels, header="Barcode ID"),
-        Column(Constants.C_BARCODE_COUNTS, values=counts, header="CCS reads"),
-        Column(Constants.C_BARCODE_NBASES, values=nbases, header="Number of CCS bases"),
-        Column(Constants.C_BARCODE_READLENGTH, values=mean_length, header="CCS Read Length (mean)"),
-        Column(Constants.C_BARCODE_QUALITY, values=readquals, header="CCS Read Score (mean)"),
-        Column(Constants.C_BARCODE_NPASSES, values=npasses, header="Number of Passes (mean)")
+        Column(Constants.C_BARCODE_ID, values=labels),
+        Column(Constants.C_BARCODE_COUNTS, values=counts),
+        Column(Constants.C_BARCODE_NBASES, values=nbases),
+        Column(Constants.C_BARCODE_READLENGTH, values=mean_length),
+        Column(Constants.C_BARCODE_QUALITY, values=readquals),
+        Column(Constants.C_BARCODE_NPASSES, values=npasses)
     ]
-    return Table(Constants.T_BARCODES, columns=columns, title="By Barcode")
+    return Table(Constants.T_BARCODES, columns=columns)
 
 
 def _make_histogram(data, axis_labels, nbins, barcolor):
@@ -472,18 +472,18 @@ def to_report(ccs_set, output_dir):
                               thumbnail=scatter_plot.thumbnail)
 
     movie_table = _movie_results_to_table(movie_results)
-    log.info(str(movie_table))
+    log.debug(str(movie_table))
     tables = [movie_table]
     if ccs_set.isBarcoded:
         tables.append(_make_barcode_table(bam_stats, ccs_set))
 
     attributes = _movie_results_to_attributes(movie_results)
 
-    report = Report(Constants.R_ID, title="CCS Report",
+    report = Report(Constants.R_ID,
                     tables=tables, attributes=attributes,
                     plotgroups=[readlength_group, accuracy_group,
                                 npasses_group, scatter_group],
-                    dataset_uuids=(ccs_set.uuid,))
+                    dataset_uuids=(ccs_set.uuid))
 
     return meta_rpt.apply_view(report)
 
@@ -528,7 +528,7 @@ def get_parser():
                           name="ConsensusReadSet",
                           description="ConsensusRead DataSet file")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name="CCS report",
+                           name=meta_rpt.title,
                            description="Path to write Report json output.",
                            default_name="ccs_report")
     ap.add_argument('-o', '--output-dir', dest='output_dir',

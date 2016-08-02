@@ -44,6 +44,18 @@ class Constants(object):
     R_ID = meta_rpt.id
 
     T_ID = "motif_records"
+    C_ID = 'motif_id'
+    C_POS = 'modified_position'
+    C_TYPE = 'modification_type'
+    C_PCT_MOTIF = 'percent_motifs_detected'
+    C_NMOTIF = 'ndetected_motifs'
+    C_NMOTIF_GEN = 'nmotifs_in_genome'
+    C_READSCORE = 'mean_readscore'
+    C_COV = 'mean_coverage'
+    C_PARTNER = 'partner_motif'
+    C_IPD = 'mean_ipd_ratio'
+    C_GRP = 'group_tag'
+    C_OBJ_SCORE = 'objective_score'
 
     # Plot Groups
     PG_MOD_QV = 'modification_qvs'
@@ -509,18 +521,18 @@ def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72):
 
 def to_table(motif_records):
 
-    columns = [Column('motif_id', header=""),
-               Column('modified_position', header=""),
-               Column('modification_type', header=""),
-               Column('percent_motifs_detected', header=""),
-               Column('ndetected_motifs', header=""),
-               Column('nmotifs_in_genome', header=""),
-               Column('mean_readscore', header=''),
-               Column('mean_coverage', header=""),
-               Column('partner_motif', header=""),
-               Column('mean_ipd_ratio', header=""),
-               Column('group_tag', header=""),
-               Column('objective_score', header='')]
+    columns = [Column(Constants.C_ID),
+               Column(Constants.C_POS),
+               Column(Constants.C_TYPE),
+               Column(Constants.C_PCT_MOTIF),
+               Column(Constants.C_NMOTIF),
+               Column(Constants.C_NMOTIF_GEN),
+               Column(Constants.C_READSCORE),
+               Column(Constants.C_COV),
+               Column(Constants.C_PARTNER),
+               Column(Constants.C_IPD),
+               Column(Constants.C_GRP),
+               Column(Constants.C_OBJ_SCORE)]
 
     # Record attr name ordered by index in columns
     attr_names = ['motif_str', 'center_position',
@@ -556,7 +568,6 @@ def to_motifs_report(gff_file, motif_summary_csv, output_dir):
     table = to_table(motif_records)
 
     r = Report(Constants.R_ID,
-               title="Modified Base Motifs",
                plotgroups=plot_groups,
                tables=[table])
     log.debug(pformat(r.to_dict(), indent=4))
@@ -636,7 +647,7 @@ def get_parser():
     p.add_input_file_type(FileTypes.CSV, 'motif_summary_csv',
                           "CSV file", 'Path to Motif summary CSV')
     p.add_output_file_type(FileTypes.REPORT, 'report_json',
-                           name="Motifs report",
+                           name=meta_rpt.title,
                            description="Path of output JSON report",
                            default_name="motifs_report")
     return p

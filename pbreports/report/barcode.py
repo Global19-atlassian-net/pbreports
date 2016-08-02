@@ -151,7 +151,7 @@ def get_parser():
                           name="BarcodeSet",
                           description="Barcode DataSet XML")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name="Barcode report",
+                           name=meta_rpt.title,
                            description="Path to write Report json output.",
                            default_name="barcode_report")
     # TODO(nechols)(2016-03-15) not yet supported in SA 3.x

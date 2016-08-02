@@ -37,7 +37,12 @@ meta_rpt = MetaReport.from_json(AAT_SPEC)
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_timing"
-
+    T_ID = "result_table"
+    C_BC = "barcode_col"
+    C_HOUR = "hour_col"
+    C_MIN = "minute_col"
+    C_SEC = "second_col"
+ 
 LOG_LINE_REGEX = re.compile('^\d+-\d+-\d+\s+\d+:\d+:\d+')
 LOG_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -77,43 +82,43 @@ def create_table(timings):
     """Long Amplicon Analysis Timing Result table"""
 
     columns = []
-    columns.append(Column("barcode_col", header=""))
-    columns.append(Column("hour_col", header=""))
-    columns.append(Column("minute_col", header=""))
-    columns.append(Column("second_col", header=""))
+    columns.append(Column(Constants.C_BC))
+    columns.append(Column(Constants.C_HOUR))
+    columns.append(Column(Constants.C_MIN))
+    columns.append(Column(Constants.C_SEC))
 
-    t = Table("result_table",
+    t = Table(Constants.T_ID,
               title="", columns=columns)
 
     seconds = []
     for barcode in sorted(timings):
         if barcode != 'All':
             data = timings[barcode]
-            t.add_data_by_column_id('barcode_col', barcode)
-            t.add_data_by_column_id('hour_col',   data.seconds / 3600)
-            t.add_data_by_column_id('minute_col', data.seconds / 60)
-            t.add_data_by_column_id('second_col', data.seconds)
+            t.add_data_by_column_id(Constants.C_BC, barcode)
+            t.add_data_by_column_id(Constants.C_HOUR,   data.seconds / 3600)
+            t.add_data_by_column_id(Constants.C_MIN, data.seconds / 60)
+            t.add_data_by_column_id(Constants.C_SEC, data.seconds)
             seconds.append(data.seconds)
     # Add the average time information
     seconds_sum = sum(seconds)
     avg_seconds = seconds_sum / len(timings)
-    t.add_data_by_column_id('barcode_col', 'Mean')
-    t.add_data_by_column_id('hour_col',   avg_seconds / 3600)
-    t.add_data_by_column_id('minute_col', avg_seconds / 60)
-    t.add_data_by_column_id('second_col', avg_seconds)
+    t.add_data_by_column_id(Constants.C_BC, 'Mean')
+    t.add_data_by_column_id(Constants.C_HOUR,   avg_seconds / 3600)
+    t.add_data_by_column_id(Constants.C_MIN, avg_seconds / 60)
+    t.add_data_by_column_id(Constants.C_SEC, avg_seconds)
     # Add the median time information
     median_seconds = int(median(seconds))
-    t.add_data_by_column_id('barcode_col', 'Median')
-    t.add_data_by_column_id('hour_col',   median_seconds / 3600)
-    t.add_data_by_column_id('minute_col', median_seconds / 60)
-    t.add_data_by_column_id('second_col', median_seconds)
+    t.add_data_by_column_id(Constants.C_BC, 'Median')
+    t.add_data_by_column_id(Constants.C_HOUR,   median_seconds / 3600)
+    t.add_data_by_column_id(Constants.C_MIN, median_seconds / 60)
+    t.add_data_by_column_id(Constants.C_SEC, median_seconds)
     # Add the total time information
-    t.add_data_by_column_id('barcode_col', 'Total')
-    t.add_data_by_column_id('hour_col',   timings['All'].seconds / 3600)
-    t.add_data_by_column_id('minute_col', timings['All'].seconds / 60)
-    t.add_data_by_column_id('second_col', timings['All'].seconds)
+    t.add_data_by_column_id(Constants.C_BC, 'Total')
+    t.add_data_by_column_id(Constants.C_HOUR,   timings['All'].seconds / 3600)
+    t.add_data_by_column_id(Constants.C_MIN, timings['All'].seconds / 60)
+    t.add_data_by_column_id(Constants.C_SEC, timings['All'].seconds)
 
-    log.info(str(t))
+    log.debug(str(t))
     return t
 
 
@@ -165,7 +170,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.JSON,
         file_id="report_json",
-        name="TimingReportJSON",
+        name=meta_rpt.title,
         description="Timing Report JSON",
         default_name="timing_report")
 

@@ -299,7 +299,7 @@ def _add_options_to_parser(p):
         name="SubreadSet",
         description="SubreadSet")
     p.add_output_file_type(
-        FileTypes.REPORT, "report", "Raw data report",
+        FileTypes.REPORT, "report", meta_rpt.title,
         description=("Filename of JSON output report. Should be name only, "
                      "and will be written to output dir"),
         default_name="report")

@@ -125,26 +125,28 @@ def create_table(tabulated_data):
     """Long Amplicon Analysis results table"""
 
     columns = []
-    columns.append(Column("barcode_col", header=''))
-    columns.append(Column("good", header=''))
-    columns.append(Column("good_pct", header=''))
-    columns.append(Column("chimera", header=''))
-    columns.append(Column("chimera_pct", header=''))
-    columns.append(Column("noise", header=''))
-    columns.append(Column("noise_pct", header=''))
+    columns.append(Column(Constants.C_BC))
+    columns.append(Column(Constants.C_GOOD))
+    columns.append(Column(Constants.C_GOOD_PCT))
+    columns.append(Column(Constants.C_CHIM))
+    columns.append(Column(Constants.C_CHIM_PCT))
+    columns.append(Column(Constants.C_NOISE))
+    columns.append(Column(Constants.C_NOISE_PCT))
 
     t = Table(Constants.T_R, columns=columns)
 
+    COL_IDS = [Constants.C_GOOD, Constants.C_GOOD_PCT, Constants.C_CHIM, Constants.C_CHIM_PCT, Constants.C_NOISE, Constants.C_NOISE_PCT]
+    
     for barcode, data in tabulated_data.iteritems():
         if barcode != 'all':
-            t.add_data_by_column_id('barcode_col', barcode)
-            for column_id in ['good', 'good_pct', 'chimera', 'chimera_pct', 'noise', 'noise_pct']:
+            t.add_data_by_column_id(Constants.C_BC, barcode)
+            for column_id in COL_IDS:
                 t.add_data_by_column_id(column_id, data[column_id])
-    t.add_data_by_column_id('barcode_col', 'All')
-    for column_id in ['good', 'good_pct', 'chimera', 'chimera_pct', 'noise', 'noise_pct']:
+    t.add_data_by_column_id(Constants.C_BC, 'All')
+    for column_id in COL_IDS:
         t.add_data_by_column_id(column_id, tabulated_data['all'][column_id])
 
-    log.info(str(t))
+    log.debug(str(t))
     return t
 
 
@@ -205,7 +207,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
-        name="LAA input report",
+        name=meta_rpt.title,
         description="Long Amplicon Analysis input report JSON",
         default_name="amplicon_input_report")
 

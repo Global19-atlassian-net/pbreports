@@ -3,8 +3,39 @@
         {
             "title": "Transcript Clustering", 
             "id": "isoseq_classify_table", 
-            "columns": [], 
-            "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES"
+            "columns": [
+        {
+            "type": "int",
+            "description": "Total number of consensus isoforms, both high- and low-quality",
+            "header": "Number of unpolished consensus isoforms",
+            "id": "num_consensus_isoforms"
+        },
+        {
+            "type": "int",
+            "description": "The number of consensus isoforms that have an estimated accuracy above the specified cutoff (0.99 default)",
+            "header": "Number of polished high-quality isoforms",
+            "id": "num_polished_hq_isoforms"
+        },
+        {
+            "type": "int",
+            "description": "The number of consensus isoforms that have an estimated accuracy below the specified cutoff",
+            "header": "Number of polished low-quality isoforms",
+            "id": "num_polished_lq_isoforms"
+        },
+        {
+            "type": "int",
+            "description": "The average length of all consensus isoforms, both high- and low-quality",
+            "header": "Mean unpolished consensus isoforms read length",
+            "id": "avg_consensus_isoform_length"
+        },
+        {
+            "type": "int",
+            "description": "Total number of bases in unpolished consensus isoforms",
+            "header": "Total number of bases in unpolished consensus isoforms",
+            "id": "num_total_bases"
+        }
+    ], 
+            "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES. Code exists to implement this table but it is currently not being put in reports"
         }
     ], 
     "description": null, 

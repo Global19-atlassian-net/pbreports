@@ -51,10 +51,10 @@
         {
             "plots": [
                 {
-                    "xlabel": null, 
+                    "xlabel": "Read Length", 
                     "description": null, 
                     "caption": null, 
-                    "ylabel": null, 
+                    "ylabel": "Reads", 
                     "title": null, 
                     "id": "control_noncontrol_readlength"
                 }
@@ -67,10 +67,10 @@
         {
             "plots": [
                 {
-                    "xlabel": null, 
+                    "xlabel": "Read Quality", 
                     "description": null, 
                     "caption": null, 
-                    "ylabel": null, 
+                    "ylabel": "Reads", 
                     "title": null, 
                     "id": "control_noncontrol_readquality"
                 }

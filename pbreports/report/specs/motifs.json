@@ -8,61 +8,61 @@
                     "header": "Motif", 
                     "type": "str", 
                     "id": "motif_id", 
-                    "description": null
+                    "description": "The nucleotide sequence of the methyltransferase recognition motif, using the standard IUPAC nucleotide alphabet."
                 }, 
                 {
                     "header": "Modified Position", 
                     "type": "int", 
                     "id": "modified_position", 
-                    "description": null
+                    "description": "The position within the motif that is modified with a 1-based coordinate system."
                 }, 
                 {
                     "header": "Motification Type", 
                     "type": "str", 
                     "id": "modification_type", 
-                    "description": null
+                    "description": "The type of chemical modification most commonly identified at that motif- 'modified_base' means modification not recognized by the software."
                 }, 
                 {
                     "header": "% of Motifs Detected", 
                     "type": null, 
                     "id": "percent_motifs_detected", 
-                    "description": null
+                    "description": "The percentage of times that this motif was detected as modified across the entire genome."
                 }, 
                 {
                     "header": "# of Motifs Detected", 
                     "type": "int", 
                     "id": "ndetected_motifs", 
-                    "description": null
+                    "description": "The number of times that this motif was detected as modified across the entire genome."
                 }, 
                 {
                     "header": "# of Motifs in Genome", 
                     "type": "int", 
                     "id": "nmotifs_in_genome", 
-                    "description": null
+                    "description": "The number of times this motif occurs in the genome."
                 }, 
                 {
                     "header": "Mean QV", 
                     "type": "float", 
                     "id": "mean_readscore", 
-                    "description": null
+                    "description": "The mean modification QV for all instances where this motif was detected as modified."
                 }, 
                 {
                     "header": "Mean Coverage", 
                     "type": "float", 
                     "id": "mean_coverage", 
-                    "description": null
+                    "description": "The mean coverage for all instances where this motif was detected as modified."
                 }, 
                 {
                     "header": "Partner Motif", 
                     "type": null, 
                     "id": "partner_motif", 
-                    "description": null
+                    "description": "For motifs that are not self-palindromic, this is the complementary sequence."
                 }, 
                 {
                     "header": "Mean IPD ratio", 
                     "type": "float", 
                     "id": "mean_ipd_ratio", 
-                    "description": null
+                    "description": "The mean inter-pulse duration. An IPD ratio greater than 1 means that the sequencing polymerase slowed down at this base position, relative to the control. An IPD ratio less than 1 indicates speeding up."
                 }, 
                 {
                     "header": "Group Tag", 
@@ -81,7 +81,7 @@
         }
     ], 
     "description": null, 
-    "title": "Motifs Report Specifications", 
+    "title": "Modified Base Motifs", 
     "attributes": [], 
     "id": "motifs", 
     "plotgroups": [

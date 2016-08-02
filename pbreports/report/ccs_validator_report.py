@@ -144,7 +144,7 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
     fastq_stats = fastq_files_to_stats(fastq_files)
 
     table = _generate_table(fastq_stats.values())
-    log.info(str(table))
+    log.debug(str(table))
 
     if qv_hist is not None:
         fig, ax = to_qv_histogram(fastq_stats.values())
@@ -194,7 +194,7 @@ def get_parser():
                    help="Directory to write Read length and Quality Value histograms.")
     p.add_argument('-r', '--report', type=str,
                    default="ccs_validator_report.json",
-                   help="Name of Json report file.")
+                   help=meta_rpt.title)
     p.add_argument('--debug', action='store_true', help='Debug to stdout.')
     return p
 

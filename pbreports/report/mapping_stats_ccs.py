@@ -208,7 +208,7 @@ def _get_parser():
                                "ConsensusAlignment XML DataSet",
                                "BAM, SAM or ConsensusAlignment DataSet")
     parser.add_output_file_type(FileTypes.REPORT, "report_json",
-                                "CCS Mapping Statistics Report",
+                                meta_rpt.title,
                                 "Output report JSON file.",
                                 default_name=meta_rpt.id)
     return parser

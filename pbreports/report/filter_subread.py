@@ -389,7 +389,7 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
                                 to_a('mean_subreadlength'),
                                 to_a('n50'))
 
-    report = Report(Constants.R_ID, title="Subread filtering",
+    report = Report(Constants.R_ID,
                     plotgroups=plot_groups,
                     attributes=attributes)
 

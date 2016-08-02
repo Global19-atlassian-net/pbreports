@@ -67,7 +67,7 @@ def _attributes_to_table(attributes):
     """Build a report table from Iso-Seq Classify attributes.
 
     """
-    columns = [Column(x.id, header='') for x in attributes]
+    columns = [Column(x.id) for x in attributes]
 
     table = Table(Constants.T_ATTR,
                   columns=columns)
@@ -226,7 +226,6 @@ def make_report(contig_set, summary_txt, output_dir):
 
     # A report is consist of ID, tables, attributes, and plotgroups.
     report = Report(Constants.R_ID,
-                    title="Transcript Classification",
                     tables=[table],
                     attributes=attributes,
                     plotgroups=[readlength_group],
@@ -278,7 +277,7 @@ def get_contract_parser():
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary file",
                           description="A summary produced by Iso-Seq Classify, e.g. " +
                           "classify_summary.json")
-    p.add_output_file_type(FileTypes.REPORT, "outJson", "Iso-Seq classification report",
+    p.add_output_file_type(FileTypes.REPORT, "outJson", meta_rpt.title,
                            description="Path to write report JSON output",
                            default_name="isoseq_classify_report")
 

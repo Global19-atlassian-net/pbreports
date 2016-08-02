@@ -1,7 +1,7 @@
 {
     "tables": [], 
     "description": null, 
-    "title": "", 
+    "title": "Subread filtering", 
     "attributes": [
         {
             "type": null, 
@@ -18,7 +18,7 @@
         {
             "type": null,
             "description": null,
-            "name": "Mean Subread length",             
+            "name": "Mean Subread Length",             
             "id": "filter_subread_mean"
         },
         {
