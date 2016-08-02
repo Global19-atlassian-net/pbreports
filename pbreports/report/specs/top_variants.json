@@ -8,46 +8,46 @@
                     "header": "Sequence", 
                     "type": null, 
                     "id": "sequence", 
-                    "description": null
+                    "description": "The name of the reference sequence."
                 }, 
                 {
                     "header": "Position", 
                     "type": null, 
                     "id": "position", 
-                    "description": null
+                    "description": "The position of the variant in reference coordinates."
                 }, 
                 {
                     "header": "Variant", 
                     "type": null, 
                     "id": "variant", 
-                    "description": null
+                    "description": "The variant position, type, and affected nucleotide."
                 }, 
                 {
                     "header": "Type", 
                     "type": null, 
                     "id": "type", 
-                    "description": null
+                    "description": "The variant type."
                 }, 
                 {
                     "header": "Coverage", 
                     "type": null, 
                     "id": "coverage", 
-                    "description": null
+                    "description": "Read coverage at the variant position."
                 }, 
                 {
                     "header": "Confidence", 
                     "type": null, 
                     "id": "confidence", 
-                    "description": null
+                    "description": "The confidence of the variant call."
                 }, 
                 {
                     "header": "Genotype", 
                     "type": null, 
                     "id": "genotype", 
-                    "description": null
+                    "description": "Includes the full number of chromosomes (diploid) or half the number (haploid)."
                 }
             ], 
-            "description": null
+            "description": "Displays the position, type and coverage of the top 100 variants, sorted on confidence."
         }, 
         {
             "title": "Top minor variants", 
@@ -57,37 +57,37 @@
                     "header": "Sequence", 
                     "type": null, 
                     "id": "sequence", 
-                    "description": null
+                    "description": "The name of the reference sequence."
                 }, 
                 {
                     "header": "Position", 
                     "type": null, 
                     "id": "position", 
-                    "description": null
+                    "description": "The position of the variant in reference coordinates."
                 }, 
                 {
                     "header": "Variant", 
                     "type": null, 
                     "id": "variant", 
-                    "description": null
+                    "description": "The variant position, type, and affected nucleotide."
                 }, 
                 {
                     "header": "Type", 
                     "type": null, 
                     "id": "type", 
-                    "description": null
+                    "description": "The variant type."
                 }, 
                 {
                     "header": "Coverage", 
                     "type": null, 
                     "id": "coverage", 
-                    "description": null
+                    "description": "The coverage at position."
                 }, 
                 {
                     "header": "Confidence", 
                     "type": null, 
                     "id": "confidence", 
-                    "description": null
+                    "description": "The confidence of the variant call."
                 }, 
                 {
                     "header": "Frequency", 

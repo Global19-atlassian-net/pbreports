@@ -24,13 +24,13 @@
         {
             "type": "int", 
             "description": "The approximate mean length of polymerase reads that mapped to the reference sequence (including adapters and other unmapped regions)", 
-            "name": "Mean Mapped Read Length", 
+            "name": "Polymerase Read Length Mean (mapped)", 
             "id": "mapped_readlength_mean"
         }, 
         {
             "type": "int", 
             "description": "Number of polymerase reads that could be mapped to the reference genome", 
-            "name": "Reads in cell", 
+            "name": "Number of Polymerase Reads (mapped)", 
             "id": "reads_in_cell"
         }
     ], 

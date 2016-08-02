@@ -11,43 +11,43 @@
                     "description": "Movie name for which the following metrics apply."
                 }, 
                 {
-                    "header": "Mapped Reads", 
+                    "header": "Number of Polymerase Reads (mapped)", 
                     "type": "int", 
                     "id": "mapped_reads", 
                     "description": "The number of polymerase reads mapped to the reference sequence."
                 }, 
                 {
-                    "header": "Mapped Polymerase Read Length", 
+                    "header": "Polymerase Read Length Mean (mapped)", 
                     "type": "int", 
                     "id": "mapped_polymerase_read_length", 
                     "description": "The approximate mean length of polymerase reads that mapped to the reference sequence starting from the first mapped base of the first mapped subread and ending at the last mapped base of the last mapped subread."
                 }, 
                 {
-                    "header": "Mapped Polymerase Read Length n50", 
+                    "header": "Polymerase Read N50 (mapped)", 
                     "type": "int", 
                     "id": "mapped_polymerase_read_length_n50", 
                     "description": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value."
                 }, 
                 {
-                    "header": "Mapped Subreads", 
+                    "header": "Number of Subreads (mapped)", 
                     "type": "int", 
                     "id": "mapped_subreads",
                     "description": "The number of subreads that mapped to the reference sequence."
                 }, 
                 {
-                    "header": "Mapped Subread Bases", 
+                    "header": "Number of Subread Bases (mapped)", 
                     "type": "int", 
                     "id": "mapped_subread_base", 
                     "description": "The number of subread bases that mapped to the reference sequence."
                 }, 
                 {
-                    "header": "Mapped Subread Length", 
+                    "header": "Subread Length Mean (mapped)", 
                     "type": "int", 
                     "id": "mapped_subread_length", 
                     "description": "The mean length of post-filter subreads that mapped to the reference sequence."
                 }, 
                 {
-                    "header": "Mean Mapped Concordance", 
+                    "header": "Mean Concordance (mapped)", 
                     "type": "float", 
                     "id": "mapped_subread_concordance", 
                     "description": "The mean concordance of subreads that mapped to the reference sequence"
@@ -63,7 +63,7 @@
             "id": "mapped_subread_concordance_mean", 
             "type": "float", 
             "description": "The mean concordance of subreads that mapped to the reference sequence", 
-            "name": "Mean Mapped Concordance"
+            "name": "Mean Concordance (mapped)"
         }, 
         {
             "id": "mapped_subreads_n", 
