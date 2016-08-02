@@ -483,7 +483,7 @@ def to_report(ccs_set, output_dir):
                     tables=tables, attributes=attributes,
                     plotgroups=[readlength_group, accuracy_group,
                                 npasses_group, scatter_group],
-                    dataset_uuids=(ccs_set.uuid))
+                    dataset_uuids=(ccs_set.uuid,))
 
     return meta_rpt.apply_view(report)
 
