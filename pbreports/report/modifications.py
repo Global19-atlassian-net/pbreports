@@ -62,10 +62,12 @@ def _create_fig_template(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
 
 
 def _get_datasets(basemods_h5, ds_id):
+    log.debug("extracting {d}...".format(d=ds_id))
     data = []
     for ref_name in basemods_h5.keys():
-        data.extend(list(basemods_h5[ref_name][ds_id].__array__()))
-    return np.array(data)
+        data.append(basemods_h5[ref_name][ds_id])
+    log.debug("  concatenating arrays...")
+    return np.concatenate(data)
 
 
 def plot_kinetics_scatter(basemods_h5, ax):
