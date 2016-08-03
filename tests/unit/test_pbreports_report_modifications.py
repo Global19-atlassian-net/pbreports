@@ -23,7 +23,7 @@ from base_test_case import LOCAL_DATA
 log = logging.getLogger(__name__)
 
 
-def make_test_h5(big_h5, ofn, n=None):
+def make_h5(big_h5, ofn, n=None):
     """
     Utility function to extract and save the first N array items from a
     kinetics HDF5 file.
