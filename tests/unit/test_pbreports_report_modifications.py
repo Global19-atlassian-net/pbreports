@@ -1,11 +1,15 @@
-import os
-import logging
+
 import traceback
-import json
+import warnings
 import tempfile
 import unittest
+import logging
 import shutil
+import json
 import sys
+import os
+
+import h5py
 
 from pbcommand.models.report import PbReportError
 from pbcommand.pb_io.report import dict_to_report
@@ -19,6 +23,29 @@ from base_test_case import LOCAL_DATA
 log = logging.getLogger(__name__)
 
 
+def make_h5(big_h5, ofn, n=None):
+    """
+    Utility function to extract and save the first N array items from a
+    kinetics HDF5 file.
+    """
+    i = h5py.File(big_h5)
+    o = h5py.File(ofn, "w")
+    ig = i[f.keys()[0]]
+    og = o.create_group(f.keys()[0])
+    if n is None:
+        sel = ig['base'].__array__() != ''
+        n = 0
+        for b in sel:
+            if not b:
+                break
+            n += 1
+    for k in ig.keys():
+        d = og.create_dataset(k, (n,), dtype=ig[k].dtype, compression="gzip",
+                              chunks=(min(n, 8192),))
+        d[0:n] = ig[k][0:n] # see note above
+    o.close()
+
+
 class TestModificationsRpt(unittest.TestCase):
 
     def setUp(self):
@@ -27,6 +54,7 @@ class TestModificationsRpt(unittest.TestCase):
         """
         self._data_dir = os.path.join(LOCAL_DATA, 'modifications')
         self._output_dir = tempfile.mkdtemp(suffix="modifications")
+        self._h5 = os.path.join(self._data_dir, "basemods.h5")
 
     def tearDown(self):
         """
@@ -34,6 +62,26 @@ class TestModificationsRpt(unittest.TestCase):
         """
         if os.path.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
+
+    def test_plot_kinetics_scatter(self):
+        from pbreports.report.modifications import (_create_fig_template,
+                                                    plot_kinetics_scatter)
+        f = h5py.File(self._h5)
+        fig, ax = _create_fig_template()
+        with warnings.catch_warnings(record=True) as w:
+            plot_kinetics_scatter(f, ax)
+            self.assertEqual(len(w), 0,
+                             "\n".join([str(w_.message) for w_ in w]))
+
+    def test_plot_kinetics_hist(self):
+        from pbreports.report.modifications import (_create_fig_template,
+                                                    plot_kinetics_hist)
+        f = h5py.File(self._h5)
+        fig, ax = _create_fig_template()
+        with warnings.catch_warnings(record=True) as w:
+            plot_kinetics_hist(f, ax)
+            self.assertEqual(len(w), 0,
+                             "\n".join([str(w_.message) for w_ in w]))
 
     def test_make_modifications_report(self):
         """
