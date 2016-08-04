@@ -87,8 +87,7 @@ def create_table(timings):
     columns.append(Column(Constants.C_MIN))
     columns.append(Column(Constants.C_SEC))
 
-    t = Table(Constants.T_ID,
-              title="", columns=columns)
+    t = Table(Constants.T_ID, columns=columns)
 
     seconds = []
     for barcode in sorted(timings):

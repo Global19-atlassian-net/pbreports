@@ -753,7 +753,8 @@ class MappingStatsCollector(object):
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title=""),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
+                    Constants.P_SUBREAD_CONCORDANCE).title),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
@@ -766,7 +767,8 @@ class MappingStatsCollector(object):
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
-                plot_group_title=""),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
+                    Constants.P_SUBREAD_LENGTH).title),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
@@ -779,7 +781,8 @@ class MappingStatsCollector(object):
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title=""),
+                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
+                    Constants.P_READLENGTH).title),
         ]
         return {v.plot_id: v for v in _p}
 

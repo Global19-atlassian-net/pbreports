@@ -141,7 +141,7 @@
                     "description": null, 
                     "caption": null, 
                     "ylabel": "Subreads", 
-                    "title": null, 
+                    "title": "Mapped Subread Concordance", 
                     "id": "concordance_plot"
                 }
             ], 
@@ -157,7 +157,7 @@
                     "description": null, 
                     "caption": null, 
                     "ylabel": "Reads", 
-                    "title": null, 
+                    "title": "Mapped Polymerase Read Length", 
                     "id": "readlength_plot"
                 }
             ], 
@@ -171,7 +171,7 @@
                 {
                     "xlabel": "Subread Length", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Mapped Subread Length", 
                     "ylabel": "Subreads", 
                     "title": null, 
                     "id": "subreadlength_plot"
@@ -189,7 +189,7 @@
                     "description": null, 
                     "caption": "Mapped Concordance vs. Read Length", 
                     "ylabel": null, 
-                    "title": null, 
+                    "title": "Mapped Concordance vs. Read Length", 
                     "id": "rainbow_plot"
                 }
             ], 
