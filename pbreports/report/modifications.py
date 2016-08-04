@@ -163,6 +163,7 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     scatter = get_qmod_plot(basemods_h5, output_dir, dpi)
     hist = get_qmod_hist(basemods_h5, output_dir, dpi)
     pg = PlotGroup(Constants.PG_KIN,
+                   title=meta_rpt.get_meta_plotgroup(Constants.PG_KIN).title,
                    thumbnail=scatter.thumbnail,
                    plots=[scatter, hist])
     rpt = Report(meta_rpt.id, plotgroups=[pg])
