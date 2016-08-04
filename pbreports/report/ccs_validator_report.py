@@ -111,11 +111,11 @@ to_read_length_histogram = functools.partial(
 
 
 def _generate_table(list_fastq_stats):
-    columns = [Column(Constants.C_FN, header=''),
-               Column(Constants.C_NREADS, header=""),
-               Column(Constants.C_TOT_BASES, header=""),
-               Column(Constants.C_READLENGTH, header=""),
-               Column(Constants.C_QV, header="")]
+    columns = [Column(Constants.C_FN),
+               Column(Constants.C_NREADS),
+               Column(Constants.C_TOT_BASES),
+               Column(Constants.C_READLENGTH),
+               Column(Constants.C_QV)]
 
     table = Table(Constants.T_FASTQ, columns=columns)
 

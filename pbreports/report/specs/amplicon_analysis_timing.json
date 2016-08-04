@@ -15,7 +15,7 @@
                     "header": "Hours",
                     "type": null,
                     "id": "hour_col",
-                    "description": null
+                    "description": ""
                 },
                 {
                     "header": "Minutes",

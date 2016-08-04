@@ -125,8 +125,8 @@
                 {
                     "xlabel": "Quality",
                     "description": null,
-                    "caption": null,
-                    "title": null,
+                    "caption": "CCS Read Score",
+                    "title": "CCS Read Score",
                     "ylabel": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
                     "id": "accuracy_hist"
                 }
@@ -141,8 +141,8 @@
                 {
                     "xlabel": "Number of Passes",
                     "description": null,
-                    "caption": null,
-                    "title": null,
+                    "caption": "Number of Passes",
+                    "title": "Number of Passes",
                     "ylabel": "Reads",
                     "id": "npasses_hist"
                 }
@@ -157,8 +157,8 @@
                 {
                     "xlabel": "Read Length",
                     "description": null,
-                    "caption": null,
-                    "title": null,
+                    "caption": "CCS Read Length",
+                    "title": "CCS Read Length",
                     "ylabel": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
                     "id": "readlength_hist"
                 }
@@ -173,8 +173,8 @@
 		{
                     "xlabel": "Number of passes",
                     "description": null,
-                    "caption": null,
-                    "title": null,
+                    "caption": "Number of Passes vs. Read Score",
+                    "title": "Number of Passes vs. Read Score",
                     "ylabel": "Read Score as Phred QV",
                     "id": "npasses_vs_accuracy"
                 }

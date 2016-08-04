@@ -98,9 +98,9 @@
                 {
                     "xlabel": "Predicted Accuracy", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Mapped QV Calibration", 
                     "ylabel": "Mapped Concordance", 
-                    "title": null, 
+                    "title": "Mapped QV Calibration", 
                     "id": "qv_calibration_plot"
                 }
             ], 
@@ -114,9 +114,9 @@
                 {
                     "xlabel": "Concordance", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Mapped CCS Read Concordance", 
                     "ylabel": "CCS Reads", 
-                    "title": null, 
+                    "title": "Mapped CCS Read Concordance", 
                     "id": "concordance_plot"
                 }
             ], 
@@ -127,11 +127,11 @@
         {
             "plots": [
                 {
-                    "xlabel": null,
+                    "xlabel": "Subread Length / bp",
                     "description": null,
                     "caption": "Mapped Concordance vs. Read Length",
-                    "ylabel": null,
-                    "title": null,
+                    "ylabel": "% Concordance",
+                    "title": "Mapped Concordance vs. Read Length",
                     "id": "rainbow_plot"
                 }
             ],
@@ -146,9 +146,9 @@
                 {
                     "xlabel": "Read Length", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Mapped CCS Read Length", 
                     "ylabel": "Reads", 
-                    "title": null, 
+                    "title": "Mapped CCS Read Length", 
                     "id": "readlength_plot"
                 }
             ], 

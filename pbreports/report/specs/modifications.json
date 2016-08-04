@@ -10,17 +10,17 @@
                 {
                     "xlabel": "Modification QV", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Kinetic Detections", 
                     "ylabel": "Bases", 
-                    "title": null, 
+                    "title": "Kinetic Detections", 
                     "id": "kinetic_histogram"
                 },
                 {
                     "xlabel": "Per-Strand Coverage",
                     "description": null,
-                    "caption": null,
+                    "caption": "Kinetic Detections",
                     "ylabel": "Modification QV",
-                    "title": null,
+                    "title": "Kinetic Detections",
                     "id": "kinetic_scatter"
                 }
 
