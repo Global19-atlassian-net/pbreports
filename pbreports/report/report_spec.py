@@ -101,12 +101,14 @@ class MetaPlot(object):
         return Plot(self.id, image=image, caption=self.caption, title=self.title, thumbnail=thumbnail)
 
     def apply_plot_view(self, plot):
-    	caption = plot.caption
-   	title = plot.title
-        if caption is None:
+        if (plot.caption is None) or (not plot.caption):
                 caption = self.caption
-    	if title is None:
+	else:
+		caption = plot.caption
+    	if (plot.title is None) or (not plot.title):
                 title = self.title
+	else:
+		title = plot.title
     	return Plot(self.id, image=plot.image, caption=caption, title=title, thumbnail=plot.thumbnail)
 
 
@@ -132,12 +134,14 @@ class MetaPlotGroup(object):
         return PlotGroup(self.id, title=self.title, legend=self.legend, thumbnail=thumbnail, plots=plots)
 
     def apply_plotgroup_view(self, plotgroup):
-        legend = plotgroup.legend
-        title = plotgroup.title
-        if legend is None:
+        if (plotgroup.legend is None) or (not plotgroup.legend):
                 legend = self.legend
-        if title is None:
+        else:
+        	legend = plotgroup.legend
+        if (plotgroup.title is None) or (not plotgroup.title):
                 title = self.title
+	else:
+		title = plotgroup.title
         return PlotGroup(self.id, title=title, legend=legend, thumbnail=plotgroup.thumbnail, plots=[self.get_meta_plot(p.id).apply_plot_view(p) for p in plotgroup.plots])
 
 
@@ -179,10 +183,16 @@ class MetaReport(object):
                       plotgroups=plotgroups, tables=tables, uuid=uuid)
 
     def apply_view(self, report):
-    	return Report(self.id, self.title, 
-                      attributes=[self.get_meta_attribute(a.id).apply_attribute_view(a) for a in report.attributes],
-                      tables=[self.get_meta_table(t.id).apply_table_view(t) for t in report.tables],
-#                      plotgroups=[self.get_meta_plotgroup(p.id).apply_plotgroup_view(p) for p in report.plotGroups],
-    		      plotgroups=report.plotGroups,
-                      dataset_uuids=report.dataset_uuids, uuid=report.uuid)
-
+        blacklist = ['coverage' , 'raw_data_report', 'filter_subread', 'variants']
+    	if report.id in blacklist:
+    		return Report(self.id, self.title,
+                       attributes=[self.get_meta_attribute(a.id).apply_attribute_view(a) for a in report.attributes],
+                       tables=[self.get_meta_table(t.id).apply_table_view(t) for t in report.tables],
+                       plotgroups=report.plotGroups,
+                       dataset_uuids=report.dataset_uuids, uuid=report.uuid)
+	else:
+        	return Report(self.id, self.title, 
+                       attributes=[self.get_meta_attribute(a.id).apply_attribute_view(a) for a in report.attributes],
+                       tables=[self.get_meta_table(t.id).apply_table_view(t) for t in report.tables],
+                       plotgroups=[self.get_meta_plotgroup(p.id).apply_plotgroup_view(p) for p in report.plotGroups],
+                       dataset_uuids=report.dataset_uuids, uuid=report.uuid)
