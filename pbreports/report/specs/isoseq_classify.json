@@ -164,7 +164,7 @@
                 {
                     "xlabel": "Read Length", 
                     "description": null, 
-                    "caption": "Read Length of Full-length Non-Chimeric Reads"", 
+                    "caption": "Read Length of Full-length Non-Chimeric Reads", 
                     "ylabel": {
                         "R": "Reads > Read Length", 
                         "L": "Reads"
