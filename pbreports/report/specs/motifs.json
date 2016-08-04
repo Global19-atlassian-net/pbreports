@@ -90,33 +90,33 @@
                 {
                     "xlabel": "Per-Strand Coverage", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Kinetic Detections", 
                     "ylabel": "Modification QV", 
-                    "title": null, 
+                    "title": "Kinetic Detections", 
                     "id": "mod_qv_coverage"
                 }, 
                 {
                     "xlabel": "Modification QV", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Kinetic Detections", 
                     "ylabel": "Bases", 
-                    "title": null, 
+                    "title": "Kinetic Detections", 
                     "id": "qmod_hist"
                 }
             ], 
             "description": null, 
             "legend": null, 
             "id": "modifications", 
-            "title": "Modifications"
+            "title": "Kinetic Detections"
         }, 
         {
             "plots": [
                 {
                     "xlabel": "Modification QV", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Modification QVs", 
                     "ylabel": "Motif Sites", 
-                    "title": null, 
+                    "title": "Modification QVs", 
                     "id": "motifs"
                 }
             ], 

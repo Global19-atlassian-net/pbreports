@@ -80,12 +80,12 @@
                 {
                     "xlabel": "Read Length", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Read Length of Consensus Isoforms Reads", 
                     "ylabel": {
                         "R": "Reads > Read Length", 
                         "L": "Reads"
                     }, 
-                    "title": null, 
+                    "title": "Read Length of Consensus Isoforms Reads", 
                     "id": "consensus_isoforms_readlength_hist"
                 }
             ], 

@@ -41,9 +41,9 @@
                 {
                     "xlabel": "Read Length", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Polymerase Read Length", 
                     "ylabel": "Number Of Reads", 
-                    "title": null, 
+                    "title": "Polymerase Read Length", 
                     "id": "read_length_plot"
                 }
             ], 
@@ -73,9 +73,9 @@
                 {
                     "xlabel": "Insert Length", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Estimated Insert Length", 
                     "ylabel": "Number of Reads", 
-                    "title": null, 
+                    "title": "Estimated Insert Length", 
                     "id": "insert_length_plot"
                 }
             ], 
