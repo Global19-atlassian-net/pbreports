@@ -92,6 +92,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
         id_ = "coverage_contig_{i}".format(i=str(idx))
         caption = "Observed depth of coverage across {c} (window size = {b}bp)."
         plot = Plot(id_, os.path.basename(fname), caption.format(
+            c=ctg_cov.name, b=ctg_cov.aveRegionSize()), title = caption.format(
             c=ctg_cov.name, b=ctg_cov.aveRegionSize()))
         plots.append(plot)
         idx += 1
@@ -112,9 +113,12 @@ def _create_coverage_histo_plot_grp(stats, output_dir):
     fname, thumb = [os.path.basename(f) for f in save_figure_with_thumbnail(
         fig, os.path.join(output_dir, 'coverage_histogram.png'))]
     plot = Plot(Constants.P_COVERAGE_HIST, fname, meta_rpt.get_meta_plotgroup(
-        Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).caption)
+        Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).caption, 
+        title = meta_rpt.get_meta_plotgroup(
+        Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).title)
     plot_group = PlotGroup(Constants.PG_COVERAGE_HIST,
-                           thumbnail=thumb, plots=[plot])
+               thumbnail=thumb, plots=[plot], title = meta_rpt.get_meta_plotgroup(
+               Constants.PG_COVERAGE_HIST).title)
     return plot_group
 
 
@@ -447,8 +451,9 @@ def make_coverage_report(gff, reference, max_contigs_to_plot, report,
                  attributes=[a1, a2],
                  dataset_uuids=(ReferenceSet(reference).uuid,))
 
+    rpt = meta_rpt.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
-    return meta_rpt.apply_view(rpt)
+    return rpt
 
 
 def args_runner(args):
