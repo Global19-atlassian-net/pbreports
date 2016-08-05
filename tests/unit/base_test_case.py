@@ -243,3 +243,31 @@ def validate_report_metadata(self, report, meta_report):
         for col in table.columns:
             meta_col = meta_table.get_meta_column(col.id)
             self.assertEqual(col.header, meta_col.header)
+
+def validate_report_complete(self, report):
+    """
+    Add-on for test cases to verify that view metadata (i.e. labels) are
+    filled in.
+    """
+    self.assertIsNotNone(report.id)
+    self.assertIsNot(report.id, "")
+    self.assertIsNotNone(report.title)
+    self.assertIsNot(report.title, "")
+    for attr in report.attributes:
+        self.assertIsNotNone(attr.name)
+        self.assertIsNot(attr.name, "")
+    for table in report.tables:
+        self.assertIsNotNone(table.title)
+        self.assertIsNot(table.title, "")
+        for col in table.columns:
+            self.assertIsNotNone(col.header)
+            self.assertIsNot(col.header, "")
+    for plotgroup in report.plotGroups:
+        self.assertIsNotNone(plotgroup.title)
+        self.assertIsNot(plotgroup.title, "")
+        for plot in plotgroup.plots:
+                self.assertIsNotNone(plot.title)
+                self.assertIsNot(plot.title, "")
+                self.assertIsNotNone(plot.caption)
+                self.assertIsNot(plot.caption, "")
+

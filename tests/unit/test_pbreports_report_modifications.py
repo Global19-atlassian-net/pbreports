@@ -14,7 +14,7 @@ from pbcore.util.Process import backticks
 
 from pbreports.report.modifications import (make_modifications_report)
 
-from base_test_case import LOCAL_DATA
+from base_test_case import LOCAL_DATA, validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -52,6 +52,8 @@ class TestModificationsRpt(unittest.TestCase):
             s = json.load(f)
 
         report = dict_to_report(s)
+
+        validate_report_complete(self, report)
 
         self.assertEqual(1, len(report.plotGroups))
         self.assertEqual(2, len(report.plotGroups[0].plots))

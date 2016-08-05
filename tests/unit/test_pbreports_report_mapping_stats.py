@@ -21,7 +21,8 @@ from pbreports.report import mapping_stats_ccs
 from pbreports.report.mapping_stats import to_report, Constants, meta_rpt
 
 from base_test_case import ROOT_DATA_DIR, run_backticks, \
-    skip_if_data_dir_not_present, LOCAL_DATA, validate_report_metadata
+    skip_if_data_dir_not_present, LOCAL_DATA, validate_report_metadata, \
+    validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +89,7 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
         self.assertEqual(len(report.tables), 1)
         log.info(str(report.tables[0]))
         validate_report_metadata(self, report, meta_rpt)
-
+        validate_report_complete(self, report)
 
 class TestMappingStatsReport(unittest.TestCase):
     ALIGNMENTS = pbtestdata.get_file("aligned-bam")
