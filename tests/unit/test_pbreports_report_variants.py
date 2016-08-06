@@ -28,7 +28,7 @@ from pbreports.report.variants import (make_variants_report, _extract_alignment_
                                        _create_variants_plot_grp, _create_bars, _get_legend_file)
 
 from base_test_case import _get_root_data_dir, run_backticks, \
-    skip_if_data_dir_not_present, LOCAL_DATA
+    skip_if_data_dir_not_present, LOCAL_DATA, validate_report_complete
 
 VARIANTS_DATA = op.join(_get_root_data_dir(), 'variants')
 
@@ -282,6 +282,7 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         self.assertEqual(1, len(report.plotGroups))
         self.assertIsNotNone(report.plotGroups[0].legend)
         self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
+        validate_report_complete(self, report)
 
     def test_exit_code_0(self):
         """

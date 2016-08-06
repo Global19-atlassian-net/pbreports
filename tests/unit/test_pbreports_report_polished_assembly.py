@@ -18,7 +18,7 @@ from pbreports.report.polished_assembly import (make_polished_assembly_report,
                                                 _get_att_sum_contig_lengths)
 
 from base_test_case import (LOCAL_DATA, ROOT_DATA_DIR, AttributesTestBase,
-                            skip_if_data_dir_not_present)
+                            skip_if_data_dir_not_present, validate_report_complete)
 
 log = logging.getLogger(__name__)
 
@@ -64,6 +64,7 @@ class _BaseTestCase(AttributesTestBase, unittest.TestCase):
         self._test_attribute("max_contig_length")
         self._test_attribute("n_50_contig_length")
         self._test_attribute("sum_contig_lengths")
+        validate_report_complete(self, self.report)
 
     def test_exit_code_0(self):
         """

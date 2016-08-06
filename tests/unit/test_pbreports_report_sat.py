@@ -23,7 +23,7 @@ from pbreports.report.sat import (_validate_inputs, _get_read_hole_data,
                                   _get_mapping_stats_data,
                                   _get_reads_info, summarize_report)
 
-from base_test_case import LOCAL_DATA
+from base_test_case import LOCAL_DATA, validate_report_complete
 
 DATA = os.path.join(LOCAL_DATA, "sat")
 log = logging.getLogger(__name__)
@@ -53,6 +53,7 @@ class TestCoreFunctions(unittest.TestCase):
         rpt = os.path.join(DATA, 'mapping_stats_report.json')
         d = _get_mapping_stats_data(rpt)
         self.assertEqual(7752, d['mapped_readlength_mean'])
+        
 
 
 # XXX note that due to use of canned data, we have a rather unusual instrument
@@ -123,7 +124,7 @@ class TestSatRpt(unittest.TestCase):
         self.assertEqual(48, rpt.get_attribute_by_id('reads_in_cell').value)
         out = StringIO()
         self.assertTrue(summarize_report(rpt_file, out=out))
-
+        validate_report_complete(self, rpt)
 
 class TestSatRptDatasetXml(TestSatRpt):
 

@@ -18,6 +18,8 @@ import pbtestdata
 
 from pbreports.report.barcode import run_to_report
 
+from base_test_case import validate_report_complete
+
 log = logging.getLogger(__name__)
 
 
@@ -35,6 +37,7 @@ class TestBarcodeReportBasic(unittest.TestCase):
 
     def test_basic(self):
         report = run_to_report(self.subreads, self.barcodes, subreads=True)
+        validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
         self.assertEqual(report.tables[0].columns[0].values, ['0--0', '2--2'])

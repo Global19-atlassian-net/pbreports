@@ -11,7 +11,7 @@ from pbreports.report.amplicon_analysis_input import (run_to_report,
                                                       parse_summary,
                                                       parse_mappings,
                                                       tabulate_results)
-from base_test_case import LOCAL_DATA, run_backticks
+from base_test_case import LOCAL_DATA, run_backticks, validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class TestLongAmpliconAnalysisPcrReport(unittest.TestCase):
 
     def test_make_report(self):
         report = run_to_report(self.summary_file, self.zmw_file)
+        validate_report_complete(self, report)
         self.assertTrue(isinstance(report, Report))
         log.info(pformat(report.to_dict()))
         self.assertIsNotNone(report)

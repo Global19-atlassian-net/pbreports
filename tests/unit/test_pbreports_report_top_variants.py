@@ -21,7 +21,7 @@ from pbreports.report.top_variants import (make_topvariants_report, VariantFinde
                                            MinorVariantTableBuilder, VariantTableBuilder)
 
 from base_test_case import _get_root_data_dir, run_backticks, \
-    skip_if_data_dir_not_present, LOCAL_DATA
+    skip_if_data_dir_not_present, LOCAL_DATA, validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -171,6 +171,7 @@ class TestTopVariantsReport(unittest.TestCase):
             s = json.load(f)
 
         report = dict_to_report(s)
+        validate_report_complete(self, report)
 
     def test_make_minor_topvariants_report(self):
         """
@@ -187,6 +188,7 @@ class TestTopVariantsReport(unittest.TestCase):
             s = json.load(f)
 
         report = dict_to_report(s)
+        validate_report_complete(self, report)
 
     def test_exit_code_0(self):
         """

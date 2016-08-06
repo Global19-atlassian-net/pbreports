@@ -9,6 +9,7 @@ import unittest
 import tempfile
 import shutil
 
+from pprint import pformat
 from numpy import ndarray
 
 from pbcore.io.dataset.DataSetIO import InvalidDataSetIOError
@@ -24,6 +25,8 @@ from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
 from pbreports.report.filter_stats_xml import Constants
 from pbreports.report.adapter_xml import to_report as make_adapter_report
+
+from base_test_case import validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -118,6 +121,8 @@ class TestRawDataRpt(XMLStatsRptsBase):
         # these are from a raw STS file
         self.assertEqual(len(rpt._dataset_uuids), 0,
                          "Incorrect report datasets uuids")
+        print pformat(rpt.to_dict())
+        validate_report_complete(self, rpt)
 
     def test_make_filter_stats_report_dataset(self):
         """
@@ -232,6 +237,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
                          'productivity_2',
                          c4['id'])
         self.assertAlmostEqual(13.873, c4['values'][0], delta=.0003)
+        
 
     def test_make_loading_report_with_dataset(self):
         """
@@ -292,7 +298,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertAlmostEqual(4.613, c4['values'][0], delta=.0003)
         self.assertAlmostEqual(13.873, c4['values'][1], delta=.0003)
         self.assertAlmostEqual(4.436, c4['values'][2], delta=.0003)
-
+        validate_report_complete(self, rpt)
 
 class TestAdapterReport(XMLStatsRptsBase):
 
@@ -331,6 +337,7 @@ class TestAdapterReport(XMLStatsRptsBase):
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'interAdapterDist1.png')))
+        validate_report_complete(self, rpt) 
 
 
 class TestBinning(unittest.TestCase):
