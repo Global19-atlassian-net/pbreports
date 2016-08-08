@@ -34,6 +34,13 @@ class Constants(BaseConstants):
     DRIVER_EXE = "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract"
 
     T_STATS = "mapping_stats_table"
+    C_MOVIE = "movie"
+    C_READS = "mapped_reads"
+    C_NBASES = "mapped_bases"
+    C_READ_LENGTH = "mapped_read_length_mean"
+    C_READ_LENGTH_N50 = "mapped_read_length_n50"
+    C_SUBREAD_CONCORDANCE = "mapped_read_concordance_mean"
+
     PG_READ_CONCORDANCE = "ccs_read_concordance_group"
     P_READ_CONCORDANCE = "concordance_plot"
     PG_READLENGTH = "ccs_readlength_group"
@@ -82,7 +89,15 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         Constants.P_READLENGTH: "readlength_histogram",
     }
 
-    COLUMNS = [ (c.id, c.header) for c in meta_rpt.get_meta_table(Constants.T_STATS).columns]
+    COL_IDS = [
+    Constants.C_MOVIE,
+    Constants.C_READS,
+    Constants.C_NBASES,
+    Constants.C_READ_LENGTH,
+    Constants.C_READ_LENGTH_N50,
+    Constants.C_READ_CONCORDANCE
+    ]
+
 
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,
