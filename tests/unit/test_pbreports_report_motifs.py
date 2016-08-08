@@ -8,7 +8,8 @@ import tempfile
 
 import pbcommand.testkit
 
-from base_test_case import LOCAL_DATA, run_backticks
+from base_test_case import LOCAL_DATA, run_backticks, \
+                           validate_report_complete
 
 import pbreports.report.motifs
 from pbreports.report.motifs import to_motifs_report
@@ -40,6 +41,8 @@ class TestKineticsMotifs(unittest.TestCase):
         output_dir = os.path.dirname(json_report)
 
         report = to_motifs_report(_MOTIF_GFF, _MOTIF_SUMMARY_CSV, output_dir)
+
+        validate_report_complete(self, report)
 
         log.info(pformat(report.plotGroups[0].to_dict(), indent=4))
         log.info(str(report.tables[0]))

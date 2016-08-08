@@ -373,7 +373,8 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
                                    rlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(Constants.P_POST_FILTER).ylabel["R"],
                                    thumb="filtered_subread_report_thmb.png",
                                    use_group_thumb=True,
-                                   plot_group_title="",
+                                   title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(Constants.P_POST_FILTER).title,
+                                   plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).title,
                                    color=get_green(3),
                                    edgecolor=get_green(2))
 

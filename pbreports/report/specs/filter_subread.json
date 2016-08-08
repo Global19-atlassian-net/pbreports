@@ -35,9 +35,9 @@
                 {
                     "xlabel": "Subread Length", 
                     "description": null, 
-                    "caption": null, 
+                    "caption": "Subread Filtering", 
                     "ylabel": {"L": "Subreads", "R": "bp > Subread Length"}, 
-                    "title": null, 
+                    "title": "Subread Filtering", 
                     "id": "post_filter"
                 }
             ], 

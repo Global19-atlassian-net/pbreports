@@ -191,7 +191,7 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
 
         id_ = 'coverage_variants_{i}'.format(i=str(idx))
         caption = "Observed variants across {c}".format(c=ctg_var.name)
-        plot = Plot(id_, os.path.basename(fname), caption)
+        plot = Plot(id_, os.path.basename(fname), title=caption, caption=caption)
         plots.append(plot)
         idx += 1
         plt.close(fig)

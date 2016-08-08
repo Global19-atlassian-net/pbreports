@@ -15,7 +15,7 @@ from pbreports.report.filter_subread import (to_report,
                                              Constants)
 
 from base_test_case import ROOT_DATA_DIR, run_backticks, \
-    skip_if_data_dir_not_present
+    skip_if_data_dir_not_present, validate_report_complete
 
 _DATA_DIR_NAME = 'filter_subread'
 
@@ -50,6 +50,7 @@ class TestFilterSubreadSummaryReport(unittest.TestCase):
 
     def test_basic(self):
         self.assertIsNotNone(self.report)
+        validate_report_complete(self, self.report)
 
     def test_write_json(self):
 

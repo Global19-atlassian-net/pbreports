@@ -6,6 +6,7 @@ import logging
 import shutil
 import unittest
 import tempfile
+from pprint import pformat
 
 from pbcommand.models.report import Report
 from pbcommand.pb_io.report import load_report_from_json
@@ -17,7 +18,8 @@ import pbreports.report.isoseq_cluster
 from base_test_case import (LOCAL_DATA, run_backticks,
                             get_report_id_from_constants,
                             get_image_names_from_constants,
-                            get_plot_groups_from_constants)
+                            get_plot_groups_from_constants,
+                            validate_report_complete)
 
 log = logging.getLogger(__name__)
 
@@ -56,6 +58,7 @@ class _TestIsoSeqBase(unittest.TestCase):
     def test_validate_report(self):
         r = self._to_report()
         self.assertIsInstance(r, Report)
+        validate_report_complete(self, r)
 
     def test_report_id(self):
         r = self._to_report()

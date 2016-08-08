@@ -8,6 +8,7 @@ import json
 import os.path as op
 import os
 import sys
+from pprint import pformat
 
 from pbcommand.models.report import PbReportError
 import pbcommand.testkit.core
@@ -24,7 +25,7 @@ from pbreports.report.coverage import (make_coverage_report,
                                        _create_coverage_plot_grp, _create_coverage_histo_plot_grp)
 
 from base_test_case import (ROOT_DATA_DIR, LOCAL_DATA,
-                            skip_if_data_dir_not_present)
+                            skip_if_data_dir_not_present, validate_report_complete)
 
 log = logging.getLogger(__name__)
 
@@ -217,6 +218,7 @@ class TestCoverageRpt(unittest.TestCase):
         self.assertEqual(0, len(report.tables))
         self.assertEqual(2, len(report.plotGroups))
         self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
+        validate_report_complete(self, report)
 
     def test_exit_code_0(self):
         """

@@ -17,7 +17,8 @@ from pbcore.io import ConsensusReadSet
 import pbtestdata
 
 from pbreports.report.ccs import to_report, Constants
-from base_test_case import run_backticks, LOCAL_DATA
+from base_test_case import run_backticks, LOCAL_DATA, \
+                           validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -52,6 +53,7 @@ class TestCCSCommand(unittest.TestCase):
         """Basic smoke test"""
         output_dir = tempfile.mkdtemp()
         report = to_report(self.ccs_set, output_dir)
+        validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
 

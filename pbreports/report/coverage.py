@@ -98,6 +98,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
         idx += 1
 
     plot_group = PlotGroup(Constants.PG_COVERAGE,
+                           title=meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).title,
                            thumbnail=thumbnail, plots=plots)
     return plot_group
 

@@ -9,7 +9,7 @@ import pbcommand.testkit
 
 import pbreports.report.overview as overview
 from base_test_case import _get_root_data_dir, run_backticks,\
-    skip_if_data_dir_not_present
+    skip_if_data_dir_not_present, validate_report_complete
 from pbreports.util import bas_fofn_to_bas_files
 
 log = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ class TestOverViewReport(unittest.TestCase):
         d = self.report.to_dict()
         self.assertTrue(isinstance(d, dict))
         self.assertTrue('attributes' in d)
+        validate_report_complete(self, self.report)
 
     def test_nmovies_attribute(self):
         id_ = 'nmovies'

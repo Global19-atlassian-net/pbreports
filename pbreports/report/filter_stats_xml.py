@@ -55,6 +55,10 @@ class Constants(object):
 
     READ_ATTR = [A_NBASES, A_NREADS, A_READ_LENGTH, A_READ_N50]
     INSERT_ATTR = [A_INSERT_LENGTH]
+    PG_RL = "read_length_plot_group" 
+    P_RL = "read_length_plot"
+    PG_IL = "insert_length_plot_group"
+    P_IL = "insert_length_plot"
 
 
 class ReadStatsPlots(object):
@@ -178,9 +182,11 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         length_plots.append(
             Plot("{p}_{i}".format(i=i, p=PlotConstants.P_LENGTH),
                  os.path.relpath(png_base, output_dir),
+                 title=title, caption=title,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
     plot_groups = [
         PlotGroup(PlotConstants.PG_LENGTH,
+                  title=title,
                   plots=length_plots,
                   thumbnail=os.path.relpath(thumbnail_base, output_dir))
     ]
@@ -196,7 +202,7 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
+        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).xlabel)
         qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
             p=PlotConstants.P_QUAL_PREFIX))
@@ -211,8 +217,10 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                   plots=qual_plots))
     return plot_groups
 
-to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots, "")
-to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots, "")
+to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots, 
+                                        meta_rpt.get_meta_plotgroup(Constants.PG_RL).title)
+to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots,
+                                         meta_rpt.get_meta_plotgroup(Constants.PG_IL).title)
 
 
 def to_report(stats_xml, output_dir, dpi=72):

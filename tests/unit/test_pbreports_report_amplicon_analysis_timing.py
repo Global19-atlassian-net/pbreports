@@ -8,7 +8,7 @@ from pprint import pformat
 from pbcommand.models.report import Report
 
 from pbreports.report.amplicon_analysis_timing import run_to_report
-from base_test_case import LOCAL_DATA, run_backticks
+from base_test_case import LOCAL_DATA, run_backticks, validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +27,7 @@ class TestAmpliconAnalysisTimingReport(unittest.TestCase):
 
     def test_basic(self):
         report = run_to_report(self.input_log_file)
+        validate_report_complete(self, report)
         self.assertTrue(isinstance(report, Report))
         log.info(pformat(report.to_dict()))
         self.assertIsNotNone(report)

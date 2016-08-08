@@ -20,7 +20,8 @@ from pbreports.report.control import (make_control_report, _get_control_reads,
                                       _get_attr_control_95_readlength, _get_attr_n50,
                                       _create_score_figure, _create_length_figure)
 
-from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present
+from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present, \
+                           validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -238,6 +239,7 @@ class TestControlRpt(unittest.TestCase):
             s = json.load(f)
 
         report = dict_to_report(s)
+        validate_report_complete(self, report)
         self.assertEqual(7, len(report.attributes))
 
         for i in range(2):
