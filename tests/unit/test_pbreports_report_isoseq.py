@@ -58,8 +58,8 @@ class _TestIsoSeqBase(unittest.TestCase):
     def test_validate_report(self):
         r = self._to_report()
         self.assertIsInstance(r, Report)
-#        print pformat(r.to_dict())
-#        validate_report_complete(self, r)
+        print pformat(r.to_dict())
+        validate_report_complete(self, r)
 
     def test_report_id(self):
         r = self._to_report()
