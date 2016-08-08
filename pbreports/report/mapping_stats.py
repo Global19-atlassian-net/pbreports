@@ -832,24 +832,20 @@ class MappingStatsCollector(object):
         mean subread readlength
         mean subread concordance), ...]
         """
-#        columns = [Column(k) for k in self.COLUMNS]
-#        table = Table(Constants.T_STATS,
-#                      columns=columns)
  
         table = Table(Constants.T_STATS, columns=(Column(c_id, []) for c_id in self.COL_IDS))
 
         for movie_data in movie_datum:
             if len(movie_data) != len(self.COL_IDS):
-                #            if len(movie_data) != 6:
                 log.error(movie_datum)
                 raise ValueError(
-                    "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
+                    "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(self.COL_IDS)))
 
             for value, c_id in zip(movie_data, self.COL_IDS):
                 
                 table.add_data_by_column_id(c_id, value)
 
-        log.debug(str(table))
+#        log.debug(str(table))
         return table
 
     def add_more_plots(self, plot_groups, output_dir):
