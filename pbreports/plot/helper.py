@@ -232,8 +232,11 @@ def apply_histogram_data(ax, data, bins, axis_labels=('', ''),
         edgeColor = barcolor
 
     if len(data) > 0:
-        ax.hist(data, bins=bins, ec=edgeColor, fc=barcolor, log=log_scale,
-                weights=weights)
+        d = np.diff(np.unique(data)).min()
+        left_of_first_bin = data.min() - float(d)/2
+        right_of_last_bin = data.max() + float(d)/2
+    	ax.hist(data, np.arange(left_of_first_bin, right_of_last_bin + d, d), 
+                ec=edgeColor, fc=barcolor, log=log_scale, weights=weights)
     else:
         # Perhaps this should be an exception.
         log.warn("Empty dataset. Unable to generate histogram.")
