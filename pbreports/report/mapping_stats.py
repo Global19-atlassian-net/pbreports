@@ -833,7 +833,7 @@ class MappingStatsCollector(object):
         mean subread concordance), ...]
         """
  
-        table = Table(Constants.T_STATS, columns=(Column(c_id, []) for c_id in self.COL_IDS))
+        table = Table(Constants.T_STATS, columns=(Column(c_id) for c_id in self.COL_IDS))
 
         for movie_data in movie_datum:
             if len(movie_data) != len(self.COL_IDS):
@@ -845,7 +845,7 @@ class MappingStatsCollector(object):
                 
                 table.add_data_by_column_id(c_id, value)
 
-#        log.debug(str(table))
+        log.debug(str(table))
         return table
 
     def add_more_plots(self, plot_groups, output_dir):
