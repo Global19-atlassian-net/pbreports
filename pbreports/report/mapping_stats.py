@@ -658,8 +658,6 @@ class MappingStatsCollector(object):
     Wrapper class for generating the report.  This allows us to re-use the
     logic but override the content in the CCS version (mapping_stats_ccs.py).
     """
-    META_REPORT = meta_rpt
-    TABLE_ID = Constants.T_STATS
 
     # FIXME we should get rid of this
     COLUMN_ATTR = [
@@ -674,9 +672,17 @@ class MappingStatsCollector(object):
         Constants.P_READLENGTH: Constants.P_READLENGTH_HIST,
     }
 
-    COLUMNS = []
-    for id in meta_rpt.get_meta_table(Constants.T_STATS)._col_dict.keys():
-        COLUMNS.append((id, ""))
+    COL_IDS = [
+    Constants.C_MOVIE,
+    Constants.C_READS,
+    Constants.C_READLENGTH,
+    Constants.C_READLENGTH_N50,
+    Constants.C_SUBREADS,
+    Constants.C_SUBREAD_NBASES,
+    Constants.C_SUBREAD_LENGTH,
+    Constants.C_SUBREAD_CONCORDANCE
+    ]
+
 
     # FIXME this is coupled to the report spec
     COLUMN_AGGREGATOR_CLASSES = [
@@ -826,19 +832,18 @@ class MappingStatsCollector(object):
         mean subread readlength
         mean subread concordance), ...]
         """
-        columns = [Column(k, h) for k, h in self.COLUMNS]
-        table = Table(Constants.T_STATS,
-                      columns=columns)
  
+        table = Table(Constants.T_STATS, columns=(Column(c_id) for c_id in self.COL_IDS))
+
         for movie_data in movie_datum:
-            if len(movie_data) != len(columns):
-                #            if len(movie_data) != 6:
+            if len(movie_data) != len(self.COL_IDS):
                 log.error(movie_datum)
                 raise ValueError(
-                    "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(columns)))
+                    "Incompatible values. {n} values provided, expected {a}".format(n=len(movie_data), a=len(self.COL_IDS)))
 
-            for value, c in zip(movie_data, columns):
-                table.add_data_by_column_id(c.id, value)
+            for value, c_id in zip(movie_data, self.COL_IDS):
+                
+                table.add_data_by_column_id(c_id, value)
 
         log.debug(str(table))
         return table
@@ -947,14 +952,13 @@ class MappingStatsCollector(object):
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, rb_png)
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                          caption=self.META_REPORT.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
+                          caption=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
         self.add_more_plots(plot_groups, output_dir)
 
         tables = [table]
         report = Report(Constants.R_ID,
-                        title="Mapping Report",
                         attributes=attributes,
                         plotgroups=plot_groups,
                         tables=tables,
