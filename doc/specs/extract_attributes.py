@@ -13,6 +13,7 @@ TARGET = op.join(op.dirname(__file__), "attributes.rst")
 _DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 SPEC_DIR = os.path.join(_DIR_NAME, '../../pbreports/report/specs/')
 
+blacklist = ["control", "filter_subread", "overview"]
 
 def run(args=()):
     with open(TARGET, "w") as f:
@@ -26,6 +27,8 @@ pbreports specifications (automatically generated)
         for spec in os.listdir(SPEC_DIR):
             specfile = op.join(SPEC_DIR, spec)
             meta_rpt = MetaReport.from_json(specfile)
+            if meta_rpt.id in blacklist:
+            	continue
             if meta_rpt.attributes:
             	f.write("\n\n\n")
             	f.write("**{t}** ({d}):\n\n".format(t=meta_rpt.title, d=meta_rpt.id))

@@ -396,7 +396,7 @@ def args_runner(args):
 
 
 def add_options_to_parser(p):
-    desc = 'Generates a report showing control quality and readlength information.'
+    desc = meta_rpt.description
     p.description = desc
     p.version = __version__
     p = add_base_and_plot_options(p)

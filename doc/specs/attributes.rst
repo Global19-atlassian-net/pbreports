@@ -32,23 +32,6 @@ mean_ccs_num_passes        Number of Passes (mean)  Mean number of complete subr
 =========================  =======================  =============================================================================
 
 
-**Control Report** (control):
-
-None
-
-================================  ==================================  =============
-Attribute ID                      Name                                  Description
-================================  ==================================  =============
-control_sequence                  Control Sequence
-n_control_reads                   Number of Control Reads
-frac_control_reads                Fraction Control Reads
-control_subread_accuracy          Control Subread Accuracy
-control_n50                       Control Polymerase Read Length N50
-control_95_percentile_readlength  Control Polymerase Read Length 95%
-control_mean_readlength           Control Polymerase Read Length
-================================  ==================================  =============
-
-
 **Coverage** (coverage):
 
 None
@@ -65,29 +48,15 @@ missing_bases_pct    Missing Bases (%)  Percent of reference bases without cover
 
 None
 
-==============  =============================  =============
+==============  =============================  ==================================================================================================================================
 Attribute ID    Name                           Description
-==============  =============================  =============
-nbases          Polymerase Read Bases
-nreads          Polymerase Reads
-read_n50        Polymerase Read N50
-read_length     Polymerase Read Length (mean)
-insert_length   Insert Length (mean)
-==============  =============================  =============
-
-
-**Subread filtering** (filter_subread):
-
-None
-
-=====================  =====================  =============
-Attribute ID           Name                     Description
-=====================  =====================  =============
-filter_subread_nbases  Total Number of Bases
-filter_subread_nreads  Number of Reads
-filter_subread_mean    Mean Subread Length
-filter_subread_n50     N50
-=====================  =====================  =============
+==============  =============================  ==================================================================================================================================
+nbases          Polymerase Read Bases          Number of bases in the polymerase reads.
+nreads          Polymerase Reads               Number of polymerase reads.
+read_n50        Polymerase Read N50            The polymerase read length at which 50% of the polymerase read bases are in polymerase reads longer than, or equal to, this value.
+read_length     Polymerase Read Length (mean)  The mean polymerase read length.
+insert_length   Insert Length (mean)           The mean insert length.
+==============  =============================  ==================================================================================================================================
 
 
 **Transcript Classification** (isoseq_classify):
@@ -164,18 +133,6 @@ mapped_readlength_n50         CCS Read Length N50 (mapped)      The read length 
 mapped_readlength_q95         CCS Read Length 95% (mapped)      The 95th percentile of length of CCS reads that mapped to the reference sequence
 mapped_readlength_max         CCS Read Length Max (mapped)      The maximum length of CCS reads that mapped to the reference sequencee
 ============================  ================================  ===========================================================================================
-
-
-**Overview** (overview):
-
-None
-
-==============  ==========  =============
-Attribute ID    Name          Description
-==============  ==========  =============
-ncells          SMRT Cells
-nmovies         Movies
-==============  ==========  =============
 
 
 **Polished Assembly** (polished_assembly):
