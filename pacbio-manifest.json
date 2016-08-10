@@ -1,0 +1,10 @@
+[
+  {
+    "id": "pbreports",
+    "name": "pbreports",
+    "_comment": "Need to update this to load the short-sha1 format of the first 7 chars, e.g., 'ce635e6'",
+    "version": "3.2.1-FIXME",
+    "description": "Python library and tool(s) for generating PacBio Reports used in pipelines.",
+    "dependencies": [ "pbcommand", "pbcore"]
+  }
+]
