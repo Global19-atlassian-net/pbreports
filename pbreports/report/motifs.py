@@ -41,6 +41,12 @@ meta_rpt = MetaReport.from_json(MOTIF_SPEC)
 
 
 class Constants(object):
+    # XXX TCI stuff
+    TOOL_ID = "pbreports.tasks.motifs_report"
+    DRIVER_EXE = "python -m pbreports.report.motifs --resolved-tool-contract"
+    MAX_MOTIFS_ID = "pbreports.task_options.max_motifs_plot"
+    MAX_MOTIFS_DEFAULT = 10
+
     R_ID = meta_rpt.id
 
     T_ID = "motif_records"
@@ -73,9 +79,6 @@ class Constants(object):
     I_KINETICS_SCATTER = 'kinetics_detections.png'
     I_KINETICS_HIST = "kinetics_histogram.png"
 
-    # XXX TCI stuff
-    TOOL_ID = "pbreports.tasks.motifs_report"
-    DRIVER_EXE = "python -m pbreports.report.motifs --resolved-tool-contract"
 
 
 class MotifRecord(object):
@@ -437,7 +440,7 @@ def excludeSparseRegions(data):
     return start
 
 
-def plotMotifHist(csvFile, kinArr):
+def plotMotifHist(csvFile, kinArr, max_motifs=10):
 
     # Use kinArr to determine number of motifs:
     # motifs = np.unique( kinArr['motif'] )
@@ -446,10 +449,14 @@ def plotMotifHist(csvFile, kinArr):
     motifs = []
 
     with open(csvFile, 'r') as f:
+        k = 0
         reader = csv.reader(f, delimiter=',')
         reader.next()
         for row in reader:
             motifs.append(row[0])
+            k += 1
+            if k >= max_motifs:
+                break
 
     # Check to make sure there exists a 'Not Clustered' site in kinArr:
     if 'Not Clustered' in kinArr['motif']:
@@ -491,12 +498,12 @@ def plotMotifHist(csvFile, kinArr):
 
     # Display a legend only if at least one motif was found:
     if numMotifs > 0:
-        ax.legend(loc='upper right')
+        ax.legend(loc='upper right', fontsize=9)
 
     return fig, ax
 
 
-def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72):
+def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72, max_motifs=10):
 
     # Apart from passing in motif_summary.csv file name, nearly identical to
     # addQmodHist
@@ -504,7 +511,7 @@ def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72):
     image_name = os.path.join(outputFolder, Constants.I_MOTIFS_QMOD)
 
     # Generate modification detection plot
-    fig, ax = plotMotifHist(csvFile, kinData)
+    fig, ax = plotMotifHist(csvFile, kinData, max_motifs=max_motifs)
 
     png, thumbpng = PH.save_figure_with_thumbnail(fig, image_name, dpi=dpi)
 
@@ -553,7 +560,7 @@ def to_table(motif_records):
     return table
 
 
-def to_motifs_report(gff_file, motif_summary_csv, output_dir):
+def to_motifs_report(gff_file, motif_summary_csv, output_dir, max_motifs=10):
 
     _d = dict(g=gff_file, c=motif_summary_csv, o=output_dir)
     log.info(
@@ -561,7 +568,8 @@ def to_motifs_report(gff_file, motif_summary_csv, output_dir):
 
     # Generate a histogram with lines corresponding to motifs
     kinData = readMotifFiles(gff_file)
-    plot_group = addQmodMotifHist(motif_summary_csv, kinData, output_dir)
+    plot_group = addQmodMotifHist(motif_summary_csv, kinData, output_dir,
+                                  max_motifs=max_motifs)
     plot_groups = [plot_group]
 
     motif_records = _motif_csv_to_records(motif_summary_csv)
@@ -605,8 +613,10 @@ def _to_motif_report(
         gff_file,
         motif_summary_csv,
         output,
-        report_json):
-    report = to_motifs_report(gff_file, motif_summary_csv, output)
+        report_json,
+        max_motifs=10):
+    report = to_motifs_report(gff_file, motif_summary_csv, output,
+                              max_motifs=max_motifs)
     # the json report supplied as the basename,
     return _write_report(report, os.path.join(output, report_json))
 
@@ -622,7 +632,8 @@ def args_runner(args):
         gff_file=args.gff_file,
         motif_summary_csv=args.motif_summary_csv,
         output=os.path.dirname(args.report_json),
-        report_json=os.path.basename(args.report_json))
+        report_json=os.path.basename(args.report_json),
+        max_motifs=args.maxMotifs)
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
@@ -631,7 +642,8 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         gff_file=resolved_tool_contract.task.input_files[0],
         motif_summary_csv=resolved_tool_contract.task.input_files[1],
         output=os.path.dirname(report_json),
-        report_json=os.path.basename(report_json))
+        report_json=os.path.basename(report_json),
+        max_motifs=resolved_tool_contract.task.options[Constants.MAX_MOTIFS_ID])
 
 
 def get_parser():
@@ -650,6 +662,11 @@ def get_parser():
                            name=meta_rpt.title,
                            description="Path of output JSON report",
                            default_name="motifs_report")
+    p.add_int(Constants.MAX_MOTIFS_ID,
+              option_str="maxMotifs",
+              default=Constants.MAX_MOTIFS_DEFAULT,
+              name="Max. number of motifs in QV plot",
+              description="Control number of motifs whose QVs are plotted")
     return p
 
 
