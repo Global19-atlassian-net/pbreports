@@ -90,7 +90,7 @@
             "id": "mapped_readlength_max"
         }
     ], 
-    "id": "mapping_stats_report", 
+    "id": "mapping_stats_ccs",
     "plotgroups": [
         {
             "id": "qv_calibration_group", 
