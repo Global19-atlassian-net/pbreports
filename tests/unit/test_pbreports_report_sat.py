@@ -53,7 +53,6 @@ class TestCoreFunctions(unittest.TestCase):
         rpt = os.path.join(DATA, 'mapping_stats_report.json')
         d = _get_mapping_stats_data(rpt)
         self.assertEqual(7752, d['mapped_readlength_mean'])
-        
 
 
 # XXX note that due to use of canned data, we have a rather unusual instrument
@@ -125,6 +124,7 @@ class TestSatRpt(unittest.TestCase):
         out = StringIO()
         self.assertTrue(summarize_report(rpt_file, out=out))
         validate_report_complete(self, rpt)
+
 
 class TestSatRptDatasetXml(TestSatRpt):
 

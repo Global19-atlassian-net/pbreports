@@ -31,16 +31,19 @@ from base_test_case import validate_report_complete
 
 log = logging.getLogger(__name__)
 
+
 def _internal_data():
     if os.path.exists("/pbi/dept/secondary/siv/testdata"):
         return True
     return False
+
 
 def get_fixed_bin_sts():
     sfn = ('/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/'
            'sts_xml/3120134-r54009_20160323_173308-1_A01-Bug30772/'
            'm54009_160323_173323.sts.xml')
     return sfn
+
 
 def get_fixed_bin_dataset():
     sfn = get_fixed_bin_sts()
@@ -50,6 +53,7 @@ def get_fixed_bin_dataset():
 
 
 class XMLStatsRptsBase(unittest.TestCase):
+
     def setUp(self):
         """
         Before *every* test
@@ -72,7 +76,7 @@ class XMLStatsRptsBase(unittest.TestCase):
 
     def _compare_attribute_values(self, report_d, expected_d):
         attr = report_d['attributes']
-        attr_d = {a_['id'].split(".")[-1]:a_['value'] for a_ in attr}
+        attr_d = {a_['id'].split(".")[-1]: a_['value'] for a_ in attr}
         for id_, val in expected_d.iteritems():
             self.assertEqual(attr_d[id_], val)
 
@@ -115,7 +119,7 @@ class TestRawDataRpt(XMLStatsRptsBase):
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'readLenDist0.png')))
-        #self.assertTrue(os.path.exists(os.path.join(
+        # self.assertTrue(os.path.exists(os.path.join(
         #    self.get_output_dir(),
         #    'readQualDist0.png')))
 
@@ -238,7 +242,6 @@ class TestLoadingRpt(XMLStatsRptsBase):
                          'productivity_2',
                          c4['id'])
         self.assertAlmostEqual(13.873, c4['values'][0], delta=.0003)
-        
 
     def test_make_loading_report_with_dataset(self):
         """
@@ -301,6 +304,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertAlmostEqual(4.436, c4['values'][2], delta=.0003)
         validate_report_complete(self, rpt)
 
+
 class TestAdapterReport(XMLStatsRptsBase):
 
     def test_adapter_exit_code_0(self):
@@ -338,7 +342,7 @@ class TestAdapterReport(XMLStatsRptsBase):
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'interAdapterDist1.png')))
-        validate_report_complete(self, rpt) 
+        validate_report_complete(self, rpt)
 
 
 class TestBinning(unittest.TestCase):
@@ -348,7 +352,7 @@ class TestBinning(unittest.TestCase):
     def test_reports_with_fixed_bins(self):
         # TODO readQualDists are currently unpopulated, turn back on when
         # they're repopulated
-        #for dist_name, nbins in zip(['medianInsertDists', 'readLenDists',
+        # for dist_name, nbins in zip(['medianInsertDists', 'readLenDists',
         #                             'readQualDists'], [200, 200, 50]):
         for dist_name, nbins in zip(['medianInsertDists', 'readLenDists'],
                                     [200, 200]):
@@ -362,7 +366,6 @@ class TestBinning(unittest.TestCase):
             mdist = getattr(ss2.metadata.summaryStats, dist_name)[0].bins
             mdist = [0, 0, 0] + mdist[:-3]
             getattr(ss2.metadata.summaryStats, dist_name)[0].bins = mdist
-
 
             ss3 = ss + ss2
 
@@ -412,7 +415,7 @@ class TestBinning(unittest.TestCase):
                      "Internal data not available")
     def test_abstract_dist_shaper(self):
         bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
-        labels1 = [i*5 for i in range(len(bins1))]
+        labels1 = [i * 5 for i in range(len(bins1))]
         bins2 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0]
         labels2 = [25 + i * 5 for i in range(len(bins2))]
         dist_list = [(bins1, labels1), (bins2, labels2)]
@@ -420,16 +423,16 @@ class TestBinning(unittest.TestCase):
         for nbins in range(1, 100):
             shaper = dist_shaper(dist_list, nbins=nbins)
             for dist in dist_list:
-                #print 'pre'
-                #print dist[0]
+                # print 'pre'
+                # print dist[0]
                 bins, labels = shaper(dist)
-                #print 'post'
-                #print bins
-                #print labels
+                # print 'post'
+                # print bins
+                # print labels
                 self.assertEqual(len(bins), len(labels))
                 self.assertEqual(len(bins), nbins)
                 self.assertEqual(sum(bins), sum(dist[0]))
-                #print ""
+                # print ""
                 """
                 if nbins > len(merged):
                     self.assertEqual(bins, merged)
@@ -441,7 +444,7 @@ class TestBinning(unittest.TestCase):
                      "Internal data not available")
     def test_abstract_dist_shaper_float_bwidth(self):
         bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
-        labels1 = [i*0.2 for i in range(len(bins1))]
+        labels1 = [i * 0.2 for i in range(len(bins1))]
         bins2 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0]
         labels2 = [1.0 + i * 0.2 for i in range(len(bins2))]
         dist_list = [(bins1, labels1), (bins2, labels2)]
@@ -459,7 +462,6 @@ class TestBinning(unittest.TestCase):
                     self.assertEqual(labels,
                                      [i*5 for i in range(len(merged))])
                 """
-
 
     def test_dist_shaper_leading_and_trailing(self):
 

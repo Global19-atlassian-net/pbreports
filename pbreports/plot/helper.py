@@ -232,15 +232,18 @@ def apply_histogram_data(ax, data, bins, axis_labels=('', ''),
         edgeColor = barcolor
 
     if len(data) > 0:
-        if len(np.unique(data)) > 1:
-        	d = min(np.diff(np.unique(data)))
-        	left_of_first_bin = min(data) - float(d)/2
-        	right_of_last_bin = max(data) + float(d)/2
-    		ax.hist(data, np.arange(left_of_first_bin, right_of_last_bin + d, d), 
-                ec=edgeColor, fc=barcolor, log=log_scale, weights=weights)
-	else:
-		ax.hist(data, bins=bins, ec=edgeColor, fc=barcolor, log=log_scale,
-		weights=weights)
+        if not isinstance(data, np.ndarray):
+            data = np.array(data)
+        dtype = np.result_type(data)
+        if "int" in dtype.type.__name__ and len(np.unique(data)) > 1:
+            d = min(np.diff(np.unique(data)))
+            left_of_first_bin = min(data) - float(d) / 2
+            right_of_last_bin = max(data) + float(d) / 2
+            ax.hist(data, np.arange(left_of_first_bin, right_of_last_bin + d, d),
+                    ec=edgeColor, fc=barcolor, log=log_scale, weights=weights)
+        else:
+            ax.hist(data, bins=bins, ec=edgeColor, fc=barcolor, log=log_scale,
+                    weights=weights)
     else:
         # Perhaps this should be an exception.
         log.warn("Empty dataset. Unable to generate histogram.")

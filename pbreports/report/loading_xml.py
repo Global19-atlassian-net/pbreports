@@ -64,7 +64,7 @@ def to_report(stats_xml):
         if subdset.metadata.summaryStats:
             dsets.append(subdset)
 
-    col_ids = [Constants.C_CONTEXT, 
+    col_ids = [Constants.C_CONTEXT,
                Constants.C_ZMWS,
                Constants.C_PROD_0,
                Constants.C_PROD_1,
@@ -91,7 +91,8 @@ def to_report(stats_xml):
                          decimals=Constants.DECIMALS)
         this_row = [movie_name, productive_zmws, prod0, prod1, prod2]
         map(lambda (x, y): x.append(y), zip(col_values, this_row))
-    columns = [Column(cid, values=vals) for cid, vals in zip(col_ids, col_values)]
+    columns = [Column(cid, values=vals)
+               for cid, vals in zip(col_ids, col_values)]
     tables = [Table(Constants.T_LOADING, columns=columns)]
     report = Report(meta_rpt.id, title=meta_rpt.title,
                     tables=tables, attributes=None, plotgroups=None)

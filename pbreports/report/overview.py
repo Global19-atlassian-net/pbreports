@@ -31,12 +31,14 @@ SPEC_DIR = op.join(_DIR_NAME, 'specs/')
 OV_SPEC = op.join(SPEC_DIR, 'overview.json')
 meta_rpt = MetaReport.from_json(OV_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.overview"
     TOOL_NAME = "Overview report"
     DRIVER_EXE = "python -m pbreports.report.overview --resolved-tool-contract "
     A_NCELLS = "ncells"
     A_NMOVIES = "nmovies"
+
 
 def run(dataset_file):
     """Reads in the input.fofn and counts movies and cells. Outputs in XML."""

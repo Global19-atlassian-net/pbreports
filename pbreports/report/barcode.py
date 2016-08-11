@@ -41,12 +41,13 @@ class Constants(object):
     C_NREADS = 'number_of_reads'
     C_NBASES = 'number_of_bases'
 
+
 def _labels_reads_iterator(reads, barcodes, subreads=True):
     with openDataSet(reads) as ds:
         for er in ds.externalResources:
             if er.barcodes != barcodes:
-                raise ValueError("Mismatch between external resource "+
-                                 "barcodes and input BarcodeSet: "+
+                raise ValueError("Mismatch between external resource " +
+                                 "barcodes and input BarcodeSet: " +
                                  "{a} != {b}".format(a=er.barcodes,
                                                      b=barcodes))
         assert ds.isIndexed
@@ -58,7 +59,7 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                                               rr.pbi.qId)):
                 movie = rr.readGroupInfo(q).MovieName
                 zmws_by_barcode[b].add((movie, z))
-                reads_by_zmw[(movie,z)].append((rr, i))
+                reads_by_zmw[(movie, z)].append((rr, i))
         with BarcodeSet(barcodes) as bc:
             for i_bc, barcode in enumerate(bc):
                 zmws = sorted(list(zmws_by_barcode[i_bc]))

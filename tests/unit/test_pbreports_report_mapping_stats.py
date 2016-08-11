@@ -91,6 +91,7 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
         validate_report_metadata(self, report, meta_rpt)
         validate_report_complete(self, report)
 
+
 class TestMappingStatsReport(unittest.TestCase):
     ALIGNMENTS = pbtestdata.get_file("aligned-bam")
     TOTAL_NUMBER_OF_ATTRIBUTES = 12
@@ -294,7 +295,7 @@ class TestMappingStatsMisc(unittest.TestCase):
 
     def setUp(self):
         self.bam_file = op.join(LOCAL_DATA, "mapping_stats",
-                                     "duplicate.subreads.bam")
+                                "duplicate.subreads.bam")
 
     def test_duplicate_subreads(self):
         """Test that report doesn't crash on duplicate subreads"""
@@ -528,5 +529,5 @@ class TestMappingStatsMultipleMovies(TestMappingStatsReportLarge):
     def test_all_movies_in_table_have_mapped_reads(self):
         for column in self.report.tables[0].columns:
             if column.id == "mapped_reads":
-                self.assertTrue(all([x>0 for x in column.values]),
+                self.assertTrue(all([x > 0 for x in column.values]),
                                 "Not all movies have a mapped read")

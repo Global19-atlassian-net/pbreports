@@ -129,7 +129,8 @@ def get_region_size(ref_length, num_refs, region_size, num_regions,
     pretty_region_size = get_pretty_value(ugly_region_size)
 
     if max_region_size > 0 and max_region_size < pretty_region_size:
-        log.warn("Automatic region size is {r}, above the maximum allowed value - will reduce to {m}".format(r=pretty_region_size, m=max_region_size))
+        log.warn("Automatic region size is {r}, above the maximum allowed value - will reduce to {m}".format(
+            r=pretty_region_size, m=max_region_size))
         pretty_region_size = max_region_size
     return pretty_region_size
 

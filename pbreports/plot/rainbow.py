@@ -49,6 +49,7 @@ def _read_in_file(in_fn, reference=None):
     """
     if in_fn.endswith(".xml"):
         return _read_in_indexed_alignmentset(in_fn, reference)
+
     def _openAlignments():
         if in_fn.endswith(".cmp.h5"):
             return CmpH5Reader(in_fn)
@@ -90,7 +91,7 @@ def _read_in_indexed_alignmentset(in_fn, reference=None):
             if len(bam) == 0:
                 continue
             identities = bam.identity
-            ref_name_to_id = {r.Name:r.ID for r in bam.referenceInfoTable}
+            ref_name_to_id = {r.Name: r.ID for r in bam.referenceInfoTable}
             sel = np.full(len(identities), True, dtype=bool)
             bam_lengths = bam.pbi.aEnd - bam.pbi.aStart
             if reference is not None:
@@ -201,4 +202,4 @@ def make_rainbow_plot(in_fn, png_name, reference=None):
     data = _read_in_file(in_fn, reference)
     _make_plot(data, png_name)
     t2 = time.time()
-    log.info("Plot generated in {s:.2f} sec".format(s=t2-t1))
+    log.info("Plot generated in {s:.2f} sec".format(s=t2 - t1))

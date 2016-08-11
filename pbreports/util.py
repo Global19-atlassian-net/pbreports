@@ -407,9 +407,10 @@ def compute_n50_from_bins(bins):
                     return n50
     msg = "Unable to compute n50 from {n} bins with sum {x}".format(
         n=len(bins), x=total)
-    #warnings.warn(msg)
+    # warnings.warn(msg)
     log.warn(msg)
     return 0
+
 
 def _dist_shaper(bmin, bmax, poolby, dist, trim_to=None):
     """Just change the bins and binlabels! Not the sample means etc.
@@ -443,13 +444,13 @@ def _dist_shaper(bmin, bmax, poolby, dist, trim_to=None):
         # pad the range:
         under = firstl - bmin
         if under > 0:
-            lpad = int(under/bwidth)
+            lpad = int(under / bwidth)
             newbins = [0] * lpad + newbins
             newlabels = [newlabels[0] - (lpad - i) * bwidth
                          for i in range(lpad)] + newlabels
         under = bmax - lastl
         if under > 0:
-            rpad = int(round(under/bwidth))
+            rpad = int(round(under / bwidth))
             newbins = newbins + [0] * rpad
             newlabels = newlabels + [newlabels[-1] + i * bwidth
                                      for i in range(1, rpad + 1)]
@@ -481,6 +482,7 @@ def _dist_shaper(bmin, bmax, poolby, dist, trim_to=None):
         return dist
     return (bins, labels)
 
+
 def _cont_dist_shaper(shape_func, dist):
     """Just change the bins and binlabels! Not the sample means etc."""
     dist = deepcopy(dist)
@@ -492,6 +494,7 @@ def _cont_dist_shaper(shape_func, dist):
     if len(newlabels) > 1:
         dist.binWidth = newlabels[1] - newlabels[0]
     return dist
+
 
 def dist_shaper(dist_list, nbins=40, trim_excess=False):
     """Produce a function to modify a distribution to have a number of bins
@@ -541,25 +544,25 @@ def dist_shaper(dist_list, nbins=40, trim_excess=False):
         assert bwidth != 0
 
         # you have to add on that last bin
-        curbins = int(round((bmax - bmin)/bwidth + 1))
-        poolby = curbins/float(nbins)
+        curbins = int(round((bmax - bmin) / bwidth + 1))
+        poolby = curbins / float(nbins)
 
         # poolby should be an int >= 1 before it hits _dist_shaper, so if it is
         # less than that, lets adjust the other values here and now:
         if poolby < 1:
             if trim_excess:
                 poolby = 1.0
-                curbins = (bmax - bmin)/bwidth + 1
+                curbins = (bmax - bmin) / bwidth + 1
                 nbins = curbins
             else:
                 # the total to be padded:
                 pad = int(round((1 - poolby) * nbins))
-                pad_left = min(pad/2, (bmin/bwidth))
+                pad_left = min(pad / 2, (bmin / bwidth))
                 pad_right = pad - pad_left
                 bmin = bmin - (pad_left * bwidth)
                 bmax = bmax + (pad_right * bwidth)
-                curbins = (bmax - bmin)/bwidth + 1
-                poolby = curbins/float(nbins)
+                curbins = (bmax - bmin) / bwidth + 1
+                poolby = curbins / float(nbins)
 
         curbins = int(round(curbins))
         poolby = int(math.ceil(poolby))
@@ -573,20 +576,21 @@ def dist_shaper(dist_list, nbins=40, trim_excess=False):
         if poolby > 1:
             # we don't want to end up with fewer bins than predicted, so take
             # the max
-            curbins = int(max(round(curbins/poolby), nbins)) * int(poolby)
+            curbins = int(max(round(curbins / poolby), nbins)) * int(poolby)
             # round up that multiplier, but remember that it is relative to
             # bmin, not always zero. we only go to the beginning of the last
             # bin, so subtract one before multiplying in the binwidth
-            bmax = (curbins + bmin/bwidth - 1) * bwidth
+            bmax = (curbins + bmin / bwidth - 1) * bwidth
 
         # you have to add on that last bin
-        curbins = int(round((bmax - bmin)/bwidth) + 1)
-        poolby = int(curbins/nbins)
+        curbins = int(round((bmax - bmin) / bwidth) + 1)
+        poolby = int(curbins / nbins)
         return functools.partial(_dist_shaper, bmin, bmax, poolby,
                                  trim_to=actual_bmax)
     except AssertionError as e:
         log.error(e.message)
         return lambda x: x
+
 
 def continuous_dist_shaper(dist_list, nbins=40, trim_excess=False):
     generic_dist_list = [(d.bins, d.labels) for d in dist_list]

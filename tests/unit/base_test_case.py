@@ -244,6 +244,7 @@ def validate_report_metadata(self, report, meta_report):
             meta_col = meta_table.get_meta_column(col.id)
             self.assertEqual(col.header, meta_col.header)
 
+
 def validate_report_complete(self, report):
     """
     Add-on for test cases to verify that view metadata (i.e. labels) are
@@ -266,8 +267,7 @@ def validate_report_complete(self, report):
         self.assertIsNotNone(plotgroup.title)
         self.assertIsNot(plotgroup.title, "")
         for plot in plotgroup.plots:
-                self.assertIsNotNone(plot.title)
-                self.assertIsNot(plot.title, "")
-                self.assertIsNotNone(plot.caption)
-                self.assertIsNot(plot.caption, "")
-
+            self.assertIsNotNone(plot.title)
+            self.assertIsNot(plot.title, "")
+            self.assertIsNotNone(plot.caption)
+            self.assertIsNot(plot.caption, "")

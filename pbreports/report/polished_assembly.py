@@ -38,6 +38,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 POLISHED_ASSEMBLY_SPEC = op.join(SPEC_DIR, 'polished_assembly.json')
 meta_rpt = MetaReport.from_json(POLISHED_ASSEMBLY_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.polished_assembly"
     A_N_CONTIGS = "polished_contigs"
@@ -46,6 +47,7 @@ class Constants(object):
     A_SUM_LEN = "sum_contig_lengths"
     PG_COVERAGE = "coverage_based"
     P_COVERAGE = "cov_vs_qual"
+
 
 def make_polished_assembly_report(report, gff, fastq, output_dir):
     """
@@ -131,8 +133,10 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     fig, axes = PH.get_fig_axes_lpr()
     axes = fig.add_subplot(111)
     axes.set_axisbelow(True)
-    axes.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel)
-    axes.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).xlabel)
+    axes.set_ylabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel)
+    axes.set_xlabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).xlabel)
     PH.set_tick_label_font_size(axes, 12, 12)
     PH.set_axis_label_font_size(axes, 16)
 
@@ -165,12 +169,14 @@ def _get_att_max_contig_length(read_lengths):
         val = read_lengths[l - 1]
     return Attribute(Constants.A_MAX_LEN, val)
 
+
 def _get_att_sum_contig_lengths(read_lengths):
     """
     Return the last member of the sorted list. 0 if read_lengths is empty.
     :param read_lengths: sorted list
     """
     return Attribute(Constants.A_SUM_LEN, sum(read_lengths))
+
 
 def _get_att_n_50_contig_length(read_lengths):
     """
@@ -179,6 +185,7 @@ def _get_att_n_50_contig_length(read_lengths):
     """
     n50 = compute_n50(read_lengths)
     return Attribute(Constants.A_N50_LEN, int(n50))
+
 
 def _validate_inputs(infile, desc="input file"):
     """

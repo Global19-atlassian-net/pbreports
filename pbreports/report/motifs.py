@@ -66,7 +66,7 @@ class Constants(object):
     # Plot Groups
     PG_MOD_QV = 'modification_qvs'
     P_MOD_QV = "motifs"
-    
+
     PG_MOD = 'modifications'
     P_MOD_COV = 'mod_qv_coverage'
     P_MOD_HIST = 'qmod_hist'
@@ -78,7 +78,6 @@ class Constants(object):
     I_MOD_HISTOGRAM = 'motif_histogram.png'
     I_KINETICS_SCATTER = 'kinetics_detections.png'
     I_KINETICS_HIST = "kinetics_histogram.png"
-
 
 
 class MotifRecord(object):
@@ -270,8 +269,10 @@ def plotKineticsScatter(kinArr, outputFileName):
                             i], lw=0, alpha=0.3, s=12)
             handles.append(pl)
 
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_MOD).get_meta_plot(Constants.P_MOD_COV).xlabel)
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_MOD).get_meta_plot(Constants.P_MOD_COV).ylabel)
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_COV).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_COV).ylabel)
     plt.legend(handles, bases, loc='upper left')
 
     if kinArr.shape[0] > 0:
@@ -307,8 +308,10 @@ def plotKineticsHist(kinArr, outputFileName):
             _ = ax.hist(baseHits['score'], color=colors[i], label=bases[
                         i], bins=bins, histtype="step", log=True)
 
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_MOD).get_meta_plot(Constants.P_MOD_HIST).ylabel)
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_MOD).get_meta_plot(Constants.P_MOD_HIST).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_HIST).ylabel)
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_HIST).xlabel)
 
     if d.size > 0:
         ax.legend(loc='upper right')
@@ -493,8 +496,10 @@ def plotMotifHist(csvFile, kinArr, max_motifs=10):
             pl = ax.hist(baseHits['score'], color=colors[i], label=motifs[
                          i], bins=bins, histtype="step", log=True)
 
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_MOD_QV).get_meta_plot(Constants.P_MOD_QV).ylabel)
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_MOD_QV).get_meta_plot(Constants.P_MOD_QV).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD_QV).get_meta_plot(Constants.P_MOD_QV).ylabel)
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD_QV).get_meta_plot(Constants.P_MOD_QV).xlabel)
 
     # Display a legend only if at least one motif was found:
     if numMotifs > 0:
@@ -595,7 +600,8 @@ def to_mod_report(motif_summary_csv, output_dir):
     p2 = addQmodHist(kinData, output_dir)
     plots = [p1, p2]
 
-    pg = PlotGroup(Constants.PG_MOD, title=meta_rpt.get_meta_plotgroup(Constants.PG_MOD).title, plots=plots)
+    pg = PlotGroup(Constants.PG_MOD, title=meta_rpt.get_meta_plotgroup(
+        Constants.PG_MOD).title, plots=plots)
 
     r = Report(Constants.R_ID, plotgroups=[pg])
 

@@ -35,6 +35,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 AAT_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_timing.json')
 meta_rpt = MetaReport.from_json(AAT_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_timing"
     T_ID = "result_table"
@@ -42,7 +43,7 @@ class Constants(object):
     C_HOUR = "hour_col"
     C_MIN = "minute_col"
     C_SEC = "second_col"
- 
+
 LOG_LINE_REGEX = re.compile('^\d+-\d+-\d+\s+\d+:\d+:\d+')
 LOG_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 

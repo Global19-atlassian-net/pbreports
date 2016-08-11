@@ -42,7 +42,7 @@ def make_h5(big_h5, ofn, n=None):
     for k in ig.keys():
         d = og.create_dataset(k, (n,), dtype=ig[k].dtype, compression="gzip",
                               chunks=(min(n, 8192),))
-        d[0:n] = ig[k][0:n] # see note above
+        d[0:n] = ig[k][0:n]  # see note above
     o.close()
 
 

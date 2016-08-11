@@ -336,13 +336,12 @@ class TestManyContigs(unittest.TestCase):
         cov_map = _get_contigs_to_plot(self.GFF, top_contigs)
         self.assertNotEqual(len(cov_map), 0)
 
-
     def test_make_report(self):
         rpt = make_coverage_report(self.GFF, self.REFERENCE,
                                    report=self.report_out,
                                    output_dir=self.tmp_dir,
                                    max_contigs_to_plot=25)
-        attr = {a.id:a.value for a in rpt.attributes}
+        attr = {a.id: a.value for a in rpt.attributes}
         self.assertEqual(attr['missing_bases_pct'], 0.0)
         self.assertAlmostEqual(attr['depth_coverage_mean'], 68.06, places=2)
 

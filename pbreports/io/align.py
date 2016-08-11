@@ -57,6 +57,7 @@ def _getPct(percentile, vector):
 
 
 class MovieAlignmentInfo(object):
+
     def __init__(self, bam_file_name, movie_name):
         self.bam_file_name = bam_file_name
         self.movie_name = movie_name
@@ -120,16 +121,17 @@ def alignment_info_from_bam(bam_file_name):
                 m.datum[subread_id] = tuple(this_a)
 
                 if zmw_id not in m.max_subread or subread_lengths[i_aln] > m.max_subread[zmw_id][1]:
-                    m.max_subread[zmw_id] = (subread_id, subread_lengths[i_aln])
+                    m.max_subread[zmw_id] = (
+                        subread_id, subread_lengths[i_aln])
 
                 m.unrolled.setdefault(zmw_id, [99999, 0])
                 m.unrolled[zmw_id][0] = min(m.unrolled[zmw_id][0], rstart)
                 m.unrolled[zmw_id][1] = max(m.unrolled[zmw_id][1], rend)
 
-    return by_movie #datum, unrolled, max_subread
+    return by_movie  # datum, unrolled, max_subread
 
 
-def from_alignment_file(aln_info): #movie_name, alignment_file_name):
+def from_alignment_file(aln_info):  # movie_name, alignment_file_name):
     columns = ["Length", "Concordance", "Read quality", "isFirst", "modStart"]
     datum, unrolled, max_subread, movie_names = aln_info.as_tuple()
     return movie_names, unrolled, datum, columns

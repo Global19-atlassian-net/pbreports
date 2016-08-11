@@ -32,6 +32,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 ADAPTER_SPEC = op.join(SPEC_DIR, 'adapter_xml.json')
 meta_rpt = MetaReport.from_json(ADAPTER_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.adapter_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.adapter_xml "
@@ -74,7 +75,8 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     plots = []
     # Pull some histograms (may have dupes (unmergeable distributions)):
-    shaper = continuous_dist_shaper(dset.metadata.summaryStats.medianInsertDists)
+    shaper = continuous_dist_shaper(
+        dset.metadata.summaryStats.medianInsertDists)
     for i, orig_ins_len_dist in enumerate(
             dset.metadata.summaryStats.medianInsertDists):
         ins_len_dist = shaper(orig_ins_len_dist)
@@ -83,8 +85,10 @@ def to_report(stats_xml, output_dir, dpi=72):
         ax.bar(map(float, ins_len_dist.labels), ins_len_dist.bins,
                color=get_green(0), edgecolor=get_green(0),
                width=(ins_len_dist.binWidth * 0.75))
-        ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).xlabel)
-        ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).ylabel)
+        ax.set_xlabel(meta_rpt.get_meta_plotgroup(
+            Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).xlabel)
+        ax.set_ylabel(meta_rpt.get_meta_plotgroup(
+            Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).ylabel)
         png_fn = os.path.join(output_dir,
                               "interAdapterDist{i}.png".format(i=i))
         png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn,
@@ -98,9 +102,9 @@ def to_report(stats_xml, output_dir, dpi=72):
     plot_groups = [PlotGroup(Constants.PG_ADAPTER,
                              plots=plots,
                              thumbnail=os.path.relpath(thumbnail_base, output_dir))]
-    attributes = [Attribute(i, v) for i,v in
-        zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
-            [adapter_dimers, short_inserts])]
+    attributes = [Attribute(i, v) for i, v in
+                  zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
+                      [adapter_dimers, short_inserts])]
 
     tables = []
 
@@ -108,7 +112,7 @@ def to_report(stats_xml, output_dir, dpi=72):
                     title=meta_rpt.title,
                     attributes=attributes,
                     tables=tables,
-                    )#plotgroups=plot_groups)
+                    )  # plotgroups=plot_groups)
 
     return meta_rpt.apply_view(report)
 
