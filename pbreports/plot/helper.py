@@ -232,6 +232,8 @@ def apply_histogram_data(ax, data, bins, axis_labels=('', ''),
         edgeColor = barcolor
 
     if len(data) > 0:
+        if not isinstance(data, np.ndarray):
+            data = np.array(data)
         dtype = np.result_type(data)
         if "int" in dtype.type.__name__ and len(np.unique(data)) > 1:
             d = min(np.diff(np.unique(data)))
