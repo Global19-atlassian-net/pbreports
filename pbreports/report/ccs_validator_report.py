@@ -45,7 +45,6 @@ class Constants(object):
     C_QV = 'mean_qv'
 
 
-
 class FastqStats(object):
 
     def __init__(self, reads, qvs, file_name):
@@ -103,11 +102,13 @@ def __generate_histogram_comparison(method_name, title, xlabel, list_fastq_stats
     return fig, ax
 
 to_qv_histogram = functools.partial(
-    __generate_histogram_comparison, 'qvs', meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_QV).title, 
-                                            meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_QV).xlabel)
+    __generate_histogram_comparison, 'qvs', meta_rpt.get_meta_plotgroup(
+        Constants.PG_CCS).get_meta_plot(Constants.P_QV).title,
+    meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_QV).xlabel)
 to_read_length_histogram = functools.partial(
-    __generate_histogram_comparison, 'reads', meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_RL).title, 
-                                              meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_RL).xlabel)
+    __generate_histogram_comparison, 'reads', meta_rpt.get_meta_plotgroup(
+        Constants.PG_CCS).get_meta_plot(Constants.P_RL).title,
+    meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_RL).xlabel)
 
 
 def _generate_table(list_fastq_stats):
@@ -122,7 +123,8 @@ def _generate_table(list_fastq_stats):
     for fastq_stat in list_fastq_stats:
         table.add_data_by_column_id(
             Constants.C_FN, os.path.basename(fastq_stat.file_name))
-        table.add_data_by_column_id(Constants.C_NREADS, fastq_stat.reads.shape[0])
+        table.add_data_by_column_id(
+            Constants.C_NREADS, fastq_stat.reads.shape[0])
         table.add_data_by_column_id(
             Constants.C_TOT_BASES, int(np.sum(fastq_stat.reads)))
         table.add_data_by_column_id(

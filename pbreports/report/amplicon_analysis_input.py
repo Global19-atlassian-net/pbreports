@@ -28,6 +28,7 @@ SPEC_DIR = op.join(_DIR_NAME, 'specs/')
 A_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_input.json')
 meta_rpt = MetaReport.from_json(A_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_input"
     DRIVER_EXE = "python -m pbreports.report.amplicon_analysis_input --resolved-tool-contract "
@@ -79,7 +80,8 @@ def parse_summary(summary):
 
             # Add the current sequence to the appropriate bin
             if chimera_flag:
-                summary_data[barcode_name][Constants.DATA_CHIMERA].add(seq_name)
+                summary_data[barcode_name][
+                    Constants.DATA_CHIMERA].add(seq_name)
             elif noise_flag:
                 summary_data[barcode_name][Constants.DATA_NOISE].add(seq_name)
             else:
@@ -113,7 +115,8 @@ def tabulate_results(summary_data, consensus_sums):
     final_data = {}
     for barcode, data in tabulated_data.iteritems():
         final_data[barcode] = defaultdict(float)
-        total = data[Constants.DATA_GOOD] + data[Constants.DATA_CHIMERA] + data[Constants.DATA_NOISE]
+        total = data[Constants.DATA_GOOD] + \
+            data[Constants.DATA_CHIMERA] + data[Constants.DATA_NOISE]
         for sequence_type, weight in data.iteritems():
             value = tabulated_data[barcode][sequence_type]
             final_data[barcode][sequence_type] = int(value)
@@ -135,8 +138,9 @@ def create_table(tabulated_data):
 
     t = Table(Constants.T_R, columns=columns)
 
-    COL_IDS = [Constants.C_GOOD, Constants.C_GOOD_PCT, Constants.C_CHIM, Constants.C_CHIM_PCT, Constants.C_NOISE, Constants.C_NOISE_PCT]
-    
+    COL_IDS = [Constants.C_GOOD, Constants.C_GOOD_PCT, Constants.C_CHIM,
+               Constants.C_CHIM_PCT, Constants.C_NOISE, Constants.C_NOISE_PCT]
+
     for barcode, data in tabulated_data.iteritems():
         if barcode != 'all':
             t.add_data_by_column_id(Constants.C_BC, barcode)

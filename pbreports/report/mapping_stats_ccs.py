@@ -90,14 +90,13 @@ class CCSMappingStatsCollector(MappingStatsCollector):
     }
 
     COL_IDS = [
-    Constants.C_MOVIE,
-    Constants.C_READS,
-    Constants.C_NBASES,
-    Constants.C_READ_LENGTH,
-    Constants.C_READ_LENGTH_N50,
-    Constants.C_READ_CONCORDANCE
+        Constants.C_MOVIE,
+        Constants.C_READS,
+        Constants.C_NBASES,
+        Constants.C_READ_LENGTH,
+        Constants.C_READ_LENGTH_N50,
+        Constants.C_READ_CONCORDANCE
     ]
-
 
     COLUMN_AGGREGATOR_CLASSES = [
         ReadCounterAggregator,

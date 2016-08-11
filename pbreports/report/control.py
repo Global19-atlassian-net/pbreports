@@ -47,19 +47,21 @@ CSV_COLUMN_MAP = {"ReadId": ("|S128", str),
                   "ReadScore": (float, float),
                   "PassedFilter": (int, int)}
 
+
 class Constants(object):
     A_CONTROL_SEQ = "control_sequence"
     A_NCONTROL = "n_control_reads"
     A_FRAC_CONTROL = "frac_control_reads"
     A_ACCURACY = "control_subread_accuracy"
-    A_N50  = "control_n50"
-    A_PCT95  = "control_95_percentile_readlength"
+    A_N50 = "control_n50"
+    A_PCT95 = "control_95_percentile_readlength"
     A_LENGTH = "control_mean_readlength"
 
     PG_QUAL = "polymerase_read_quality"
     P_QUAL = "control_noncontrol_readquality"
-    PG_LENGTH = "polymerase_read_length" 
+    PG_LENGTH = "polymerase_read_length"
     P_LENGTH = "control_noncontrol_readlength"
+
 
 def make_control_report(control_cmph5, filtered_subreads_csv, report,
                         output_dir, dpi, dumpdata):
@@ -253,7 +255,8 @@ def _create_score_figure(control_data, sample_data):
     x_data = np.arange(min_score, 1.0, 0.02)
     y1_data = control_data[0, :]
     y2_data = sample_data[0, :]
-    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).ylabel)
+    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).xlabel,
+              meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).ylabel)
     return _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc='upper left')
 
 
@@ -267,7 +270,8 @@ def _create_length_figure(control_data, sample_data):
     x_data = np.arange(0, len_unit * num_len_bins, len_unit)
     y1_data = control_data[1, :]
     y2_data = sample_data[1, :]
-    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).ylabel)
+    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).xlabel,
+              meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).ylabel)
     return _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc='upper right')
 
 

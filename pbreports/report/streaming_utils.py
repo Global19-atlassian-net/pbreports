@@ -341,7 +341,8 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
         plt.close(fig)
 
         # these are relative paths
-        plot = Plot(id_, plot_view.image_name, title=plot_view.title, caption=plot_view.title, thumbnail=plot_view.thumb)
+        plot = Plot(id_, plot_view.image_name, title=plot_view.title,
+                    caption=plot_view.title, thumbnail=plot_view.thumb)
 
         if plot_view.plot_group_id in plots_by_group_id:
             plots_by_group_id[plot_view.plot_group_id].append(plot)

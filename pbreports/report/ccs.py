@@ -168,7 +168,8 @@ def _movie_results_to_attributes(movie_results):
 
     attributes = []
     attributes.append(Attribute(Constants.A_NREADS, read_lengths.shape[0]))
-    attributes.append(Attribute(Constants.A_TOTAL_BASES, int(read_lengths.sum())))
+    attributes.append(
+        Attribute(Constants.A_TOTAL_BASES, int(read_lengths.sum())))
     attributes.append(Attribute(Constants.A_MEAN_READLENGTH, m_readlength))
     attributes.append(Attribute(Constants.A_MEAN_ACCURACY, float(m_accuracy)))
     attributes.append(Attribute(Constants.A_MEAN_NPASSES, m_npasses))
@@ -184,12 +185,12 @@ def _movie_results_to_table(movie_results):
     """
 
     columns = []
-    columns.append(Column(Constants.C_MOVIE_NAME,values=[]))
-    columns.append(Column(Constants.C_NREADS,values=[]))
-    columns.append(Column(Constants.C_TOTAL_BASES,values=[]))
-    columns.append(Column(Constants.C_MEAN_READLENGTH,values=[]))
-    columns.append(Column(Constants.C_MEAN_ACCURACY,values=[]))
-    columns.append(Column(Constants.C_MEAN_NPASSES,values=[]))
+    columns.append(Column(Constants.C_MOVIE_NAME, values=[]))
+    columns.append(Column(Constants.C_NREADS, values=[]))
+    columns.append(Column(Constants.C_TOTAL_BASES, values=[]))
+    columns.append(Column(Constants.C_MEAN_READLENGTH, values=[]))
+    columns.append(Column(Constants.C_MEAN_ACCURACY, values=[]))
+    columns.append(Column(Constants.C_MEAN_NPASSES, values=[]))
     table = Table(Constants.T_ID, columns=columns)
 
     movie_names = {m.movie_name for m in movie_results}
@@ -215,7 +216,8 @@ def _movie_results_to_table(movie_results):
 
         table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_name)
         table.add_data_by_column_id(Constants.C_NREADS, read_lengths.shape[0])
-        table.add_data_by_column_id(Constants.C_TOTAL_BASES, int(read_lengths.sum()))
+        table.add_data_by_column_id(
+            Constants.C_TOTAL_BASES, int(read_lengths.sum()))
         table.add_data_by_column_id(Constants.C_MEAN_READLENGTH, m_readlength)
         table.add_data_by_column_id(Constants.C_MEAN_ACCURACY, m_accuracy)
         #table.add_data_by_column_id(Constants.A_MEAN_QV, m_qv)
@@ -244,17 +246,18 @@ def _make_barcode_table(bam_stats, ccs_set):
             with BarcodeSet(bcs) as bc_set:
                 for i_bc, rec in enumerate(bc_set):
                     if i_bc in barcode_labels:
-                        assert barcode_labels[i_bc] == rec.id, "Barcode ID mismatch: {l} versus {r}".format(l=barcode_labels[i_bc], r=rec.id)
+                        assert barcode_labels[i_bc] == rec.id, "Barcode ID mismatch: {l} versus {r}".format(
+                            l=barcode_labels[i_bc], r=rec.id)
                     else:
                         barcode_labels[i_bc] = rec.id
     barcode_ids = sorted(barcode_counts.keys())
     counts = [barcode_counts[i_bc] for i_bc in barcode_ids]
     nbases = [barcode_nbases[i_bc] for i_bc in barcode_ids]
-    mean_length = [int(float(n)/c) for (c, n) in zip(counts, nbases)]
+    mean_length = [int(float(n) / c) for (c, n) in zip(counts, nbases)]
     labels = [str(barcode_labels.get(i_bc, i_bc)) for i_bc in barcode_ids]
-    npasses = [sum(barcode_npasses[i_bc])/len(barcode_npasses[i_bc])
+    npasses = [sum(barcode_npasses[i_bc]) / len(barcode_npasses[i_bc])
                for i_bc in barcode_ids]
-    readquals = [sum(barcode_readscores[i_bc])/len(barcode_readscores[i_bc])
+    readquals = [sum(barcode_readscores[i_bc]) / len(barcode_readscores[i_bc])
                  for i_bc in barcode_ids]
     assert len(labels) == len(counts) == len(nbases)
     columns = [
@@ -360,7 +363,8 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, data, axis_labels, nbins, 
 
 def scatter_plot_accuracy_vs_numpasses(data,
                                        axis_labels=(
-                                           meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).xlabel,
+                                           meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(
+                                               Constants.P_SCATTER).xlabel,
                                            meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).ylabel),
                                        nbins=None, barcolor=None):
     """
@@ -417,21 +421,23 @@ _custom_read_accuracy_histogram = functools.partial(
 # These functions need to generate a function with signature (data,
 # output_dir, dpi=)
 create_readlength_plot = functools.partial(create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
-                                         (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["L"],
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
+                                           (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
+                                            meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
+                                               Constants.P_READLENGTH).ylabel["L"],
+                                            meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
                                            80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
 create_accuracy_plot = functools.partial(create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
-                                         (meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).xlabel, 
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["L"],
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["R"]), 
-                                          80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
+                                         (meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).xlabel,
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(
+                                              Constants.P_ACCURACY).ylabel["L"],
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["R"]),
+                                         80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
 create_npasses_plot = functools.partial(create_plot, _make_histogram, Constants.P_NPASSES,
-                                        (meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).xlabel, 
-                                         meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).ylabel), 
-                                         80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
+                                        (meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).xlabel,
+                                         meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).ylabel),
+                                        80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
 
 create_scatter_plot = functools.partial(create_plot,
                                         scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,

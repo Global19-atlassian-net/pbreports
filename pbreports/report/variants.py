@@ -41,6 +41,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 VARIANTS_SPEC = op.join(SPEC_DIR, 'variants.json')
 meta_rpt = MetaReport.from_json(VARIANTS_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.variants_report"
     DRIVER_EXE = "python -m pbreports.report.variants --resolved-tool-contract "
@@ -55,7 +56,7 @@ class Constants(object):
     C_CONTIG_NAME = "contig_name"
     C_CONTIG_LEN = "contig_len"
     C_BASES_CALLED = "bases_called"
-    C_CONCORDANCE = "concordance" 
+    C_CONCORDANCE = "concordance"
     C_COVERAGE = "coverage"
     PG_VARIANTS = "variants_plots"
     P_VARIANTS = "variants_plot"
@@ -191,7 +192,8 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
 
         id_ = 'coverage_variants_{i}'.format(i=str(idx))
         caption = "Observed variants across {c}".format(c=ctg_var.name)
-        plot = Plot(id_, os.path.basename(fname), title=caption, caption=caption)
+        plot = Plot(id_, os.path.basename(fname),
+                    title=caption, caption=caption)
         plots.append(plot)
         idx += 1
         plt.close(fig)
@@ -291,7 +293,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     columns.append(Column(Constants.C_BASES_CALLED))
     columns.append(Column(Constants.C_CONCORDANCE))
     columns.append(Column(Constants.C_COVERAGE))
-    table = Table(Constants.T_STATS, columns=columns)    
+    table = Table(Constants.T_STATS, columns=columns)
 
     for seqid in ordered_ids:
         contig = reference_entry.get_contig(seqid)
@@ -328,7 +330,6 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         table.add_data_by_column_id(Constants.C_CONCORDANCE, concord)
         table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
 
-
     mean_contig_length = sum_lengths / len(ordered_ids)
     mean_bases_called = mean_bases_called / sum_lengths
     if mean_concord is not 'NA':
@@ -337,9 +338,11 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
 
     attributes = []
     attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
-    attributes.append(Attribute(Constants.MEAN_CONTIG_LENGTH, mean_contig_length))
+    attributes.append(
+        Attribute(Constants.MEAN_CONTIG_LENGTH, mean_contig_length))
     attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
-    attributes.append(Attribute(Constants.MEAN_BASES_CALLED, mean_bases_called))
+    attributes.append(
+        Attribute(Constants.MEAN_BASES_CALLED, mean_bases_called))
     attributes.append(Attribute(Constants.MEAN_COVERAGE, mean_coverage))
 
     return table, attributes

@@ -42,12 +42,14 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 MOD_SPEC = op.join(SPEC_DIR, 'modifications.json')
 meta_rpt = MetaReport.from_json(MOD_SPEC)
 
+
 class Constants(BaseConstants):
     TOOL_ID = "pbreports.tasks.modifications_report"
     DRIVER_EXE = "python -m pbreports.report.modifications --resolved-tool-contract"
     PG_KIN = "kinetic_detections"
     P_SCAT = "kinetic_scatter"
     P_HIST = "kinetic_histogram"
+
 
 def _create_fig_template(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
     fig, ax = PH.get_fig_axes_lpr(dims=dims)
@@ -96,8 +98,10 @@ def plot_kinetics_scatter(basemods_h5, ax):
         else:
             log.warn("Base {b} not found".format(b=base))
 
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).xlabel)
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).ylabel)
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).ylabel)
     legend(handles, bases, loc='upper left')
 
     if len(coverage) > 0:
@@ -131,9 +135,10 @@ def plot_kinetics_hist(basemods_h5, ax):
         else:
             log.warn("Base {b} not found".format(b=base))
 
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_HIST).xlabel)
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(Constants.PG_KIN).get_meta_plot(Constants.P_HIST).ylabel)
-
+    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_KIN).get_meta_plot(Constants.P_HIST).xlabel)
+    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
+        Constants.PG_KIN).get_meta_plot(Constants.P_HIST).ylabel)
 
     if len(scores) > 0:
         ax.legend(loc='upper right')

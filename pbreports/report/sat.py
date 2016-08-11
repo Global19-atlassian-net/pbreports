@@ -47,6 +47,7 @@ class Constants(object):
     V_CONCORDANCE = "weighted_mean_concordance"
     M_READLENGTH = "mapped_readlength_mean"
 
+
 def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, report, output_dir):
     """
     Entry to report.
@@ -64,11 +65,15 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     d_var = _get_variants_data(variants_report)
     ds = AlignmentSet(aligned_reads_file)
 
-    rpt = Report(meta_rpt.id, dataset_uuids=(ds.uuid,))   
-    rpt.add_attribute(Attribute(Constants.A_INSTRUMENT, d_bam[Constants.A_INSTRUMENT]))
-    rpt.add_attribute(Attribute(Constants.A_COVERAGE, d_var[Constants.A_COVERAGE]))
-    rpt.add_attribute(Attribute(Constants.A_CONCORDANCE, d_var[Constants.A_CONCORDANCE]))
-    rpt.add_attribute(Attribute(Constants.A_READLENGTH, d_map[Constants.A_READLENGTH]))
+    rpt = Report(meta_rpt.id, dataset_uuids=(ds.uuid,))
+    rpt.add_attribute(Attribute(Constants.A_INSTRUMENT,
+                                d_bam[Constants.A_INSTRUMENT]))
+    rpt.add_attribute(Attribute(Constants.A_COVERAGE,
+                                d_var[Constants.A_COVERAGE]))
+    rpt.add_attribute(Attribute(Constants.A_CONCORDANCE,
+                                d_var[Constants.A_CONCORDANCE]))
+    rpt.add_attribute(Attribute(Constants.A_READLENGTH,
+                                d_map[Constants.A_READLENGTH]))
     rpt.add_attribute(Attribute(Constants.A_READS, d_bam[Constants.A_READS]))
     rpt = meta_rpt.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
@@ -184,8 +189,10 @@ def summarize_report(report_file, out=sys.stdout):
     coverage = attr[Constants.A_COVERAGE]
     concordance = attr[Constants.A_CONCORDANCE]
     out.write("%s:\n" % report_file)
-    out.write("  {n}: {a}\n".format(n=meta_rpt.get_meta_attribute(Constants.A_CONCORDANCE).name,a=concordance))
-    out.write("  {n}: {c}\n".format(n=meta_rpt.get_meta_attribute(Constants.A_COVERAGE).name,c=coverage))
+    out.write("  {n}: {a}\n".format(n=meta_rpt.get_meta_attribute(
+        Constants.A_CONCORDANCE).name, a=concordance))
+    out.write("  {n}: {c}\n".format(n=meta_rpt.get_meta_attribute(
+        Constants.A_COVERAGE).name, c=coverage))
     return coverage == 1 and concordance == 1
 
 

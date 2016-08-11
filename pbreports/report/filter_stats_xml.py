@@ -40,6 +40,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 FILTER_SPEC = op.join(SPEC_DIR, 'filter_stats_xml.json')
 meta_rpt = MetaReport.from_json(FILTER_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.filter_stats_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.filter_stats_xml "
@@ -55,7 +56,7 @@ class Constants(object):
 
     READ_ATTR = [A_NBASES, A_NREADS, A_READ_LENGTH, A_READ_N50]
     INSERT_ATTR = [A_INSERT_LENGTH]
-    PG_RL = "read_length_plot_group" 
+    PG_RL = "read_length_plot_group"
     P_RL = "read_length_plot"
     PG_IL = "insert_length_plot_group"
     P_IL = "insert_length_plot"
@@ -138,7 +139,7 @@ def _to_read_stats_attributes(readLenDists, readQualDists):
             nreads,
             readlen,
             n50,
-            ]#readQuality]
+            ]  # readQuality]
 
 
 def _make_attributes(read_attr, attr_values):
@@ -173,10 +174,12 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
-        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylabel)
+        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(
+            PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
+        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(
+            PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
-            p=PlotConstants.P_LENGTH_PREFIX))
+                                                              p=PlotConstants.P_LENGTH_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
                                                               dpi=dpi)
         length_plots.append(
@@ -202,10 +205,12 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).xlabel)
-        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylabel)
+        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(
+            PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).xlabel)
+        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(
+            PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylabel)
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
-            p=PlotConstants.P_QUAL_PREFIX))
+                                                              p=PlotConstants.P_QUAL_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,
                                                               dpi=dpi)
         qual_plots.append(
@@ -217,10 +222,10 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                   plots=qual_plots))
     return plot_groups
 
-to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots, 
+to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots,
                                         meta_rpt.get_meta_plotgroup(Constants.PG_RL).title)
 to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots,
-                                         meta_rpt.get_meta_plotgroup(Constants.PG_IL).title)
+                                          meta_rpt.get_meta_plotgroup(Constants.PG_IL).title)
 
 
 def to_report(stats_xml, output_dir, dpi=72):
@@ -245,7 +250,6 @@ def to_report(stats_xml, output_dir, dpi=72):
     if not dset.metadata.summaryStats.readLenDists:
         raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
                       "key distributions")
-
 
     # we want all of the length distributions in this report to look the same,
     # so we make the shaper here and pass it around:

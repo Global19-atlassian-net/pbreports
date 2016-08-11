@@ -39,6 +39,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 ISOSEQ_CLUSTER_SPEC = op.join(SPEC_DIR, 'isoseq_cluster.json')
 meta_rpt = MetaReport.from_json(ISOSEQ_CLUSTER_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.isoseq_cluster"
     DRIVER_EXE = "python -m pbreports.report.isoseq_cluster --resolved-tool-contract"
@@ -49,7 +50,7 @@ class Constants(object):
     # Attributes
     A_LENGTH = "avg_consensus_isoform_length"
     A_CONSENSUS = "num_consensus_isoforms"
-    A_BASES = "num_total_bases"    
+    A_BASES = "num_total_bases"
 
     # PlotGroup
     PG_READLENGTH = "consensus_isoforms_readlength_group"
@@ -57,7 +58,7 @@ class Constants(object):
     # Plots
     P_READLENGTH = "consensus_isoforms_readlength_hist"
 
-    #Table
+    # Table
     T_ATTR = "isoseq_classify_table"
 
 
@@ -163,10 +164,11 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
 create_readlength_plot = functools.partial(
     __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
     (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["L"],
-     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]), 
-     80,
-     "consensus_isoforms_readlength_hist.png", get_blue(3))
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
+         Constants.P_READLENGTH).ylabel["L"],
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
+    80,
+    "consensus_isoforms_readlength_hist.png", get_blue(3))
 
 
 def makeReport(inReadsFN, inSummaryFN, outDir):
@@ -207,8 +209,8 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     dataset_uuids = [ContigSet(inReadsFN).uuid]
     attributes = _report_to_attributes(inSummaryFN)
     r = load_report_from_json(inSummaryFN)
-        # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
-        # reports; should we be?
+    # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
+    # reports; should we be?
 
     table = attributesToTable(attributes)
     log.info(str(table))

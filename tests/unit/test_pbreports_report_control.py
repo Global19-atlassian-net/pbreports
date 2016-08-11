@@ -21,7 +21,7 @@ from pbreports.report.control import (make_control_report, _get_control_reads,
                                       _create_score_figure, _create_length_figure)
 
 from base_test_case import _get_root_data_dir, skip_if_data_dir_not_present, \
-                           validate_report_complete
+    validate_report_complete
 
 log = logging.getLogger(__name__)
 

@@ -39,6 +39,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
 ISOSEQ_CLASSIFY_SPEC = op.join(SPEC_DIR, 'isoseq_classify.json')
 meta_rpt = MetaReport.from_json(ISOSEQ_CLASSIFY_SPEC)
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.isoseq_classify"
     DRIVER_EXE = "python -m pbreports.report.isoseq_classify --resolved-tool-contract "
@@ -55,12 +56,10 @@ class Constants(object):
     # Table
     T_ATTR = "isoseq_classify_table"
 
+
 def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
-    attributes = []
-    for attr in report.attributes:
-    	attributes.append(Attribute(attr.id, attr.value))
-    return attributes
+    return [Attribute(attr.id, attr.value) for attr in report.attributes]
 
 
 def _attributes_to_table(attributes):
@@ -162,9 +161,10 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
 create_readlength_plot = functools.partial(
     __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
     (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["L"],
+     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
+         Constants.P_READLENGTH).ylabel["L"],
      meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
-     80, "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
+    80, "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
 
 
 def make_report(contig_set, summary_txt, output_dir):
@@ -218,8 +218,8 @@ def make_report(contig_set, summary_txt, output_dir):
     # Produce attributes based on summary.
     attributes = _report_to_attributes(summary_txt)
     r = load_report_from_json(summary_txt)
-        # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
-        # reports; should we be?
+    # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
+    # reports; should we be?
 
     table = _attributes_to_table(attributes)
     log.info(str(table))

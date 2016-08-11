@@ -52,7 +52,6 @@ class Constants(object):
     T_TOP = "top_variants_table"
 
 
-
 def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
                             output_dir, is_minor_variants_rpt=False):
     """

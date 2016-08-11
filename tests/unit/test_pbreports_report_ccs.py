@@ -18,7 +18,7 @@ import pbtestdata
 
 from pbreports.report.ccs import to_report, Constants
 from base_test_case import run_backticks, LOCAL_DATA, \
-                           validate_report_complete
+    validate_report_complete
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ EXPECTED_VALUES = {
     Constants.A_MEAN_READLENGTH: 4766,
     Constants.A_MEAN_ACCURACY: 0.947,
     Constants.A_MEAN_NPASSES: 4,
-    #Constants.A_MEAN_QV: 13
+    # Constants.A_MEAN_QV: 13
 }
 
 
@@ -148,7 +148,7 @@ class TestCCSMetrics(unittest.TestCase):
         actual = self._get_attribute_value_by_id(Constants.A_MEAN_ACCURACY)
         self.assertEqual('%.3f' % value, '%.3f' % actual)
 
-    #def test_mean_qv(self):
+    # def test_mean_qv(self):
     #    self._compare_metric_values(Constants.A_MEAN_QV)
 
     def test_mean_ccs_num_passes(self):
@@ -185,7 +185,7 @@ class TestCCSBarcoded(unittest.TestCase):
         ds = ConsensusReadSet(self.CCS_DS)
         r = to_report(ds, tempfile.mkdtemp())
         self.assertEqual([c.values for c in r.tables[1].columns[0:4]],
-                         [["lbc1", "lbc3"], [1,1], [1958,1954], [1958,1954]])
+                         [["lbc1", "lbc3"], [1, 1], [1958, 1954], [1958, 1954]])
         self.assertAlmostEqual(r.tables[1].columns[4].values[0], 0.9724,
                                places=4)
         self.assertAlmostEqual(r.tables[1].columns[4].values[1], 0.9926,

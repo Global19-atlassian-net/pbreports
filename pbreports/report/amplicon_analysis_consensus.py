@@ -42,6 +42,7 @@ class Constants(object):
     C_ACCURACY = "predictedaccuracy"
     C_COVERAGE = "totalcoverage"
 
+
 def create_table(d, barcode):
     """Long Amplicon Analysis results table"""
 

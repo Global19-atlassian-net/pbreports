@@ -27,15 +27,16 @@ pbreports specifications (automatically generated)
             specfile = op.join(SPEC_DIR, spec)
             meta_rpt = MetaReport.from_json(specfile)
             if meta_rpt.attributes:
-            	f.write("\n\n\n")
-            	f.write("**{t}** ({d}):\n\n".format(t=meta_rpt.title, d=meta_rpt.id))
-            	f.write("{n}\n\n".format(n=meta_rpt.description))
-            	table = []
-            	for attr in meta_rpt.attributes:
-                	row = [attr.id, attr.name, attr.description]
-                	table.append(row)
-            	HEADERS = ["Attribute ID", "Name", "Description"]
-            	f.write(tabulate(table, HEADERS, tablefmt="rst"))
+                f.write("\n\n\n")
+                f.write(
+                    "**{t}** ({d}):\n\n".format(t=meta_rpt.title, d=meta_rpt.id))
+                f.write("{n}\n\n".format(n=meta_rpt.description))
+                table = []
+                for attr in meta_rpt.attributes:
+                    row = [attr.id, attr.name, attr.description]
+                    table.append(row)
+                HEADERS = ["Attribute ID", "Name", "Description"]
+                f.write(tabulate(table, HEADERS, tablefmt="rst"))
 
     return 0
 

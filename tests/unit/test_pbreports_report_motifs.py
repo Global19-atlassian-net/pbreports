@@ -9,7 +9,7 @@ import tempfile
 import pbcommand.testkit
 
 from base_test_case import LOCAL_DATA, run_backticks, \
-                           validate_report_complete
+    validate_report_complete
 
 import pbreports.report.motifs
 from pbreports.report.motifs import to_motifs_report
