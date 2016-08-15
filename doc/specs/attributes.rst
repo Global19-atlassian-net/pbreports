@@ -48,15 +48,15 @@ missing_bases_pct    Missing Bases (%)  Percent of reference bases without cover
 
 None
 
-==============  =============================  ==================================================================================================================================
+==============  =============================  =================================================================================================================================
 Attribute ID    Name                           Description
-==============  =============================  ==================================================================================================================================
-nbases          Polymerase Read Bases          Number of bases in the polymerase reads.
-nreads          Polymerase Reads               Number of polymerase reads.
-read_n50        Polymerase Read N50            The polymerase read length at which 50% of the polymerase read bases are in polymerase reads longer than, or equal to, this value.
-read_length     Polymerase Read Length (mean)  The mean polymerase read length.
-insert_length   Insert Length (mean)           The mean insert length.
-==============  =============================  ==================================================================================================================================
+==============  =============================  =================================================================================================================================
+nbases          Polymerase Read Bases          Number of bases in the polymerase reads
+nreads          Polymerase Reads               Number of polymerase reads
+read_n50        Polymerase Read N50            The polymerase read length at which 50% of the polymerase read bases are in polymerase reads longer than, or equal to, this value
+read_length     Polymerase Read Length (mean)  The mean polymerase read length
+insert_length   Insert Length (mean)           The mean insert length
+==============  =============================  =================================================================================================================================
 
 
 **Transcript Classification** (isoseq_classify):
@@ -139,14 +139,14 @@ mapped_readlength_max         CCS Read Length Max (mapped)      The maximum leng
 
 None
 
-==================  =====================  ==========================================
+==================  =====================  =========================================
 Attribute ID        Name                   Description
-==================  =====================  ==========================================
-polished_contigs    Polished Contigs       The number of polished contigs.
+==================  =====================  =========================================
+polished_contigs    Polished Contigs       The number of polished contigs
 max_contig_length   Maximum Contig Length  Length of longest contig
-n_50_contig_length  N50 Contig Length      50% of contigs are longer than this value.
-sum_contig_lengths  Sum of Contig Lengths  Total length of all contigs.
-==================  =====================  ==========================================
+n_50_contig_length  N50 Contig Length      50% of contigs are longer than this value
+sum_contig_lengths  Sum of Contig Lengths  Total length of all contigs
+==================  =====================  =========================================
 
 
 **Site Acceptance Test Report** (sat):
