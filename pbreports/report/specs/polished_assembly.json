@@ -5,7 +5,7 @@
     "attributes": [
         {
             "type": "int", 
-            "description": "The number of polished contigs.", 
+            "description": "The number of polished contigs", 
             "name": "Polished Contigs", 
             "id": "polished_contigs"
         }, 
@@ -17,13 +17,13 @@
         }, 
         {
             "type": "int", 
-            "description": "50% of contigs are longer than this value.", 
+            "description": "50% of contigs are longer than this value", 
             "name": "N50 Contig Length", 
             "id": "n_50_contig_length"
         }, 
         {
             "type": "int", 
-            "description": "Total length of all contigs.",
+            "description": "Total length of all contigs",
             "name": "Sum of Contig Lengths", 
             "id": "sum_contig_lengths"
         }
