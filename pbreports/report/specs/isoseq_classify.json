@@ -42,7 +42,7 @@
         },
         {
             "type": "int",
-            "description": "The number of full-length CCS reads. (Full-length reads are reads which have both prime signals and poly-A detected.)",
+            "description": "The number of full-length CCS reads (Full-length reads are reads which have both prime signals and poly-A detected)",
             "header": "Number of full-length reads",
             "id": "num_fl"
         },
