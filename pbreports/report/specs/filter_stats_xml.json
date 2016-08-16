@@ -7,31 +7,31 @@
             "type": "", 
             "id": "nbases", 
             "name": "Polymerase Read Bases", 
-            "description": ""
+            "description": "Number of bases in the polymerase reads"
         }, 
         {
             "type": "", 
             "id": "nreads", 
             "name": "Polymerase Reads", 
-            "description": ""
+            "description": "Number of polymerase reads"
         }, 
         {
             "type": "", 
             "id": "read_n50", 
             "name": "Polymerase Read N50", 
-            "description": ""
+            "description": "The polymerase read length at which 50% of the polymerase read bases are in polymerase reads longer than, or equal to, this value"
         }, 
         {
             "type": "", 
             "id": "read_length", 
             "name": "Polymerase Read Length (mean)", 
-            "description": ""
+            "description": "The mean polymerase read length"
         }, 
         {
             "type": "", 
             "id": "insert_length", 
             "name": "Insert Length (mean)", 
-            "description": ""
+            "description": "The mean insert length"
         }
     ], 
     "id": "raw_data_report", 

@@ -1,6 +1,6 @@
 {
     "tables": [], 
-    "description": null, 
+    "description": "Generates a report showing control quality and readlength information.", 
     "title": "Control Report", 
     "attributes": [
         {
