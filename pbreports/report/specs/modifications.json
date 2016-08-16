@@ -10,17 +10,17 @@
                 {
                     "xlabel": "Modification QV", 
                     "description": null, 
-                    "caption": "Kinetic Detections", 
+                    "caption": "Histogram: Kinetic Detections Histogram", 
                     "ylabel": "Bases", 
-                    "title": "Kinetic Detections", 
+                    "title": "Histogram: Kinetic Detections Histogram", 
                     "id": "kinetic_histogram"
                 },
                 {
                     "xlabel": "Per-Strand Coverage",
                     "description": null,
-                    "caption": "Kinetic Detections",
+                    "caption": "Scatterplot: Per-Base Kinetic Detections",
                     "ylabel": "Modification QV",
-                    "title": "Kinetic Detections",
+                    "title": "Scatterplot: Per-Base Kinetic Detections",
                     "id": "kinetic_scatter"
                 }
 
