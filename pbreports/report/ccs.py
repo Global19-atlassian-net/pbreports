@@ -17,7 +17,6 @@ import argparse
 import time
 from pprint import pformat
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
@@ -390,6 +389,7 @@ def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolo
     plot config options.
     """
 
+    import matplotlib.pyplot as plt
     fig, ax = _make_plot_func(data, axis_labels, nbins, barcolor)
     path = os.path.join(output_dir, plot_name)
     try:

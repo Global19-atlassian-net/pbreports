@@ -23,7 +23,6 @@ from pbcore.io import FastqReader, GffReader
 
 from pbreports.report.coverage import ContigCoverage
 from pbreports.util import compute_n50
-import pbreports.plot.helper as PH
 
 log = logging.getLogger(__name__)
 
@@ -130,6 +129,7 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     :param output_dir: (str) path to output directory
     :return: (Plot) object that has already been saved as a PNG to output_dir
     """
+    import pbreports.plot.helper as PH
     fig, axes = PH.get_fig_axes_lpr()
     axes = fig.add_subplot(111)
     axes.set_axisbelow(True)

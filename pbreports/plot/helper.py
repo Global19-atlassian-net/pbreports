@@ -2,8 +2,6 @@
 import os
 import logging
 
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import numpy as np
 
 log = logging.getLogger(__name__)
@@ -25,6 +23,7 @@ def get_fig_axes(dims=(8, 6), facecolor='#e0e0e0', gridcolor='#ffffff'):
     Get a matplotlib figure object.
     This theme is background (default=gray) and grid lines (default=white).
     """
+    import matplotlib.pyplot as plt
     fig = plt.figure(figsize=dims)
     fig.patch.set_alpha(0.5)
     ax = fig.add_subplot(111)
@@ -142,6 +141,7 @@ def apply_line_data(ax, line_models,
 
 
 def apply_bar_data(ax, bars, labels, axis_labels=('', ''), data_file=None):
+    import matplotlib.ticker as ticker
 
     def y_height_sort(i, j):
         """Basically a sorting comparator for rectangles"""
@@ -304,6 +304,7 @@ def save_figure_with_thumbnail(figure, filename, dpi=60):
 
     returns a tuple of (basename of image, basename of thumbnail)
     """
+    import matplotlib.pyplot as plt
     parts = os.path.splitext(filename)
     thumb = '{b}_thumb{e}'.format(b=parts[0], e=parts[1])
     _save_figures(figure, [(filename, dpi), (thumb, 20)])

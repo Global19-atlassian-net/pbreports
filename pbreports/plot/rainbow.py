@@ -12,8 +12,6 @@ import time
 import os
 import sys
 
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 
 from pbcore.io import openDataFile, DataSet, CmpH5Reader
@@ -112,6 +110,7 @@ def _read_in_indexed_alignmentset(in_fn, reference=None):
 
 def _make_plot(data, png_fn, bounds=None, dpi=60, nolegend=False):
     """Make a scatterplot of read length and concordance"""
+    import matplotlib.pyplot as plt
     fig = plt.figure()
     axes = fig.add_subplot(111)
     axes.axesPatch.set_facecolor('#ffffff')

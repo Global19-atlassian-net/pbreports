@@ -9,7 +9,6 @@ import math
 import array
 import sys
 
-import matplotlib.patches as mp
 import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, PlotGroup, Plot,
@@ -278,6 +277,7 @@ def _create_length_figure(control_data, sample_data):
 def _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc=None):
     """Default labels assume y1_data==control, y2_data==sample"""
 
+    import matplotlib.patches as mp
     h1_color = '#5050f0'
     h2_color = '#f05050'
 

@@ -16,7 +16,6 @@ import argparse
 import operator
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Report, PlotGroup, Plot, Table, Column
 from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
@@ -193,6 +192,7 @@ def setAxisLabelFontSize(ax, labelSize):
 
 
 def _createFigTemplate(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
+    import matplotlib.pyplot as plt
     fig = plt.figure(figsize=dims)
     ax = fig.add_subplot(111)
     ax.axesPatch.set_facecolor(facecolor)
@@ -248,6 +248,7 @@ def readModificationCsvGz(fn):
 
 def plotKineticsScatter(kinArr, outputFileName):
 
+    import matplotlib.pyplot as plt
     handles = []
     colors = ['red', 'green', 'blue', 'magenta']
     bases = ['A', 'C', 'G', 'T']
@@ -285,6 +286,7 @@ def plotKineticsScatter(kinArr, outputFileName):
 
 def plotKineticsHist(kinArr, outputFileName):
 
+    import matplotlib.pyplot as plt
     colors = ['red', 'green', 'blue', 'magenta']
     bases = ['A', 'C', 'G', 'T']
 
@@ -444,7 +446,7 @@ def excludeSparseRegions(data):
 
 
 def plotMotifHist(csvFile, kinArr, max_motifs=10):
-
+    import matplotlib.pyplot as plt
     # Use kinArr to determine number of motifs:
     # motifs = np.unique( kinArr['motif'] )
 
