@@ -8,24 +8,28 @@
                 {
                     "header": "Barcode Name",
                     "type": null,
+                    "format": null,
                     "id": "barcode_col",
                     "description": "A string containing the pair of barcode indices for which the following metrics apply, or a 0 if not barcoded. The barcode entries are represented as a pair of dash-separated number, with each number representing one of the two barcodes used for that amplicon."
                 },
                 {
                     "header": "Hours",
                     "type": null,
+                    "format": null,
                     "id": "hour_col",
                     "description": ""
                 },
                 {
                     "header": "Minutes",
                     "type": null,
+                    "format": null,
                     "id": "minute_col",
                     "description": null
                 },
                 {
                     "header": "Total Time (seconds)",
                     "type": null,
+                    "format": null,
                     "id": "second_col",
                     "description": null
                 }
@@ -35,6 +39,7 @@
     ],
     "plotgroups": [],
     "id": "amplicon_analysis_timing",
+    "version": null,
     "description": null,
     "title": "Amplicon Analysis Timing"
 }
