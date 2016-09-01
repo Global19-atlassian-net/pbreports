@@ -14,42 +14,42 @@
                 {
                     "header": "Good",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "good",
                     "description": "The number of consensus sequences not categorized as Chimeric or Noise."
                 },
                 {
                     "header": "Good (%)",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "good_pct",
                     "description": "The percentage of consensus sequences not categorized as Chimeric or Noise."
                 },
                 {
                     "header": "Chimeric",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "chimera",
                     "description": "The number of consensus sequences flagged as likely coming from PCR cross-over events."
                 },
                 {
                     "header": "Chimeric (%)",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "chimera_pct",
                     "description": "The percentage of consensus sequences flagged as likely coming from PCR cross-over events."
                 },
                 {
                     "header": "Noise",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "noise",
                     "description": "The number of consensus sequences that have a very low predicted accuracy (<95%) despite sufficient coverage (>20 reads and >10% all sequences in the current bin) to be called an novel allele."
                 },
                 {
                     "header": "Noise (%)",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "noise_pct",
                     "description": "The percentage of consensus sequences that have a very low predicted accuracy (<95%) despite sufficient coverage (>20 reads and >10% all sequences in the current bin) to be called an novel allele."
                 }

@@ -14,7 +14,7 @@
                 {
                     "header": "Modified Position",
                     "type": "int",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "modified_position",
                     "description": "The position within the motif that is modified with a 1-based coordinate system."
                 },
@@ -28,35 +28,35 @@
                 {
                     "header": "% of Motifs Detected",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "percent_motifs_detected",
                     "description": "The percentage of times that this motif was detected as modified across the entire genome."
                 },
                 {
                     "header": "# of Motifs Detected",
                     "type": "int",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "ndetected_motifs",
                     "description": "The number of times that this motif was detected as modified across the entire genome."
                 },
                 {
                     "header": "# of Motifs in Genome",
                     "type": "int",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "nmotifs_in_genome",
                     "description": "The number of times this motif occurs in the genome."
                 },
                 {
                     "header": "Mean QV",
                     "type": "float",
-                    "format": null,
+                    "format": "{:.2f}",
                     "id": "mean_readscore",
                     "description": "The mean modification QV for all instances where this motif was detected as modified."
                 },
                 {
                     "header": "Mean Coverage",
                     "type": "float",
-                    "format": null,
+                    "format": "{:.2f}",
                     "id": "mean_coverage",
                     "description": "The mean coverage for all instances where this motif was detected as modified."
                 },
@@ -70,7 +70,7 @@
                 {
                     "header": "Mean IPD ratio",
                     "type": "float",
-                    "format": null,
+                    "format": "{:.2f}",
                     "id": "mean_ipd_ratio",
                     "description": "The mean inter-pulse duration. An IPD ratio greater than 1 means that the sequencing polymerase slowed down at this base position, relative to the control. An IPD ratio less than 1 indicates speeding up."
                 },
@@ -84,7 +84,7 @@
                 {
                     "header": "Objective Score",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "objective_score",
                     "description": null
                 }

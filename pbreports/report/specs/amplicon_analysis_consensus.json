@@ -28,21 +28,21 @@
                 },
                 {
                     "header": "Length (bp)",
-                    "format": null,
+                    "format": "{:,d}",
                     "type": null,
                     "id": "sequencelength",
                     "description": "The length of the consensus amplicon sequence."
                 },
                 {
                     "header": "Estimated Accuracy",
-                    "format": null,
+                    "format": "{p:.2f}",
                     "type": null,
                     "id": "predictedaccuracy",
                     "description": "The estimated accuracy of the consensus amplicon sequence."
                 },
                 {
                     "header": "Subreads coverage",
-                    "format": null,
+                    "format": "{:,d}",
                     "type": null,
                     "id": "totalcoverage",
                     "description": "The number of subreads used to call consensus for this sequence."

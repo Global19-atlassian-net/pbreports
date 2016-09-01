@@ -14,28 +14,28 @@
                 {
                     "header": "Productive ZMWs",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "productive_zmws",
                     "description": null
                 },
                 {
                     "header": "Productivity 0 (%)",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "productivity_0",
                     "description": null
                 },
                 {
                     "header": "Productivity 1 (%)",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "productivity_1",
                     "description": null
                 },
                 {
                     "header": "Productivity 2 (%)",
                     "type": null,
-                    "format": null,
+                    "format": "{p:.2f}",
                     "id": "productivity_2",
                     "description": null
                 }

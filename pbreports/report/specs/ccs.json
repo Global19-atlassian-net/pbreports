@@ -3,35 +3,35 @@
         {
             "description": "The number of CCS reads",
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "id": "number_of_ccs_reads",
             "name": "CCS reads"
         },
         {
             "description": "Total number of consensus bases in all CCS reads",
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "id": "total_number_of_ccs_bases",
             "name": "Number of CCS bases"
         },
         {
             "description": "Mean length of CCS reads",
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "id": "mean_ccs_readlength",
             "name": "CCS Read Length (mean)"
         },
         {
             "description": "Mean CCS read score",
             "type": "float",
-            "format": null,
+            "format": "{:.2f}",
             "id": "mean_accuracy",
             "name": "CCS Read Score (mean)"
         },
         {
             "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer",
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "id": "mean_ccs_num_passes",
             "name": "Number of Passes (mean)"
         }
@@ -51,35 +51,35 @@
                 {
                     "header": "CCS reads",
                     "type": "int",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "number_of_ccs_reads",
                     "description": "The number of CCS reads"
                 },
                 {
                     "header": "Number of CCS bases",
                     "type": "int",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "total_number_of_ccs_bases",
                     "description": "Total number of consensus bases in all CCS reads"
                 },
                 {
                     "header": "CCS Read Length (mean)",
                     "type": "int",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "ave_ccs_readlength",
                     "description": "Mean length of CCS reads"
                 },
                 {
                     "header": "CCS Read Score (mean)",
                     "type": "float",
-                    "format": null,
+                    "format": "{:.2f}",
                     "id": "ave_ccs_accuracy",
                     "description": "Mean predicted accuracy of CCS reads"
                 },
                 {
                     "header": "Number of Passes (mean)",
                     "type": "float",
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "mean_ccs_num_passes",
                     "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer"
                 }
@@ -100,35 +100,35 @@
                 {
                     "header": "CCS reads",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "number_of_ccs_reads",
                     "description": "The number of CCS reads."
                 },
                 {
                     "header": "Number of CCS bases",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "total_number_of_ccs_bases",
                     "description": "The number of CCS bases."
                 },
                 {
                     "header": "CCS Read Score (mean)",
                     "type": null,
-                    "format": null,
+                    "format": "{:.2f}",
                     "id": "mean_ccs_accuracy",
                     "description": "Mean predicted accuracy of CCS reads"
                 },
                 {
                     "header": "Number of Passes (mean)",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "mean_ccs_num_passes",
                     "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer"
                 },
                 {
                     "header": "CCS Read Length (mean)",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "mean_ccs_readlength",
                     "description": "Mean length of CCS reads"
                 }

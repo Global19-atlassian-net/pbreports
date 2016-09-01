@@ -15,14 +15,14 @@
                 {
                     "header": "Reads",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "number_of_reads",
                     "description": "The number of reads associated with the barcode."
                 },
                 {
                     "header": "Bases",
                     "type": null,
-                    "format": null,
+                    "format": "{:,d}",
                     "id": "number_of_bases",
                     "description": "The number of bases associated with the barcode."
                 }
