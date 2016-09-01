@@ -35,7 +35,7 @@
                 {
                     "header": "Base Coverage",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{:.2f}",
                     "id": "coverage",
                     "description": "The mean depth of coverage across the reference sequence"
                 }
