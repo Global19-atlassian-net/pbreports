@@ -13,7 +13,7 @@
                 },
                 {
                     "header": "Reference Length",
-                    "type": "float",
+                    "type": "{:,d}",
                     "format": "{:,d}",
                     "id": "contig_len",
                     "description": "Length of reference contig"
@@ -48,13 +48,13 @@
     "attributes": [
         {
             "type": "float",
-            "format": "{:.2f}",
+            "format": "{p:.2f}",
             "description": "The percent concordance of the consensus sequence compared to the reference",
             "name": "Reference Consensus Concordance (mean)",
             "id": "weighted_mean_concordance"
         },
         {
-            "type": "float",
+            "type": "{:,d}",
             "format": "{:,d}",
             "description": "Mean length of reference sequence contigs",
             "name": "Reference Contig Length (mean)",

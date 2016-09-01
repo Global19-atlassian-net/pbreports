@@ -90,7 +90,7 @@
         },
         {
             "id": "mapped_subread_readlength_mean",
-            "type": "float",
+            "type": "int",
             "format": "{:,d}",
             "description": "The mean length of the mapped portion of subreads which mapped to the reference sequence",
             "name": "Subread Length Mean (mapped)"
@@ -125,7 +125,7 @@
         },
         {
             "id": "mapped_readlength_mean",
-            "type": "float",
+            "type": "int",
             "format": "{:,d}",
             "description": "The approximate mean length of polymerase reads that mapped to the reference sequence starting from the first mapped base of the first mapped subread and ending at the last mapped base of the last mapped subread.",
             "name": "Polymerase Read Length Mean (mapped)"

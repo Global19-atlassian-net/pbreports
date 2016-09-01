@@ -27,7 +27,7 @@
                 },
                 {
                     "header": "% of Motifs Detected",
-                    "type": null,
+                    "type": "float",
                     "format": "{p:.2f}",
                     "id": "percent_motifs_detected",
                     "description": "The percentage of times that this motif was detected as modified across the entire genome."
@@ -62,7 +62,7 @@
                 },
                 {
                     "header": "Partner Motif",
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "id": "partner_motif",
                     "description": "For motifs that are not self-palindromic, this is the complementary sequence."
@@ -83,7 +83,7 @@
                 },
                 {
                     "header": "Objective Score",
-                    "type": null,
+                    "type": "int",
                     "format": "{:,d}",
                     "id": "objective_score",
                     "description": null
