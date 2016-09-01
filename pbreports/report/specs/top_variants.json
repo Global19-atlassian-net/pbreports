@@ -1,122 +1,122 @@
 {
     "tables": [
         {
-            "title": "Top Variants", 
-            "id": "top_variants_table", 
+            "title": "Top Variants",
+            "id": "top_variants_table",
             "columns": [
                 {
-                    "header": "Sequence", 
-                    "type": null, 
+                    "header": "Sequence",
+                    "type": null,
                     "format": null,
-                    "id": "sequence", 
+                    "id": "sequence",
                     "description": "The name of the reference sequence."
-                }, 
+                },
                 {
-                    "header": "Position", 
-                    "type": null, 
+                    "header": "Position",
+                    "type": null,
                     "format": null,
-                    "id": "position", 
+                    "id": "position",
                     "description": "The position of the variant in reference coordinates."
-                }, 
+                },
                 {
-                    "header": "Variant", 
-                    "type": null, 
+                    "header": "Variant",
+                    "type": null,
                     "format": null,
-                    "id": "variant", 
+                    "id": "variant",
                     "description": "The variant position, type, and affected nucleotide."
-                }, 
+                },
                 {
-                    "header": "Type", 
-                    "type": null, 
+                    "header": "Type",
+                    "type": null,
                     "format": null,
-                    "id": "type", 
+                    "id": "type",
                     "description": "The variant type."
-                }, 
+                },
                 {
-                    "header": "Coverage", 
-                    "type": null, 
+                    "header": "Coverage",
+                    "type": null,
                     "format": null,
-                    "id": "coverage", 
+                    "id": "coverage",
                     "description": "Read coverage at the variant position."
-                }, 
+                },
                 {
-                    "header": "Confidence", 
-                    "type": null, 
+                    "header": "Confidence",
+                    "type": null,
                     "format": null,
-                    "id": "confidence", 
+                    "id": "confidence",
                     "description": "The confidence of the variant call."
-                }, 
+                },
                 {
-                    "header": "Genotype", 
-                    "type": null, 
+                    "header": "Genotype",
+                    "type": null,
                     "format": null,
-                    "id": "genotype", 
+                    "id": "genotype",
                     "description": "Includes the full number of chromosomes (diploid) or half the number (haploid)."
                 }
-            ], 
+            ],
             "description": "Displays the position, type and coverage of the top 100 variants, sorted on confidence."
-        }, 
+        },
         {
-            "title": "Top minor variants", 
-            "id": "top_minor_variants_table", 
+            "title": "Top minor variants",
+            "id": "top_minor_variants_table",
             "columns": [
                 {
-                    "header": "Sequence", 
-                    "type": null, 
+                    "header": "Sequence",
+                    "type": null,
                     "format": null,
-                    "id": "sequence", 
+                    "id": "sequence",
                     "description": "The name of the reference sequence."
-                }, 
+                },
                 {
-                    "header": "Position", 
-                    "type": null, 
+                    "header": "Position",
+                    "type": null,
                     "format": null,
-                    "id": "position", 
+                    "id": "position",
                     "description": "The position of the variant in reference coordinates."
-                }, 
+                },
                 {
-                    "header": "Variant", 
-                    "type": null, 
+                    "header": "Variant",
+                    "type": null,
                     "format": null,
-                    "id": "variant", 
+                    "id": "variant",
                     "description": "The variant position, type, and affected nucleotide."
-                }, 
+                },
                 {
-                    "header": "Type", 
-                    "type": null, 
+                    "header": "Type",
+                    "type": null,
                     "format": null,
-                    "id": "type", 
+                    "id": "type",
                     "description": "The variant type."
-                }, 
+                },
                 {
-                    "header": "Coverage", 
-                    "type": null, 
+                    "header": "Coverage",
+                    "type": null,
                     "format": null,
-                    "id": "coverage", 
+                    "id": "coverage",
                     "description": "The coverage at position."
-                }, 
+                },
                 {
-                    "header": "Confidence", 
-                    "type": null, 
+                    "header": "Confidence",
+                    "type": null,
                     "format": null,
-                    "id": "confidence", 
+                    "id": "confidence",
                     "description": "The confidence of the variant call."
-                }, 
+                },
                 {
-                    "header": "Frequency", 
-                    "type": null, 
+                    "header": "Frequency",
+                    "type": null,
                     "format": null,
-                    "id": "frequency", 
+                    "id": "frequency",
                     "description": null
                 }
-            ], 
+            ],
             "description": null
         }
-    ], 
-    "description": null, 
-    "title": "Top Variants", 
-    "attributes": [], 
-    "id": "topvariants", 
+    ],
+    "description": null,
+    "title": "Top Variants",
+    "attributes": [],
+    "id": "topvariants",
     "version": null,
     "plotgroups": []
 }

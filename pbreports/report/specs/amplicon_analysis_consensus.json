@@ -3,14 +3,14 @@
     "tables": [
         {
             "id": "result_table",
-	    "description": "Displays statistics on amplicon sequences",
+            "description": "Displays statistics on amplicon sequences",
             "columns": [
                 {
                     "header": "Barcode Name",
                     "id": "barcodename",
                     "description": "A string containing the pair of barcode indices for which the following metrics apply, or a 0 if not barcoded. The barcode entries are represented as a pair of dash-separated number, with each number representing one of the two barcodes used for that amplicon.",
                     "format": null,
-		    "type": null
+                    "type": null
                 },
                 {
                     "header": "Sequence Cluster",

@@ -1,12 +1,12 @@
 {
-    "tables": [], 
-    "description": null, 
-    "title": "Adapter Report", 
+    "tables": [],
+    "description": null,
+    "title": "Adapter Report",
     "attributes": [
         {
             "type": null,
             "format": null,
-            "description": "Percentage of Prod1 ZMWs with adapter dimers", 
+            "description": "Percentage of Prod1 ZMWs with adapter dimers",
             "name": "Adapter Dimers (0-10bp) %",
             "id": "adapter_dimers"
         },
@@ -17,7 +17,7 @@
             "name": "Short Inserts (11-100bp) %",
             "id": "short_inserts"
         }
-    ], 
+    ],
     "id": "adapter_xml_report",
     "version": null,
     "plotgroups": [
@@ -25,17 +25,17 @@
             "plots": [
                 {
                     "xlabel": "Reads",
-                    "description": null, 
+                    "description": null,
                     "caption": null,
                     "ylabel": "Median Distance Between Adapters",
                     "title": null,
                     "id": "adapter_xml_plot"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
+            ],
+            "description": null,
+            "legend": null,
             "id": "adapter_xml_plot_group",
             "title": "Observed Insert Length Distribution"
         }
-]
+    ]
 }

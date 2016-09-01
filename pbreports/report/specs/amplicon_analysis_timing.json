@@ -3,7 +3,7 @@
     "tables": [
         {
             "id": "result_table",
-	    "description": null,
+            "description": null,
             "columns": [
                 {
                     "header": "Barcode Name",

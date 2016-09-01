@@ -39,7 +39,7 @@
     "tables": [
         {
             "id": "ccs_table",
-	    "description": null,
+            "description": null,
             "columns": [
                 {
                     "header": "Movie",
@@ -86,7 +86,7 @@
             ],
             "title": "By Movie"
         },
-	{
+        {
             "id": "ccs_barcodes",
             "description": null,
             "columns": [
@@ -144,7 +144,11 @@
                     "description": null,
                     "caption": "CCS Read Score",
                     "title": "CCS Read Score",
-                    "ylabel": {"L": "Reads", "R": "bp > Read Score", "Custom": "Mb > Read Score"},
+                    "ylabel": {
+                        "L": "Reads",
+                        "R": "bp > Read Score",
+                        "Custom": "Mb > Read Score"
+                    },
                     "id": "accuracy_hist"
                 }
             ],
@@ -169,25 +173,29 @@
             "id": "npasses_hist",
             "title": "Number of Passes"
         },
-	{
-	    "plots": [
+        {
+            "plots": [
                 {
                     "xlabel": "Read Length",
                     "description": null,
                     "caption": "CCS Read Length",
                     "title": "CCS Read Length",
-                    "ylabel": {"L": "Reads", "R": "bp > Read Length", "Custom": "Mb > Read Length"},
+                    "ylabel": {
+                        "L": "Reads",
+                        "R": "bp > Read Length",
+                        "Custom": "Mb > Read Length"
+                    },
                     "id": "readlength_hist"
                 }
-	             ],
+            ],
             "description": null,
             "legend": null,
             "id": "readlength_group",
             "title": "CCS Read Length"
-	},
-	{
+        },
+        {
             "plots": [
-		{
+                {
                     "xlabel": "Number of passes",
                     "description": null,
                     "caption": "Number of Passes vs. Read Score",
@@ -195,16 +203,15 @@
                     "ylabel": "Read Score as Phred QV",
                     "id": "npasses_vs_accuracy"
                 }
-                     ],
+            ],
             "description": null,
             "legend": null,
             "id": "npasses_vs_accuracy",
             "title": "Number of Passes vs. Read Score"
-	}
+        }
     ],
     "id": "ccs",
     "version": null,
     "description": null,
     "title": "CCS Report"
 }
-

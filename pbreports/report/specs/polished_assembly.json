@@ -1,54 +1,54 @@
 {
-    "tables": [], 
-    "description": null, 
-    "title": "Polished Assembly", 
+    "tables": [],
+    "description": null,
+    "title": "Polished Assembly",
     "attributes": [
         {
-            "type": "int", 
+            "type": "int",
             "format": null,
-            "description": "The number of polished contigs", 
-            "name": "Polished Contigs", 
+            "description": "The number of polished contigs",
+            "name": "Polished Contigs",
             "id": "polished_contigs"
-        }, 
+        },
         {
-            "type": "int", 
+            "type": "int",
             "format": null,
-            "description": "Length of longest contig", 
-            "name": "Maximum Contig Length", 
+            "description": "Length of longest contig",
+            "name": "Maximum Contig Length",
             "id": "max_contig_length"
-        }, 
+        },
         {
-            "type": "int", 
+            "type": "int",
             "format": null,
-            "description": "50% of contigs are longer than this value", 
-            "name": "N50 Contig Length", 
+            "description": "50% of contigs are longer than this value",
+            "name": "N50 Contig Length",
             "id": "n_50_contig_length"
-        }, 
+        },
         {
-            "type": "int", 
+            "type": "int",
             "format": null,
             "description": "Total length of all contigs",
-            "name": "Sum of Contig Lengths", 
+            "name": "Sum of Contig Lengths",
             "id": "sum_contig_lengths"
         }
-    ], 
-    "id": "polished_assembly", 
+    ],
+    "id": "polished_assembly",
     "version": null,
     "plotgroups": [
         {
             "plots": [
                 {
-                    "xlabel": "Mean Coverage Depth", 
-                    "description": null, 
-                    "caption": "Contig Coverage vs Confidence", 
-                    "ylabel": "Mean Confidence (QV)", 
-                    "title": "Contig Coverage vs Confidence", 
+                    "xlabel": "Mean Coverage Depth",
+                    "description": null,
+                    "caption": "Contig Coverage vs Confidence",
+                    "ylabel": "Mean Confidence (QV)",
+                    "title": "Contig Coverage vs Confidence",
                     "id": "cov_vs_qual"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
-            "id": "coverage_based", 
+            ],
+            "description": null,
+            "legend": null,
+            "id": "coverage_based",
             "title": "Contig Coverage vs Confidence"
         }
     ]

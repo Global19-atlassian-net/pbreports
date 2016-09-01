@@ -1,24 +1,24 @@
 {
-    "tables": [], 
-    "description": null, 
+    "tables": [],
+    "description": null,
     "title": "Overview",
     "attributes": [
         {
-            "type": null, 
+            "type": null,
             "format": null,
-            "description": null, 
-            "name": "SMRT Cells", 
+            "description": null,
+            "name": "SMRT Cells",
             "id": "ncells"
-        }, 
+        },
         {
-            "type": "float", 
+            "type": "float",
             "format": null,
-            "description": null, 
-            "name": "Movies", 
+            "description": null,
+            "name": "Movies",
             "id": "nmovies"
         }
-    ], 
-    "id": "overview", 
+    ],
+    "id": "overview",
     "version": null,
     "plotgroups": []
 }
