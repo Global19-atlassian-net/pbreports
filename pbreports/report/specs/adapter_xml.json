@@ -4,19 +4,22 @@
     "title": "Adapter Report", 
     "attributes": [
         {
-            "type": null, 
+            "type": null,
+            "format": null,
             "description": "Percentage of Prod1 ZMWs with adapter dimers", 
             "name": "Adapter Dimers (0-10bp) %",
             "id": "adapter_dimers"
         },
         {
             "type": null,
+            "format": null,
             "description": "Percentage of Prod1 ZMWs with short inserts",
             "name": "Short Inserts (11-100bp) %",
             "id": "short_inserts"
         }
     ], 
     "id": "adapter_xml_report",
+    "version": null,
     "plotgroups": [
         {
             "plots": [

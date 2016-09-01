@@ -5,30 +5,35 @@
     "attributes": [
         {
             "type": null, 
+            "format": null,
             "description": null, 
             "name": "Total Number of Bases", 
             "id": "filter_subread_nbases"
         }, 
         {
             "type": null,
+            "format": null,
             "description": null,
             "name": "Number of Reads",             
             "id": "filter_subread_nreads"
         },
         {
             "type": null,
+            "format": null,
             "description": null,
             "name": "Mean Subread Length",             
             "id": "filter_subread_mean"
         },
         {
             "type": null,
+            "format": null,
             "description": null,
             "name": "N50",             
             "id": "filter_subread_n50"
         }
     ], 
-    "id": "filter_subread", 
+    "id": "filter_subread",
+    "version": null, 
     "plotgroups": [
         {
             "plots": [

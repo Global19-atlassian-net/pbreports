@@ -7,48 +7,56 @@
                 {
                     "header": "Movie", 
                     "type": "str", 
+                    "format": null,
                     "id": "movie", 
                     "description": "Movie name for which the following metrics apply."
                 }, 
                 {
                     "header": "Number of Polymerase Reads (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_reads", 
                     "description": "The number of polymerase reads mapped to the reference sequence."
                 }, 
                 {
                     "header": "Polymerase Read Length Mean (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_polymerase_read_length", 
                     "description": "The approximate mean length of polymerase reads that mapped to the reference sequence starting from the first mapped base of the first mapped subread and ending at the last mapped base of the last mapped subread."
                 }, 
                 {
                     "header": "Polymerase Read N50 (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_polymerase_read_length_n50", 
                     "description": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value."
                 }, 
                 {
                     "header": "Number of Subreads (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_subreads",
                     "description": "The number of subreads that mapped to the reference sequence."
                 }, 
                 {
                     "header": "Number of Subread Bases (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_subread_base", 
                     "description": "The number of subread bases that mapped to the reference sequence."
                 }, 
                 {
                     "header": "Subread Length Mean (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_subread_length", 
                     "description": "The mean length of post-filter subreads that mapped to the reference sequence."
                 }, 
                 {
                     "header": "Mean Concordance (mapped)", 
-                    "type": "float", 
+                    "type": "float",
+                    "format": null, 
                     "id": "mapped_subread_concordance", 
                     "description": "The mean concordance of subreads that mapped to the reference sequence"
                 }
@@ -62,77 +70,90 @@
         {
             "id": "mapped_subread_concordance_mean", 
             "type": "float", 
+            "format": null,
             "description": "The mean concordance of subreads that mapped to the reference sequence", 
             "name": "Mean Concordance (mapped)"
         }, 
         {
             "id": "mapped_subreads_n", 
             "type": "int", 
+            "format": null,
             "description": "The number of subreads mapped to the reference sequence", 
             "name": "Number of Subreads (mapped)"
         }, 
         {
             "id": "mapped_subread_bases_n", 
             "type": "int", 
+            "format": null,
             "description": "The number of subread bases mapped to the reference sequence", 
             "name": "Number of Subread Bases (mapped)"
         }, 
         {
             "id": "mapped_subread_readlength_mean", 
             "type": "float", 
+            "format": null,
             "description": "The mean length of the mapped portion of subreads which mapped to the reference sequence", 
             "name": "Subread Length Mean (mapped)"
         }, 
         {
             "id": "mapped_subreadlength_n50", 
             "type": "int", 
+            "format": null,
             "description": "The subread length at which 50% of the mapped bases are in subreads longer than, or equal to, this value", 
             "name": "Subread Length N50 (mapped)"
         }, 
         {
             "id": "mapped_subreadlength_q95", 
             "type": "int", 
+            "format": null,
             "description": "The 95th percentile of length of subreads that mapped to the reference sequence", 
             "name": "Subread Length 95% (mapped)"
         }, 
         {
             "id": "mapped_subread_readlength_max", 
             "type": "int", 
+            "format": null,
             "description": "The maximum length of subreads that mapped to the reference sequence", 
             "name": "Subread Length Max (mapped)"
         }, 
         {
             "id": "mapped_reads_n", 
             "type": "int", 
+            "format": null,
             "description": "The number of polymerase reads mapped to the reference sequence", 
             "name": "Number of Polymerase Reads (mapped)"
         }, 
         {
             "id": "mapped_readlength_mean", 
             "type": "float", 
+            "format": null,
             "description": "The approximate mean length of polymerase reads that mapped to the reference sequence starting from the first mapped base of the first mapped subread and ending at the last mapped base of the last mapped subread.", 
             "name": "Polymerase Read Length Mean (mapped)"
         }, 
         {
             "id": "mapped_readlength_n50", 
             "type": "int", 
+            "format": null,
             "description": "The read length at which 50% of the mapped bases are in polymerase reads longer than, or equal to, this value", 
             "name": "Polymerase Read N50 (mapped)"
         }, 
         {
             "id": "mapped_readlength_q95", 
             "type": "int", 
+            "format": null,
             "description": "The 95th percentile of read length of polymerase reads that mapped to the reference sequence", 
             "name": "Polymerase Read Length 95% (mapped)"
         }, 
         {
             "id": "mapped_readlength_max", 
             "type": "int", 
+            "format": null,
             "description": "The maximum length of polymerase reads that mapped to the reference sequence", 
             "name": "Polymerase Read Length Max (mapped)"
         }
     ], 
     "id": "mapping_stats", 
+    "version": null,
     "plotgroups": [
         {
             "plots": [

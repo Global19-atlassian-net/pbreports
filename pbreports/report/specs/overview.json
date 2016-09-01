@@ -5,17 +5,20 @@
     "attributes": [
         {
             "type": null, 
+            "format": null,
             "description": null, 
             "name": "SMRT Cells", 
             "id": "ncells"
         }, 
         {
             "type": "float", 
+            "format": null,
             "description": null, 
             "name": "Movies", 
             "id": "nmovies"
         }
     ], 
     "id": "overview", 
+    "version": null,
     "plotgroups": []
 }

@@ -7,16 +7,17 @@ from pbcommand.models.report import Attribute, PlotGroup, Plot, Table, Column, R
 
 class MetaAttribute(object):
 
-    def __init__(self, id_, name, description, type_):
+    def __init__(self, id_, name, description, type_, format_):
         self.id = id_
         self.name = name
         self.description = description
         self.type = type_
+        self.format = format_
 
     @staticmethod
     def from_dict(d):
         return MetaAttribute(d['id'].split(".")[-1], d['name'],
-                             d['description'], d["type"])
+                             d['description'], d["type"], d["format"])
 
     def as_attribute(self, value):
         #        assert type(value).__name__ == self.type, "{v} != {t}".format(v=type(value), t=self.type)
@@ -32,16 +33,17 @@ class MetaAttribute(object):
 
 class MetaColumn(object):
 
-    def __init__(self, id_, header, description, type_):
+    def __init__(self, id_, header, description, type_, format_):
         self.id = id_
         self.header = header
         self.description = description
         self.type = type_
+        self.format = format_
 
     @staticmethod
     def from_dict(d):
         return MetaColumn(d['id'].split(".")[-1], d['header'],
-                          d['description'], d["type"])
+                          d['description'], d["type"], d['format'])
 
     def as_column(self, values=()):
         # for value in values:
@@ -148,8 +150,9 @@ class MetaPlotGroup(object):
 
 class MetaReport(object):
 
-    def __init__(self, id_, title, description, attributes=(), plotgroups=(), tables=()):
+    def __init__(self, id_, version, title, description, attributes=(), plotgroups=(), tables=()):
         self.id = id_
+        self.version = version
         self.title = title
         self.description = description
         self.attributes = attributes
@@ -163,7 +166,7 @@ class MetaReport(object):
     def from_json(json_str):
         d = json.load(open(json_str))
         json.dumps(d)
-        return MetaReport(d['id'], d['title'], d['description'],
+        return MetaReport(d['id'], d['version'], d['title'], d['description'],
                           [MetaAttribute.from_dict(a)
                            for a in d['attributes']],
                           [MetaPlotGroup.from_dict(p)

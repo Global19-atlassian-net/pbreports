@@ -1,5 +1,6 @@
 {
     "id": "test_report",
+    "version": null,
     "title": "Example report spec",
     "description": "This is a small test report which is used to ensure report_spec.py is working",
     "attributes": [
@@ -7,18 +8,21 @@
             "id": "attribute1",
             "name": "Attribute 1",
             "description": "An attribute of type int",
+            "format": null,
             "type": "int"
         },
         {
             "id": "attribute2",
             "name": "Attribute 2",
             "description": "An attribute of type float",
+            "format": null,
             "type": "float"
         },
 	{
             "id": "attribute3",
             "name": "Attribute 3",
             "description": "An attribute of type string",
+            "format": null,
             "type": "str"
 	}
 
@@ -76,6 +80,7 @@
                    "id": "column1",
                     "header": "Column 1",
                     "description": "A column of type int",
+                    "format": null,
                     "type": "int"
                 }
                 ]
@@ -89,12 +94,14 @@
                    "id": "column1",
                     "header": "Column 1",
                     "description": "A column of type float",
+                    "format": null,
                     "type": "float"
                 },
                 {
                    "id": "column2",
                     "header": "Column 2",
                     "description": "A column of type str",
+                    "format": null,
                     "type": "str"
                 }
                 ]

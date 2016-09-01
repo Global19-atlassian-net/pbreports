@@ -7,36 +7,42 @@
                 {
                     "header": "Movie", 
                     "type": "str", 
+                    "format": null,
                     "id": "movie", 
                     "description": "Movie name for which the following metrics apply."
                 }, 
                 {
                     "header": "Number of CCS Reads (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_reads", 
                     "description": "The number of CCS reads that mapped to the reference sequence"
                 }, 
                 {
                     "header": "Number of CCS Bases (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_bases", 
                     "description": "The number of CCS read bases that mapped to the reference sequence"
                 }, 
                 {
                     "header": "CCS Read Length Mean (mapped)", 
-                    "type": "float", 
+                    "type": "float",
+                    "format": null, 
                     "id": "mapped_read_length_mean", 
                     "description": "The mean length of CCS reads that mapped to the reference sequence"
                 }, 
                 {
                     "header": "CCS Read Length N50 (mapped)", 
                     "type": "int", 
+                    "format": null,
                     "id": "mapped_read_length_n50", 
                     "description": "The read length at which 50% of the bases are in reads longer than, or equal to, this value"
                 }, 
                 {
                     "header": "Mapped CCS Read Mean Concordance", 
                     "type": "float", 
+                    "format": null,
                     "id": "mapped_read_concordance_mean", 
                     "description": "The mean concordance of CCS reads that mapped to the reference sequence"
                 }
@@ -49,48 +55,56 @@
     "attributes": [
         {
             "type": null, 
+            "format": null,
             "description": "The mean concordance of CCS reads that mapped to the reference sequence", 
             "name": "Mapped CCS Read Mean Concordance", 
             "id": "mapped_read_concordance_mean"
         }, 
         {
             "type": "int", 
+            "format": null,
             "description": "The number of CCS reads that mapped to the reference sequence", 
             "name": "Number of CCS Reads (mapped)", 
             "id": "mapped_reads_n"
         }, 
         {
             "type": null, 
+            "format": null,
             "description": "The number of CCS read bases that mapped to the reference sequence", 
             "name": "Number of CCS Bases (mapped)", 
             "id": "mapped_bases_n"
         }, 
         {
             "type": null, 
+            "format": null,
             "description": "The mean length of CCS reads that mapped to the reference sequence", 
             "name": "CCS Read Length Mean (mapped)", 
             "id": "mapped_readlength_mean"
         }, 
         {
             "type": null, 
+            "format": null,
             "description": "The read length at which 50% of the bases are in reads longer than, or equal to, this value", 
             "name": "CCS Read Length N50 (mapped)", 
             "id": "mapped_readlength_n50"
         }, 
         {
             "type": null, 
+            "format": null,
             "description": "The 95th percentile of length of CCS reads that mapped to the reference sequence", 
             "name": "CCS Read Length 95% (mapped)", 
             "id": "mapped_readlength_q95"
         }, 
         {
             "type": null, 
+            "format": null,
             "description": "The maximum length of CCS reads that mapped to the reference sequencee", 
             "name": "CCS Read Length Max (mapped)", 
             "id": "mapped_readlength_max"
         }
     ], 
     "id": "mapping_stats_ccs",
+    "version": null,
     "plotgroups": [
         {
             "id": "qv_calibration_group", 

@@ -3,12 +3,14 @@
         {
             "description": "Mean depth of coverage over entire reference",
             "type": "float",
+            "format": null,
             "id": "depth_coverage_mean",
             "name": "Mean Coverage"
         },
         {
             "description": "Percent of reference bases without coverage",
             "type": "float",
+            "format": null,
             "id": "missing_bases_pct",
             "name": "Missing Bases (%)"
         }
@@ -49,6 +51,7 @@
         }
     ],
     "id": "coverage",
+    "version": null,
     "description": null,
     "title": "Coverage"
 }

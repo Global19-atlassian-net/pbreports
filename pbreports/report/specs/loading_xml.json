@@ -7,30 +7,35 @@
                 {
                     "header": "Collection Context", 
                     "type": null, 
+                    "format": null,
                     "id": "collection_context", 
                     "description": null
                 }, 
                 {
                     "header": "Productive ZMWs",
                     "type": null,
+                    "format": null,
                     "id": "productive_zmws",     
                     "description": null
                 },
                 {
                     "header": "Productivity 0 (%)",
                     "type": null,
+                    "format": null,
                     "id": "productivity_0",     
                     "description": null
                 },
                 {
                     "header": "Productivity 1 (%)",
                     "type": null,
+                    "format": null,
                     "id": "productivity_1",     
                     "description": null
                 },
                 {
                     "header": "Productivity 2 (%)",
                     "type": null,
+                    "format": null,
                     "id": "productivity_2",     
                     "description": null
                 }
@@ -42,6 +47,7 @@
     "title": "Loading Report", 
     "attributes": [], 
     "id": "loading_xml_report", 
+    "version": null,
     "plotgroups": []
 }
 

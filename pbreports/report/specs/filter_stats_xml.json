@@ -4,37 +4,43 @@
     "title": "Raw Data Report", 
     "attributes": [
         {
-            "type": "", 
+            "type": null,
+            "format": null, 
             "id": "nbases", 
             "name": "Polymerase Read Bases", 
             "description": "Number of bases in the polymerase reads"
         }, 
         {
-            "type": "", 
+            "type": null,
+            "format": null, 
             "id": "nreads", 
             "name": "Polymerase Reads", 
             "description": "Number of polymerase reads"
         }, 
         {
-            "type": "", 
+            "type": null,
+            "format": null, 
             "id": "read_n50", 
             "name": "Polymerase Read N50", 
             "description": "The polymerase read length at which 50% of the polymerase read bases are in polymerase reads longer than, or equal to, this value"
         }, 
         {
-            "type": "", 
+            "type": null,
+            "format": null, 
             "id": "read_length", 
             "name": "Polymerase Read Length (mean)", 
             "description": "The mean polymerase read length"
         }, 
         {
-            "type": "", 
+            "type": null,
+            "format": null, 
             "id": "insert_length", 
             "name": "Insert Length (mean)", 
             "description": "The mean insert length"
         }
     ], 
     "id": "raw_data_report", 
+    "version": null,
     "plotgroups": [
         {
             "plots": [
