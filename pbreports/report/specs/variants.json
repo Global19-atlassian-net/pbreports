@@ -28,14 +28,14 @@
                 {
                     "header": "Consensus Concordance",
                     "type": "float",
-                    "format": "{:.2f}",
+                    "format": "{p:.2f}",
                     "id": "concordance",
                     "description": "The percent concordance of the consensus sequence compared to the reference"
                 },
                 {
                     "header": "Base Coverage",
                     "type": "float",
-                    "format": "{:.2f}",
+                    "format": "{p:.2f}",
                     "id": "coverage",
                     "description": "The mean depth of coverage across the reference sequence"
                 }
