@@ -53,7 +53,7 @@
     ],
     "plotgroups": [],
     "id": "amplicon_analysis_consensus",
-    "version": null,
+    "version": "1.0.0",
     "title": "Amplicon Consensus",
     "description": null
 }

@@ -96,7 +96,7 @@
     "title": "Modified Base Motifs",
     "attributes": [],
     "id": "motifs",
-    "version": null,
+    "version": "1.0.0",
     "plotgroups": [
         {
             "plots": [

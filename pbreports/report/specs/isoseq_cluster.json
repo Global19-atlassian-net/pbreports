@@ -83,7 +83,7 @@
         }
     ],
     "id": "isoseq_cluster",
-    "version": null,
+    "version": "1.0.0",
     "plotgroups": [
         {
             "id": "consensus_isoforms_readlength_group",

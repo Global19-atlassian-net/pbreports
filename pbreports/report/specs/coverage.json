@@ -51,7 +51,7 @@
         }
     ],
     "id": "coverage",
-    "version": null,
+    "version": "1.0.0",
     "description": null,
     "title": "Coverage"
 }

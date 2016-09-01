@@ -47,6 +47,6 @@
     "title": "Loading Report",
     "attributes": [],
     "id": "loading_xml_report",
-    "version": null,
+    "version": "1.0.0",
     "plotgroups": []
 }
