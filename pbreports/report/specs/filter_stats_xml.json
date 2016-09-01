@@ -1,109 +1,109 @@
 {
-    "tables": [], 
-    "description": null, 
-    "title": "Raw Data Report", 
+    "tables": [],
+    "description": null,
+    "title": "Raw Data Report",
     "attributes": [
         {
             "type": null,
-            "format": null, 
-            "id": "nbases", 
-            "name": "Polymerase Read Bases", 
+            "format": null,
+            "id": "nbases",
+            "name": "Polymerase Read Bases",
             "description": "Number of bases in the polymerase reads"
-        }, 
+        },
         {
             "type": null,
-            "format": null, 
-            "id": "nreads", 
-            "name": "Polymerase Reads", 
+            "format": null,
+            "id": "nreads",
+            "name": "Polymerase Reads",
             "description": "Number of polymerase reads"
-        }, 
+        },
         {
             "type": null,
-            "format": null, 
-            "id": "read_n50", 
-            "name": "Polymerase Read N50", 
+            "format": null,
+            "id": "read_n50",
+            "name": "Polymerase Read N50",
             "description": "The polymerase read length at which 50% of the polymerase read bases are in polymerase reads longer than, or equal to, this value"
-        }, 
+        },
         {
             "type": null,
-            "format": null, 
-            "id": "read_length", 
-            "name": "Polymerase Read Length (mean)", 
+            "format": null,
+            "id": "read_length",
+            "name": "Polymerase Read Length (mean)",
             "description": "The mean polymerase read length"
-        }, 
+        },
         {
             "type": null,
-            "format": null, 
-            "id": "insert_length", 
-            "name": "Insert Length (mean)", 
+            "format": null,
+            "id": "insert_length",
+            "name": "Insert Length (mean)",
             "description": "The mean insert length"
         }
-    ], 
-    "id": "raw_data_report", 
+    ],
+    "id": "raw_data_report",
     "version": null,
     "plotgroups": [
         {
             "plots": [
                 {
-                    "xlabel": "Read Length", 
-                    "description": null, 
-                    "caption": "Polymerase Read Length", 
-                    "ylabel": "Number Of Reads", 
-                    "title": "Polymerase Read Length", 
+                    "xlabel": "Read Length",
+                    "description": null,
+                    "caption": "Polymerase Read Length",
+                    "ylabel": "Number Of Reads",
+                    "title": "Polymerase Read Length",
                     "id": "read_length_plot"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
-            "id": "read_length_plot_group", 
+            ],
+            "description": null,
+            "legend": null,
+            "id": "read_length_plot_group",
             "title": "Polymerase Read Length"
-        }, 
+        },
         {
             "plots": [
                 {
-                    "xlabel": "Read Quality", 
-                    "description": null, 
-                    "caption": null, 
-                    "ylabel": "Number Of Reads", 
-                    "title": null, 
+                    "xlabel": "Read Quality",
+                    "description": null,
+                    "caption": null,
+                    "ylabel": "Number Of Reads",
+                    "title": null,
                     "id": "read_quality_plot"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
-            "id": "read_quality_plot_group", 
+            ],
+            "description": null,
+            "legend": null,
+            "id": "read_quality_plot_group",
             "title": null
-        }, 
+        },
         {
             "plots": [
                 {
-                    "xlabel": "Insert Length", 
-                    "description": null, 
-                    "caption": "Estimated Insert Length", 
-                    "ylabel": "Number of Reads", 
-                    "title": "Estimated Insert Length", 
+                    "xlabel": "Insert Length",
+                    "description": null,
+                    "caption": "Estimated Insert Length",
+                    "ylabel": "Number of Reads",
+                    "title": "Estimated Insert Length",
                     "id": "insert_length_plot"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
-            "id": "insert_length_plot_group", 
+            ],
+            "description": null,
+            "legend": null,
+            "id": "insert_length_plot_group",
             "title": "Estimated Insert Length"
-        }, 
+        },
         {
             "plots": [
                 {
-                    "xlabel": "Insert Quality", 
-                    "description": null, 
-                    "caption": null, 
-                    "ylabel": "Number Of Reads", 
-                    "title": null, 
+                    "xlabel": "Insert Quality",
+                    "description": null,
+                    "caption": null,
+                    "ylabel": "Number Of Reads",
+                    "title": null,
                     "id": "insert_quality_plot"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
-            "id": "insert_quality_plot_group", 
+            ],
+            "description": null,
+            "legend": null,
+            "id": "insert_quality_plot_group",
             "title": null
         }
     ]

@@ -1,52 +1,51 @@
 {
     "tables": [
         {
-            "title": null, 
-            "id": "fastq_table", 
+            "title": null,
+            "id": "fastq_table",
             "columns": [
-        {
-            "type": null,
-            "format": null,
-            "description": null,
-            "header": "File Name",
-            "id": "file_name"
-        },
-        {
-            "type": null,
-            "format": null,
-            "description": null,
-            "header": "Number of Reads",
-            "id": "n_reads"
-        },
-        {
-            "type": null,
-            "format": null,
-            "description": null,
-            "header": "Total Bases",
-            "id": "total_bases"
-        },
-        {
-            "type": null,
-            "format": null,
-            "description": null,
-            "header": "Mean Read Length",
-            "id": "mean_readlength"
-        },
-        {
-            "type": null,
-            "format": null,
-            "description": null,
-            "header": "Mean Quality Values",
-            "id": "mean_qv"
-        }
-        ], 
+                {
+                    "type": null,
+                    "format": null,
+                    "description": null,
+                    "header": "File Name",
+                    "id": "file_name"
+                },
+                {
+                    "type": null,
+                    "format": null,
+                    "description": null,
+                    "header": "Number of Reads",
+                    "id": "n_reads"
+                },
+                {
+                    "type": null,
+                    "format": null,
+                    "description": null,
+                    "header": "Total Bases",
+                    "id": "total_bases"
+                },
+                {
+                    "type": null,
+                    "format": null,
+                    "description": null,
+                    "header": "Mean Read Length",
+                    "id": "mean_readlength"
+                },
+                {
+                    "type": null,
+                    "format": null,
+                    "description": null,
+                    "header": "Mean Quality Values",
+                    "id": "mean_qv"
+                }
+            ],
             "description": null
         }
-
-], 
-    "description": null, 
-    "title": null, 
-    "attributes": [], 
+    ],
+    "description": null,
+    "title": null,
+    "attributes": [],
     "id": "ccs_validator",
     "version": null,
     "plotgroups": [
@@ -54,7 +53,7 @@
             "plots": [
                 {
                     "xlabel": "Read Length",
-                    "description": null, 
+                    "description": null,
                     "caption": null,
                     "ylabel": null,
                     "title": "Read Length",
@@ -68,11 +67,11 @@
                     "title": "Quality Values",
                     "id": "qv_hist"
                 }
-            ], 
-            "description": null, 
-            "legend": null, 
+            ],
+            "description": null,
+            "legend": null,
             "id": "ccs_validator_group",
             "title": "Read Length Histogram"
         }
-	]
+    ]
 }
