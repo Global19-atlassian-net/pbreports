@@ -1,4 +1,8 @@
 {
+    "id": "ccs",
+    "version": "3.2",
+    "title": "CCS Report",
+    "description": null,
     "attributes": [
         {
             "description": "The number of CCS reads",
@@ -136,7 +140,7 @@
             "title": "By Barcode"
         }
     ],
-    "plotgroups": [
+    "plotGroups": [
         {
             "plots": [
                 {
@@ -144,11 +148,7 @@
                     "description": null,
                     "caption": "CCS Read Score",
                     "title": "CCS Read Score",
-                    "ylabel": {
-                        "L": "Reads",
-                        "R": "bp > Read Score",
-                        "Custom": "Mb > Read Score"
-                    },
+                    "ylabel": null,
                     "id": "accuracy_hist"
                 }
             ],
@@ -180,11 +180,7 @@
                     "description": null,
                     "caption": "CCS Read Length",
                     "title": "CCS Read Length",
-                    "ylabel": {
-                        "L": "Reads",
-                        "R": "bp > Read Length",
-                        "Custom": "Mb > Read Length"
-                    },
+                    "ylabel": null,
                     "id": "readlength_hist"
                 }
             ],
@@ -209,9 +205,5 @@
             "id": "npasses_vs_accuracy",
             "title": "Number of Passes vs. Read Score"
         }
-    ],
-    "id": "ccs",
-    "version": "3.2",
-    "description": null,
-    "title": "CCS Report"
+    ]
 }

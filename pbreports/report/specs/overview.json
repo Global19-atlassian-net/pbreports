@@ -1,24 +1,24 @@
 {
-    "tables": [],
-    "description": null,
+    "id": "overview",
+    "version": "3.2",
     "title": "Overview",
+    "description": null,
     "attributes": [
         {
-            "type": null,
+            "type": "int",
             "format": null,
             "description": null,
             "name": "SMRT Cells",
             "id": "ncells"
         },
         {
-            "type": "float",
+            "type": "int",
             "format": null,
             "description": null,
             "name": "Movies",
             "id": "nmovies"
         }
     ],
-    "id": "overview",
-    "version": null,
-    "plotgroups": []
+    "tables": [],
+    "plotGroups": []
 }

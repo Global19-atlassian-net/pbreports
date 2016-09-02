@@ -413,25 +413,21 @@ def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolo
 
 # These functions create signatures (data, axis_labels, nbins, barcolor
 _custom_read_length_histogram = functools.partial(
-    _custom_histogram_with_cdf, meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["Custom"], 1000000)
+    _custom_histogram_with_cdf, "Mb > Read Length", 1000000)
 _custom_read_accuracy_histogram = functools.partial(
-    _custom_histogram_with_cdf, meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["Custom"], 1000000)
+    _custom_histogram_with_cdf, "Mb > Read Score", 1000000)
 
 
 # These functions need to generate a function with signature (data,
 # output_dir, dpi=)
-create_readlength_plot = functools.partial(create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
+create_readlength_plot = functools.partial(create_plot, _custom_read_length_histogram, Constants.P_READLENGTH, 
                                            (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-                                            meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
-                                               Constants.P_READLENGTH).ylabel["L"],
-                                            meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
+                                            "Reads", "bp > Read Length"),
                                            80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
 create_accuracy_plot = functools.partial(create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
                                          (meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).xlabel,
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(
-                                              Constants.P_ACCURACY).ylabel["L"],
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).ylabel["R"]),
+                                         "Reads", "bp > Read Score"),
                                          80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
 create_npasses_plot = functools.partial(create_plot, _make_histogram, Constants.P_NPASSES,

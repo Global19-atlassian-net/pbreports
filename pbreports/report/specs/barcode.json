@@ -30,7 +30,7 @@
             "title": "Barcodes"
         }
     ],
-    "plotgroups": [],
+    "plotGroups": [],
     "id": "barcode",
     "version": "3.2",
     "description": "Displays statistics on reads and bases associated with individual barcodes.",

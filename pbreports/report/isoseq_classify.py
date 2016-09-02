@@ -160,10 +160,7 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
 
 create_readlength_plot = functools.partial(
     __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
-    (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
-         Constants.P_READLENGTH).ylabel["L"],
-     meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel["R"]),
+    ("Read Length", "Reads", "Reads > Read Length"),
     80, "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
 
 

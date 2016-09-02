@@ -1,4 +1,8 @@
 {
+    "id": "isoseq_classify",
+    "version": "3.2",
+    "title": "Transcript Classification",
+    "description": null,
     "tables": [
         {
             "title": "Iso-Seq Transcript Classification",
@@ -92,8 +96,6 @@
             "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES"
         }
     ],
-    "description": null,
-    "title": "Transcript Classification",
     "attributes": [
         {
             "type": "int",
@@ -180,25 +182,20 @@
             "id": "num_flnc_bases"
         }
     ],
-    "id": "isoseq_classify",
-    "version": "3.2",
-    "plotgroups": [
+    "plotGroups": [
         {
             "id": "fulllength_nonchimeric_readlength_group",
+            "title": "Read Length of Full-length Non-Chimeric Reads",
             "plots": [
                 {
                     "xlabel": "Read Length",
                     "description": null,
                     "caption": "Read Length of Full-length Non-Chimeric Reads",
-                    "ylabel": {
-                        "R": "Reads > Read Length",
-                        "L": "Reads"
-                    },
+                    "ylabel": null,
                     "title": "Read Length of Full-length Non-Chimeric Reads",
                     "id": "fulllength_nonchimeric_readlength_hist"
                 }
             ],
-            "title": "Read Length of Full-length Non-Chimeric Reads",
             "description": null,
             "legend": null
         }
