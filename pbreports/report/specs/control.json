@@ -54,7 +54,7 @@
         }
     ],
     "id": "control",
-    "version": null,
+    "version": "3.2",
     "plotgroups": [
         {
             "plots": [

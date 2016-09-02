@@ -6,36 +6,36 @@
             "columns": [
                 {
                     "header": "Collection Context",
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "id": "collection_context",
                     "description": null
                 },
                 {
                     "header": "Productive ZMWs",
-                    "type": null,
-                    "format": null,
+                    "type": "int",
+                    "format": "{:,d}",
                     "id": "productive_zmws",
                     "description": null
                 },
                 {
                     "header": "Productivity 0 (%)",
-                    "type": null,
-                    "format": null,
+                    "type": "float",
+                    "format": "{p:.2f}",
                     "id": "productivity_0",
                     "description": null
                 },
                 {
                     "header": "Productivity 1 (%)",
-                    "type": null,
-                    "format": null,
+                    "type": "float",
+                    "format": "{p:.2f}",
                     "id": "productivity_1",
                     "description": null
                 },
                 {
                     "header": "Productivity 2 (%)",
-                    "type": null,
-                    "format": null,
+                    "type": "float",
+                    "format": "{p:.2f}",
                     "id": "productivity_2",
                     "description": null
                 }
@@ -47,6 +47,6 @@
     "title": "Loading Report",
     "attributes": [],
     "id": "loading_xml_report",
-    "version": null,
+    "version": "3.2",
     "plotgroups": []
 }

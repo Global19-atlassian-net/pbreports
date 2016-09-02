@@ -6,49 +6,49 @@
             "columns": [
                 {
                     "header": "Sequence",
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "id": "sequence",
                     "description": "The name of the reference sequence."
                 },
                 {
                     "header": "Position",
-                    "type": null,
-                    "format": null,
+                    "type": "int",
+                    "format": "{:,d}",
                     "id": "position",
                     "description": "The position of the variant in reference coordinates."
                 },
                 {
                     "header": "Variant",
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "id": "variant",
                     "description": "The variant position, type, and affected nucleotide."
                 },
                 {
                     "header": "Type",
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "id": "type",
                     "description": "The variant type."
                 },
                 {
                     "header": "Coverage",
-                    "type": null,
-                    "format": null,
+                    "type": "int",
+                    "format": "{:,d}",
                     "id": "coverage",
                     "description": "Read coverage at the variant position."
                 },
                 {
                     "header": "Confidence",
-                    "type": null,
-                    "format": null,
+                    "type": "int",
+                    "format": "{:,d}",
                     "id": "confidence",
                     "description": "The confidence of the variant call."
                 },
                 {
                     "header": "Genotype",
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "id": "genotype",
                     "description": "Includes the full number of chromosomes (diploid) or half the number (haploid)."
@@ -117,6 +117,6 @@
     "title": "Top Variants",
     "attributes": [],
     "id": "topvariants",
-    "version": null,
+    "version": "3.2",
     "plotgroups": []
 }

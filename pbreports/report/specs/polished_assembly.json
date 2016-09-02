@@ -5,35 +5,35 @@
     "attributes": [
         {
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "description": "The number of polished contigs",
             "name": "Polished Contigs",
             "id": "polished_contigs"
         },
         {
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "description": "Length of longest contig",
             "name": "Maximum Contig Length",
             "id": "max_contig_length"
         },
         {
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "description": "50% of contigs are longer than this value",
             "name": "N50 Contig Length",
             "id": "n_50_contig_length"
         },
         {
             "type": "int",
-            "format": null,
+            "format": "{:,d}",
             "description": "Total length of all contigs",
             "name": "Sum of Contig Lengths",
             "id": "sum_contig_lengths"
         }
     ],
     "id": "polished_assembly",
-    "version": null,
+    "version": "3.2",
     "plotgroups": [
         {
             "plots": [

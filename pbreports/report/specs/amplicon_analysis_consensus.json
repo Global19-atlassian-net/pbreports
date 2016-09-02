@@ -10,40 +10,40 @@
                     "id": "barcodename",
                     "description": "A string containing the pair of barcode indices for which the following metrics apply, or a 0 if not barcoded. The barcode entries are represented as a pair of dash-separated number, with each number representing one of the two barcodes used for that amplicon.",
                     "format": null,
-                    "type": null
+                    "type": "str"
                 },
                 {
                     "header": "Sequence Cluster",
                     "format": null,
-                    "type": null,
+                    "type": "str",
                     "id": "coarsecluster",
                     "description": "A name given to the cluster of sequences roughly corresponding to one amplicon."
                 },
                 {
                     "header": "Sequence Phase",
                     "format": null,
-                    "type": null,
+                    "type": "str",
                     "id": "phase",
                     "description": "A name given to each phased haplotype within a sequence cluster."
                 },
                 {
                     "header": "Length (bp)",
-                    "format": null,
-                    "type": null,
+                    "format": "{:,d}",
+                    "type": "int",
                     "id": "sequencelength",
                     "description": "The length of the consensus amplicon sequence."
                 },
                 {
                     "header": "Estimated Accuracy",
-                    "format": null,
-                    "type": null,
+                    "format": "{p:.2f}",
+                    "type": "float",
                     "id": "predictedaccuracy",
                     "description": "The estimated accuracy of the consensus amplicon sequence."
                 },
                 {
                     "header": "Subreads coverage",
-                    "format": null,
-                    "type": null,
+                    "format": "{:,d}",
+                    "type": "int",
                     "id": "totalcoverage",
                     "description": "The number of subreads used to call consensus for this sequence."
                 }
@@ -53,7 +53,7 @@
     ],
     "plotgroups": [],
     "id": "amplicon_analysis_consensus",
-    "version": null,
+    "version": "3.2",
     "title": "Amplicon Consensus",
     "description": null
 }
