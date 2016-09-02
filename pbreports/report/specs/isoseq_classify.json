@@ -181,7 +181,7 @@
         }
     ],
     "id": "isoseq_classify",
-    "version": "1.0.0",
+    "version": "3.2",
     "plotgroups": [
         {
             "id": "fulllength_nonchimeric_readlength_group",
