@@ -6,7 +6,7 @@
             "columns": [
                 {
                     "header": "Motif",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "motif_id",
                     "description": "The nucleotide sequence of the methyltransferase recognition motif, using the standard IUPAC nucleotide alphabet."
@@ -20,7 +20,7 @@
                 },
                 {
                     "header": "Motification Type",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "modification_type",
                     "description": "The type of chemical modification most commonly identified at that motif- 'modified_base' means modification not recognized by the software."
@@ -62,7 +62,7 @@
                 },
                 {
                     "header": "Partner Motif",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "partner_motif",
                     "description": "For motifs that are not self-palindromic, this is the complementary sequence."
@@ -76,7 +76,7 @@
                 },
                 {
                     "header": "Group Tag",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "group_tag",
                     "description": null

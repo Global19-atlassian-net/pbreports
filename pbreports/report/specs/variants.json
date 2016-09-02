@@ -6,15 +6,15 @@
             "columns": [
                 {
                     "header": "Reference",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "contig_name",
                     "description": "Reference contig name"
                 },
                 {
                     "header": "Reference Length",
-                    "type": "{:,d}",
-                    "format": "{:,d}",
+                    "type": "float",
+                    "format": "{:.2f}",
                     "id": "contig_len",
                     "description": "Length of reference contig"
                 },
@@ -54,14 +54,14 @@
             "id": "weighted_mean_concordance"
         },
         {
-            "type": "{:,d}",
-            "format": "{:,d}",
+            "type": "float",
+            "format": "{:.2f}",
             "description": "Mean length of reference sequence contigs",
             "name": "Reference Contig Length (mean)",
             "id": "mean_contig_length"
         },
         {
-            "type": "str",
+            "type": "string",
             "format": null,
             "description": "The FASTA header ID of the longest reference contig",
             "name": "Longest Reference Contig",

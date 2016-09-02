@@ -11,7 +11,7 @@
             "columns": [
                 {
                     "header": "Sequence",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "sequence",
                     "description": "The name of the reference sequence."
@@ -25,14 +25,14 @@
                 },
                 {
                     "header": "Variant",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "variant",
                     "description": "The variant position, type, and affected nucleotide."
                 },
                 {
                     "header": "Type",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "type",
                     "description": "The variant type."
@@ -53,7 +53,7 @@
                 },
                 {
                     "header": "Genotype",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "genotype",
                     "description": "Includes the full number of chromosomes (diploid) or half the number (haploid)."
@@ -67,7 +67,7 @@
             "columns": [
                 {
                     "header": "Sequence",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "sequence",
                     "description": "The name of the reference sequence."
@@ -81,14 +81,14 @@
                 },
                 {
                     "header": "Variant",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "variant",
                     "description": "The variant position, type, and affected nucleotide."
                 },
                 {
                     "header": "Type",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "type",
                     "description": "The variant type."

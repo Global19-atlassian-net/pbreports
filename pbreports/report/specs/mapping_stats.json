@@ -96,7 +96,7 @@
             "columns": [
                 {
                     "header": "Movie",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "movie",
                     "description": "Movie name for which the following metrics apply."

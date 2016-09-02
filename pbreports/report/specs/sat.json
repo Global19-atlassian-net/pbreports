@@ -4,7 +4,7 @@
     "title": "Site Acceptance Test Report",
     "attributes": [
         {
-            "type": "str",
+            "type": "string",
             "format": null,
             "description": "ID of the Sequel or RSII instrument on which the data were collected",
             "name": "Instrument ID",
