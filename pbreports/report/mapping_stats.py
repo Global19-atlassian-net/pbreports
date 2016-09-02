@@ -395,7 +395,7 @@ class MaxSubreadLengthAggregator(_BaseTotalAggregator):
     DATA_TYPE = SUBREAD_TYPE
 
     def apply(self, crunched_npa):
-        value = crunched_npa['Length'].max()
+        value = int(crunched_npa['Length'].max())
         if value > self.value:
             self.value = value
 

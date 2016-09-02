@@ -10,7 +10,7 @@
             "title": "Summary",
             "columns": [
                 {
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "description": null,
                     "header": "File Name",

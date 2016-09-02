@@ -6,7 +6,7 @@
             "columns": [
                 {
                     "header": "Collection Context",
-                    "type": "str",
+                    "type": "string",
                     "format": null,
                     "id": "collection_context",
                     "description": null

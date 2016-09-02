@@ -5,7 +5,7 @@
     "description": "Generates a report showing control quality and readlength information.",
     "attributes": [
         {
-            "type": "str",
+            "type": "string",
             "format": null,
             "description": null,
             "name": "Control Sequence",
