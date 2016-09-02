@@ -18,93 +18,91 @@
             "format": null,
             "type": "float"
         },
-	{
+        {
             "id": "attribute3",
             "name": "Attribute 3",
             "description": "An attribute of type string",
             "format": null,
             "type": "str"
-	}
-
+        }
     ],
-    "plotgroups": [
+    "plotGroups": [
         {
-        "id": "plotgroup1",
-        "title": "Plotgroup 1",
-	"description": "The first plotgroup",
-	"legend": "legend1.png",
+            "id": "plotgroup1",
+            "title": "Plotgroup 1",
+            "description": "The first plotgroup",
+            "legend": "legend1.png",
             "plots": [
                 {
-                   "id": "plot1",
-		   "description": "The first plot of the first plotgroup",
-		   "caption": "Plot 1",
-                   "title": "Plot 1",
-                   "xlabel": "x variable",
-                   "ylabel": "y variable"
-		   
+                    "id": "plot1",
+                    "description": "The first plot of the first plotgroup",
+                    "caption": "Plot 1",
+                    "title": "Plot 1",
+                    "xlabel": "x variable",
+                    "ylabel": "y variable"
                 }
-                ]
+            ]
         },
         {
-        "id": "plotgroup2",
-        "title": "Plotgroup 2",
-	"description": "The second plotgroup",
-	"legend": "legend2.png",
+            "id": "plotgroup2",
+            "title": "Plotgroup 2",
+            "description": "The second plotgroup",
+            "legend": "legend2.png",
             "plots": [
                 {
-                   "id": "plot1",
-                   "description": "The first plot of the second plotgroup",
-		   "caption": "Plot 1",
-                   "title": "Plot 1",
-		   "xlabel": "x variable",
-		   "ylabel": "y variable"
+                    "id": "plot1",
+                    "description": "The first plot of the second plotgroup",
+                    "caption": "Plot 1",
+                    "title": "Plot 1",
+                    "xlabel": "x variable",
+                    "ylabel": "y variable"
                 },
                 {
-                   "id": "plot2",
-                   "description": "The second plot of the second plotgroup", 
-		   "caption": "Plot 2",
-                   "title": "Plot 2",
-                   "xlabel": "x variable",
-                   "ylabel": "y variable"
+                    "id": "plot2",
+                    "description": "The second plot of the second plotgroup",
+                    "caption": "Plot 2",
+                    "title": "Plot 2",
+                    "xlabel": "x variable",
+                    "ylabel": "y variable"
                 }
-                ]
+            ]
         }
     ],
     "tables": [
         {
-        "id": "table1",
-        "title": "Table 1",
-        "description": "The first table",
-        "columns": [
+            "id": "table1",
+            "title": "Table 1",
+            "description": "The first table",
+            "columns": [
                 {
-                   "id": "column1",
+                    "id": "column1",
                     "header": "Column 1",
                     "description": "A column of type int",
                     "format": null,
                     "type": "int"
                 }
-                ]
+            ]
         },
         {
-        "id": "table2",
-        "title": "Table 2",
-        "description": "The second table",
-        "columns": [
+            "id": "table2",
+            "title": "Table 2",
+            "description": "The second table",
+            "columns": [
                 {
-                   "id": "column1",
+                    "id": "column1",
                     "header": "Column 1",
                     "description": "A column of type float",
                     "format": null,
                     "type": "float"
                 },
                 {
-                   "id": "column2",
+                    "id": "column2",
                     "header": "Column 2",
                     "description": "A column of type str",
                     "format": null,
                     "type": "str"
                 }
-                ]
+            ]
         }
     ]
 }

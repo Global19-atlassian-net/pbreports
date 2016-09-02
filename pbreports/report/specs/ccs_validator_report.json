@@ -1,39 +1,44 @@
 {
+    "id": "ccs_validator",
+    "version": "3.2",
+    "title": "CCS Validation",
+    "description": null,
+    "attributes": [],
     "tables": [
         {
-            "title": null,
             "id": "fastq_table",
+            "title": "Summary",
             "columns": [
                 {
-                    "type": null,
+                    "type": "str",
                     "format": null,
                     "description": null,
                     "header": "File Name",
                     "id": "file_name"
                 },
                 {
-                    "type": null,
+                    "type": "int",
                     "format": null,
                     "description": null,
                     "header": "Number of Reads",
                     "id": "n_reads"
                 },
                 {
-                    "type": null,
+                    "type": "int",
                     "format": null,
                     "description": null,
                     "header": "Total Bases",
                     "id": "total_bases"
                 },
                 {
-                    "type": null,
+                    "type": "int",
                     "format": null,
                     "description": null,
                     "header": "Mean Read Length",
                     "id": "mean_readlength"
                 },
                 {
-                    "type": null,
+                    "type": "float",
                     "format": null,
                     "description": null,
                     "header": "Mean Quality Values",
@@ -43,13 +48,10 @@
             "description": null
         }
     ],
-    "description": null,
-    "title": null,
-    "attributes": [],
-    "id": "ccs_validator",
-    "version": null,
-    "plotgroups": [
+    "plotGroups": [
         {
+            "id": "ccs_validator_group",
+            "title": "Read Length Histogram",
             "plots": [
                 {
                     "xlabel": "Read Length",
@@ -69,9 +71,7 @@
                 }
             ],
             "description": null,
-            "legend": null,
-            "id": "ccs_validator_group",
-            "title": "Read Length Histogram"
+            "legend": null
         }
     ]
 }

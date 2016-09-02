@@ -170,7 +170,7 @@ class MetaReport(object):
                           [MetaAttribute.from_dict(a)
                            for a in d['attributes']],
                           [MetaPlotGroup.from_dict(p)
-                           for p in d['plotgroups']],
+                           for p in d['plotGroups']],
                           [MetaTable.from_dict(t) for t in d['tables']])
 
     def get_meta_attribute(self, id_):

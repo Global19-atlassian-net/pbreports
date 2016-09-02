@@ -1,7 +1,8 @@
 {
-    "tables": [],
-    "description": null,
+    "id": "raw_data_report",
+    "version": "3.2",
     "title": "Raw Data Report",
+    "description": null,
     "attributes": [
         {
             "type": "int",
@@ -39,9 +40,8 @@
             "description": "The mean insert length"
         }
     ],
-    "id": "raw_data_report",
-    "version": "3.2",
-    "plotgroups": [
+    "tables": [],
+    "plotGroups": [
         {
             "plots": [
                 {
@@ -72,7 +72,7 @@
             "description": null,
             "legend": null,
             "id": "read_quality_plot_group",
-            "title": null
+            "title": "Read Quality"
         },
         {
             "plots": [
@@ -104,7 +104,7 @@
             "description": null,
             "legend": null,
             "id": "insert_quality_plot_group",
-            "title": null
+            "title": "Insert Quality"
         }
     ]
 }

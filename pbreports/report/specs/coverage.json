@@ -16,7 +16,7 @@
         }
     ],
     "tables": [],
-    "plotgroups": [
+    "plotGroups": [
         {
             "id": "coverage_plots",
             "plots": [

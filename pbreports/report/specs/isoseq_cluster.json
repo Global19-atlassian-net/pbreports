@@ -1,4 +1,8 @@
 {
+    "id": "isoseq_cluster",
+    "version": "3.2",
+    "title": "Transcript Clustering",
+    "description": null,
     "tables": [
         {
             "title": "Transcript Clustering",
@@ -43,8 +47,6 @@
             "description": "THIS JUST CREATES A TABLE FROM THE ATTRIBUTES. Code exists to implement this table but it is currently not being put in reports"
         }
     ],
-    "description": null,
-    "title": "Transcript Clustering",
     "attributes": [
         {
             "type": "int",
@@ -82,9 +84,7 @@
             "id": "num_total_bases"
         }
     ],
-    "id": "isoseq_cluster",
-    "version": "3.2",
-    "plotgroups": [
+    "plotGroups": [
         {
             "id": "consensus_isoforms_readlength_group",
             "plots": [
@@ -92,10 +92,7 @@
                     "xlabel": "Read Length",
                     "description": null,
                     "caption": "Read Length of Consensus Isoforms Reads",
-                    "ylabel": {
-                        "R": "Reads > Read Length",
-                        "L": "Reads"
-                    },
+                    "ylabel": null,
                     "title": "Read Length of Consensus Isoforms Reads",
                     "id": "consensus_isoforms_readlength_hist"
                 }

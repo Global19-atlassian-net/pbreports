@@ -105,7 +105,7 @@
     ],
     "id": "mapping_stats_ccs",
     "version": "3.2",
-    "plotgroups": [
+    "plotGroups": [
         {
             "id": "qv_calibration_group",
             "plots": [

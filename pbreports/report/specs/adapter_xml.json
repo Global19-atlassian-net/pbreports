@@ -20,7 +20,7 @@
     ],
     "id": "adapter_xml_report",
     "version": "3.2",
-    "plotgroups": [
+    "plotGroups": [
         {
             "plots": [
                 {

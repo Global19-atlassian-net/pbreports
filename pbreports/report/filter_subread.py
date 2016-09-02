@@ -370,10 +370,8 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
                                    Constants.I_FILTER_SUBREADS_HIST,
                                    xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
                                        Constants.P_POST_FILTER).xlabel,
-                                   ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                                       Constants.P_POST_FILTER).ylabel["L"],
-                                   rlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                                       Constants.P_POST_FILTER).ylabel["R"],
+                                   ylabel="Subreads",
+                                   rlabel="bp > Subread Length",
                                    thumb="filtered_subread_report_thmb.png",
                                    use_group_thumb=True,
                                    title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(

@@ -1,11 +1,11 @@
 {
-    "tables": [],
-    "description": null,
-    "title": "Base Modifcations",
-    "attributes": [],
     "id": "modifications",
-    "version": null,
-    "plotgroups": [
+    "version": "3.2",
+    "title": "Base Modifcations",
+    "description": null,
+    "attributes": [],
+    "tables": [],
+    "plotGroups": [
         {
             "plots": [
                 {
