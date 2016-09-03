@@ -90,7 +90,7 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
             fig.savefig(fname)
         plt.close(fig)
         id_ = "coverage_contig_{i}".format(i=str(idx))
-        caption = "Observed depth of coverage across {c} (window size = {b}bp)."
+        caption = "Coverage across {c}."
         plot = Plot(id_, os.path.basename(fname), caption.format(
             c=ctg_cov.name, b=ctg_cov.aveRegionSize()), title=caption.format(
             c=ctg_cov.name, b=ctg_cov.aveRegionSize()))
