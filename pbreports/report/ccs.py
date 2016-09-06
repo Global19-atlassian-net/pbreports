@@ -162,7 +162,7 @@ def _movie_results_to_attributes(movie_results):
     m_readlength = int(read_lengths.mean()) if read_lengths.size > 0 else 0.0
     m_accuracy = np.round(
         accuracies.mean(), decimals=4) if accuracies.size > 0 else 0.0
-    m_npasses = np.round(num_passes.mean()) if num_passes.size > 0 else 0.0
+    m_npasses = int(num_passes.mean()) if num_passes.size > 0 else 0
     #m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
     attributes = []
@@ -209,8 +209,7 @@ def _movie_results_to_table(movie_results):
             read_lengths.mean()) if read_lengths.size > 0 else 0.0
         m_accuracy = np.round(
             accuracies.mean(), decimals=4) if accuracies.size > 0 else 0.0
-        m_npasses = np.round(
-            num_passes.mean(), decimals=3) if num_passes.size > 0 else 0.0
+        m_npasses = int(num_passes.mean()) if num_passes.size > 0 else 0
         #m_qv = int(round(accuracy_as_phred_qv(float(accuracies.mean()))))
 
         table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_name)

@@ -83,8 +83,8 @@
                 },
                 {
                     "header": "Objective Score",
-                    "type": "int",
-                    "format": "{:,d}",
+                    "type": "float",
+                    "format": "{:.1f}",
                     "id": "objective_score",
                     "description": null
                 }
