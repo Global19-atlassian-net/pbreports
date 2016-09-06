@@ -19,14 +19,14 @@
                 {
                     "header": "Sequence Cluster",
                     "format": null,
-                    "type": "string",
+                    "type": "int",
                     "id": "coarsecluster",
                     "description": "A name given to the cluster of sequences roughly corresponding to one amplicon."
                 },
                 {
                     "header": "Sequence Phase",
                     "format": null,
-                    "type": "string",
+                    "type": "int",
                     "id": "phase",
                     "description": "A name given to each phased haplotype within a sequence cluster."
                 },

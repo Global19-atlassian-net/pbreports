@@ -124,8 +124,8 @@
                 },
                 {
                     "header": "Number of Passes (mean)",
-                    "type": "int",
-                    "format": "{:,d}",
+                    "type": "float",
+                    "format": "{:.1f}",
                     "id": "mean_ccs_num_passes",
                     "description": "Mean number of complete subreads per CCS read, rounded to the nearest integer"
                 },
