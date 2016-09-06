@@ -21,14 +21,14 @@
                 {
                     "header": "Bases Called",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "bases_called",
                     "description": "Percentage of the reference sequence for which consensus bases were called"
                 },
                 {
                     "header": "Consensus Concordance",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "concordance",
                     "description": "The percent concordance of the consensus sequence compared to the reference"
                 },
@@ -48,7 +48,7 @@
     "attributes": [
         {
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "description": "The percent concordance of the consensus sequence compared to the reference",
             "name": "Reference Consensus Concordance (mean)",
             "id": "weighted_mean_concordance"
@@ -69,7 +69,7 @@
         },
         {
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "description": "Percentage of the reference sequence for which consensus bases were called",
             "name": "Percent Reference Bases Called (mean)",
             "id": "weighted_mean_bases_called"

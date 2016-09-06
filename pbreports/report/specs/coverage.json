@@ -10,7 +10,7 @@
         {
             "description": "Percent of reference bases without coverage",
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "id": "missing_bases_pct",
             "name": "Missing Bases (%)"
         }

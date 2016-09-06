@@ -28,7 +28,7 @@
                 {
                     "header": "% of Motifs Detected",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "percent_motifs_detected",
                     "description": "The percentage of times that this motif was detected as modified across the entire genome."
                 },

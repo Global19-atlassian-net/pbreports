@@ -39,7 +39,7 @@
                 },
                 {
                     "header": "Estimated Accuracy",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "type": "float",
                     "id": "predictedaccuracy",
                     "description": "The estimated accuracy of the consensus amplicon sequence."
