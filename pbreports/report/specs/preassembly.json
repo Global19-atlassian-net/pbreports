@@ -144,21 +144,21 @@
             "id": "preassembled_yield",
             "name": "Pre-Assembled Yield (bases/seed_bases)",
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "description": null
         },
         {
             "id": "preassembled_seed_fragmentation",
             "name": "Avg number of reads that each seed is broken into.",
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "description": null
         },
         {
             "id": "preassembled_seed_truncation",
             "name": "Avg number of bases lost from each seed.",
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "description": null
         }
     ],

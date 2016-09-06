@@ -21,7 +21,7 @@
                 {
                     "header": "Good (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "good_pct",
                     "description": "The percentage of consensus sequences not categorized as Chimeric or Noise."
                 },
@@ -35,7 +35,7 @@
                 {
                     "header": "Chimeric (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "chimera_pct",
                     "description": "The percentage of consensus sequences flagged as likely coming from PCR cross-over events."
                 },
@@ -49,7 +49,7 @@
                 {
                     "header": "Noise (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "noise_pct",
                     "description": "The percentage of consensus sequences that have a very low predicted accuracy (<95%) despite sufficient coverage (>20 reads and >10% all sequences in the current bin) to be called an novel allele."
                 }

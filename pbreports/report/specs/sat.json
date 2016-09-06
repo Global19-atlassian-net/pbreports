@@ -12,7 +12,7 @@
         },
         {
             "type": "float",
-            "format": "{p:.2f}",
+            "format": "{p:.2f} %",
             "description": "Percentage of the genome for which consensus bases were called",
             "name": "Genome Coverage",
             "id": "coverage"

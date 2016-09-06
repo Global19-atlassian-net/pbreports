@@ -21,21 +21,21 @@
                 {
                     "header": "Productivity 0 (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "productivity_0",
                     "description": null
                 },
                 {
                     "header": "Productivity 1 (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "productivity_1",
                     "description": null
                 },
                 {
                     "header": "Productivity 2 (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{p:.2f} %",
                     "id": "productivity_2",
                     "description": null
                 }
