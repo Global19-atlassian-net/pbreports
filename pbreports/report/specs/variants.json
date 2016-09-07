@@ -12,28 +12,28 @@
                     "description": "Reference contig name"
                 },
                 {
-                    "header": "Reference Length",
+                    "header": "Reference Contig Length",
                     "type": "float",
                     "format": "{:.2f}",
                     "id": "contig_len",
                     "description": "Length of reference contig"
                 },
                 {
-                    "header": "Bases Called",
+                    "header": "Percent Reference Bases Called",
                     "type": "float",
                     "format": "{p:.2f} %",
                     "id": "bases_called",
                     "description": "Percentage of the reference sequence for which consensus bases were called"
                 },
                 {
-                    "header": "Consensus Concordance",
+                    "header": "Reference Consensus Concordance",
                     "type": "float",
                     "format": "{p:.2f} %",
                     "id": "concordance",
                     "description": "The percent concordance of the consensus sequence compared to the reference"
                 },
                 {
-                    "header": "Base Coverage",
+                    "header": "Reference Coverage",
                     "type": "float",
                     "format": "{:.2f}",
                     "id": "coverage",
