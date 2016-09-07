@@ -17,8 +17,6 @@ import numpy as np
 
 from pbcommand.models.report import (Table, Column, Attribute, Report,
                                      PlotGroup, Plot, PbReportError)
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -29,21 +27,17 @@ from pbreports.util import (openReference,
                             add_base_options_pbcommand,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-VARIANTS_SPEC = op.join(SPEC_DIR, 'variants.json')
-meta_rpt = MetaReport.from_json(VARIANTS_SPEC)
-
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.variants_report"
     DRIVER_EXE = "python -m pbreports.report.variants --resolved-tool-contract "
+    R_ID = "variants"
     MAX_CONTIGS_ID = "pbreports.task_options.max_contigs"
     MAX_CONTIGS_DEFAULT = 25
     MEAN_CONTIG_LENGTH = "mean_contig_length"
@@ -62,6 +56,7 @@ class Constants(object):
 
 LENGTH, GAPS, ERR, COV = 0, 1, 2, 3
 
+spec = load_spec(Constants.R_ID)
 
 def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_plot, report, output_dir, dpi=72, dumpdata=True):
     """
@@ -89,13 +84,13 @@ def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_p
     plotgroup = _create_variants_plot_grp(
         top_contigs, contig_variants, output_dir)
 
-    rpt = Report(meta_rpt.id,
+    rpt = Report(Constants.R_ID,
                  plotgroups=[plotgroup],
                  attributes=atts,
                  tables=[table],
                  dataset_uuids=(ReferenceSet(reference).uuid,))
 
-    rpt = meta_rpt.apply_view(rpt)
+    rpt = spec.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
     return rpt
 
@@ -199,8 +194,10 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
         idx += 1
         plt.close(fig)
 
-    plot_group = PlotGroup(Constants.PG_VARIANTS, title=meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).title, legend=legend,
-                           thumbnail=thumbnail, plots=plots)
+    plot_group = PlotGroup(Constants.PG_VARIANTS,
+                           thumbnail=thumbnail,
+                           legend=legend,
+                           plots=plots)
     return plot_group
 
 
@@ -246,8 +243,9 @@ def _create_contig_fig_ax(bars, xlabels):
     :param contig_variants: (ContigVariants) 
     """
     fig, ax = PH.get_fig_axes_lpr()
-    PH.apply_bar_data(
-        ax, bars, xlabels, (meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_VARIANTS).get_meta_plot(Constants.P_VARIANTS).ylabel))
+    xlabel = get_plot_xlabel(spec, Constants.PG_VARIANTS, Constants.P_VARIANTS)
+    ylabel = get_plot_ylabel(spec, Constants.PG_VARIANTS, Constants.P_VARIANTS)
+    PH.apply_bar_data(ax, bars, xlabels, (xlabel, ylabel))
     return fig, ax
 
 
@@ -414,7 +412,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 
 def _add_options_to_parser(p):
-    p = add_base_options_pbcommand(p, meta_rpt.title)
+    p = add_base_options_pbcommand(p, spec.title)
     p.add_input_file_type(FileTypes.DS_REF,
                           file_id="reference",
                           name="Reference dataset",
@@ -452,7 +450,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)

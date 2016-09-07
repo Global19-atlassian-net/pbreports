@@ -16,21 +16,16 @@ import sys
 
 from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
 
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 __version__ = '0.6'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-BC_SPEC = op.join(SPEC_DIR, 'barcode.json')
-meta_rpt = MetaReport.from_json(BC_SPEC)
+spec = load_spec("barcode")
 
 
 class Constants(object):
@@ -106,9 +101,9 @@ def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
         table.add_data_by_column_id(Constants.C_NREADS, row.reads)
         table.add_data_by_column_id(Constants.C_NBASES, row.bases)
 
-    report = Report(meta_rpt.id, tables=[table],
+    report = Report(spec.id, tables=[table],
                     dataset_uuids=dataset_uuids)
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def args_runner(args):
@@ -152,7 +147,7 @@ def get_parser():
                           name="BarcodeSet",
                           description="Barcode DataSet XML")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name=meta_rpt.title,
+                           name=spec.title,
                            description="Path to write Report json output.",
                            default_name="barcode_report")
     # TODO(nechols)(2016-03-15) not yet supported in SA 3.x

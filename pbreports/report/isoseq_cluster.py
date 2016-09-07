@@ -3,6 +3,8 @@ Generate a report for a Iso-Seq Cluster run, given both
 consensus isoforms reads in Fasta file and a
 cluster summary.
 """
+
+from pprint import pformat
 import functools
 import os
 import os.path as op
@@ -15,8 +17,6 @@ import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
@@ -26,25 +26,17 @@ from pbcore.io import ContigSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue)
-from pprint import pformat
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1.0.132615'  # The last 6 digits is changelist
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-ISOSEQ_CLUSTER_SPEC = op.join(SPEC_DIR, 'isoseq_cluster.json')
-meta_rpt = MetaReport.from_json(ISOSEQ_CLUSTER_SPEC)
-
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.isoseq_cluster"
     DRIVER_EXE = "python -m pbreports.report.isoseq_cluster --resolved-tool-contract"
-
-    """Names used within plot groups."""
-    R_ID = meta_rpt.id
+    R_ID = "isoseq_cluster"
 
     # Attributes
     A_LENGTH = "avg_consensus_isoform_length"
@@ -60,6 +52,7 @@ class Constants(object):
     # Table
     T_ATTR = "isoseq_classify_table"
 
+spec = load_spec(Constants.R_ID)
 
 def _report_to_attributes(report_file):
     report = load_report_from_json(report_file)
@@ -213,12 +206,11 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
 
     # A report is consist of ID, tables, attributes, and plotgroups.
     report = Report(Constants.R_ID,
-                    title=meta_rpt.title,
                     attributes=attributes,
                     plotgroups=[readlength_group],
                     dataset_uuids=dataset_uuids)
 
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def _run(fasta_file, summary_txt, json_report, outDir):
@@ -265,7 +257,7 @@ def get_contract_parser():
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary text",
                           description="A summary produced by Iso-Seq Cluster, e.g. " +
                           "cluster_summary.txt")
-    p.add_output_file_type(FileTypes.REPORT, "outJson", meta_rpt.title,
+    p.add_output_file_type(FileTypes.REPORT, "outJson", spec.title,
                            description="Path to write Report json output.",
                            default_name="isoseq_cluster_report")
     return p

@@ -10,36 +10,31 @@ import sys
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import DataSet
 
+from pbreports.io.specs import *
+
 __version__ = '0.1.0'
-
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-LOADING_SPEC = op.join(SPEC_DIR, 'loading_xml.json')
-meta_rpt = MetaReport.from_json(LOADING_SPEC)
-
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.loading_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.loading_xml "
                   "--resolved-tool-contract ")
-    DECIMALS = 3
+    R_ID = "loading_xml_report"
     T_LOADING = "loading_xml_table"
     C_CONTEXT = "collection_context"
     C_ZMWS = "productive_zmws"
     C_PROD_0 = "productivity_0"
     C_PROD_1 = "productivity_1"
     C_PROD_2 = "productivity_2"
+    DECIMALS = 3
 
 log = logging.getLogger(__name__)
+spec = load_spec(Constants.R_ID)
 
 
 def to_report(stats_xml):
@@ -94,9 +89,9 @@ def to_report(stats_xml):
     columns = [Column(cid, values=vals)
                for cid, vals in zip(col_ids, col_values)]
     tables = [Table(Constants.T_LOADING, columns=columns)]
-    report = Report(meta_rpt.id, title=meta_rpt.title,
+    report = Report(Constants.R_ID,
                     tables=tables, attributes=None, plotgroups=None)
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def args_runner(args):
@@ -122,7 +117,7 @@ def _add_options_to_parser(p):
         file_id="subread_set",
         name="SubreadSet",
         description="SubreadSet")
-    p.add_output_file_type(FileTypes.REPORT, "report", meta_rpt.title,
+    p.add_output_file_type(FileTypes.REPORT, "report", spec.title,
                            description=("Filename of JSON output report. Should be name only, "
                                         "and will be written to output dir"),
                            default_name="report")

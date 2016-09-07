@@ -22,9 +22,6 @@ import numpy as np
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
 
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
-
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -33,16 +30,12 @@ from pbcore.io import ConsensusReadSet, BarcodeSet
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue, get_green, Line, apply_line_data)
 from pbreports.util import accuracy_as_phred_qv
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 __version__ = '0.44'
 
-# Import MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-CCS_SPEC = op.join(SPEC_DIR, 'ccs.json')
-meta_rpt = MetaReport.from_json(CCS_SPEC)
-
+spec = load_spec("ccs")
 
 class Constants(object):
 
@@ -51,7 +44,7 @@ class Constants(object):
     TOOL_NAME = "ccs_report"
     DRIVER_EXE = "python -m pbreports.report.ccs --resolved-tool-contract"
 
-    R_ID = meta_rpt.id
+    R_ID = "ccs"
 
     # PlotGroup
     PG_READLENGTH = 'readlength_group'
@@ -359,12 +352,12 @@ def _custom_histogram_with_cdf(new_rlabel, threshold, data, axis_labels, nbins, 
     return fig, ax
 
 
-def scatter_plot_accuracy_vs_numpasses(data,
-                                       axis_labels=(
-                                           meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(
-                                               Constants.P_SCATTER).xlabel,
-                                           meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).ylabel),
-                                       nbins=None, barcolor=None):
+def scatter_plot_accuracy_vs_numpasses(
+        data,
+        axis_labels=(
+            get_plot_xlabel(spec, Constants.PG_SCATTER, Constants.P_SCATTER),
+            get_plot_ylabel(spec, Constants.PG_SCATTER, Constants.P_SCATTER)),
+        nbins=None, barcolor=None):
     """
     """
     npasses, accuracy = data
@@ -419,26 +412,29 @@ _custom_read_accuracy_histogram = functools.partial(
 
 # These functions need to generate a function with signature (data,
 # output_dir, dpi=)
-create_readlength_plot = functools.partial(create_plot, _custom_read_length_histogram, Constants.P_READLENGTH, 
-                                           (meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-                                            "Reads", "bp > Read Length"),
-                                           80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
+create_readlength_plot = functools.partial(
+    create_plot, _custom_read_length_histogram, Constants.P_READLENGTH, 
+    (get_plot_xlabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH),
+     "Reads", "bp > Read Length"),
+    80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
-create_accuracy_plot = functools.partial(create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
-                                         (meta_rpt.get_meta_plotgroup(Constants.PG_ACCURACY).get_meta_plot(Constants.P_ACCURACY).xlabel,
-                                         "Reads", "bp > Read Score"),
-                                         80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
+create_accuracy_plot = functools.partial(
+    create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
+    (get_plot_xlabel(spec, Constants.PG_ACCURACY, Constants.P_ACCURACY),
+     "Reads", "bp > Read Score"),
+    80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
-create_npasses_plot = functools.partial(create_plot, _make_histogram, Constants.P_NPASSES,
-                                        (meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).xlabel,
-                                         meta_rpt.get_meta_plotgroup(Constants.PG_NPASSES).get_meta_plot(Constants.P_NPASSES).ylabel),
-                                        80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
+create_npasses_plot = functools.partial(
+    create_plot, _make_histogram, Constants.P_NPASSES,
+    (get_plot_xlabel(spec, Constants.PG_NPASSES, Constants.P_NPASSES),
+     get_plot_ylabel(spec, Constants.PG_NPASSES, Constants.P_NPASSES)),
+    80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")
 
-create_scatter_plot = functools.partial(create_plot,
-                                        scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
-                                        (meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).xlabel,
-                                         meta_rpt.get_meta_plotgroup(Constants.PG_SCATTER).get_meta_plot(Constants.P_SCATTER).ylabel), None,
-                                        Constants.I_CCS_SCATTER_PLOT, get_blue(3))
+create_scatter_plot = functools.partial(
+    create_plot, scatter_plot_accuracy_vs_numpasses, Constants.P_SCATTER,
+    (get_plot_xlabel(spec, Constants.PG_SCATTER, Constants.P_SCATTER),
+     get_plot_ylabel(spec, Constants.PG_SCATTER, Constants.P_SCATTER)),
+    None, Constants.I_CCS_SCATTER_PLOT, get_blue(3))
 
 
 def to_report(ccs_set, output_dir):
@@ -486,7 +482,7 @@ def to_report(ccs_set, output_dir):
                                 npasses_group, scatter_group],
                     dataset_uuids=(ccs_set.uuid,))
 
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def run_report(
@@ -529,7 +525,7 @@ def get_parser():
                           name="ConsensusReadSet",
                           description="ConsensusRead DataSet file")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name=meta_rpt.title,
+                           name=spec.title,
                            description="Path to write Report json output.",
                            default_name="ccs_report")
     ap.add_argument('-o', '--output-dir', dest='output_dir',

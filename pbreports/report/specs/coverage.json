@@ -1,4 +1,8 @@
 {
+    "id": "coverage",
+    "version": "3.2",
+    "description": null,
+    "title": "Coverage",
     "attributes": [
         {
             "description": "Mean depth of coverage over entire reference",
@@ -49,9 +53,5 @@
             "description": null,
             "legend": null
         }
-    ],
-    "id": "coverage",
-    "version": "3.2",
-    "description": null,
-    "title": "Coverage"
+    ]
 }

@@ -10,28 +10,22 @@ import os.path as op
 import sys
 
 from pbcommand.models.report import Report, Table, Column
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = op.dirname(op.realpath(__file__))
-SPEC_DIR = op.join(_DIR_NAME, 'specs/')
-A_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_input.json')
-meta_rpt = MetaReport.from_json(A_SPEC)
-
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_input"
     DRIVER_EXE = "python -m pbreports.report.amplicon_analysis_input --resolved-tool-contract "
+    R_ID = "amplicon_analysis_input"
     DATA_GOOD = "good"
     DATA_CHIMERA = "chimera"
     DATA_NOISE = "noise"
@@ -44,6 +38,7 @@ class Constants(object):
     C_NOISE = "noise"
     C_NOISE_PCT = "noise_pct"
 
+spec = load_spec(Constants.R_ID)
 
 def parse_summary(summary):
     # Internal helper function for parsing the Summary CSV header
@@ -171,8 +166,8 @@ def run_to_report(summary_csv, zmws_json):
     table = create_table(tabulated_data)
 
     # ids must be lowercase.
-    r = Report(meta_rpt.id, tables=[table])
-    return meta_rpt.apply_view(r)
+    r = Report(Constants.R_ID, tables=[table])
+    return spec.apply_view(r)
 
 
 def amplicon_analysis_input(summary_csv, zmws_json, report_json):
@@ -211,7 +206,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
-        name=meta_rpt.title,
+        name=spec.title,
         description="Long Amplicon Analysis input report JSON",
         default_name="amplicon_input_report")
 

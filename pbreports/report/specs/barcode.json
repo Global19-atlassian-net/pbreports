@@ -1,4 +1,8 @@
 {
+    "id": "barcode",
+    "version": "3.2",
+    "title": "Barcodes",
+    "description": "Displays statistics on reads and bases associated with individual barcodes.",
     "attributes": [],
     "tables": [
         {
@@ -30,9 +34,5 @@
             "title": "Barcodes"
         }
     ],
-    "plotGroups": [],
-    "id": "barcode",
-    "version": "3.2",
-    "description": "Displays statistics on reads and bases associated with individual barcodes.",
-    "title": "Barcodes"
+    "plotGroups": []
 }

@@ -1,4 +1,9 @@
 {
+    "id": "loading_xml_report",
+    "title": "Loading Report",
+    "version": "3.2",
+    "description": null,
+    "attributes": [],
     "tables": [
         {
             "title": "Loading Statistics",
@@ -43,10 +48,5 @@
             "description": null
         }
     ],
-    "description": null,
-    "title": "Loading Report",
-    "attributes": [],
-    "id": "loading_xml_report",
-    "version": "3.2",
     "plotGroups": []
 }

@@ -1,7 +1,8 @@
 {
-    "tables": [],
-    "description": "Generates the SAT metric performance attributes",
+    "id": "sat",
+    "version": "3.2",
     "title": "Site Acceptance Test Report",
+    "description": "Generates the SAT metric performance attributes",
     "attributes": [
         {
             "type": "string",
@@ -39,7 +40,6 @@
             "id": "reads_in_cell"
         }
     ],
-    "id": "sat",
-    "version": "3.2",
+    "tables": [],
     "plotGroups": []
 }

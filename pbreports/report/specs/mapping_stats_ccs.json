@@ -1,57 +1,8 @@
 {
-    "tables": [
-        {
-            "title": "CCS Mapping Statistics Summary",
-            "id": "mapping_stats_table",
-            "columns": [
-                {
-                    "header": "Movie",
-                    "type": "string",
-                    "format": null,
-                    "id": "movie",
-                    "description": "Movie name for which the following metrics apply."
-                },
-                {
-                    "header": "Number of CCS Reads (mapped)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "mapped_reads",
-                    "description": "The number of CCS reads that mapped to the reference sequence"
-                },
-                {
-                    "header": "Number of CCS Bases (mapped)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "mapped_bases",
-                    "description": "The number of CCS read bases that mapped to the reference sequence"
-                },
-                {
-                    "header": "CCS Read Length Mean (mapped)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "mapped_read_length_mean",
-                    "description": "The mean length of CCS reads that mapped to the reference sequence"
-                },
-                {
-                    "header": "CCS Read Length N50 (mapped)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "mapped_read_length_n50",
-                    "description": "The read length at which 50% of the bases are in reads longer than, or equal to, this value"
-                },
-                {
-                    "header": "Mapped CCS Read Mean Concordance",
-                    "type": "float",
-                    "format": "{:.2f}",
-                    "id": "mapped_read_concordance_mean",
-                    "description": "The mean concordance of CCS reads that mapped to the reference sequence"
-                }
-            ],
-            "description": "Per-movie CCS mapping statistics"
-        }
-    ],
-    "description": null,
+    "id": "mapping_stats_ccs",
+    "version": "3.2",
     "title": "CCS Mapping Statistics",
+    "description": null,
     "attributes": [
         {
             "type": "float",
@@ -103,8 +54,57 @@
             "id": "mapped_readlength_max"
         }
     ],
-    "id": "mapping_stats_ccs",
-    "version": "3.2",
+    "tables": [
+        {
+            "title": "CCS Mapping Statistics Summary",
+            "id": "mapping_stats_table",
+            "columns": [
+                {
+                    "header": "Movie",
+                    "type": "string",
+                    "format": null,
+                    "id": "movie",
+                    "description": "Movie name for which the following metrics apply."
+                },
+                {
+                    "header": "Number of CCS Reads (mapped)",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "mapped_reads",
+                    "description": "The number of CCS reads that mapped to the reference sequence"
+                },
+                {
+                    "header": "Number of CCS Bases (mapped)",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "mapped_bases",
+                    "description": "The number of CCS read bases that mapped to the reference sequence"
+                },
+                {
+                    "header": "CCS Read Length Mean (mapped)",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "mapped_read_length_mean",
+                    "description": "The mean length of CCS reads that mapped to the reference sequence"
+                },
+                {
+                    "header": "CCS Read Length N50 (mapped)",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "mapped_read_length_n50",
+                    "description": "The read length at which 50% of the bases are in reads longer than, or equal to, this value"
+                },
+                {
+                    "header": "Mapped CCS Read Mean Concordance",
+                    "type": "float",
+                    "format": "{:.2f}",
+                    "id": "mapped_read_concordance_mean",
+                    "description": "The mean concordance of CCS reads that mapped to the reference sequence"
+                }
+            ],
+            "description": "Per-movie CCS mapping statistics"
+        }
+    ],
     "plotGroups": [
         {
             "id": "qv_calibration_group",

@@ -19,9 +19,6 @@ import numpy as np
 from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
 
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
-
 from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -36,6 +33,8 @@ from pbreports.io.align import (alignment_info_from_bam, from_alignment_file,
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups, get_percentile,
                                               generate_plot)
+from pbreports.io.specs import *
+
 
 log = logging.getLogger(__name__)
 
@@ -46,11 +45,7 @@ READ_TYPE = 'ReadType'
 
 DATA_TYPES = (READ_TYPE, SUBREAD_TYPE)
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-MAPPING_STATS_SPEC = op.join(SPEC_DIR, 'mapping_stats.json')
-meta_rpt = MetaReport.from_json(MAPPING_STATS_SPEC)
+spec = load_spec("mapping_stats")
 
 
 class Constants(object):
@@ -304,6 +299,10 @@ class MaxReadLengthAggregator(_BaseTotalAggregator):
         else:
             _d = dict(s=type(self), o=type(other))
             raise TypeError("Incompatible types. {s} {o}".format(**_d))
+
+    @property
+    def attribute(self):
+        return int(self.value)
 
 
 class MeanReadLengthAggregator(_MeanAggregator, AttributeAble):
@@ -752,43 +751,46 @@ class MappingStatsCollector(object):
                 Constants.PG_SUBREAD_CONCORDANCE,
                 generate_plot,
                 'mapped_subread_concordance_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
-                    Constants.P_SUBREAD_CONCORDANCE).xlabel,
-                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
-                    Constants.P_SUBREAD_CONCORDANCE).ylabel,
+                xlabel=get_plot_xlabel(spec, Constants.PG_SUBREAD_CONCORDANCE,
+                                       Constants.P_SUBREAD_CONCORDANCE),
+                ylabel=get_plot_ylabel(spec, Constants.PG_SUBREAD_CONCORDANCE,
+                                       Constants.P_SUBREAD_CONCORDANCE),
                 color=get_green(3),
                 edgecolor=get_green(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_CONCORDANCE).get_meta_plot(
-                    Constants.P_SUBREAD_CONCORDANCE).title),
+                plot_group_title=get_plot_title(
+                    spec,
+                    Constants.PG_SUBREAD_CONCORDANCE,
+                    Constants.P_SUBREAD_CONCORDANCE)),
             PlotViewProperties(
                 Constants.P_SUBREAD_LENGTH,
                 Constants.PG_SUBREAD_LENGTH,
                 generate_plot,
                 'mapped_subreadlength_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                    Constants.P_SUBREAD_LENGTH).xlabel,
-                ylabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                    Constants.P_SUBREAD_LENGTH).ylabel,
+                xlabel=get_plot_xlabel(spec, Constants.PG_SUBREAD_LENGTH,
+                                       Constants.P_SUBREAD_LENGTH),
+                ylabel=get_plot_ylabel(spec, Constants.PG_SUBREAD_LENGTH,
+                                       Constants.P_SUBREAD_LENGTH),
                 use_group_thumb=True,
                 color=get_blue(3),
                 edgecolor=get_blue(2),
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                    Constants.P_SUBREAD_LENGTH).title),
+                plot_group_title=get_plot_title(spec,
+                                                Constants.PG_SUBREAD_LENGTH,
+                                                Constants.P_SUBREAD_LENGTH)),
             PlotViewProperties(
                 Constants.P_READLENGTH,
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
-                xlabel=meta_rpt.get_meta_plotgroup(
-                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).xlabel,
-                ylabel=meta_rpt.get_meta_plotgroup(
-                    Constants.PG_READLENGTH).get_meta_plot(Constants.P_READLENGTH).ylabel,
+                xlabel=get_plot_xlabel(spec, Constants.PG_READLENGTH,
+                                       Constants.P_READLENGTH),
+                ylabel=get_plot_ylabel(spec, Constants.PG_READLENGTH,
+                                       Constants.P_READLENGTH),
                 color=get_blue(3),
                 edgecolor=get_blue(2),
                 use_group_thumb=True,
-                plot_group_title=meta_rpt.get_meta_plotgroup(Constants.PG_READLENGTH).get_meta_plot(
-                    Constants.P_READLENGTH).title),
+                plot_group_title=get_plot_title(spec, Constants.PG_READLENGTH,
+                                                Constants.P_READLENGTH)),
         ]
         return {v.plot_id: v for v in _p}
 
@@ -856,7 +858,7 @@ class MappingStatsCollector(object):
         """
         pass
 
-    def to_report(self, output_dir):
+    def to_report(self, output_dir, report_id=Constants.R_ID):
         """
         This needs to be cleaned up. Keeping the old interface for testing purposes.
         """
@@ -954,13 +956,14 @@ class MappingStatsCollector(object):
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, rb_png)
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                          caption=meta_rpt.get_meta_plotgroup(Constants.PG_RAINBOW).get_meta_plot(Constants.P_RAINBOW).caption)
+                          caption=get_plot_caption(spec, Constants.PG_RAINBOW,
+                                                   Constants.P_RAINBOW))
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
         self.add_more_plots(plot_groups, output_dir)
 
         tables = [table]
-        report = Report(Constants.R_ID,
+        report = Report(report_id,
                         attributes=attributes,
                         plotgroups=plot_groups,
                         tables=tables,
@@ -974,7 +977,7 @@ class MappingStatsCollector(object):
 
 
 def to_report(alignment_file, output_dir):
-    return meta_rpt.apply_view(MappingStatsCollector(alignment_file).to_report(output_dir))
+    return spec.apply_view(MappingStatsCollector(alignment_file).to_report(output_dir))
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -982,22 +985,16 @@ def summarize_report(report_file, out=sys.stdout):
     Utility function to harvest statistics from an existing report
     """
     from pbcommand.pb_io.report import load_report_from_json
-    W = lambda s: out.write(s + "\n")
+    W = lambda a: out.write("  {n}: {v}\n".format(n=a.name, v=a.value))
     report = load_report_from_json(report_file)
-    attr = {a.id: a.value for a in report.attributes}
-    W("%s:" % report_file)
-    W("  {n}: {a}".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_SUBREAD_CONCORDANCE).name.upper(), a=attr[Constants.A_SUBREAD_CONCORDANCE]))
-    W("  {n}: {a}".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_NSUBREADS).name.upper(), a=attr[Constants.A_NSUBREADS]))
-    W("  {n}: {a}".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_NREADS).name.upper(), a=attr[Constants.A_NREADS]))
-    W("  {n}: {a}".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_SUBREAD_NBASES).name.upper(), a=attr[Constants.A_SUBREAD_NBASES]))
-    W("  {n}: {a}".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_READLENGTH).name.upper(), a=attr[Constants.A_READLENGTH]))
-    W("  {n}: {a}".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_SUBREAD_LENGTH).name.upper(), a=attr[Constants.A_SUBREAD_LENGTH]))
+    attr = {a.id: a for a in report.attributes}
+    out.write("{f}:\n".format(f=report_file))
+    W(attr[Constants.A_SUBREAD_CONCORDANCE])
+    W(attr[Constants.A_NSUBREADS])
+    W(attr[Constants.A_NREADS])
+    W(attr[Constants.A_SUBREAD_NBASES])
+    W(attr[Constants.A_READLENGTH])
+    W(attr[Constants.A_SUBREAD_LENGTH])
 
 
 def run_and_write_report(alignment_file, json_report, report_func=to_report):
@@ -1034,8 +1031,8 @@ def _get_parser():
 
     parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
                                "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
-    parser.add_output_file_type(FileTypes.REPORT, "report_json", meta_rpt.title,
-                                "Output report JSON file.", meta_rpt.id)
+    parser.add_output_file_type(FileTypes.REPORT, "report_json", spec.title,
+                                "Output report JSON file.", Constants.R_ID)
 
     return parser
 

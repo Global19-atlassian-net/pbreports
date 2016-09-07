@@ -1,4 +1,9 @@
 {
+    "id": "motifs",
+    "version": "3.2",
+    "title": "Modified Base Motifs",
+    "description": null,
+    "attributes": [],
     "tables": [
         {
             "title": "Modified Base Motifs",
@@ -92,11 +97,6 @@
             "description": null
         }
     ],
-    "description": null,
-    "title": "Modified Base Motifs",
-    "attributes": [],
-    "id": "motifs",
-    "version": "3.2",
     "plotGroups": [
         {
             "plots": [

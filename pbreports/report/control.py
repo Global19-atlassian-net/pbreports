@@ -13,8 +13,6 @@ import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, PlotGroup, Plot,
                                      PbReportError)
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.cli import (pacbio_args_runner,
                            get_default_argparser_with_base_opts)
 from pbcommand.utils import setup_log
@@ -27,19 +25,13 @@ from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail,
                                    set_tick_label_font_size,
                                    set_axis_label_font_size)
-
 from pbreports.util import add_base_and_plot_options
+from pbreports.io.specs import *
 
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
-
-# Import Mapping MetaReport
-_DIR_NAME = op.dirname(op.realpath(__file__))
-SPEC_DIR = op.join(_DIR_NAME, 'specs/')
-CONTROL_SPEC = op.join(SPEC_DIR, 'control.json')
-meta_rpt = MetaReport.from_json(CONTROL_SPEC)
 
 CSV_COLUMN_MAP = {"ReadId": ("|S128", str),
                   "Readlength": (int, int),
@@ -48,6 +40,7 @@ CSV_COLUMN_MAP = {"ReadId": ("|S128", str),
 
 
 class Constants(object):
+    R_ID = "control"
     A_CONTROL_SEQ = "control_sequence"
     A_NCONTROL = "n_control_reads"
     A_FRAC_CONTROL = "frac_control_reads"
@@ -60,6 +53,8 @@ class Constants(object):
     P_QUAL = "control_noncontrol_readquality"
     PG_LENGTH = "polymerase_read_length"
     P_LENGTH = "control_noncontrol_readlength"
+
+spec = load_spec(Constants.R_ID)
 
 
 def make_control_report(control_cmph5, filtered_subreads_csv, report,
@@ -84,8 +79,8 @@ def make_control_report(control_cmph5, filtered_subreads_csv, report,
                                  sample_data, output_dir),
            _get_plot_group_length(control_data,
                                   sample_data, output_dir)]
-    r = Report(meta_rpt.id, attributes=atts, plotgroups=pgs)
-    r = meta_rpt.apply_view(r)
+    r = Report(Constants.R_ID, attributes=atts, plotgroups=pgs)
+    r = spec.apply_view(r)
     r.write_json(os.path.join(output_dir, report))
 
 
@@ -241,7 +236,7 @@ def _get_error_report():
     log.warn('Returning a report with a warning that 0 controls reads have '
              'been found.')
     a = Attribute('warning', 'No control reads found', 'Warning')
-    return Report(meta_rpt.id, title=meta_rpt.title, attributes=[a])
+    return Report(Constants.R_ID, title=spec.title, attributes=[a])
 
 
 def _create_score_figure(control_data, sample_data):
@@ -254,9 +249,9 @@ def _create_score_figure(control_data, sample_data):
     x_data = np.arange(min_score, 1.0, 0.02)
     y1_data = control_data[0, :]
     y2_data = sample_data[0, :]
-    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).xlabel,
-              meta_rpt.get_meta_plotgroup(Constants.PG_QUAL).get_meta_plot(Constants.P_QUAL).ylabel)
-    return _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc='upper left')
+    xlabel = get_plot_xlabel(spec, Constants.PG_QUAL, Constants.P_QUAL)
+    ylabel = get_plot_ylabel(spec, Constants.PG_QUAL, Constants.P_QUAL)
+    return _apply_plot_data(x_data, y1_data, y2_data, (xlabel, ylabel), legend_loc='upper left')
 
 
 def _create_length_figure(control_data, sample_data):
@@ -269,8 +264,9 @@ def _create_length_figure(control_data, sample_data):
     x_data = np.arange(0, len_unit * num_len_bins, len_unit)
     y1_data = control_data[1, :]
     y2_data = sample_data[1, :]
-    labels = (meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).xlabel,
-              meta_rpt.get_meta_plotgroup(Constants.PG_LENGTH).get_meta_plot(Constants.P_LENGTH).ylabel)
+    labels = (
+        get_plot_xlabel(spec, Constants.PG_LENGTH, Constants.P_LENGTH),
+        get_plot_ylabel(spec, Constants.PG_LENGTH, Constants.P_LENGTH))
     return _apply_plot_data(x_data, y1_data, y2_data, labels, legend_loc='upper right')
 
 
@@ -400,7 +396,7 @@ def args_runner(args):
 
 
 def add_options_to_parser(p):
-    desc = meta_rpt.description
+    desc = spec.description
     p.description = desc
     p.version = __version__
     p = add_base_and_plot_options(p)

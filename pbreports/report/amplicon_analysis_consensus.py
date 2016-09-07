@@ -10,8 +10,6 @@ from pprint import pformat
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -19,21 +17,16 @@ from pbcommand.utils import setup_log
 
 from pbreports.util import recfromcsv
 from pbreports.util import validate_nonempty_file
-
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.3.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-AAC_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_consensus.json')
-meta_rpt = MetaReport.from_json(AAC_SPEC)
-
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_consensus"
+    R_ID = "amplicon_analysis_consensus"
     T_ID = "result_table"
     C_BARCODE = "barcodename"
     C_CLUSTER = "coarsecluster"
@@ -42,6 +35,7 @@ class Constants(object):
     C_ACCURACY = "predictedaccuracy"
     C_COVERAGE = "totalcoverage"
 
+spec = load_spec(Constants.R_ID)
 
 def create_table(d, barcode):
     """Long Amplicon Analysis results table"""
@@ -94,9 +88,9 @@ def run_to_report(summary_file):
 
     # Convert the data to a table and the report
     table = create_table(s, barcode)
-    r = Report(meta_rpt.id, tables=[table])
+    r = Report(spec.id, tables=[table])
 
-    return meta_rpt.apply_view(r)
+    return spec.apply_view(r)
 
 
 def amplicon_analysis_consensus(incsv, outjson):
@@ -130,7 +124,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
-        name=meta_rpt.title,
+        name=spec.title,
         description="Amplicon Consensus Report JSON",
         default_name="consensus_report")
 
@@ -156,7 +150,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         driver_exe)
     return p

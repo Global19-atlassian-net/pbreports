@@ -13,8 +13,6 @@ import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, Plot, PlotGroup,
                                      PbReportError)
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -23,6 +21,7 @@ from pbcore.io import FastqReader, GffReader
 
 from pbreports.report.coverage import ContigCoverage
 from pbreports.util import compute_n50
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
@@ -31,21 +30,17 @@ __version__ = '0.4'
 __all__ = ['make_polished_assembly_report', 'ContigInfo',
            'get_parser']
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-POLISHED_ASSEMBLY_SPEC = op.join(SPEC_DIR, 'polished_assembly.json')
-meta_rpt = MetaReport.from_json(POLISHED_ASSEMBLY_SPEC)
-
-
 class Constants(object):
     TOOL_ID = "pbreports.tasks.polished_assembly"
+    R_ID = "polished_assembly"
     A_N_CONTIGS = "polished_contigs"
     A_MAX_LEN = "max_contig_length"
     A_N50_LEN = "n_50_contig_length"
     A_SUM_LEN = "sum_contig_lengths"
     PG_COVERAGE = "coverage_based"
     P_COVERAGE = "cov_vs_qual"
+
+spec = load_spec(Constants.R_ID)
 
 
 def make_polished_assembly_report(report, gff, fastq, output_dir):
@@ -73,7 +68,7 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
                      thumbnail=cvqp.thumbnail,
                      plots=[cvqp])
 
-    rep = Report(meta_rpt.id)
+    rep = Report(Constants.R_ID)
     rep.add_attribute(Attribute(Constants.A_N_CONTIGS, len(contigs)))
     read_lengths = [c.length for c in contigs.values()]
     read_lengths.sort()
@@ -81,7 +76,7 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
     rep.add_attribute(_get_att_n_50_contig_length(read_lengths))
     rep.add_attribute(_get_att_sum_contig_lengths(read_lengths))
     rep.add_plotgroup(pgrp)
-    rep = meta_rpt.apply_view(rep)
+    rep = spec.apply_view(rep)
 
     rep.write_json(os.path.join(output_dir, report))
     _write_coverage_vs_quality_csv(contigs, output_dir)
@@ -133,10 +128,10 @@ def _coverage_vs_quality_plot(contigs, output_dir):
     fig, axes = PH.get_fig_axes_lpr()
     axes = fig.add_subplot(111)
     axes.set_axisbelow(True)
-    axes.set_ylabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel)
-    axes.set_xlabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).xlabel)
+    axes.set_ylabel(get_plot_ylabel(spec, Constants.PG_COVERAGE,
+                                    Constants.P_COVERAGE))
+    axes.set_xlabel(get_plot_xlabel(spec, Constants.PG_COVERAGE,
+                                    Constants.P_COVERAGE))
     PH.set_tick_label_font_size(axes, 12, 12)
     PH.set_axis_label_font_size(axes, 16)
 
@@ -317,7 +312,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         driver_exe)
     return p
