@@ -1,7 +1,8 @@
 {
-    "tables": [],
-    "description": null,
+    "id": "polished_assembly",
+    "version": "3.2",
     "title": "Polished Assembly",
+    "description": null,
     "attributes": [
         {
             "type": "int",
@@ -32,8 +33,7 @@
             "id": "sum_contig_lengths"
         }
     ],
-    "id": "polished_assembly",
-    "version": "3.2",
+    "tables": [],
     "plotGroups": [
         {
             "plots": [

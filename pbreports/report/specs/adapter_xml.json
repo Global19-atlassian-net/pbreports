@@ -1,7 +1,8 @@
 {
-    "tables": [],
-    "description": null,
+    "id": "adapter_xml_report",
+    "version": "3.2",
     "title": "Adapter Report",
+    "description": null,
     "attributes": [
         {
             "type": "float",
@@ -18,8 +19,7 @@
             "id": "short_inserts"
         }
     ],
-    "id": "adapter_xml_report",
-    "version": "3.2",
+    "tables": [],
     "plotGroups": [
         {
             "plots": [

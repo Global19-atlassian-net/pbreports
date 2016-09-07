@@ -1,4 +1,9 @@
 {
+    "id": "amplicon_analysis_input",
+    "version": "3.2",
+    "title": "Amplicon Inputs",
+    "description": null,
+    "attributes": [],
     "tables": [
         {
             "title": "Amplicon Input Molecule Summary",
@@ -57,10 +62,5 @@
             "description": "Displays statistics on the input amplicons sequences."
         }
     ],
-    "description": null,
-    "title": "Amplicon Inputs",
-    "attributes": [],
-    "id": "amplicon_analysis_input",
-    "version": "3.2",
     "plotGroups": []
 }
