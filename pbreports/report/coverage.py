@@ -92,8 +92,8 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
         id_ = "coverage_contig_{i}".format(i=str(idx))
         caption = "Coverage across {c}."
         plot = Plot(id_, os.path.basename(fname), caption.format(
-            c=ctg_cov.name, b=ctg_cov.aveRegionSize()), title=caption.format(
-            c=ctg_cov.name, b=ctg_cov.aveRegionSize()))
+            c=ctg_cov.name), title=caption.format(
+            c=ctg_cov.name))
         plots.append(plot)
         idx += 1
 
