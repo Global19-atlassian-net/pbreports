@@ -21,8 +21,6 @@ import numpy as np
 from pbcommand.utils import setup_log
 from pbcommand.models.report import (Report, Table, Column, Plot, Attribute,
                                      PlotGroup)
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -31,20 +29,16 @@ from pbcore.io import SubreadSet
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
 from pbreports.util import compute_n50, continuous_dist_shaper
+from pbreports.io.specs import *
 
 __version__ = '0.1.0'
-
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-FILTER_SPEC = op.join(SPEC_DIR, 'filter_stats_xml.json')
-meta_rpt = MetaReport.from_json(FILTER_SPEC)
 
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.filter_stats_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.filter_stats_xml "
                   "--resolved-tool-contract ")
+    R_ID = "raw_data_report"
 
     A_NBASES = "nbases"
     A_NREADS = "nreads"
@@ -81,7 +75,7 @@ class InsertStatsPlots(object):
 
 
 log = logging.getLogger(__name__)
-
+spec = load_spec(Constants.R_ID)
 
 def _total_from_bins(bins, min_val, bin_width):
     _min = min_val
@@ -174,10 +168,10 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         len_axes.bar(rlendist.labels, rlendist.bins,
                      color=get_green(0), edgecolor=get_green(0),
                      width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(meta_rpt.get_meta_plotgroup(
-            PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).xlabel)
-        len_axes.set_ylabel(meta_rpt.get_meta_plotgroup(
-            PlotConstants.PG_LENGTH).get_meta_plot(PlotConstants.P_LENGTH).ylabel)
+        len_axes.set_xlabel(get_plot_xlabel(spec, PlotConstants.PG_LENGTH,
+                                            PlotConstants.P_LENGTH))
+        len_axes.set_ylabel(get_plot_ylabel(spec, PlotConstants.PG_LENGTH,
+                                            PlotConstants.P_LENGTH))
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
                                                               p=PlotConstants.P_LENGTH_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
@@ -205,10 +199,10 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
         qual_axes.bar(rqualdist.labels, rqualdist.bins,
                       color=get_green(0), edgecolor=get_green(0),
                       width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(meta_rpt.get_meta_plotgroup(
-            PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).xlabel)
-        qual_axes.set_ylabel(meta_rpt.get_meta_plotgroup(
-            PlotConstants.PG_QUAL).get_meta_plot(PlotConstants.P_QUAL).ylabel)
+        qual_axes.set_xlabel(get_plot_xlabel(spec, PlotConstants.PG_QUAL,
+                                             PlotConstants.P_QUAL))
+        qual_axes.set_ylabel(get_plot_ylabel(spec, PlotConstants.PG_QUAL,
+                                             PlotConstants.P_QUAL))
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
                                                               p=PlotConstants.P_QUAL_PREFIX))
         png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,
@@ -223,9 +217,9 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
     return plot_groups
 
 to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots,
-                                        meta_rpt.get_meta_plotgroup(Constants.PG_RL).title)
+                                        get_plotgroup_title(spec, Constants.PG_RL))
 to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots,
-                                          meta_rpt.get_meta_plotgroup(Constants.PG_IL).title)
+                                          get_plotgroup_title(spec, Constants.PG_IL))
 
 
 def to_report(stats_xml, output_dir, dpi=72):
@@ -276,13 +270,12 @@ def to_report(stats_xml, output_dir, dpi=72):
         lenDistShaper=len_dist_shaper))
 
     # build the report:
-    report = Report(meta_rpt.id,
-                    title=meta_rpt.title,
+    report = Report(Constants.R_ID,
                     attributes=attr,
                     plotgroups=plot_groups,
                     dataset_uuids=dataset_uuids)
 
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def args_runner(args):
@@ -311,7 +304,7 @@ def _add_options_to_parser(p):
         name="SubreadSet",
         description="SubreadSet")
     p.add_output_file_type(
-        FileTypes.REPORT, "report", meta_rpt.title,
+        FileTypes.REPORT, "report", spec.title,
         description=("Filename of JSON output report. Should be name only, "
                      "and will be written to output dir"),
         default_name="report")

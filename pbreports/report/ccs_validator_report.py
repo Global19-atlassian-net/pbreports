@@ -12,27 +12,19 @@ import sys
 import numpy as np
 
 from pbcommand.models.report import Table, Column, Report, Plot, PlotGroup
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.validators import validate_dir, validate_file
 from pbcommand.cli.core import pacbio_args_runner
 from pbcommand.utils import setup_log
 from pbcore.io.FastqIO import FastqReader
 
 from pbreports.plot.helper import get_fig_axes_lpr
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 __version__ = '1.2'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-CCS_VAL_SPEC = op.join(SPEC_DIR, 'ccs_validator_report.json')
-meta_rpt = MetaReport.from_json(CCS_VAL_SPEC)
-
-
 class Constants(object):
-
+    R_ID = "ccs_validator"
     PG_CCS = "ccs_validator_group"
     P_RL = "readlength_hist"
     P_QV = "qv_hist"
@@ -43,6 +35,7 @@ class Constants(object):
     C_READLENGTH = 'mean_readlength'
     C_QV = 'mean_qv'
 
+spec = load_spec(Constants.R_ID)
 
 class FastqStats(object):
 
@@ -101,13 +94,13 @@ def __generate_histogram_comparison(method_name, title, xlabel, list_fastq_stats
     return fig, ax
 
 to_qv_histogram = functools.partial(
-    __generate_histogram_comparison, 'qvs', meta_rpt.get_meta_plotgroup(
-        Constants.PG_CCS).get_meta_plot(Constants.P_QV).title,
-    meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_QV).xlabel)
+    __generate_histogram_comparison, 'qvs',
+    get_plot_title(spec, Constants.PG_CCS, Constants.P_QV),
+    get_plot_xlabel(spec, Constants.PG_CCS, Constants.P_QV))
 to_read_length_histogram = functools.partial(
-    __generate_histogram_comparison, 'reads', meta_rpt.get_meta_plotgroup(
-        Constants.PG_CCS).get_meta_plot(Constants.P_RL).title,
-    meta_rpt.get_meta_plotgroup(Constants.PG_CCS).get_meta_plot(Constants.P_RL).xlabel)
+    __generate_histogram_comparison, 'reads',
+    get_plot_title(spec, Constants.PG_CCS, Constants.P_RL),
+    get_plot_xlabel(spec, Constants.PG_CCS, Constants.P_RL))
 
 
 def _generate_table(list_fastq_stats):
@@ -158,8 +151,8 @@ def to_report(fastq_files, qv_hist=None, readlength_hist=None):
     readlength_hist_plot = Plot(Constants.P_RL, readlength_hist)
     plotgroup = PlotGroup(Constants.PG_RL, plots=[
                           readlength_hist_plot])
-    report = Report(meta_rpt.title, tables=[table], plotgroups=[plotgroup])
-    return meta_rpt.apply_view(report)
+    report = Report(Constats.R_ID, tables=[table], plotgroups=[plotgroup])
+    return spec.apply_view(report)
 
 
 def args_runner(args):
@@ -196,7 +189,7 @@ def get_parser():
                    help="Directory to write Read length and Quality Value histograms.")
     p.add_argument('-r', '--report', type=str,
                    default="ccs_validator_report.json",
-                   help=meta_rpt.title)
+                   help=spec.title)
     p.add_argument('--debug', action='store_true', help='Debug to stdout.')
     return p
 

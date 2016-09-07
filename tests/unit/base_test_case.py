@@ -229,20 +229,24 @@ class AttributesTestBase(object):
             self.assertAlmostEqual(a.value, correct_value, decimals)
 
 
-def validate_report_metadata(self, report, meta_report):
+def validate_report_metadata(self, report, spec):
     """
     Add-on for test cases to verify that view metadata (i.e. labels) are
     consistent with the spec.
     """
     for attr in report.attributes:
-        meta_attr = meta_report.get_meta_attribute(attr.id)
-        self.assertEqual(attr.name, meta_attr.name)
+        attr_spec = spec.get_attribute_spec(attr.id)
+        self.assertEqual(attr.name, attr_spec.name)
     for table in report.tables:
-        meta_table = meta_report.get_meta_table(table.id)
-        self.assertEqual(table.title, meta_table.title)
+        table_spec = spec.get_table_spec(table.id)
+        self.assertEqual(table.title, table_spec.title)
         for col in table.columns:
-            meta_col = meta_table.get_meta_column(col.id)
-            self.assertEqual(col.header, meta_col.header)
+            col_spec = table_spec.get_column_spec(col.id)
+            self.assertEqual(col.header, col_spec.header)
+    try:
+        spec.validate_report(report)
+    except ValueError as e:
+        self.fail(str(e))
 
 
 def validate_report_complete(self, report):

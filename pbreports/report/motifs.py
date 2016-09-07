@@ -18,8 +18,6 @@ import operator
 import numpy as np
 
 from pbcommand.models.report import Report, PlotGroup, Plot, Table, Column
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -27,16 +25,13 @@ from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 
 import pbreports.plot.helper as PH
+from pbreports.io.specs import *
 
 __version__ = '2.0'
 
 log = logging.getLogger()
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-MOTIF_SPEC = op.join(SPEC_DIR, 'motifs.json')
-meta_rpt = MetaReport.from_json(MOTIF_SPEC)
+spec = load_spec("motifs")
 
 
 class Constants(object):
@@ -46,7 +41,7 @@ class Constants(object):
     MAX_MOTIFS_ID = "pbreports.task_options.max_motifs_plot"
     MAX_MOTIFS_DEFAULT = 10
 
-    R_ID = meta_rpt.id
+    R_ID = spec.id
 
     T_ID = "motif_records"
     C_ID = 'motif_id'
@@ -270,10 +265,8 @@ def plotKineticsScatter(kinArr, outputFileName):
                             i], lw=0, alpha=0.3, s=12)
             handles.append(pl)
 
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_COV).xlabel)
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_COV).ylabel)
+    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_MOD, Constants.P_MOD_COV))
+    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_MOD, Constants.P_MOD_COV))
     plt.legend(handles, bases, loc='upper left')
 
     if kinArr.shape[0] > 0:
@@ -310,10 +303,8 @@ def plotKineticsHist(kinArr, outputFileName):
             _ = ax.hist(baseHits['score'], color=colors[i], label=bases[
                         i], bins=bins, histtype="step", log=True)
 
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_HIST).ylabel)
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD).get_meta_plot(Constants.P_MOD_HIST).xlabel)
+    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_MOD, Constants.P_MOD_HIST))
+    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_MOD, Constants.P_MOD_HIST))
 
     if d.size > 0:
         ax.legend(loc='upper right')
@@ -498,10 +489,8 @@ def plotMotifHist(csvFile, kinArr, max_motifs=10):
             pl = ax.hist(baseHits['score'], color=colors[i], label=motifs[
                          i], bins=bins, histtype="step", log=True)
 
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD_QV).get_meta_plot(Constants.P_MOD_QV).ylabel)
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD_QV).get_meta_plot(Constants.P_MOD_QV).xlabel)
+    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_MOD_QV, Constants.P_MOD_QV))
+    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_MOD_QV, Constants.P_MOD_QV))
 
     # Display a legend only if at least one motif was found:
     if numMotifs > 0:
@@ -527,7 +516,8 @@ def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72, max_motifs=10):
     plot = Plot(Constants.P_MOD_QV, image=os.path.basename(png),
                 thumbnail=os.path.basename(thumbpng))
 
-    pg = PlotGroup(Constants.PG_MOD_QV, title=meta_rpt.get_meta_plotgroup(Constants.PG_MOD_QV).title,
+    pg = PlotGroup(Constants.PG_MOD_QV,
+                   title=get_plotgroup_title(spec, Constants.PG_MOD_QV),
                    plots=[plot],
                    thumbnail=os.path.basename(thumbpng))
     return pg
@@ -557,7 +547,7 @@ def to_table(motif_records):
                   'mean_ipd_ratio',
                   'group_tag', 'objective_score']
 
-    table = Table(Constants.T_ID, title="", columns=columns)
+    table = Table(Constants.T_ID, columns=columns)
 
     for record in motif_records:
         for attr_name, column in zip(attr_names, columns):
@@ -586,7 +576,7 @@ def to_motifs_report(gff_file, motif_summary_csv, output_dir, max_motifs=10):
                plotgroups=plot_groups,
                tables=[table])
     log.debug(pformat(r.to_dict(), indent=4))
-    return meta_rpt.apply_view(r)
+    return spec.apply_view(r)
 
 
 def to_mod_report(motif_summary_csv, output_dir):
@@ -602,12 +592,13 @@ def to_mod_report(motif_summary_csv, output_dir):
     p2 = addQmodHist(kinData, output_dir)
     plots = [p1, p2]
 
-    pg = PlotGroup(Constants.PG_MOD, title=meta_rpt.get_meta_plotgroup(
-        Constants.PG_MOD).title, plots=plots)
+    pg = PlotGroup(Constants.PG_MOD,
+                   title=get_plotgroup_title(spec, Constants.PG_MOD),
+                   plots=plots)
 
     r = Report(Constants.R_ID, plotgroups=[pg])
 
-    return meta_rpt.apply_view(r)
+    return spec.apply_view(r)
 
 
 def _write_report(r, json_file):
@@ -658,7 +649,7 @@ def get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         Constants.DRIVER_EXE)
 
@@ -667,7 +658,7 @@ def get_parser():
     p.add_input_file_type(FileTypes.CSV, 'motif_summary_csv',
                           "CSV file", 'Path to Motif summary CSV')
     p.add_output_file_type(FileTypes.REPORT, 'report_json',
-                           name=meta_rpt.title,
+                           name=spec.title,
                            description="Path of output JSON report",
                            default_name="motifs_report")
     p.add_int(Constants.MAX_MOTIFS_ID,

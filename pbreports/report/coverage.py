@@ -27,20 +27,14 @@ from pbreports.util import get_top_contigs, add_base_and_plot_options
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data,
                                    apply_line_fill_data, apply_histogram_data,
                                    LineFill, save_figure_with_thumbnail)
+from pbreports.io.specs import *
 
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-COVERAGE_SPEC = op.join(SPEC_DIR, 'coverage.json')
-meta_rpt = MetaReport.from_json(COVERAGE_SPEC)
-
+spec = load_spec("coverage")
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.coverage_report"
@@ -97,10 +91,11 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
         plots.append(plot)
         idx += 1
 
-    plot_group = PlotGroup(Constants.PG_COVERAGE,
-                           title=meta_rpt.get_meta_plotgroup(
-                               Constants.PG_COVERAGE).title,
-                           thumbnail=thumbnail, plots=plots)
+    plot_group = PlotGroup(
+        Constants.PG_COVERAGE,
+        title=get_plotgroup_title(spec, Constants.PG_COVERAGE),
+        thumbnail=thumbnail,
+        plots=plots)
     return plot_group
 
 
@@ -114,13 +109,14 @@ def _create_coverage_histo_plot_grp(stats, output_dir):
     fig, ax = _create_histogram(stats)
     fname, thumb = [os.path.basename(f) for f in save_figure_with_thumbnail(
         fig, os.path.join(output_dir, 'coverage_histogram.png'))]
-    plot = Plot(Constants.P_COVERAGE_HIST, fname, meta_rpt.get_meta_plotgroup(
-        Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).caption,
-        title=meta_rpt.get_meta_plotgroup(
-        Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).title)
+    plot = Plot(Constants.P_COVERAGE_HIST, fname, 
+        caption=get_plot_caption(spec, Constants.PG_COVERAGE_HIST,
+                                 Constants.P_COVERAGE_HIST),
+        title=get_plot_title(spec, Constants.PG_COVERAGE_HIST,
+                             Constants.P_COVERAGE_HIST))
     plot_group = PlotGroup(Constants.PG_COVERAGE_HIST,
-                           thumbnail=thumb, plots=[plot], title=meta_rpt.get_meta_plotgroup(
-                               Constants.PG_COVERAGE_HIST).title)
+                           thumbnail=thumb, plots=[plot],
+                           title=get_plotgroup_title(spec, Constants.PG_COVERAGE_HIST))
     return plot_group
 
 
@@ -189,8 +185,9 @@ def _create_contig_plot(contig_coverage):
                          facecolor=Constants.COLOR_STEEL_BLUE_LIGHT)
     lines_fills = [line_fill]
     fig, ax = get_fig_axes_lpr()
-    apply_line_data(ax, lines_fills, (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(
-        Constants.P_COVERAGE).xlabel, meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE).get_meta_plot(Constants.P_COVERAGE).ylabel))
+    xlabel = get_plot_xlabel(spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
+    ylabel = get_plot_ylabel(spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
+    apply_line_data(ax, lines_fills, (xlabel, ylabel))
     apply_line_fill_data(ax, lines_fills)
     return fig, ax
 
@@ -207,9 +204,11 @@ def _create_histogram(stats):
     m = 1 if stats.maxbin == 0.0 else stats.maxbin
     bins = np.arange(0, m, binSize)
     fig, ax = get_fig_axes_lpr()
-    apply_histogram_data(ax, stats.means, bins,
-                         (meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).xlabel,
-                          meta_rpt.get_meta_plotgroup(Constants.PG_COVERAGE_HIST).get_meta_plot(Constants.P_COVERAGE_HIST).ylabel),
+    xlabel = get_plot_xlabel(spec, Constants.PG_COVERAGE_HIST,
+                             Constants.P_COVERAGE_HIST)
+    ylabel = get_plot_ylabel(spec, Constants.PG_COVERAGE_HIST,
+                             Constants.P_COVERAGE_HIST)
+    apply_histogram_data(ax, stats.means, bins, (xlabel, ylabel),
                          barcolor=Constants.COLOR_STEEL_BLUE_DARK,
                          showEdges=False)
     return fig, ax
@@ -447,13 +446,12 @@ def make_coverage_report(gff, reference, max_contigs_to_plot, report,
         if plot_grp_histogram.plots:
             plotgroups.append(plot_grp_histogram)
 
-    rpt = Report(meta_rpt.id,
-                 title=meta_rpt.title,
+    rpt = Report(spec.id,
                  plotgroups=plotgroups,
                  attributes=[a1, a2],
                  dataset_uuids=(ReferenceSet(reference).uuid,))
 
-    rpt = meta_rpt.apply_view(rpt)
+    rpt = spec.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
     return rpt
 
@@ -492,9 +490,9 @@ def get_parser():
                           name="Alignment Summary GFF",
                           description="Alignment Summary GFF")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name=meta_rpt.title,
+                           name=spec.title,
                            description="Path to write report JSON output",
-                           default_name=meta_rpt.id)
+                           default_name=spec.id)
     p.add_int(
         option_id=Constants.MAX_CONTIGS_ID,
         option_str="maxContigs",

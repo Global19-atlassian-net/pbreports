@@ -12,8 +12,6 @@ import os.path as op
 import sys
 
 from pbcommand.models.report import Attribute, Report, PbReportError
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json, dict_to_report
 from pbcommand.common_options import add_debug_option
@@ -22,21 +20,17 @@ from pbcommand.utils import setup_log
 from pbcore.io import AlignmentSet
 
 from pbreports.util import movie_to_cell, add_base_options_pbcommand
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-SAT_SPEC = op.join(SPEC_DIR, 'sat.json')
-meta_rpt = MetaReport.from_json(SAT_SPEC)
-
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.sat_report"
     DRIVER_EXE = "python -m pbreports.report.sat --resolved-tool-contract "
+    R_ID = "sat"
     A_INSTRUMENT = "instrument"
     A_COVERAGE = "coverage"
     A_CONCORDANCE = "concordance"
@@ -46,6 +40,8 @@ class Constants(object):
     V_COVERAGE = "weighted_mean_bases_called"
     V_CONCORDANCE = "weighted_mean_concordance"
     M_READLENGTH = "mapped_readlength_mean"
+
+spec = load_spec(Constants.R_ID)
 
 
 def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, report, output_dir):
@@ -65,7 +61,7 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     d_var = _get_variants_data(variants_report)
     ds = AlignmentSet(aligned_reads_file)
 
-    rpt = Report(meta_rpt.id, dataset_uuids=(ds.uuid,))
+    rpt = Report(Constants.R_ID, dataset_uuids=(ds.uuid,))
     rpt.add_attribute(Attribute(Constants.A_INSTRUMENT,
                                 d_bam[Constants.A_INSTRUMENT]))
     rpt.add_attribute(Attribute(Constants.A_COVERAGE,
@@ -75,7 +71,7 @@ def make_sat_report(aligned_reads_file, mapping_stats_report, variants_report, r
     rpt.add_attribute(Attribute(Constants.A_READLENGTH,
                                 d_map[Constants.A_READLENGTH]))
     rpt.add_attribute(Attribute(Constants.A_READS, d_bam[Constants.A_READS]))
-    rpt = meta_rpt.apply_view(rpt)
+    rpt = spec.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
 
 
@@ -185,15 +181,13 @@ def _get_reads_info(aligned_reads_file):
 
 def summarize_report(report_file, out=sys.stdout):
     report = load_report_from_json(report_file)
-    attr = {a.id: a.value for a in report.attributes}
+    attr = {a.id: a for a in report.attributes}
     coverage = attr[Constants.A_COVERAGE]
     concordance = attr[Constants.A_CONCORDANCE]
-    out.write("%s:\n" % report_file)
-    out.write("  {n}: {a}\n".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_CONCORDANCE).name, a=concordance))
-    out.write("  {n}: {c}\n".format(n=meta_rpt.get_meta_attribute(
-        Constants.A_COVERAGE).name, c=coverage))
-    return coverage == 1 and concordance == 1
+    out.write("{f}:\n".format(f=report_file))
+    out.write("  {n}: {v}\n".format(n=concordance.name, v=concordance.value))
+    out.write("  {n}: {v}\n".format(n=coverage.name, v=coverage.value))
+    return coverage.value == 1 and concordance.value == 1
 
 
 def args_runner(args):
@@ -218,8 +212,8 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 
 def _add_options_to_parser(p):
-    desc = meta_rpt.description
-    p = add_base_options_pbcommand(p, meta_rpt.title)
+    desc = spec.description
+    p = add_base_options_pbcommand(p, spec.title)
     p.add_input_file_type(FileTypes.DS_ALIGN,
                           file_id="alignment_file",
                           name="AlignmentSet",
@@ -254,7 +248,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)

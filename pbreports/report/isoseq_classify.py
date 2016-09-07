@@ -15,8 +15,6 @@ import numpy as np
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
@@ -26,25 +24,19 @@ from pbcore.io import ContigSet
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue)
 from pbreports.util import validate_file
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1.0.132615'  # The last 6 digits is changelist
 
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-ISOSEQ_CLASSIFY_SPEC = op.join(SPEC_DIR, 'isoseq_classify.json')
-meta_rpt = MetaReport.from_json(ISOSEQ_CLASSIFY_SPEC)
-
-
 class Constants(object):
     TOOL_ID = "pbreports.tasks.isoseq_classify"
     DRIVER_EXE = "python -m pbreports.report.isoseq_classify --resolved-tool-contract "
+    R_ID = "isoseq_classify"
 
     """Names used within plot groups."""
-    R_ID = meta_rpt.id
 
     # PlotGroup
     PG_READLENGTH = "fulllength_nonchimeric_readlength_group"
@@ -55,6 +47,7 @@ class Constants(object):
     # Table
     T_ATTR = "isoseq_classify_table"
 
+spec = load_spec(Constants.R_ID)
 
 def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
@@ -228,7 +221,7 @@ def make_report(contig_set, summary_txt, output_dir):
                     plotgroups=[readlength_group],
                     dataset_uuids=dataset_uuids)
 
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def _run(contig_set, summary_txt, output_dir, json_report):
@@ -264,7 +257,7 @@ def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         Constants.DRIVER_EXE)
 
@@ -274,7 +267,7 @@ def get_contract_parser():
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary file",
                           description="A summary produced by Iso-Seq Classify, e.g. " +
                           "classify_summary.json")
-    p.add_output_file_type(FileTypes.REPORT, "outJson", meta_rpt.title,
+    p.add_output_file_type(FileTypes.REPORT, "outJson", spec.title,
                            description="Path to write report JSON output",
                            default_name="isoseq_classify_report")
 

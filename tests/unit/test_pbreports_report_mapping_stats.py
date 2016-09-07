@@ -18,7 +18,7 @@ from pbcore.io import AlignmentSet, ConsensusAlignmentSet
 import pbtestdata
 
 from pbreports.report import mapping_stats_ccs
-from pbreports.report.mapping_stats import to_report, Constants, meta_rpt
+from pbreports.report.mapping_stats import to_report, Constants, spec
 
 from base_test_case import ROOT_DATA_DIR, run_backticks, \
     skip_if_data_dir_not_present, LOCAL_DATA, validate_report_metadata, \
@@ -88,7 +88,7 @@ class TestIntegrationMappingStatsReport(unittest.TestCase):
         self.assertIsNotNone(report)
         self.assertEqual(len(report.tables), 1)
         log.info(str(report.tables[0]))
-        validate_report_metadata(self, report, meta_rpt)
+        validate_report_metadata(self, report, spec)
         validate_report_complete(self, report)
 
 
@@ -128,7 +128,7 @@ class TestMappingStatsReport(unittest.TestCase):
             log.info(str(table))
 
     def test_report_metadata(self):
-        validate_report_metadata(self, self.report, meta_rpt)
+        validate_report_metadata(self, self.report, spec)
 
     def test_number_of_attributes(self):
         value = self.TOTAL_NUMBER_OF_ATTRIBUTES
@@ -446,7 +446,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         self.assertEqual(len(self.report.tables), value)
 
     def test_report_metadata(self):
-        validate_report_metadata(self, self.report, mapping_stats_ccs.meta_rpt)
+        validate_report_metadata(self, self.report, mapping_stats_ccs.spec)
 
     def _compare_metric_values(self, metric_id):
         value = self.EXPECTED_VALUES[metric_id]
@@ -493,7 +493,7 @@ class TestPbreportMappingStats(pbcommand.testkit.PbTestApp):
         r = load_report_from_json(rtc.task.output_files[0])
         with AlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
-        validate_report_metadata(self, r, meta_rpt)
+        validate_report_metadata(self, r, spec)
 
 
 class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
@@ -507,7 +507,7 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
         with ConsensusAlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
             self.assertEqual(len(r.plotGroups), 4)
-        validate_report_metadata(self, r, mapping_stats_ccs.meta_rpt)
+        validate_report_metadata(self, r, mapping_stats_ccs.spec)
 
 
 @skip_if_data_dir_not_present

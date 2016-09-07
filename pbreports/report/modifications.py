@@ -20,8 +20,6 @@ import numpy as np
 import h5py
 
 from pbcommand.models.report import Report, PlotGroup, Plot
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
@@ -31,16 +29,13 @@ import pbreports.plot.helper as PH
 from pbreports.util import (add_base_and_plot_options,
                             add_base_options_pbcommand)
 from pbreports.util import Constants as BaseConstants
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '2.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-MOD_SPEC = op.join(SPEC_DIR, 'modifications.json')
-meta_rpt = MetaReport.from_json(MOD_SPEC)
+spec = load_spec("modifications")
 
 
 class Constants(BaseConstants):
@@ -98,10 +93,8 @@ def plot_kinetics_scatter(basemods_h5, ax):
         else:
             log.warn("Base {b} not found".format(b=base))
 
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).xlabel)
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_KIN).get_meta_plot(Constants.P_SCAT).ylabel)
+    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_KIN, Constants.P_SCAT))
+    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_KIN, Constants.P_SCAT))
     legend(handles, bases, loc='upper left')
 
     if len(coverage) > 0:
@@ -135,10 +128,8 @@ def plot_kinetics_hist(basemods_h5, ax):
         else:
             log.warn("Base {b} not found".format(b=base))
 
-    ax.set_xlabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_KIN).get_meta_plot(Constants.P_HIST).xlabel)
-    ax.set_ylabel(meta_rpt.get_meta_plotgroup(
-        Constants.PG_KIN).get_meta_plot(Constants.P_HIST).ylabel)
+    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_KIN, Constants.P_HIST))
+    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_KIN, Constants.P_HIST))
 
     if len(scores) > 0:
         ax.legend(loc='upper right')
@@ -182,11 +173,11 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     scatter = get_qmod_plot(basemods_h5, output_dir, dpi)
     hist = get_qmod_hist(basemods_h5, output_dir, dpi)
     pg = PlotGroup(Constants.PG_KIN,
-                   title=meta_rpt.get_meta_plotgroup(Constants.PG_KIN).title,
+                   title=get_plotgroup_title(spec, Constants.PG_KIN),
                    thumbnail=scatter.thumbnail,
                    plots=[scatter, hist])
-    rpt = Report(meta_rpt.id, plotgroups=[pg])
-    rpt = meta_rpt.apply_view(rpt)
+    rpt = Report(spec.id, plotgroups=[pg])
+    rpt = spec.apply_view(rpt)
     rpt.write_json(os.path.join(output_dir, report))
     return 0
 

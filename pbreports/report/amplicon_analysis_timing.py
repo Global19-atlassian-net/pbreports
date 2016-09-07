@@ -15,29 +15,22 @@ import sys
 from numpy import median
 
 from pbcommand.models.report import Report, Table, Column
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
 from pbreports.util import validate_nonempty_file
+from pbreports.io.specs import *
 
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-AAT_SPEC = op.join(SPEC_DIR, 'amplicon_analysis_timing.json')
-meta_rpt = MetaReport.from_json(AAT_SPEC)
-
-
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_timing"
+    R_ID = "amplicon_analysis_timing"
     T_ID = "result_table"
     C_BC = "barcode_col"
     C_HOUR = "hour_col"
@@ -46,6 +39,7 @@ class Constants(object):
 
 LOG_LINE_REGEX = re.compile('^\d+-\d+-\d+\s+\d+:\d+:\d+')
 LOG_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+spec = load_spec(Constants.R_ID)
 
 
 def parse_log_file(log_file):
@@ -134,9 +128,9 @@ def run_to_report(log_file):
     table = create_table(timings)
 
     # ids must be lowercase.
-    r = Report(meta_rpt.id, tables=[table])
+    r = Report(Constants.R_ID, tables=[table])
 
-    return meta_rpt.apply_view(r)
+    return spec.apply_view(r)
 
 
 def amplicon_analysis_timing(log_file, report_json):
@@ -170,7 +164,7 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.JSON,
         file_id="report_json",
-        name=meta_rpt.title,
+        name=spec.title,
         description="Timing Report JSON",
         default_name="timing_report")
 
@@ -196,7 +190,7 @@ def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         driver_exe)
     return p

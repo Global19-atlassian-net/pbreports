@@ -48,10 +48,8 @@ import math
 import numpy as np
 
 from pbcommand.models.report import Report, Attribute
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
-from pbcommand.cli import pacbio_args_runner, \
-    get_default_argparser_with_base_opts
+from pbcommand.cli import (pacbio_args_runner,
+                           get_default_argparser_with_base_opts)
 from pbcommand.utils import setup_log
 
 from pbreports.io.validators import validate_dir, validate_file
@@ -64,23 +62,14 @@ from pbreports.model.aggregators import (BaseAggregator, SumAggregator,
                                          HistogramAggregator,
                                          MaxAggregator, MeanAggregator,
                                          CountAggregator)
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 __version__ = '1.2'
 
-# Import Mapping MetaReport
-_DIR_NAME = op.dirname(op.realpath(__file__))
-SPEC_DIR = op.join(_DIR_NAME, 'specs/')
-FS_SPEC = op.join(SPEC_DIR, 'filter_subread.json')
-meta_rpt = MetaReport.from_json(FS_SPEC)
-
 
 class Constants(object):
-    """Ids used for Report, Table, PlotGroup, Plot, Attributes,
-
-    Using an a prefix for autocomplete
-    """
-    R_ID = meta_rpt.id
+    R_ID = "filter_subread"
 
     # Table
     #T_MY_ID = ''
@@ -98,6 +87,8 @@ class Constants(object):
     A_N50 = 'filter_subread_n50'
 
     I_FILTER_SUBREADS_HIST = "filtered_subread_report.png"
+
+spec = load_spec(Constants.R_ID)
 
 
 class _BaseSubreadFilterException(Exception):
@@ -368,21 +359,16 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
                                    Constants.PG_SUBREAD_LENGTH,
                                    custom_subread_length_histogram,
                                    Constants.I_FILTER_SUBREADS_HIST,
-                                   xlabel=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                                       Constants.P_POST_FILTER).xlabel,
+                                   xlabel=get_plot_xlabel(spec, Constants.PG_SUBREAD_LENGTH, Constants.P_POST_FILTER),
                                    ylabel="Subreads",
                                    rlabel="bp > Subread Length",
                                    thumb="filtered_subread_report_thmb.png",
                                    use_group_thumb=True,
-                                   title=meta_rpt.get_meta_plotgroup(Constants.PG_SUBREAD_LENGTH).get_meta_plot(
-                                       Constants.P_POST_FILTER).title,
-                                   plot_group_title=meta_rpt.get_meta_plotgroup(
-                                       Constants.PG_SUBREAD_LENGTH).title,
                                    color=get_green(3),
                                    edgecolor=get_green(2))
 
-    view_config_d = {'subread': plot_view}
-    id_aggregators = {'subread': aggregators['subread']}
+    view_config_d = {'post_filter': plot_view}
+    id_aggregators = {'post_filter': aggregators['subread']}
 
     plot_groups = to_plot_groups(view_config_d, output_dir, id_aggregators)
 
@@ -399,7 +385,7 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
 
     log.debug(str(report))
 
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def args_runner(args):

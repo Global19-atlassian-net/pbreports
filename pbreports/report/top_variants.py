@@ -11,29 +11,22 @@ import os.path as op
 import sys
 
 from pbcommand.models.report import Table, Column, Report, PbReportError
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.util import add_base_options, openReference, \
-    add_base_options_pbcommand
+from pbreports.util import (add_base_options, openReference,
+                            add_base_options_pbcommand)
+from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-VARS_SPEC = op.join(SPEC_DIR, 'top_variants.json')
-meta_rpt = MetaReport.from_json(VARS_SPEC)
-
 
 class Constants(object):
-    R_ID = meta_rpt.id
+    R_ID = "topvariants"
     TOOL_ID = "pbreports.tasks.top_variants"
     DRIVER_EXE = "python -m pbreports.report.top_variants --resolved-tool-contract"
     HOW_MANY_ID = "pbreports.task_options.how_many"
@@ -50,6 +43,8 @@ class Constants(object):
     C_FRE = 'frequency'
     C_GEN = 'genotype'
     T_TOP = "top_variants_table"
+
+spec = load_spec(Constants.R_ID)
 
 
 def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
@@ -79,7 +74,7 @@ def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
 
     r = Report(Constants.R_ID, tables=[table_builder.table],
                dataset_uuids=(ReferenceSet(reference).uuid,))
-    r = meta_rpt.apply_view(r)
+    r = spec.apply_view(r)
     r.write_json(os.path.join(output_dir, report))
     return 0
 
@@ -344,7 +339,7 @@ def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        meta_rpt.title,
+        spec.title,
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)

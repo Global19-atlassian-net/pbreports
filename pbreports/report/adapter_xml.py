@@ -13,8 +13,6 @@ import numpy as np
 
 from pbreports.util import continuous_dist_shaper
 from pbcommand.models.report import *
-from pbreports.report.report_spec import (MetaAttribute, MetaPlotGroup, MetaPlot,
-                                          MetaColumn, MetaTable, MetaReport)
 from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -23,18 +21,15 @@ from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
+from pbreports.io.specs import *
 
 __version__ = '0.1.0'
 
-# Import Mapping MetaReport
-_DIR_NAME = os.path.dirname(os.path.realpath(__file__))
-SPEC_DIR = os.path.join(_DIR_NAME, 'specs/')
-ADAPTER_SPEC = op.join(SPEC_DIR, 'adapter_xml.json')
-meta_rpt = MetaReport.from_json(ADAPTER_SPEC)
 
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.adapter_report_xml"
+    R_ID = "adapter_xml_report"
     DRIVER_EXE = ("python -m pbreports.report.adapter_xml "
                   "--resolved-tool-contract ")
 
@@ -45,6 +40,7 @@ class Constants(object):
     P_ADAPTER = "adapter_xml_plot"
 
 log = logging.getLogger(__name__)
+spec = load_spec(Constants.R_ID)
 
 
 def to_report(stats_xml, output_dir, dpi=72):
@@ -85,10 +81,10 @@ def to_report(stats_xml, output_dir, dpi=72):
         ax.bar(map(float, ins_len_dist.labels), ins_len_dist.bins,
                color=get_green(0), edgecolor=get_green(0),
                width=(ins_len_dist.binWidth * 0.75))
-        ax.set_xlabel(meta_rpt.get_meta_plotgroup(
-            Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).xlabel)
-        ax.set_ylabel(meta_rpt.get_meta_plotgroup(
-            Constants.PG_ADAPTER).get_meta_plot(Constants.P_ADAPTER).ylabel)
+        ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_ADAPTER,
+                                      Constants.P_ADAPTER))
+        ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_ADAPTER,
+                                      Constants.P_ADAPTER))
         png_fn = os.path.join(output_dir,
                               "interAdapterDist{i}.png".format(i=i))
         png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn,
@@ -108,13 +104,12 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     tables = []
 
-    report = Report(meta_rpt.id,
-                    title=meta_rpt.title,
+    report = Report(Constants.R_ID,
                     attributes=attributes,
                     tables=tables,
                     )  # plotgroups=plot_groups)
 
-    return meta_rpt.apply_view(report)
+    return spec.apply_view(report)
 
 
 def args_runner(args):
@@ -139,7 +134,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 def _add_options_to_parser(p):
     p.add_input_file_type(
         FileTypes.DS_SUBREADS, "subread_set", "SubreadSet", "PacBio SubreadSet XML File")
-    p.add_output_file_type(FileTypes.REPORT, "report", meta_rpt.title,
+    p.add_output_file_type(FileTypes.REPORT, "report", spec.title,
                            description=("Filename of JSON output report. Should be name only, "
                                         "and will be written to output dir"),
                            default_name="report")
