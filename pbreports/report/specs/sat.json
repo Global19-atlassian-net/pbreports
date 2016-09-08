@@ -20,7 +20,7 @@
         },
         {
             "type": "float",
-            "format": "{:.2f}",
+            "format": "{p:.2f} %",
             "description": "Percent concordance of the consensus sequence versus the reference",
             "name": "Consensus Concordance",
             "id": "concordance"

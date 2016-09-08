@@ -222,7 +222,7 @@ def _get_att_mean_coverage(stats):
     if stats is None:
         v = 'NA'
     else:
-        v = stats.mean_depth_of_coverage
+        v = int(round(stats.mean_depth_of_coverage))
     a = Attribute(Constants.A_COVERAGE, v)
     return a
 
