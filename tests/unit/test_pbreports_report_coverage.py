@@ -140,7 +140,7 @@ class TestCoverageRpt(unittest.TestCase):
         # This was in coverage.xml for the alignment summary gff used
         # attribute hidden="true" id="depth_coverage_mean" name="Coverage"
         # value="2958.16">2958.16</attribute>
-        self.assertAlmostEqual(1.228, att.value, places=3)
+        self.assertEqual(1, att.value)
         att = _get_att_percent_missing(stats)
         self.assertAlmostEqual(58.4, att.value, places=1)
 
@@ -156,7 +156,7 @@ class TestCoverageRpt(unittest.TestCase):
         # This was in coverage.xml for the alignment summary gff used
         # attribute hidden="true" id="depth_coverage_mean" name="Coverage"
         # value="2958.16">2958.16</attribute>
-        self.assertAlmostEqual(2958.16, att.value, places=2)
+        self.assertEqual(2958, att.value)
         att = _get_att_percent_missing(stats)
         self.assertEqual(0, att.value)
 
@@ -343,7 +343,7 @@ class TestManyContigs(unittest.TestCase):
                                    max_contigs_to_plot=25)
         attr = {a.id: a.value for a in rpt.attributes}
         self.assertEqual(attr['missing_bases_pct'], 0.0)
-        self.assertAlmostEqual(attr['depth_coverage_mean'], 68.06, places=2)
+        self.assertEqual(attr['depth_coverage_mean'], 68)
 
 
 class TestToolContract(pbcommand.testkit.core.PbTestApp):
