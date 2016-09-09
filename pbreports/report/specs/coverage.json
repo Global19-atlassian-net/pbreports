@@ -7,7 +7,7 @@
         {
             "description": "Mean depth of coverage over entire reference",
             "type": "float",
-            "format": "{:.2f}",
+            "format": "{:.0f}",
             "id": "depth_coverage_mean",
             "name": "Mean Coverage"
         },

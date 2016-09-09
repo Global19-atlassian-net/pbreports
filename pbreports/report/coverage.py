@@ -219,10 +219,8 @@ def _get_att_mean_coverage(stats):
     :param stats (dict)
     """
     v = None
-    if stats is None:
-        v = 'NA'
-    else:
-        v = int(round(stats.mean_depth_of_coverage))
+    if stats is not None:
+        v = stats.mean_depth_of_coverage
     a = Attribute(Constants.A_COVERAGE, v)
     return a
 
