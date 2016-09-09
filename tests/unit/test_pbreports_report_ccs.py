@@ -17,8 +17,8 @@ from pbcore.io import ConsensusReadSet
 import pbtestdata
 
 from pbreports.report.ccs import to_report, Constants
-from base_test_case import run_backticks, LOCAL_DATA, \
-    validate_report_complete
+from base_test_case import (run_backticks, LOCAL_DATA, ROOT_DATA_DIR,
+    validate_report_complete, skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
 
@@ -179,10 +179,10 @@ class TestCCSMultipleMovies(unittest.TestCase):
 
 
 class TestCCSBarcoded(unittest.TestCase):
-    CCS_DS = pbtestdata.get_file("ccs-barcoded")
 
     def test_ccs_barcodes_table(self):
-        ds = ConsensusReadSet(self.CCS_DS)
+        CCS_DS = pbtestdata.get_file("ccs-barcoded")
+        ds = ConsensusReadSet(CCS_DS)
         r = to_report(ds, tempfile.mkdtemp())
         self.assertEqual([c.values for c in r.tables[1].columns[0:4]],
                          [["lbc1", "lbc3"], [1, 1], [1958, 1954], [1958, 1954]])
@@ -190,3 +190,12 @@ class TestCCSBarcoded(unittest.TestCase):
                                places=4)
         self.assertAlmostEqual(r.tables[1].columns[4].values[1], 0.9926,
                                places=4)
+
+    @skip_if_data_dir_not_present
+    def test_ccs_barcodes_table_asymmetric(self):
+        CCS_DS = op.join(ROOT_DATA_DIR, "ccs", "asym_barcodes",
+                         "ccs.consensusreadset.xml")
+        ds = ConsensusReadSet(CCS_DS)
+        r = to_report(ds, tempfile.mkdtemp())
+        self.assertEqual(r.tables[1].columns[0].values,
+                         ['F5, R5','F8, R8','F20, R20','F29, R29','F30, R30'])
