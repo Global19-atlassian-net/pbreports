@@ -453,7 +453,7 @@ class MeanSubreadConcordanceAggregator(_MeanAggregator):
         # hack to make it look like the old report values
         # v = self.mean * 100
         v = self.mean
-        return np.round(v, decimals=4)
+        return v
 
 
 class MeanSubreadQualityAggregator(_MeanAggregator):
@@ -468,7 +468,7 @@ class MeanSubreadQualityAggregator(_MeanAggregator):
         # hack to make it look like the old report values
         # v = self.mean * 100
         v = self.mean
-        return np.round(v, decimals=4)
+        return v
 
 
 class SubReadlengthHistogram(_BaseHistogram):

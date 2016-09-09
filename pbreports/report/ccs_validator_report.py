@@ -121,8 +121,7 @@ def _generate_table(list_fastq_stats):
             Constants.C_TOT_BASES, int(np.sum(fastq_stat.reads)))
         table.add_data_by_column_id(
             Constants.C_READLENGTH, int(fastq_stat.reads.mean()))
-        table.add_data_by_column_id(Constants.C_QV, np.round(
-            fastq_stat.qvs.mean(), decimals=2))
+        table.add_data_by_column_id(Constants.C_QV, fastq_stat.qvs.mean())
 
     return table
 

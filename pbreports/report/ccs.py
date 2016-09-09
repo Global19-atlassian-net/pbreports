@@ -152,9 +152,8 @@ def _movie_results_to_attributes(movie_results):
     npass = [m.num_passes for m in movie_results]
     num_passes = np.concatenate(npass)
 
-    m_readlength = int(read_lengths.mean()) if read_lengths.size > 0 else 0.0
-    m_accuracy = np.round(
-        accuracies.mean(), decimals=4) if accuracies.size > 0 else 0.0
+    m_readlength = int(read_lengths.mean()) if read_lengths.size > 0 else 0
+    m_accuracy = accuracies.mean() if accuracies.size > 0 else 0.0
     m_npasses = int(np.round(num_passes.mean(), decimals=0)) if num_passes.size > 0 else 0
     #m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
@@ -199,9 +198,8 @@ def _movie_results_to_table(movie_results):
         num_passes = np.concatenate(npass)
 
         m_readlength = int(
-            read_lengths.mean()) if read_lengths.size > 0 else 0.0
-        m_accuracy = np.round(
-            accuracies.mean(), decimals=4) if accuracies.size > 0 else 0.0
+            read_lengths.mean()) if read_lengths.size > 0 else 0
+        m_accuracy = accuracies.mean() if accuracies.size > 0 else 0.0
         m_npasses = int(np.round(num_passes.mean(), decimals=0)) if num_passes.size > 0 else 0
         #m_qv = int(round(accuracy_as_phred_qv(float(accuracies.mean()))))
 

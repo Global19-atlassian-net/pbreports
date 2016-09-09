@@ -62,12 +62,8 @@ def to_report(stats_xml, output_dir, dpi=72):
                       "key distributions")
 
     # Pull some stats:
-    adapter_dimers = np.round(
-        100.0 * dset.metadata.summaryStats.adapterDimerFraction,
-        decimals=2)
-    short_inserts = np.round(
-        100.0 * dset.metadata.summaryStats.shortInsertFraction,
-        decimals=2)
+    adapter_dimers = dset.metadata.summaryStats.adapterDimerFraction
+    short_inserts = dset.metadata.summaryStats.shortInsertFraction
 
     plots = []
     # Pull some histograms (may have dupes (unmergeable distributions)):
