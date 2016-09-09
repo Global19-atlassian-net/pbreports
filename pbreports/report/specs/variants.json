@@ -33,8 +33,8 @@
             "id": "weighted_mean_bases_called"
         },
         {
-            "type": "int",
-            "format": "{:,d}",
+            "type": "float",
+            "format": "{:.0f}",
             "description": "The mean depth of coverage across the reference sequence",
             "name": "Reference Coverage (mean)",
             "id": "weighted_mean_coverage"
@@ -75,8 +75,8 @@
                 },
                 {
                     "header": "Reference Coverage",
-                    "type": "int",
-                    "format": "{:,d}",
+                    "type": "float",
+                    "format": "{:.0f}",
                     "id": "coverage",
                     "description": "The mean depth of coverage across the reference sequence"
                 }
