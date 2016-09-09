@@ -44,6 +44,8 @@ class Constants(object):
     TOOL_NAME = "ccs_report"
     DRIVER_EXE = "python -m pbreports.report.ccs --resolved-tool-contract"
 
+    NO_BC_LABEL = "none"
+
     R_ID = "ccs"
 
     # PlotGroup
@@ -94,7 +96,7 @@ class Constants(object):
 MovieResult = namedtuple("MovieResult", ["movie_name", "read_lengths",
                                          "accuracies", "num_passes"])
 BamStats = namedtuple("BamStats", ["qLen", "numPasses", "readScore",
-                                   "movieName", "bc"])
+                                   "movieName", "bcForward", "bcReverse"])
 
 
 def _stats_from_dataset(ccs_set):
@@ -106,9 +108,10 @@ def _stats_from_dataset(ccs_set):
             movie_names.add(rg["MovieName"])
         is_barcoded = hasattr(bam.pbi, "bcForward")
         for k, r in enumerate(bam):
-            bc = bam.pbi.bcForward[k] if is_barcoded else None
+            bcForward = bam.pbi.bcForward[k] if is_barcoded else None
+            bcReverse = bam.pbi.bcReverse[k] if is_barcoded else None
             results.append(BamStats(r.qLen, r.numPasses, r.readScore,
-                                    r.movieName, bc))
+                                    r.movieName, bcForward, bcReverse))
     return results, movie_names
 
 
@@ -225,11 +228,15 @@ def _make_barcode_table(bam_stats, ccs_set):
     barcode_nbases = defaultdict(int)
     barcode_npasses = defaultdict(list)
     barcode_readscores = defaultdict(list)
+    is_symmetric = all([r.bcForward==r.bcReverse for r in bam_stats])
     for r in bam_stats:
-        barcode_counts[r.bc] += 1
-        barcode_nbases[r.bc] += r.qLen
-        barcode_npasses[r.bc].append(r.numPasses)
-        barcode_readscores[r.bc].append(r.readScore)
+        key = r.bcForward
+        if not is_symmetric:
+            key = (r.bcForward, r.bcReverse)
+        barcode_counts[key] += 1
+        barcode_nbases[key] += r.qLen
+        barcode_npasses[key].append(r.numPasses)
+        barcode_readscores[key].append(r.readScore)
     barcode_labels = {}
     for er in ccs_set.externalResources:
         bcs = er.barcodes
@@ -245,7 +252,14 @@ def _make_barcode_table(bam_stats, ccs_set):
     counts = [barcode_counts[i_bc] for i_bc in barcode_ids]
     nbases = [barcode_nbases[i_bc] for i_bc in barcode_ids]
     mean_length = [int(float(n) / c) for (c, n) in zip(counts, nbases)]
-    labels = [str(barcode_labels.get(i_bc, i_bc)) for i_bc in barcode_ids]
+    labels = []
+    for i_bc in barcode_ids:
+        if is_symmetric:
+            labels.append(barcode_labels.get(i_bc, Constants.NO_BC_LABEL))
+        else:
+            labels.append("{f}, {r}".format(
+                          f=barcode_labels.get(i_bc[0], Constants.NO_BC_LABEL),
+                          r=barcode_labels.get(i_bc[1], Constants.NO_BC_LABEL)))
     npasses = [sum(barcode_npasses[i_bc]) / len(barcode_npasses[i_bc])
                for i_bc in barcode_ids]
     readquals = [sum(barcode_readscores[i_bc]) / len(barcode_readscores[i_bc])
