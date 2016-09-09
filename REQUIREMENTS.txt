@@ -5,4 +5,4 @@ pysam >= 0.8.4
 matplotlib
 jsonschema
 pbcore
-pbcommand >= 0.4.10
+pbcommand >= 0.4.11
