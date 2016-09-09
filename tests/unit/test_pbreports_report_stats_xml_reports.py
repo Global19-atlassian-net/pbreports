@@ -334,8 +334,8 @@ class TestAdapterReport(XMLStatsRptsBase):
         d = json.loads(rpt.to_json())
         a = d['attributes']
         self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp) %')
-        self.assertEqual(a[0]['value'], 0.0)
-        self.assertEqual(a[1]['value'], 0.0)
+        self.assertAlmostEqual(a[0]['value'], 1.28301765719e-05)
+        self.assertAlmostEqual(a[1]['value'], 3.20754414298e-05)
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'interAdapterDist0.png')))

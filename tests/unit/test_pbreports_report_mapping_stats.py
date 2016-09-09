@@ -398,7 +398,7 @@ class TestMappingStatsGmapReport(unittest.TestCase):
 
 class TestMappingStatsCCSReport(unittest.TestCase):
     EXPECTED_VALUES = {
-        Constants.A_READ_CONCORDANCE: 0.999,
+        Constants.A_READ_CONCORDANCE: 0.99898496389948943,
         Constants.A_NREADS: 10,
         Constants.A_READLENGTH: 1123,
         Constants.A_READLENGTH_MAX: 1866,
@@ -450,7 +450,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
 
     def _compare_metric_values(self, metric_id):
         value = self.EXPECTED_VALUES[metric_id]
-        self.assertEqual(self._get_attribute_value_by_id(metric_id), value)
+        self.assertAlmostEqual(self._get_attribute_value_by_id(metric_id), value)
 
     def test_mapped_read_concordance_mean(self):
         self._compare_metric_values(Constants.A_READ_CONCORDANCE)
