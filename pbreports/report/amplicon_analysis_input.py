@@ -115,7 +115,10 @@ def tabulate_results(summary_data, consensus_sums):
         for sequence_type, weight in data.iteritems():
             value = tabulated_data[barcode][sequence_type]
             final_data[barcode][sequence_type] = int(value)
-            final_data[barcode][sequence_type + '_pct'] = value / total
+            if total > 0:
+                final_data[barcode][sequence_type + '_pct'] = value / total
+            else:
+                final_data[barcode][sequence_type + '_pct'] = 0
     return final_data
 
 
