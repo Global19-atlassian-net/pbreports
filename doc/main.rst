@@ -1,7 +1,9 @@
 Design Model
 -----------------------------
 
-A report is composed of model objects whose classes are defined in pbreports.model. Typically, a report object is created and then attributes, tables, or plotGroups are
+A report is composed of model objects whose classes are defined in
+`pbcommands.models.report`. Typically, a report object is created and then
+attributes, tables, or plotGroups are
 added to the report. Lastly, the report is serialized as json to a file.
 
 The objects that comprise a report extend BaseReportElement. All report elements have an id. When the
@@ -25,7 +27,7 @@ This example shows how a report is with one attribute, plotGroup, and table is c
     import os
     import logging
 
-    from pbreports.model.model import Report, Attribute, PlotGroup, Table
+    from pbcommand.models.report import Report, Attribute, PlotGroup, Table
 
     log = logging.getLogger(__name__)
    
@@ -45,7 +47,7 @@ This example shows how a report is with one attribute, plotGroup, and table is c
         r.write_json('/my/file.json')
             
 
-.. autoclass:: pbreports.model.model.Report
+.. autoclass:: pbcommand.models.report.Report
     :members:
     :special-members:
 	
@@ -61,7 +63,7 @@ a list of attributes.
     import os
     import logging
 
-    from pbreports.model.model import Attribute
+    from pbcommand.models.report import Attribute
 
     log = logging.getLogger(__name__)
    
@@ -71,7 +73,7 @@ a list of attributes.
         return a
             
 
-.. autoclass:: pbreports.model.model.Attribute
+.. autoclass:: pbcommand.models.report.Attribute
     :members:
     :special-members:
 	
@@ -90,7 +92,7 @@ columns by index.
     import logging
     import random
 
-    from pbreports.model.model import Table, Column
+    from pbcommand.models.report import Table, Column
 
     log = logging.getLogger(__name__)
    
@@ -109,11 +111,11 @@ columns by index.
 
         return t
             
-.. autoclass:: pbreports.model.model.Table
+.. autoclass:: pbcommand.models.report.Table
     :members:
     :special-members:
 	
-.. autoclass:: pbreports.model.model.Column
+.. autoclass:: pbcommand.models.report.Column
     :members:
     :special-members:
 
@@ -130,7 +132,7 @@ preview), an optional legend and a list of plots
     import os
     import logging
 
-    from pbreports.model.model import PlotGroup, Plot
+    from pbcommand.models.report import PlotGroup, Plot
 
     log = logging.getLogger(__name__)
    
@@ -143,10 +145,10 @@ preview), an optional legend and a list of plots
         # or p.add_plot(plot)
         return p
             
-.. autoclass:: pbreports.model.model.PlotGroup
+.. autoclass:: pbcommand.models.report.PlotGroup
     :members:
     :special-members:
 	
-.. autoclass:: pbreports.model.model.Plot
+.. autoclass:: pbcommand.models.report.Plot
     :members:
     :special-members:
