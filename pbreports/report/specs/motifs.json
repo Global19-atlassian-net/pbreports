@@ -84,14 +84,14 @@
                     "type": "string",
                     "format": null,
                     "id": "group_tag",
-                    "description": null
+                    "description": "The motif group of which the motif is a member. Motifs are grouped if they are mutually or self reverse-complimentary. If the motif isn't complementary to itself or another motif, the motif is given its own group."
                 },
                 {
                     "header": "Objective Score",
                     "type": "float",
                     "format": "{:.1f}",
                     "id": "objective_score",
-                    "description": null
+                    "description": "For a given motif, the objective score is computed as (fraction methylated)*(sum of log-p values of matches)."
                 }
             ],
             "description": null
