@@ -35,7 +35,7 @@ EXPECTED_VALUES = {
     Constants.A_TOTAL_BASES: 85803,
     Constants.A_NREADS: 18,
     Constants.A_MEAN_READLENGTH: 4766,
-    Constants.A_MEAN_ACCURACY: 0.947,
+    Constants.A_MEAN_ACCURACY: 0.946,
     Constants.A_MEAN_NPASSES: 4,
     # Constants.A_MEAN_QV: 13
 }

@@ -128,7 +128,7 @@ def _to_read_stats_attributes(readLenDists, readQualDists):
     readlen = int(np.round(readlen, decimals=0))
     readQuality = 0
     if readscorenumber != 0:
-        readQuality = np.round(readscoretotal / readscorenumber, decimals=2)
+        readQuality = readscoretotal / readscorenumber
     return [int(np.round(nbases, decimals=0)),
             nreads,
             readlen,
