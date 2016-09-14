@@ -6,7 +6,7 @@
     "attributes": [],
     "tables": [
         {
-            "title": "Top Variants",
+            "title": "High-Confidence Variant Calls",
             "id": "top_variants_table",
             "columns": [
                 {
@@ -62,7 +62,7 @@
             "description": "Displays the position, type and coverage of the top 100 variants, sorted on confidence."
         },
         {
-            "title": "Top minor variants",
+            "title": "Top Minor Variant Calls",
             "id": "top_minor_variants_table",
             "columns": [
                 {
