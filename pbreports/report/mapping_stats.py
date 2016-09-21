@@ -3,6 +3,9 @@
 Generates a report of statistics for subreads mapped to a reference genome with
 Blasr/pbalign.
 """
+# a wart, but enforces matplotlib headless compat. fixes "TclError: no display name and no $DISPLAY environment variable" errors that sometimes mysteriously appear.
+import matplotlib
+matplotlib.use("Agg")
 
 from collections import OrderedDict
 import multiprocessing
