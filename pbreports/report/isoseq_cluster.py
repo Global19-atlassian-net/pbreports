@@ -14,6 +14,9 @@ import logging
 import argparse
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
                                      PlotGroup)
@@ -132,7 +135,6 @@ def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
     plot config options.
     """
 
-    import matplotlib.pyplot as plt
     fig, _ax = _make_plot_func(datum, axis_labels, nbins, barcolor)
     path = os.path.join(output_dir, plot_name)
     try:

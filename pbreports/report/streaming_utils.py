@@ -8,6 +8,9 @@ import logging
 import functools
 import types
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Plot, PlotGroup
 
@@ -308,7 +311,6 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
     Make custom func on plot view?
     """
 
-    import matplotlib.pyplot as plt
     plots_by_group_id = {}
 
     # Messy way to set the PlotGroup
