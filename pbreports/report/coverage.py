@@ -15,6 +15,9 @@ import os
 import sys
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Attribute, Report, PlotGroup, Plot, PbReportError
 from pbcommand.models import FileTypes, get_pbparser
@@ -62,7 +65,6 @@ def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
     :param cov_map: (dict string:ContigCoverage) mapping of contig.id to ContigCoverage object
     :param output_dir: (string) where to write images
     """
-    import matplotlib.pyplot as plt
     plots = []
     thumbnail = None
     idx = 0

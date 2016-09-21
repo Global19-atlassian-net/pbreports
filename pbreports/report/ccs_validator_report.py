@@ -10,6 +10,9 @@ import os.path as op
 import sys
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Table, Column, Report, Plot, PlotGroup
 from pbcommand.validators import validate_dir, validate_file
@@ -134,7 +137,6 @@ def fastq_files_to_stats(fastq_files):
 
 def to_report(fastq_files, qv_hist=None, readlength_hist=None):
     """Generate a histogram of read lengths and quality values"""
-    import matplotlib.pyplot as plt
     fastq_stats = fastq_files_to_stats(fastq_files)
 
     table = _generate_table(fastq_stats.values())

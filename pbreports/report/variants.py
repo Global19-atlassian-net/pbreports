@@ -14,6 +14,9 @@ import sys
 import hashlib
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from pbcommand.models.report import (Table, Column, Attribute, Report,
                                      PlotGroup, Plot, PbReportError)
@@ -163,7 +166,6 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
     :param var_map: (dict string:ContigVariants) mapping of contig.header to ContigVariants object
     :param output_dir: (string) where to write images
     """
-    import matplotlib.pyplot as plt
     plots = []
     thumbnail = None
     legend = None
@@ -212,7 +214,6 @@ def _get_legend_file(bars, output_dir):
     :param output_dir: Where to write file
     :return (string) filename
     """
-    import matplotlib.pyplot as plt
     fig = PH.get_bar_plot_legend_fig(bars)
     fname = 'variants_plot_legend.png'
     fig.savefig(os.path.join(output_dir, fname), dpi=60)
