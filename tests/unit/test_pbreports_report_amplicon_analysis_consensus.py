@@ -7,6 +7,7 @@ import nose
 from pprint import pformat
 
 from pbcommand.models.report import Report
+import pbcommand.testkit
 
 from pbreports.report.amplicon_analysis_consensus import run_to_report
 from base_test_case import LOCAL_DATA, run_backticks, validate_report_complete
@@ -96,3 +97,21 @@ class TestSingleEntryInputFile(unittest.TestCase):
         self.assertTrue(isinstance(report, Report))
         log.info(pformat(report.to_dict()))
         self.assertIsNotNone(report)
+
+
+class TestAmpliconAnalysisConsensus(pbcommand.testkit.PbTestApp):
+    name = 'amplicon_analysis_summary.csv'
+    csv_file_name = os.path.join(LOCAL_DATA, "amplicon_analysis_consensus",
+                                 name)
+    t = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    t.close()
+    report_json = t.name
+    DRIVER_BASE = "python -m pbreports.report.amplicon_analysis_consensus "
+    DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
+    DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "
+    REQUIRES_PBCORE = False
+    INPUT_FILES = [
+        csv_file_name,
+    ]
+    OUTPUT_FILES = [report_json]
+    TASK_OPTIONS = {}
