@@ -17,7 +17,7 @@
         {
             "id": "raw_mean",
             "name": "Raw Read Length Mean",
-            "type": "float",
+            "type": "int",
             "format": "{:.0f}",
             "description": null
         },
@@ -66,7 +66,7 @@
         {
             "id": "seed_mean",
             "name": "Seed Read Length Mean",
-            "type": "float",
+            "type": "int",
             "format": "{:.0f}",
             "description": null
         },
@@ -108,7 +108,7 @@
         {
             "id": "preassembled_mean",
             "name": "Pre-Assembled Read Length Mean",
-            "type": "float",
+            "type": "int",
             "format": "{:.0f}",
             "description": null
         },
@@ -136,7 +136,7 @@
         {
             "id": "preassembled_coverage",
             "name": "Pre-Assembled Coverage (bases/genome_size)",
-            "type": "float",
+            "type": "int",
             "format": "{:.0f}",
             "description": null
         },
