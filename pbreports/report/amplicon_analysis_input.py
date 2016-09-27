@@ -4,7 +4,7 @@ from collections import defaultdict
 from pprint import pformat
 import argparse
 import logging
-import json
+import csv
 import os
 import os.path as op
 import sys
@@ -40,89 +40,8 @@ class Constants(object):
 
 spec = load_spec(Constants.R_ID)
 
-def parse_summary(summary):
-    # Internal helper function for parsing the Summary CSV header
-    def parse_summary_header(header):
-        parts = header.strip().split(',')
-        name = parts.index("FastaName")
-        barcode = parts.index("BarcodeName")
-        noise = parts.index("NoiseSequence")
-        chimera = parts.index("IsChimera")
-        return name, barcode, chimera, noise
 
-    # Parse the summary file
-    summary_data = {}
-    with open(summary) as handle:
-        # Read the summary header to find the location of important fields
-        name, barcode, chimera, noise = parse_summary_header(
-            handle.next().strip())
-
-        for line in handle:
-            # Parse the requisite fields from the current line
-            parts = line.split(',')
-            seq_name = parts[name]
-            barcode_name = parts[barcode]
-            noise_flag = parts[noise] == "1"
-            chimera_flag = parts[chimera] == "1"
-
-            # Catch whether it's a new barcode for summary setup
-            if barcode_name not in summary_data:
-                summary_data[barcode_name] = {
-                    Constants.DATA_GOOD: set(),
-                    Constants.DATA_CHIMERA: set(),
-                    Constants.DATA_NOISE: set()
-                }
-
-            # Add the current sequence to the appropriate bin
-            if chimera_flag:
-                summary_data[barcode_name][
-                    Constants.DATA_CHIMERA].add(seq_name)
-            elif noise_flag:
-                summary_data[barcode_name][Constants.DATA_NOISE].add(seq_name)
-            else:
-                summary_data[barcode_name][Constants.DATA_GOOD].add(seq_name)
-    return summary_data
-
-
-def parse_mappings(mappings_file):
-    consensus_sums = defaultdict(float)
-    with open(mappings_file) as json_in:
-        for barcode_id, zmws_d in json.load(json_in).iteritems():
-            for zmw_id, consensus_d in zmws_d.iteritems():
-                for consensus_id, weight in consensus_d.iteritems():
-                    consensus_sums[consensus_id] += weight
-    return consensus_sums
-
-
-def tabulate_results(summary_data, consensus_sums):
-    # Combine the individual consensus sums by barcode and in total
-    tabulated_data = {'all': defaultdict(float)}
-    for barcode, barcode_dict in summary_data.iteritems():
-        data = defaultdict(float)
-        for sequence_type, consensus_sequences in barcode_dict.iteritems():
-            data[sequence_type] = 0.0
-            for consensus in consensus_sequences:
-                weight = consensus_sums[consensus]
-                data[sequence_type] += weight
-                tabulated_data['all'][sequence_type] += weight
-        tabulated_data[barcode] = data
-    # Round the final tallys and their percentages to the nearest integer
-    final_data = {}
-    for barcode, data in tabulated_data.iteritems():
-        final_data[barcode] = defaultdict(float)
-        total = data[Constants.DATA_GOOD] + \
-            data[Constants.DATA_CHIMERA] + data[Constants.DATA_NOISE]
-        for sequence_type, weight in data.iteritems():
-            value = tabulated_data[barcode][sequence_type]
-            final_data[barcode][sequence_type] = int(value)
-            if total > 0:
-                final_data[barcode][sequence_type + '_pct'] = value / total
-            else:
-                final_data[barcode][sequence_type + '_pct'] = 0
-    return final_data
-
-
-def create_table(tabulated_data):
+def create_table(summary_csv):
     """Long Amplicon Analysis results table"""
 
     columns = []
@@ -139,59 +58,62 @@ def create_table(tabulated_data):
     COL_IDS = [Constants.C_GOOD, Constants.C_GOOD_PCT, Constants.C_CHIM,
                Constants.C_CHIM_PCT, Constants.C_NOISE, Constants.C_NOISE_PCT]
 
-    for barcode, data in tabulated_data.iteritems():
-        if barcode != 'all':
-            t.add_data_by_column_id(Constants.C_BC, barcode)
-            for column_id in COL_IDS:
-                t.add_data_by_column_id(column_id, data[column_id])
-    t.add_data_by_column_id(Constants.C_BC, 'All')
-    for column_id in COL_IDS:
-        t.add_data_by_column_id(column_id, tabulated_data['all'][column_id])
+    def add_column(barcode_id, n_good, n_chimera, n_noise):
+        pct_good = pct_chimera = pct_noise = 0
+        total = n_good + n_chimera + n_noise
+        if total > 0:
+            pct_good = n_good / float(total)
+            pct_chimera = n_chimera / float(total)
+            pct_noise = n_noise / float(total)
+        values = [n_good, pct_good, n_chimera, pct_chimera, n_noise, pct_noise]
+        t.add_data_by_column_id(Constants.C_BC, bc_id)
+        for column_id, value in zip(COL_IDS, values):
+            t.add_data_by_column_id(column_id, value)
 
-    log.debug(str(t))
+    with open(summary_csv) as csv_in:
+        reader = csv.reader(csv_in, delimiter=',')
+        reader.next()
+        for rec in reader:
+            assert len(rec) == 7, rec
+            bc_id = rec[0]
+            if bc_id == "All":
+                continue
+            add_column(bc_id, int(rec[1]), int(rec[3]), int(rec[5]))
+    n_good = sum(t.get_column_by_id(Constants.C_GOOD).values)
+    n_chimera = sum(t.get_column_by_id(Constants.C_CHIM).values)
+    n_noise = sum(t.get_column_by_id(Constants.C_NOISE).values)
+    add_column("All", n_good, n_chimera, n_noise)
     return t
 
 
-def run_to_report(summary_csv, zmws_json):
-    log.info("Generating PCR report v{v} from summary '{s}' "
-             "and ZMW mappings '{j}'".format(v=__version__,
-                                             s=summary_csv,
-                                             j=zmws_json))
-
-    # Parse the data into dictionaries
-    summary_data = parse_summary(summary_csv)
-    consensus_sums = parse_mappings(zmws_json)
-
-    # Tabulate the values for each category
-    tabulated_data = tabulate_results(summary_data, consensus_sums)
-
+def run_to_report(summary_csv):
+    log.info("Generating PCR report v{v} from summary '{s}'".format(
+             v=__version__,
+             s=summary_csv))
     # Convert the data into a PBreports table
-    table = create_table(tabulated_data)
-
+    table = create_table(summary_csv)
     # ids must be lowercase.
     r = Report(Constants.R_ID, tables=[table])
     return spec.apply_view(r)
 
 
-def amplicon_analysis_input(summary_csv, zmws_json, report_json):
+def amplicon_analysis_input(summary_csv, report_json):
     log.info("Running {f} v{v}.".format(
         f=os.path.basename(__file__), v=__version__))
-    report = run_to_report(summary_csv, zmws_json)
+    report = run_to_report(summary_csv)
     log.info(pformat(report.to_dict()))
     report.write_json(report_json)
     return 0
 
 
 def args_runner(args):
-    amplicon_analysis_input(args.report_csv, args.zmws_json, args.report_json)
+    amplicon_analysis_input(args.report_csv, args.report_json)
     return 0
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
-    amplicon_analysis_input(rtc.task.input_files[0],
-                            rtc.task.input_files[1],
-                            rtc.task.output_files[0])
+    amplicon_analysis_input(rtc.task.input_files[0], rtc.task.output_files[0])
     return 0
 
 
@@ -199,13 +121,8 @@ def _add_options_to_parser(p):
     p.add_input_file_type(
         FileTypes.CSV,
         file_id="report_csv",
-        name="ConsensusReportCSV",
-        description="Consensus Report CSV")
-    p.add_input_file_type(
-        FileTypes.JSON,
-        file_id="zmws_json",
-        name="JSON per-ZMW info",
-        description="JSON file containing per-ZMW info")
+        name="Consensus Summary CSV",
+        description="Consensus summary CSV by barcode")
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
