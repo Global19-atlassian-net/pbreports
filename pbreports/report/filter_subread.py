@@ -359,7 +359,8 @@ def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
                                    Constants.PG_SUBREAD_LENGTH,
                                    custom_subread_length_histogram,
                                    Constants.I_FILTER_SUBREADS_HIST,
-                                   xlabel=get_plot_xlabel(spec, Constants.PG_SUBREAD_LENGTH, Constants.P_POST_FILTER),
+                                   xlabel=get_plot_xlabel(
+                                       spec, Constants.PG_SUBREAD_LENGTH, Constants.P_POST_FILTER),
                                    ylabel="Subreads",
                                    rlabel="bp > Subread Length",
                                    thumb="filtered_subread_report_thmb.png",

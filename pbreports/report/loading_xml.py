@@ -20,6 +20,7 @@ from pbreports.io.specs import *
 
 __version__ = '0.1.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.loading_report_xml"
     DRIVER_EXE = ("python -m pbreports.report.loading_xml "

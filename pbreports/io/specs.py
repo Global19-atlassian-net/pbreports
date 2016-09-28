@@ -20,17 +20,22 @@ def load_spec(report_id):
             REGISTERED_SPECS[spec.id] = spec
     return REGISTERED_SPECS[report_id]
 
+
 def get_plot_xlabel(spec, plotgroup_id, plot_id):
     return spec.get_plotgroup_spec(plotgroup_id).get_plot_spec(plot_id).xlabel
+
 
 def get_plot_ylabel(spec, plotgroup_id, plot_id):
     return spec.get_plotgroup_spec(plotgroup_id).get_plot_spec(plot_id).ylabel
 
+
 def get_plot_title(spec, plotgroup_id, plot_id):
     return spec.get_plotgroup_spec(plotgroup_id).get_plot_spec(plot_id).title
 
+
 def get_plotgroup_title(spec, plotgroup_id):
     return spec.get_plotgroup_spec(plotgroup_id).title
+
 
 def get_plot_caption(spec, plotgroup_id, plot_id):
     return spec.get_plotgroup_spec(plotgroup_id).get_plot_spec(plot_id).caption

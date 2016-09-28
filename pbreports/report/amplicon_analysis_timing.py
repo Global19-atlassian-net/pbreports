@@ -28,6 +28,7 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1.1'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.amplicon_analysis_timing"
     R_ID = "amplicon_analysis_timing"

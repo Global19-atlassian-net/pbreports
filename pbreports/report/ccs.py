@@ -40,6 +40,7 @@ __version__ = '0.44'
 
 spec = load_spec("ccs")
 
+
 class Constants(object):
 
     """ ids for the core Report objects (e.g., Plot, PlotGroup, etc...)"""
@@ -160,7 +161,8 @@ def _movie_results_to_attributes(movie_results):
 
     m_readlength = int(read_lengths.mean()) if read_lengths.size > 0 else 0
     m_accuracy = accuracies.mean() if accuracies.size > 0 else 0.0
-    m_npasses = int(np.round(num_passes.mean(), decimals=0)) if num_passes.size > 0 else 0
+    m_npasses = int(np.round(num_passes.mean(), decimals=0)
+                    ) if num_passes.size > 0 else 0
     #m_qv = int(round(accuracy_as_phred_qv(float(m_accuracy))))
 
     attributes = []
@@ -206,7 +208,8 @@ def _movie_results_to_table(movie_results):
         m_readlength = int(
             read_lengths.mean()) if read_lengths.size > 0 else 0
         m_accuracy = accuracies.mean() if accuracies.size > 0 else 0.0
-        m_npasses = int(np.round(num_passes.mean(), decimals=0)) if num_passes.size > 0 else 0
+        m_npasses = int(np.round(num_passes.mean(), decimals=0)
+                        ) if num_passes.size > 0 else 0
         #m_qv = int(round(accuracy_as_phred_qv(float(accuracies.mean()))))
 
         table.add_data_by_column_id(Constants.C_MOVIE_NAME, movie_name)
@@ -229,7 +232,7 @@ def _make_barcode_table(bam_stats, ccs_set):
     barcode_nbases = defaultdict(int)
     barcode_npasses = defaultdict(list)
     barcode_readscores = defaultdict(list)
-    is_symmetric = all([r.bcForward==r.bcReverse for r in bam_stats])
+    is_symmetric = all([r.bcForward == r.bcReverse for r in bam_stats])
     for r in bam_stats:
         key = r.bcForward
         if not is_symmetric:
@@ -427,7 +430,7 @@ _custom_read_accuracy_histogram = functools.partial(
 # These functions need to generate a function with signature (data,
 # output_dir, dpi=)
 create_readlength_plot = functools.partial(
-    create_plot, _custom_read_length_histogram, Constants.P_READLENGTH, 
+    create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
     (get_plot_xlabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH),
      "Reads", "bp > Read Length"),
     80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))

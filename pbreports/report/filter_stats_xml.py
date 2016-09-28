@@ -77,6 +77,7 @@ class InsertStatsPlots(object):
 log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
+
 def _total_from_bins(bins, min_val, bin_width):
     _min = min_val
     _wid = bin_width

@@ -39,6 +39,7 @@ __version__ = '0.1'
 
 spec = load_spec("coverage")
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.coverage_report"
     DRIVER_EXE = "python -m pbreports.report.coverage --resolved-tool-contract "
@@ -111,11 +112,11 @@ def _create_coverage_histo_plot_grp(stats, output_dir):
     fig, ax = _create_histogram(stats)
     fname, thumb = [os.path.basename(f) for f in save_figure_with_thumbnail(
         fig, os.path.join(output_dir, 'coverage_histogram.png'))]
-    plot = Plot(Constants.P_COVERAGE_HIST, fname, 
-        caption=get_plot_caption(spec, Constants.PG_COVERAGE_HIST,
-                                 Constants.P_COVERAGE_HIST),
-        title=get_plot_title(spec, Constants.PG_COVERAGE_HIST,
-                             Constants.P_COVERAGE_HIST))
+    plot = Plot(Constants.P_COVERAGE_HIST, fname,
+                caption=get_plot_caption(spec, Constants.PG_COVERAGE_HIST,
+                                         Constants.P_COVERAGE_HIST),
+                title=get_plot_title(spec, Constants.PG_COVERAGE_HIST,
+                                     Constants.P_COVERAGE_HIST))
     plot_group = PlotGroup(Constants.PG_COVERAGE_HIST,
                            thumbnail=thumb, plots=[plot],
                            title=get_plotgroup_title(spec, Constants.PG_COVERAGE_HIST))

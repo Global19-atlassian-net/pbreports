@@ -57,6 +57,7 @@ class Constants(object):
 
 spec = load_spec(Constants.R_ID)
 
+
 def _report_to_attributes(report_file):
     report = load_report_from_json(report_file)
     return report.attributes
