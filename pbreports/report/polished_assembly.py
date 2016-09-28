@@ -30,6 +30,7 @@ __version__ = '0.4'
 __all__ = ['make_polished_assembly_report', 'ContigInfo',
            'get_parser']
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.polished_assembly"
     R_ID = "polished_assembly"

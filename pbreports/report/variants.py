@@ -61,6 +61,7 @@ LENGTH, GAPS, ERR, COV = 0, 1, 2, 3
 
 spec = load_spec(Constants.R_ID)
 
+
 def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_plot, report, output_dir, dpi=72, dumpdata=True):
     """
     Entry to report.

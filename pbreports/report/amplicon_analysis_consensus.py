@@ -37,6 +37,7 @@ class Constants(object):
 
 spec = load_spec(Constants.R_ID)
 
+
 def create_table(d, barcode):
     """Long Amplicon Analysis results table"""
 

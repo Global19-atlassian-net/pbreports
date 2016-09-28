@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 
 __version__ = '2.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.overview"
     TOOL_NAME = "Overview report"

@@ -450,7 +450,8 @@ class TestMappingStatsCCSReport(unittest.TestCase):
 
     def _compare_metric_values(self, metric_id):
         value = self.EXPECTED_VALUES[metric_id]
-        self.assertAlmostEqual(self._get_attribute_value_by_id(metric_id), value)
+        self.assertAlmostEqual(
+            self._get_attribute_value_by_id(metric_id), value)
 
     def test_mapped_read_concordance_mean(self):
         self._compare_metric_values(Constants.A_READ_CONCORDANCE)

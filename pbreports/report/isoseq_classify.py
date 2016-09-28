@@ -52,6 +52,7 @@ class Constants(object):
 
 spec = load_spec(Constants.R_ID)
 
+
 def _report_to_attributes(summary_json):
     report = load_report_from_json(summary_json)
     return [Attribute(attr.id, attr.value) for attr in report.attributes]

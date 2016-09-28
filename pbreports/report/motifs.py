@@ -303,8 +303,10 @@ def plotKineticsHist(kinArr, outputFileName):
             _ = ax.hist(baseHits['score'], color=colors[i], label=bases[
                         i], bins=bins, histtype="step", log=True)
 
-    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_MOD, Constants.P_MOD_HIST))
-    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_MOD, Constants.P_MOD_HIST))
+    ax.set_xlabel(get_plot_xlabel(
+        spec, Constants.PG_MOD, Constants.P_MOD_HIST))
+    ax.set_ylabel(get_plot_ylabel(
+        spec, Constants.PG_MOD, Constants.P_MOD_HIST))
 
     if d.size > 0:
         ax.legend(loc='upper right')
@@ -488,8 +490,10 @@ def plotMotifHist(csvFile, kinArr, max_motifs=10):
             pl = ax.hist(baseHits['score'], color=colors[i], label=motifs[
                          i], bins=bins, histtype="step", log=True)
 
-    ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_MOD_QV, Constants.P_MOD_QV))
-    ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_MOD_QV, Constants.P_MOD_QV))
+    ax.set_xlabel(get_plot_xlabel(
+        spec, Constants.PG_MOD_QV, Constants.P_MOD_QV))
+    ax.set_ylabel(get_plot_ylabel(
+        spec, Constants.PG_MOD_QV, Constants.P_MOD_QV))
 
     # Display a legend only if at least one motif was found:
     if numMotifs > 0:

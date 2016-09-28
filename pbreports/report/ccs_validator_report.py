@@ -26,6 +26,7 @@ from pbreports.io.specs import *
 log = logging.getLogger(__name__)
 __version__ = '1.2'
 
+
 class Constants(object):
     R_ID = "ccs_validator"
     PG_CCS = "ccs_validator_group"
@@ -39,6 +40,7 @@ class Constants(object):
     C_QV = 'mean_qv'
 
 spec = load_spec(Constants.R_ID)
+
 
 class FastqStats(object):
 

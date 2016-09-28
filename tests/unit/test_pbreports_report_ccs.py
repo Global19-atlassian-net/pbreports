@@ -18,7 +18,7 @@ import pbtestdata
 
 from pbreports.report.ccs import to_report, Constants
 from base_test_case import (run_backticks, LOCAL_DATA, ROOT_DATA_DIR,
-    validate_report_complete, skip_if_data_dir_not_present)
+                            validate_report_complete, skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
 
@@ -198,4 +198,4 @@ class TestCCSBarcoded(unittest.TestCase):
         ds = ConsensusReadSet(CCS_DS)
         r = to_report(ds, tempfile.mkdtemp())
         self.assertEqual(r.tables[1].columns[0].values,
-                         ['F5, R5','F8, R8','F20, R20','F29, R29','F30, R30'])
+                         ['F5, R5', 'F8, R8', 'F20, R20', 'F29, R29', 'F30, R30'])

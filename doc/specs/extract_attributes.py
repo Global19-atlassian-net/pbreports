@@ -15,6 +15,7 @@ SPEC_DIR = os.path.join(_DIR_NAME, '../../pbreports/report/specs/')
 
 blacklist = ["control", "filter_subread", "overview"]
 
+
 def run(args=()):
     with open(TARGET, "w") as f:
         f.write("""\
@@ -28,7 +29,7 @@ pbreports specifications (automatically generated)
             specfile = op.join(SPEC_DIR, spec)
             meta_rpt = MetaReport.from_json(specfile)
             if meta_rpt.id in blacklist:
-            	continue
+                continue
             if meta_rpt.attributes:
                 f.write("\n\n\n")
                 f.write(

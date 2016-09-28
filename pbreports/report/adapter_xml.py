@@ -26,7 +26,6 @@ from pbreports.io.specs import *
 __version__ = '0.1.0'
 
 
-
 class Constants(object):
     TOOL_ID = "pbreports.tasks.adapter_report_xml"
     R_ID = "adapter_xml_report"
