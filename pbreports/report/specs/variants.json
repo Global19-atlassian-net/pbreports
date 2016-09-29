@@ -13,7 +13,7 @@
         },
         {
             "type": "float",
-            "format": "{:.2f}",
+            "format": "{:.0f}",
             "description": "Mean length of reference sequence contigs",
             "name": "Reference Contig Length (mean)",
             "id": "mean_contig_length"
