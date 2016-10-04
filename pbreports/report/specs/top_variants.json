@@ -47,7 +47,7 @@
                 {
                     "header": "Confidence",
                     "type": "float",
-                    "format": "{:.2f}",
+                    "format": "{:,.2f}",
                     "id": "confidence",
                     "description": "The confidence of the variant call."
                 },

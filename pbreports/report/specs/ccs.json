@@ -28,7 +28,7 @@
         {
             "description": "Mean CCS read score",
             "type": "float",
-            "format": "{:.3f}",
+            "format": "{:,.3f}",
             "id": "mean_accuracy",
             "name": "CCS Read Score (mean)"
         },
@@ -76,7 +76,7 @@
                 {
                     "header": "CCS Read Score (mean)",
                     "type": "float",
-                    "format": "{:.3f}",
+                    "format": "{:,.3f}",
                     "id": "ave_ccs_accuracy",
                     "description": "Mean predicted accuracy of CCS reads"
                 },
@@ -118,7 +118,7 @@
                 {
                     "header": "CCS Read Score (mean)",
                     "type": "float",
-                    "format": "{:.3f}",
+                    "format": "{:,.3f}",
                     "id": "mean_ccs_accuracy",
                     "description": "Mean predicted accuracy of CCS reads"
                 },

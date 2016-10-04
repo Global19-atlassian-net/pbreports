@@ -13,7 +13,7 @@
         },
         {
             "type": "float",
-            "format": "{:.0f}",
+            "format": "{:,.0f}",
             "description": "Mean length of reference sequence contigs",
             "name": "Reference Contig Length (mean)",
             "id": "mean_contig_length"
@@ -34,7 +34,7 @@
         },
         {
             "type": "float",
-            "format": "{:.0f}",
+            "format": "{:,.0f}",
             "description": "The mean depth of coverage across the reference sequence",
             "name": "Reference Coverage (mean)",
             "id": "weighted_mean_coverage"
@@ -55,7 +55,7 @@
                 {
                     "header": "Reference Contig Length",
                     "type": "float",
-                    "format": "{:.2f}",
+                    "format": "{:,.2f}",
                     "id": "contig_len",
                     "description": "Length of reference contig"
                 },
@@ -76,7 +76,7 @@
                 {
                     "header": "Reference Coverage",
                     "type": "float",
-                    "format": "{:.0f}",
+                    "format": "{:,.0f}",
                     "id": "coverage",
                     "description": "The mean depth of coverage across the reference sequence"
                 }
