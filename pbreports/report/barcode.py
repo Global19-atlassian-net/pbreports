@@ -55,16 +55,17 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                 movie = rr.readGroupInfo(q).MovieName
                 zmws_by_barcode[b].add((movie, z))
                 reads_by_zmw[(movie, z)].append((rr, i))
-        with BarcodeSet(barcodes) as bc:
-            for i_bc, barcode in enumerate(bc):
+        with BarcodeSet(barcodes) as ds_bc:
+            bcs = [bc for bc in ds_bc]
+            for i_bc, barcode in enumerate(bcs):
                 zmws = sorted(list(zmws_by_barcode[i_bc]))
                 for (movie, zmw) in zmws:
                     for rr, i_read in reads_by_zmw[(movie, zmw)]:
                         # FIXME(nechols)(2016-03-15) this will not work on CCS
                         qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
                         barcode_id = "{f}--{r}".format(
-                            f=rr.pbi.bcForward[i_read],
-                            r=rr.pbi.bcReverse[i_read])
+                            f=bcs[rr.pbi.bcForward[i_read]].id,
+                            r=bcs[rr.pbi.bcReverse[i_read]].id)
                         yield barcode_id, barcode, ["n"] * qlen
 
 
