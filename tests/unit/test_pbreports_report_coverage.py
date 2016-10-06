@@ -142,7 +142,7 @@ class TestCoverageRpt(unittest.TestCase):
         # value="2958.16">2958.16</attribute>
         self.assertEqual(1, int(att.value))
         att = _get_att_percent_missing(stats)
-        self.assertAlmostEqual(58.4, att.value, places=1)
+        self.assertAlmostEqual(0.584, att.value, places=3)
 
     @skip_if_data_dir_not_present
     def test_attributes_high_coverage(self):

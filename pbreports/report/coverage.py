@@ -236,7 +236,7 @@ def _get_att_percent_missing(stats):
     if stats is None:
         v = 'NA'
     else:
-        v = stats.perc_missing_bases
+        v = stats.perc_missing_bases/100
     a = Attribute(Constants.A_MISSING, v)
     return a
 
