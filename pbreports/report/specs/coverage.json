@@ -16,7 +16,7 @@
             "type": "float",
             "format": "{p:.2f} %",
             "id": "missing_bases_pct",
-            "name": "Missing Bases (%)"
+            "name": "Missing Bases"
         }
     ],
     "tables": [],
