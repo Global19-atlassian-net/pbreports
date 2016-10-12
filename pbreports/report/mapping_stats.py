@@ -1031,8 +1031,9 @@ def _get_parser():
 
     parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
                                "Alignment XML DataSet", "BAM, SAM or Alignment DataSet")
-    parser.add_output_file_type(FileTypes.REPORT, "report_json", spec.title,
-                                "Output report JSON file.", Constants.R_ID)
+    parser.add_output_file_type(FileTypes.REPORT, "report_json",
+                                "Mapping Statistics Report",
+                                "Summary of alignment results", Constants.R_ID)
 
     return parser
 

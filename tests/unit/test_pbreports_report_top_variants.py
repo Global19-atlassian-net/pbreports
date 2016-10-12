@@ -42,12 +42,15 @@ class TestTopVariantsReport(unittest.TestCase):
         """
         Before *every* test
         """
+        self._start_dir = os.getcwd()
         self._output_dir = tempfile.mkdtemp(suffix="topvariants")
+        os.chdir(self._output_dir)
 
     def tearDown(self):
         """
         After *every* test
         """
+        os.chdir(self._start_dir)
         if os.path.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
@@ -197,12 +200,11 @@ class TestTopVariantsReport(unittest.TestCase):
         ref = self.REFERENCE
         gff = self.VARIANTS_GFF
         j = 'rpt.json'
-        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(
-            o=self._output_dir, g=gff, r=ref, j=j)
+        cmd = 'python -m pbreports.report.top_variants {j} {g} {r}'.format(
+            g=gff, r=ref, j=j)
         log.info(cmd)
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, j)))
 
     def test_exit_code_0_referenceset(self):
         """
@@ -214,14 +216,12 @@ class TestTopVariantsReport(unittest.TestCase):
         refset.write(ref_name)
         ref = ref_name
         j = 'rpt.json'
-        cmd = 'python -m pbreports.report.top_variants {o} {j} {g} {r}'.format(
-            o=self._output_dir,
+        cmd = 'python -m pbreports.report.top_variants {j} {g} {r}'.format(
             g=self.VARIANTS_GFF, r=ref, j=j)
         log.info(cmd)
 
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
-        self.assertTrue(os.path.exists(os.path.join(self._output_dir, j)))
 
     def test_exit_code_0_top_corrections(self):
         """
@@ -231,8 +231,8 @@ class TestTopVariantsReport(unittest.TestCase):
         """
         ref = self.REFERENCE
         gff = self.VARIANTS_GFF
-        cmd = 'python -m pbreports.report.top_variants {o} rpt.json {g} {r}'.format(
-            o=self._output_dir, g=self.VARIANTS_GFF, r=ref)
+        cmd = 'python -m pbreports.report.top_variants rpt.json {g} {r}'.format(
+            g=self.VARIANTS_GFF, r=ref)
         log.info(cmd)
         o, c, m = backticks(cmd)
 
@@ -241,8 +241,6 @@ class TestTopVariantsReport(unittest.TestCase):
             log.error(o)
             print(m)
         self.assertEquals(0, c)
-        self.assertTrue(os.path.exists(
-            os.path.join(self._output_dir, 'rpt.json')))
 
     @unittest.skip("TEMPORARILY DISABLED")
     def test_exit_code_0_minor(self):
@@ -251,8 +249,7 @@ class TestTopVariantsReport(unittest.TestCase):
         """
         ref = self.REFERENCE
         gff = self.RARE_VARIANTS_GFF
-        cmd = 'pbreport minor-topvariants {o} rpt.json {g} {r}'.format(o=self._output_dir,
-                                                                       g=gff, r=ref)
+        cmd = 'pbreport minor-topvariants rpt.json {g} {r}'.format(g=gff, r=ref)
         log.info(cmd)
         o, c, m = backticks(cmd)
         if c is not 0:
@@ -262,9 +259,8 @@ class TestTopVariantsReport(unittest.TestCase):
         self.assertEquals(0, c)
         # deserialize report
         s = None
-        with open(os.path.join(self._output_dir, 'rpt.json'), 'r') as f:
+        with open("rpt.json") as f:
             s = json.load(f)
-
         report = dict_to_report(s)
         self.assertEqual('Frequency', report.tables[0].columns[6].header)
 

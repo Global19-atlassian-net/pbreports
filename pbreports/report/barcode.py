@@ -147,8 +147,8 @@ def get_parser():
                           name="BarcodeSet",
                           description="Barcode DataSet XML")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name=spec.title,
-                           description="Path to write Report json output.",
+                           name="Barcode Report",
+                           description="Summary of barcoding results",
                            default_name="barcode_report")
     # TODO(nechols)(2016-03-15) not yet supported in SA 3.x
     # this is necessary for BasH5Reader to handle the differences between the

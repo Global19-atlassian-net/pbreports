@@ -14,6 +14,7 @@ the specified dir_name
 MODULES = [
     "adapter_xml",
     "amplicon_analysis_consensus",
+    "amplicon_analysis_input",
     "barcode",
     "ccs",
     "coverage",

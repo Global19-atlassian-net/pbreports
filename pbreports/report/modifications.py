@@ -196,7 +196,7 @@ def args_runner(args):
     return make_modifications_report(
         modifications_h5=args.basemods_h5,
         report=os.path.basename(args.report),
-        output_dir=args.output)
+        output_dir=os.path.dirname(args.report))
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
@@ -217,7 +217,9 @@ def get_parser():
         is_distributed=True)
     p.add_input_file_type(FileTypes.H5, "basemods_h5", "HDF5 file",
                           "HDF5 file of base modifications from ipdSummary")
-    add_base_options_pbcommand(p, "Basemods report")
+    p.add_output_file_type(FileTypes.REPORT, "report", "Basemods report",
+                           description="Summary of basemod results",
+                           default_name="report")
     return p
 
 

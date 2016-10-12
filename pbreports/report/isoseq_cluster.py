@@ -260,8 +260,8 @@ def get_contract_parser():
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary text",
                           description="A summary produced by Iso-Seq Cluster, e.g. " +
                           "cluster_summary.txt")
-    p.add_output_file_type(FileTypes.REPORT, "outJson", spec.title,
-                           description="Path to write Report json output.",
+    p.add_output_file_type(FileTypes.REPORT, "outJson", "Transcript Clustering Report",
+                           description="Summary of results from pbtranscript",
                            default_name="isoseq_cluster_report")
     return p
 

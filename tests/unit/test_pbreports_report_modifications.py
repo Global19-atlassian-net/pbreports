@@ -52,14 +52,17 @@ class TestModificationsRpt(unittest.TestCase):
         """
         Before *every* test
         """
+        self._start_dir = os.getcwd()
         self._data_dir = os.path.join(LOCAL_DATA, 'modifications')
         self._output_dir = tempfile.mkdtemp(suffix="modifications")
+        os.chdir(self._output_dir)
         self._h5 = os.path.join(self._data_dir, "basemods.h5")
 
     def tearDown(self):
         """
         After *every* test
         """
+        os.chdir(self._start_dir)
         if os.path.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
@@ -126,8 +129,7 @@ class TestModificationsRpt(unittest.TestCase):
         """
 
         h5 = os.path.join(self._data_dir, "basemods.h5")
-        cmd = 'python -m pbreports.report.modifications {h} {o} {r}'.format(
-            o=self._output_dir,
+        cmd = 'python -m pbreports.report.modifications {h} {r}'.format(
             r='rpt.json',
             h=h5)
 

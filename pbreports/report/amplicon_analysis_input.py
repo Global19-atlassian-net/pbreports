@@ -126,8 +126,8 @@ def _add_options_to_parser(p):
     p.add_output_file_type(
         FileTypes.REPORT,
         file_id="report_json",
-        name=spec.title,
-        description="Long Amplicon Analysis input report JSON",
+        name="LAA Input Report",
+        description="Summary of input amplicon quality",
         default_name="amplicon_input_report")
 
 

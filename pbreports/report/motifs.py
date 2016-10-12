@@ -661,8 +661,8 @@ def get_parser():
     p.add_input_file_type(FileTypes.CSV, 'motif_summary_csv',
                           "CSV file", 'Path to Motif summary CSV')
     p.add_output_file_type(FileTypes.REPORT, 'report_json',
-                           name=spec.title,
-                           description="Path of output JSON report",
+                           name="Motifs Report",
+                           description="Summary of motif analysis results",
                            default_name="motifs_report")
     p.add_int(Constants.MAX_MOTIFS_ID,
               option_str="maxMotifs",

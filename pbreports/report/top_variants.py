@@ -343,7 +343,9 @@ def get_contract_parser():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-    add_base_options_pbcommand(p, "Top Variants Report")
+    p.add_output_file_type(FileTypes.REPORT, "report", "Top Variants Report",
+                           description="Summary of top 100 variants",
+                           default_name="top_variants_report")
     p.add_input_file_type(FileTypes.GFF,
                           file_id="gff",
                           name="GFF file",
@@ -373,7 +375,7 @@ def args_runner(args):
         how_many=args.how_many,
         batch_sort_size=args.batch_sort_size,
         report=args.report,
-        output_dir=args.output)
+        output_dir=os.path.dirname(args.report))
 
 
 def args_runner_minor(args):
@@ -383,7 +385,7 @@ def args_runner_minor(args):
         how_many=args.how_many,
         batch_sort_size=args.batch_sort_size,
         report=args.report,
-        output_dir=args.output,
+        output_dir=os.path.dirname(args.report),
         is_minor_variants_rpt=True)
 
 
