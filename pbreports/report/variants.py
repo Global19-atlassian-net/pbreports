@@ -395,7 +395,7 @@ class ContigVariants(object):
 
 def args_runner(args):
     rpt = make_variants_report(args.aln_summ_gff, args.variants_gff, args.reference, args.maxContigs,
-                               args.report, args.output)
+                               args.report, os.path.dirname(args.report))
     log.info(rpt)
     return 0
 
@@ -414,7 +414,9 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 
 def _add_options_to_parser(p):
-    p = add_base_options_pbcommand(p, spec.title)
+    p.add_output_file_type(FileTypes.REPORT, "report", "Variants Report",
+                           description="Summary of variant calling",
+                           default_name="variants_report")
     p.add_input_file_type(FileTypes.DS_REF,
                           file_id="reference",
                           name="Reference dataset",

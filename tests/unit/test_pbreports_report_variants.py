@@ -10,6 +10,7 @@ import logging
 import shutil
 import json
 import os.path as op
+import os
 
 from pbcommand.models.report import PbReportError
 import pbcommand.testkit
@@ -43,12 +44,15 @@ class BaseTestCase(object):
         """
         Before *every* test
         """
+        self._start_dir = os.getcwd()
         self._output_dir = tempfile.mkdtemp(suffix="variants")
+        os.chdir(self._output_dir)
 
     def tearDown(self):
         """
         After *every* test
         """
+        os.chdir(self._start_dir)
         if op.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
@@ -288,15 +292,14 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         """
         Like a cram test. Assert exits with 0.
         """
-        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
-            o=self._output_dir,
+        cmd = 'python -m pbreports.report.variants {r} {c} {a} {v}'.format(
             r='rpt.json',
             c=self.REFERENCE,
             a=self.ALIGNMENT_SUMMARY,
             v=self.VARIANTS_GFF)
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
-        self.assertTrue(op.exists(op.join(self._output_dir, 'rpt.json')))
+        self.assertTrue('rpt.json')
 
     def test_exit_code_0_referenceset(self):
         """
@@ -306,12 +309,12 @@ class TestVariantsReport(BaseTestCase, unittest.TestCase):
         refset = ReferenceSet(self._get_reference_fasta())
         refset.write(ref_name)
         ref = ref_name
-        cmd = 'python -m pbreports.report.variants {o} {r} {c} {a} {v}'.format(
-            o=self._output_dir, r='rpt.json', c=ref, a=self.ALIGNMENT_SUMMARY,
+        cmd = 'python -m pbreports.report.variants {r} {c} {a} {v}'.format(
+            r='rpt.json', c=ref, a=self.ALIGNMENT_SUMMARY,
             v=self.VARIANTS_GFF)
         rcode = run_backticks(cmd)
         self.assertEquals(0, rcode)
-        self.assertTrue(op.exists(op.join(self._output_dir, "rpt.json")))
+        self.assertTrue(op.exists("rpt.json"))
 
 
 @skip_if_data_dir_not_present

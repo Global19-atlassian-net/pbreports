@@ -542,8 +542,8 @@ def get_parser():
                           name="ConsensusReadSet",
                           description="ConsensusRead DataSet file")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name=spec.title,
-                           description="Path to write Report json output.",
+                           name="CCS Report",
+                           description="Summary of results from CCS2",
                            default_name="ccs_report")
     ap.add_argument('-o', '--output-dir', dest='output_dir',
                     default=os.getcwd(),

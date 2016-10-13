@@ -288,7 +288,7 @@ def _add_options_to_parser(p):
         FileTypes.REPORT,
         file_id="polished_assembly_rpt",
         name="Polished Assembly Report",
-        description="Polished Assembly Report",
+        description="Summary of polishing results",
         default_name="polished_assembly_report")
 
 

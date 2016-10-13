@@ -480,8 +480,8 @@ def add_options_to_parser(p, ds_type=FileTypes.DS_ALIGN):
     p.add_output_file_type(
         FileTypes.GFF,
         file_id="aln_summ_gff",
-        name="Alignment Summary GFF",
-        description="Alignment Summary GFF",
+        name="Coverage Summary",
+        description="Coverage summary for regions (bins) spanning the reference",
         default_name="alignment_summary")
     p.add_int(
         option_id=Constants.NUM_REGIONS_ID,

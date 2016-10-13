@@ -491,8 +491,8 @@ def get_parser():
                           name="Alignment Summary GFF",
                           description="Alignment Summary GFF")
     p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name=spec.title,
-                           description="Path to write report JSON output",
+                           name="Coverage Report",
+                           description="Basic coverage metrics",
                            default_name=spec.id)
     p.add_int(
         option_id=Constants.MAX_CONTIGS_ID,
