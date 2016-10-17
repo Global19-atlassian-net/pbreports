@@ -70,7 +70,7 @@ class _TestIsoSeqBase(unittest.TestCase):
         r = self._to_report()
         report_plot_group_ids = [p.id for p in r.plotGroups]
         plot_group_ids = get_plot_groups_from_constants(self.report_constants)
-        self.assertSequenceEqual(report_plot_group_ids, plot_group_ids)
+        self.assertSequenceEqual(sorted(report_plot_group_ids), sorted(plot_group_ids))
 
     def test_images_exist(self):
         image_names = get_image_names_from_constants(self.report_constants)
@@ -99,13 +99,17 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
         cls.report_constants = pbreports.report.isoseq_cluster.Constants
         cls.results_dir = tempfile.mkdtemp(prefix="isoseq_results_")
         cls.input_fasta = os.path.join(_DATA_DIR, 'isoseq_flnc.fasta')
+        cls.input_hq_isoforms_fq = os.path.join(_DATA_DIR, 'hq_isoforms.fastq')
+        cls.input_lq_isoforms_fq = os.path.join(_DATA_DIR, 'lq_isoforms.fastq')
+
         cls.output_summary_json = os.path.join(
             _DATA_DIR, 'isoseq_cluster_summary.json')
         cls.report_json = os.path.join(cls.results_dir, "isoseq_cluster.json")
         _d = dict(o=cls.results_dir, f=cls.input_fasta,
+                  hq=cls.input_hq_isoforms_fq, lq=cls.input_lq_isoforms_fq,
                   s=cls.output_summary_json,
                   j=cls.report_json)
-        cmd = 'isoseq_cluster_report --debug {f} {s} {j}'.format(**_d)
+        cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
 
 
@@ -122,4 +126,6 @@ class TestIsoSeqClusterTCI(PbTestApp):
     INPUT_FILES = [
         os.path.join(_DATA_DIR, "consensus_isoforms.contigset.xml"),
         os.path.join(_DATA_DIR, "isoseq_cluster_summary.json"),
+        os.path.join(_DATA_DIR, "hq_isoforms.fastq"),
+        os.path.join(_DATA_DIR, "lq_isoforms.fastq")
     ]

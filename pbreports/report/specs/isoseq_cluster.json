@@ -100,6 +100,23 @@
             "title": "Read Length of Consensus Isoforms Reads",
             "description": null,
             "legend": null
+        },
+        {
+            "id": "hq_lq_isoforms_avgqv_group",
+            "plots": [
+                {
+                    "xlabel": "Average Quality Value of HQ and LQ isoforms",
+                    "description": null,
+                    "caption": "Average Quality Value of HQ and LQ Isoforms",
+                    "ylabel": null,
+                    "title": "Average Quality Value of HQ and LQ Isoforms",
+                    "id": "hq_lq_isoforms_avgqv_hist"
+                }
+            ],
+            "title": "Average Quality Value of HQ and LQ Isoforms",
+            "description": null,
+            "legend": null
         }
+
     ]
 }

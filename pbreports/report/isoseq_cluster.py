@@ -7,23 +7,19 @@ cluster summary.
 from pprint import pformat
 import functools
 import os
-import os.path as op
 import sys
-import time
 import logging
-import argparse
 
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
+from pbcommand.models.report import (Report, Table, Column, Plot,
                                      PlotGroup)
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import ContigSet
 
@@ -48,9 +44,11 @@ class Constants(object):
 
     # PlotGroup
     PG_READLENGTH = "consensus_isoforms_readlength_group"
+    PG_AVGQV = "hq_lq_isoforms_avgqv_group"
 
     # Plots
     P_READLENGTH = "consensus_isoforms_readlength_hist"
+    P_AVGQV = "hq_lq_isoforms_avgqv_hist"
 
     # Table
     T_ATTR = "isoseq_classify_table"
@@ -162,8 +160,13 @@ create_readlength_plot = functools.partial(
     ("Read Length", "Reads", "Reads > Read Length"), 80,
     "consensus_isoforms_readlength_hist.png", get_blue(3))
 
+create_avgqv_plot = functools.partial(
+    __create_plot, _make_histogram_with_cdf, Constants.P_AVGQV,
+    ("HQ LQ Isoform Average QV", "Isoforms", "Isoforms > Average QV"), 80,
+    "hq_lq_isoforms_avgqv_hist.png", get_blue(3))
 
-def makeReport(inReadsFN, inSummaryFN, outDir):
+
+def makeReport(inReadsFN, hq_isoforms_fq, lq_isoforms_fq, inSummaryFN, outDir):
     """
     Generate a report with ID, tables, attributes and plot groups.
 
@@ -172,6 +175,11 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     This file is required to plot a read length histogram as part of
     the report:
          consensus_isoforms_readlength_hist.png
+
+    hq_isoforms_fq/lq_isoforms_lq --- input FASTQ files which has
+    all HQ/LQ isoforms produced by pbtranscript.py cluster.
+    These two files will be required to plot the average QV histograms:
+         hq_lq_isoforms_avgqv_hist.png
 
     inSummaryFN --- a summary TXT file with cluster attributes,
     including two attributes:
@@ -195,6 +203,17 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
 
+    # Collect average qvs
+    hq_qvs = [np.mean(r.quality) for r in ContigSet(hq_isoforms_fq)]
+    lq_qvs = [np.mean(r.quality) for r in ContigSet(lq_isoforms_fq)]
+    avgqvs = np.array(hq_qvs + lq_qvs)
+
+    # Plot average qv histogram
+    avgqv_plot = create_avgqv_plot(avgqvs, outDir)
+    avgqv_group = PlotGroup(Constants.PG_AVGQV,
+                            plots=[avgqv_plot],
+                            thumbnail=avgqv_plot.thumbnail)
+
     log.info("Plotting summary attributes from file: {f}".
              format(f=inSummaryFN))
     # Produce attributes based on summary.
@@ -210,17 +229,19 @@ def makeReport(inReadsFN, inSummaryFN, outDir):
     # A report is consist of ID, tables, attributes, and plotgroups.
     report = Report(Constants.R_ID,
                     attributes=attributes,
-                    plotgroups=[readlength_group],
+                    plotgroups=[readlength_group, avgqv_group],
                     dataset_uuids=dataset_uuids)
 
     return spec.apply_view(report)
 
 
-def _run(fasta_file, summary_txt, json_report, outDir):
+def _run(fasta_file, hq_isoforms_fq, lq_isoforms_fq, summary_txt, json_report, outDir):
     if outDir in ["", None]:
         outDir = os.getcwd()
     report = makeReport(
         inReadsFN=fasta_file,
+        hq_isoforms_fq=hq_isoforms_fq,
+        lq_isoforms_fq=lq_isoforms_fq,
         inSummaryFN=summary_txt,
         outDir=outDir)
     log.info(pformat(report.to_dict()))
@@ -231,6 +252,8 @@ def _run(fasta_file, summary_txt, json_report, outDir):
 def args_runner(args):
     return _run(
         fasta_file=args.inReadsFN,
+        hq_isoforms_fq=args.hq_isoforms_fq,
+        lq_isoforms_fq=args.lq_isoforms_fq,
         summary_txt=args.inSummaryFN,
         json_report=args.outJson,
         outDir=os.path.dirname(args.outJson))
@@ -240,6 +263,8 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     return _run(
         fasta_file=rtc.task.input_files[0],
+        hq_isoforms_fq=rtc.task.input_files[2],
+        lq_isoforms_fq=rtc.task.input_files[3],
         summary_txt=rtc.task.input_files[1],
         json_report=rtc.task.output_files[0],
         outDir=os.path.dirname(rtc.task.output_files[0]))
@@ -257,6 +282,13 @@ def get_contract_parser():
     p.add_input_file_type(FileTypes.DS_CONTIG, "inReadsFN", "Fasta reads",
                           description="Reads in FASTA format, usually are consensus, " +
                           "isoforms produced by Iso-Seq Cluster.")
+
+    p.add_input_file_type(FileTypes.DS_CONTIG, "hq_isoforms_fq", "HQ isoforms in Fastq",
+                          description="HQ isoforms in FASTQ format produced by Iso-Seq Cluster.")
+
+    p.add_input_file_type(FileTypes.DS_CONTIG, "lq_isoforms_fq", "LQ isoforms in Fastq",
+                          description="LQ isoforms in FASTQ format produced by Iso-Seq Cluster.")
+
     p.add_input_file_type(FileTypes.JSON, "inSummaryFN", "Summary text",
                           description="A summary produced by Iso-Seq Cluster, e.g. " +
                           "cluster_summary.txt")
