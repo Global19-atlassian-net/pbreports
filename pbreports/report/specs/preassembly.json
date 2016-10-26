@@ -149,14 +149,14 @@
         },
         {
             "id": "preassembled_seed_fragmentation",
-            "name": "Average number of reads that each seed is broken into.",
+            "name": "Average Number of Reads That Each Seed Is Broken Into",
             "type": "float",
             "format": "{:,.0f}",
             "description": null
         },
         {
             "id": "preassembled_seed_truncation",
-            "name": "Average number of bases lost from each seed.",
+            "name": "Average Number of Bases Lost from Each Seed",
             "type": "float",
             "format": "{:,.0f}",
             "description": null
