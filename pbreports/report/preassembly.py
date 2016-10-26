@@ -72,48 +72,29 @@ def produce_report(
 
     # Report Attributes
     attrs = []
-    attrs.append(Attribute('genome_length', genome_length,
-                           name="Genome Length (user input)"))
-    attrs.append(Attribute('raw_reads', raw_reads, name="Number of Raw Reads"))
-    attrs.append(Attribute('raw_mean', int(
-        round(raw_mean)), name="Raw Read Length Mean"))
-    attrs.append(Attribute('raw_n50', raw_n50, name="Raw Read Length (N50)"))
-    attrs.append(Attribute('raw_p95', raw_p95, name="Raw Read Length 95%"))
-    attrs.append(Attribute('raw_bases', raw_bases,
-                           name="Number of Raw Bases (total)"))
-    attrs.append(Attribute('raw_coverage', raw_coverage,
-                           name="Raw Coverage (bases/genome_size)"))
-    attrs.append(Attribute('length_cutoff', length_cutoff,
-                           name="Length Cutoff (user input or auto-calc)"))
-    attrs.append(Attribute('seed_reads', seed_reads,
-                           name="Number of Seed Reads"))
-    attrs.append(Attribute('seed_mean', int(
-        round(seed_mean)), name="Seed Read Length Mean"))
-    attrs.append(Attribute('seed_n50', seed_n50,
-                           name="Seed Read Length (N50)"))
-    attrs.append(Attribute('seed_p95', seed_p95, name="Seed Read Length 95%"))
-    attrs.append(Attribute('seed_bases', seed_bases,
-                           name="Number of Seed Bases (total)"))
-    attrs.append(Attribute('seed_coverage', seed_coverage,
-                           name="Seed Coverage (bases/genome_size)"))
-    attrs.append(Attribute('preassembled_reads', preassembled_reads,
-                           name="Number of Pre-Assembled Reads"))
-    attrs.append(Attribute('preassembled_mean', int(
-        round(preassembled_mean)), name="Pre-Assembled Read Length Mean"))
-    attrs.append(Attribute('preassembled_n50', preassembled_n50,
-                           name="Pre-Assembled Read Length (N50)"))
-    attrs.append(Attribute('preassembled_p95', preassembled_p95,
-                           name="Pre-Assembled Read Length 95%"))
-    attrs.append(Attribute('preassembled_bases', preassembled_bases,
-                           name="Number of Pre-Assembled Bases (total)"))
-    attrs.append(Attribute('preassembled_coverage', int(round(
-        preassembled_coverage)), name="Pre-Assembled Coverage (bases/genome_size)"))
-    attrs.append(Attribute('preassembled_yield', preassembled_yield,
-                           name="Pre-Assembled Yield (bases/seed_bases)"))
-    attrs.append(Attribute('preassembled_seed_fragmentation', preassembled_seed_fragmentation,
-                           name="Avg number of reads that each seed is broken into."))
-    attrs.append(Attribute('preassembled_seed_truncation',
-                           preassembled_seed_truncation, name="Avg number of bases lost from each seed."))
+    attrs.append(Attribute('genome_length', genome_length))
+    attrs.append(Attribute('raw_reads', raw_reads))
+    attrs.append(Attribute('raw_mean', int(round(raw_mean))))
+    attrs.append(Attribute('raw_n50', raw_n50))
+    attrs.append(Attribute('raw_p95', raw_p95))
+    attrs.append(Attribute('raw_bases', raw_bases))
+    attrs.append(Attribute('raw_coverage', raw_coverage))
+    attrs.append(Attribute('length_cutoff', length_cutoff))
+    attrs.append(Attribute('seed_reads', seed_reads))
+    attrs.append(Attribute('seed_mean', int(round(seed_mean))))
+    attrs.append(Attribute('seed_n50', seed_n50))
+    attrs.append(Attribute('seed_p95', seed_p95))
+    attrs.append(Attribute('seed_bases', seed_bases))
+    attrs.append(Attribute('seed_coverage', seed_coverage))
+    attrs.append(Attribute('preassembled_reads', preassembled_reads))
+    attrs.append(Attribute('preassembled_mean', int(round(preassembled_mean))))
+    attrs.append(Attribute('preassembled_n50', preassembled_n50))
+    attrs.append(Attribute('preassembled_p95', preassembled_p95))
+    attrs.append(Attribute('preassembled_bases', preassembled_bases))
+    attrs.append(Attribute('preassembled_coverage', int(round(preassembled_coverage))))
+    attrs.append(Attribute('preassembled_yield', preassembled_yield))
+    attrs.append(Attribute('preassembled_seed_fragmentation', preassembled_seed_fragmentation))
+    attrs.append(Attribute('preassembled_seed_truncation', preassembled_seed_truncation))
 
     report = Report(Constants.R_ID, title='Preassembly', attributes=attrs)
 
