@@ -422,9 +422,9 @@ def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolo
 
 # These functions create signatures (data, axis_labels, nbins, barcolor
 _custom_read_length_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Read Length", 1000000)
+    _custom_histogram_with_cdf, "Mb > Read Length", 50)
 _custom_read_accuracy_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Read Score", 1000000)
+    _custom_histogram_with_cdf, "Mb > Read Score", 100)
 
 
 # These functions need to generate a function with signature (data,
@@ -462,7 +462,7 @@ def to_report(ccs_set, output_dir):
     log.debug("\n" + pformat(movie_results))
 
     rs = [m.read_lengths for m in movie_results]
-    readlengths = np.concatenate(rs)
+    readlengths = np.concatenate(rs).astype(float)
     ac = [m.accuracies for m in movie_results]
     accuracies = np.concatenate(ac)
     ps = [m.num_passes for m in movie_results]
