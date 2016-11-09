@@ -26,21 +26,21 @@
                 {
                     "header": "Productivity 0 (%)",
                     "type": "float",
-                    "format": "{p:.2f} %",
+                    "format": "{:.2f} %",
                     "id": "productivity_0",
                     "description": "Productivity classification index ‘0’, corresponding to the classifier outcome ‘Empty’, otherwise known as no loading."
                 },
                 {
                     "header": "Productivity 1 (%)",
                     "type": "float",
-                    "format": "{p:.2f} %",
+                    "format": "{:.2f} %",
                     "id": "productivity_1",
                     "description": "Productivity classification index ‘1’, corresponding to the classifier outcome ‘Productive’. Any hole that contains a HQ region and passes minimal filtering requirements is classified as ‘Productive’, even if it was multiply loaded."
                 },
                 {
                     "header": "Productivity 2 (%)",
                     "type": "float",
-                    "format": "{p:.2f} %",
+                    "format": "{:.2f} %",
                     "id": "productivity_2",
                     "description": "Productivity classification index ‘2’, corresponding to the Productivity classifier outcome ‘Other’."
                 }
