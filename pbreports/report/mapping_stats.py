@@ -23,7 +23,7 @@ from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import openAlignmentFile, openDataSet, openDataFile
-from pbcore.io import AlignmentSet, ConsensusAlignmentSet
+from pbcore.io import AlignmentSet, ConsensusAlignmentSet, SubreadSet
 
 from pbreports.plot.rainbow import make_rainbow_plot
 from pbreports.plot.helper import get_blue, get_green
@@ -83,6 +83,8 @@ class Constants(object):
     A_SUBREAD_LENGTH_MAX = "mapped_subread_readlength_max"
     A_SUBREAD_LENGTH_N50 = "mapped_subreadlength_n50"
     A_SUBREAD_LENGTH_Q95 = "mapped_subreadlength_q95"
+
+    A_PCT_MAPPED = "pct_bases_mapped"
 
     # Plot Group ids
     PG_SUBREAD_CONCORDANCE = "subread_concordance_group"
@@ -694,8 +696,9 @@ class MappingStatsCollector(object):
         MeanSubreadConcordanceAggregator
     ]
 
-    def __init__(self, alignment_file):
+    def __init__(self, alignment_file, subreads_file=None):
         self.alignment_file = alignment_file
+        self.subreads_file = subreads_file
         self.dataset_uuids = []
         if alignment_file.endswith('.xml'):
             log.debug('Importing alignments from dataset XML')
@@ -858,6 +861,23 @@ class MappingStatsCollector(object):
         """
         pass
 
+    def add_more_attributes(self, attributes):
+        """
+        Additional attributes needed by some variants of the report (e.g. in
+        HGAP pipelines).
+        """
+        if self.subreads_file is not None:
+            with SubreadSet(self.subreads_file) as subreads:
+                subreads.updateCounts()
+                n_bases_raw = subreads.totalLength
+                attr_values = {a.id:a.value for a in attributes}
+                n_bases_mapped = attr_values[Constants.A_SUBREAD_NBASES]
+                pct_bases_mapped = 0.0
+                if n_bases_raw > 0:
+                    pct_bases_mapped = float(n_bases_mapped) / n_bases_raw
+                attributes.append(Attribute(Constants.A_PCT_MAPPED,
+                                            value=pct_bases_mapped))
+
     def to_report(self, output_dir, report_id=Constants.R_ID):
         """
         This needs to be cleaned up. Keeping the old interface for testing purposes.
@@ -935,6 +955,7 @@ class MappingStatsCollector(object):
             log.info(a)
 
         attributes = get_attributes(_total_aggregators)
+        self.add_more_attributes(attributes)
 
         log.info("Attributes from streaming mapping Report.")
         for a in attributes:
@@ -954,7 +975,7 @@ class MappingStatsCollector(object):
                                          id_to_aggregators)
             rb_pg = PlotGroup(Constants.PG_RAINBOW)
             rb_png = "mapped_concordance_vs_read_length.png"
-            make_rainbow_plot(self.alignment_file, rb_png)
+            make_rainbow_plot(self.alignment_file, op.join(output_dir, rb_png))
             rb_plt = Plot(Constants.P_RAINBOW, rb_png,
                           caption=get_plot_caption(spec, Constants.PG_RAINBOW,
                                                    Constants.P_RAINBOW))
@@ -976,8 +997,8 @@ class MappingStatsCollector(object):
         return report
 
 
-def to_report(alignment_file, output_dir):
-    return spec.apply_view(MappingStatsCollector(alignment_file).to_report(output_dir))
+def to_report(alignment_file, output_dir, subreads_file=None):
+    return spec.apply_view(MappingStatsCollector(alignment_file, subreads_file).to_report(output_dir))
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -997,9 +1018,11 @@ def summarize_report(report_file, out=sys.stdout):
     W(attr[Constants.A_SUBREAD_LENGTH])
 
 
-def run_and_write_report(alignment_file, json_report, report_func=to_report):
+def run_and_write_report(alignment_file, json_report, report_func=to_report,
+                         subreads_file=None):
     output_dir = os.path.dirname(json_report)
-    report = report_func(alignment_file, output_dir)
+    report = report_func(alignment_file, output_dir,
+                         subreads_file=subreads_file)
     report.write_json(json_report)
     log.info("Wrote output to %s" % json_report)
     return 0

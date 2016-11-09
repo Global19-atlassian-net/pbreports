@@ -532,3 +532,12 @@ class TestMappingStatsMultipleMovies(TestMappingStatsReportLarge):
             if column.id == "mapped_reads":
                 self.assertTrue(all([x > 0 for x in column.values]),
                                 "Not all movies have a mapped read")
+
+
+class TestPbreportMappingStatsHGAP(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.mapping_stats_hgap"
+    REQUIRES_PBCORE = True
+    INPUT_FILES = [
+        pbtestdata.get_file("aligned-internal-subreads"),
+        pbtestdata.get_file("internal-subreads")
+    ]
