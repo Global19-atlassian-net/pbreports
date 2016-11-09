@@ -9,7 +9,7 @@
         },
         {
             "id": "raw_reads",
-            "name": "Number of Raw Reads",
+            "name": "Number of Filtered Subreads",
             "type": "int",
             "format": "{:,d}",
             "description": null
@@ -37,7 +37,7 @@
         },
         {
             "id": "raw_bases",
-            "name": "Number of Raw Bases (total)",
+            "name": "Number of Filtered Subread Bases",
             "type": "int",
             "format": "{:,d}",
             "description": null
