@@ -9,7 +9,7 @@
         },
         {
             "id": "raw_reads",
-            "name": "Filtered Subreads",
+            "name": "Number of Filtered Subreads",
             "type": "int",
             "format": "{:,d}",
             "description": null
