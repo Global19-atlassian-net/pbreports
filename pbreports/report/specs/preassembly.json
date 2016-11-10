@@ -9,42 +9,42 @@
         },
         {
             "id": "raw_reads",
-            "name": "Number of Raw Reads",
+            "name": "Filtered Subreads",
             "type": "int",
             "format": "{:,d}",
             "description": null
         },
         {
             "id": "raw_mean",
-            "name": "Raw Read Length Mean",
+            "name": "Filtered Subread Length Mean",
             "type": "int",
             "format": "{:,.0f}",
             "description": null
         },
         {
             "id": "raw_n50",
-            "name": "Raw Read Length (N50)",
+            "name": "Filtered Subread Length (N50)",
             "type": "int",
             "format": "{:,d}",
             "description": null
         },
         {
             "id": "raw_p95",
-            "name": "Raw Read Length 95%",
+            "name": "Filtered Subread Length 95%",
             "type": "int",
             "format": "{:,d}",
             "description": null
         },
         {
             "id": "raw_bases",
-            "name": "Number of Raw Bases (total)",
+            "name": "Number of Filtered Subread Bases",
             "type": "int",
             "format": "{:,d}",
             "description": null
         },
         {
             "id": "raw_coverage",
-            "name": "Raw Coverage (bases/genome_size)",
+            "name": "Filtered Subread Coverage",
             "type": "float",
             "format": "{:,.2f}",
             "description": null
