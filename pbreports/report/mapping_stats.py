@@ -875,8 +875,8 @@ class MappingStatsCollector(object):
                 pct_bases_mapped = 0.0
                 if n_bases_raw > 0:
                     pct_bases_mapped = float(n_bases_mapped) / n_bases_raw
-                attributes.append(Attribute(Constants.A_PCT_MAPPED,
-                                            value=pct_bases_mapped))
+                attributes.insert(0, Attribute(Constants.A_PCT_MAPPED,
+                                               value=pct_bases_mapped))
 
     def to_report(self, output_dir, report_id=Constants.R_ID):
         """

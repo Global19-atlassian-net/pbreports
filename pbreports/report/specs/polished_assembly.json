@@ -40,7 +40,7 @@
                 {
                     "xlabel": "Mean Coverage Depth",
                     "description": null,
-                    "caption": "Contig Coverage vs Confidence",
+                    "caption": "Contig Coverage vs. Confidence",
                     "ylabel": "Mean Confidence (QV)",
                     "title": "Contig Coverage vs Confidence",
                     "id": "cov_vs_qual"

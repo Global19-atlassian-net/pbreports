@@ -541,3 +541,9 @@ class TestPbreportMappingStatsHGAP(pbcommand.testkit.PbTestApp):
         pbtestdata.get_file("aligned-internal-subreads"),
         pbtestdata.get_file("internal-subreads")
     ]
+
+    def run_after(self, rtc, output_dir):
+        r = load_report_from_json(rtc.task.output_files[0])
+        a = r.attributes[0]
+        self.assertEqual(a.id, Constants.A_PCT_MAPPED)
+        self.assertAlmostEqual(a.value, 0.9137, delta=0.0001)

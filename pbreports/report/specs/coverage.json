@@ -43,8 +43,8 @@
                 {
                     "xlabel": "Coverage",
                     "description": null,
-                    "caption": "Depth of coverage distribution ",
-                    "title": "Depth of coverage distribution ",
+                    "caption": "Depth of Coverage Distribution ",
+                    "title": "Depth of Coverage Distribution ",
                     "ylabel": "Reference Regions",
                     "id": "coverage_histogram"
                 }
