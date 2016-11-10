@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 class Constants(BaseConstants):
     TOOL_ID = "pbreports.tasks.mapping_stats_hgap"
-    DRIVER_EXE = "python -m pbreports.report.mapping_stats_gap --resolved-tool-contract"
+    DRIVER_EXE = "python -m pbreports.report.mapping_stats_hgap --resolved-tool-contract"
     R_ID = "mapping_stats_hgap"
 
 spec = load_spec(Constants.R_ID)
