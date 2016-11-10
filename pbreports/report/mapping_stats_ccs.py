@@ -185,7 +185,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
         return plot_groups
 
 
-def to_report(alignment_file, output_dir):
+def to_report(alignment_file, output_dir, subreads_file=None):
     return spec.apply_view(CCSMappingStatsCollector(alignment_file).to_report(output_dir, Constants.R_ID))
 
 
