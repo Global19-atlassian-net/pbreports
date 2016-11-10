@@ -98,7 +98,7 @@
     ],
     "tables": [
         {
-            "title": "Mapping Statistics Summary",
+            "title": "Realignment Statistics Summary",
             "id": "mapping_stats_table",
             "columns": [
                 {
