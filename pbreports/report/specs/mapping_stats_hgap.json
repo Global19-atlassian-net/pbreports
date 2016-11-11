@@ -9,7 +9,7 @@
             "type": "float",
             "format": "{p:.2f} %",
             "description": "Percent of input bases mapped to assembly draft",
-            "name": "Percent Assembled Bases"
+            "name": "Percent Realigned Bases"
         },
         {
             "id": "mapped_subread_concordance_mean",
