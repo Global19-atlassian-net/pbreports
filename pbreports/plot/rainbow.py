@@ -29,7 +29,6 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     PLOT_GROUP_ID = "alignment_to_png_plot_group"
-    TITLE_STRING = "Concordance vs. Subread Length"
     CAPTION_STRING = """\
 Each point on the graph represents the concordance and length of a single subread
 as measured by a local alignment to the reference.  The points are colored by
@@ -191,7 +190,6 @@ def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
     png_fn = os.path.join(out_dir, name)
     _make_plot(data, png_fn, bounds, dpi, nolegend)
     plot_group = PlotGroup(Constants.PLOT_GROUP_ID,
-                           title=Constants.TITLE_STRING,
                            plots=[Plot('alignment_to_png_plot',
                                        os.path.basename(png_fn))])
     report.add_plotgroup(plot_group)
