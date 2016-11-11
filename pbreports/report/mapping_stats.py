@@ -722,6 +722,9 @@ class MappingStatsCollector(object):
         else:
             raise ValueError("Unsupported alignment file type '${x}'".format(
                 x=alignment_file))
+        if subreads_file is not None and subreads_file.endswith(".xml"):
+            with SubreadSet(subreads_file) as subreads_ds:
+                self.dataset_uuids.append(subreads_ds.uuid)
 
     def _get_subread_length_histogram_bin_width(self):
         BIN_SIZES = [100, 200, 500]
@@ -976,9 +979,7 @@ class MappingStatsCollector(object):
             rb_pg = PlotGroup(Constants.PG_RAINBOW)
             rb_png = "mapped_concordance_vs_read_length.png"
             make_rainbow_plot(self.alignment_file, op.join(output_dir, rb_png))
-            rb_plt = Plot(Constants.P_RAINBOW, rb_png,
-                          caption=get_plot_caption(spec, Constants.PG_RAINBOW,
-                                                   Constants.P_RAINBOW))
+            rb_plt = Plot(Constants.P_RAINBOW, rb_png)
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)
         self.add_more_plots(plot_groups, output_dir)

@@ -29,7 +29,6 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     PLOT_GROUP_ID = "alignment_to_png_plot_group"
-    TITLE_STRING = "Concordance vs. Subread Length"
     CAPTION_STRING = """\
 Each point on the graph represents the concordance and length of a single subread
 as measured by a local alignment to the reference.  The points are colored by
