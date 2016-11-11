@@ -191,7 +191,6 @@ def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
     png_fn = os.path.join(out_dir, name)
     _make_plot(data, png_fn, bounds, dpi, nolegend)
     plot_group = PlotGroup(Constants.PLOT_GROUP_ID,
-                           title=Constants.TITLE_STRING,
                            plots=[Plot('alignment_to_png_plot',
                                        os.path.basename(png_fn))])
     report.add_plotgroup(plot_group)
