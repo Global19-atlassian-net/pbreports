@@ -151,7 +151,7 @@
             "id": "preassembled_seed_fragmentation",
             "name": "Average Number of Reads That Each Seed Is Broken Into",
             "type": "float",
-            "format": "{:,.0f}",
+            "format": "{:.3f}",
             "description": null
         },
         {
