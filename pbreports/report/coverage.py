@@ -41,8 +41,6 @@ spec = load_spec("coverage")
 
 
 class Constants(object):
-    TOOL_ID = "pbreports.tasks.coverage_report"
-    DRIVER_EXE = "python -m pbreports.report.coverage --resolved-tool-contract "
     MAX_CONTIGS_ID = "pbreports.task_options.max_contigs"
     MAX_CONTIGS_DEFAULT = 25
 
@@ -58,69 +56,204 @@ class Constants(object):
     P_COVERAGE_HIST = "coverage_histogram"
 
 
-def _create_coverage_plot_grp(top_contigs, cov_map, output_dir):
-    """
-    Returns io.model.PlotGroup object
-    Create the plotGroup element that contains the coverage plots of the top contigs.
-    :param top_contigs: (list of Contig objects) sorted by contig size
-    :param cov_map: (dict string:ContigCoverage) mapping of contig.id to ContigCoverage object
-    :param output_dir: (string) where to write images
-    """
-    plots = []
-    thumbnail = None
-    idx = 0
-    log.debug('Creating plots for {n} top contig(s)'.format(
-        n=str(len(top_contigs))))
-    for tc in top_contigs:
-        if not tc.id in cov_map:
-            # no coverage of this contig
-            log.debug('contig {c} has no coverage info '.format(c=tc.id))
-            continue
-        ctg_cov = cov_map[tc.id]
-        fig, ax = _create_contig_plot(ctg_cov)
+class CoverageReport(object):
+    TOOL_ID = "pbreports.tasks.coverage_report"
+    DRIVER_EXE = "python -m pbreports.report.coverage --resolved-tool-contract "
+    spec = load_spec("coverage")
 
-        fname = os.path.join(output_dir, ctg_cov.file_name)
-        if thumbnail is None:
-            imgfiles = save_figure_with_thumbnail(fig, fname)
-            thumbnail = os.path.basename(imgfiles[1])
-        else:
-            fig.savefig(fname)
-        plt.close(fig)
-        id_ = "coverage_contig_{i}".format(i=str(idx))
-        caption = "Coverage across {c}."
-        plot = Plot(id_, os.path.basename(fname), caption.format(
-            c=ctg_cov.name), title=caption.format(
-            c=ctg_cov.name))
-        plots.append(plot)
-        idx += 1
+    def get_parser(self):
+        p = get_pbparser(
+            tool_id=self.TOOL_ID,
+            version=__version__,
+            name="Coverage",
+            description=__doc__,
+            driver_exe=self.DRIVER_EXE,
+            is_distributed=True)
+        ap = p.arg_parser.parser
+        p.add_input_file_type(FileTypes.DS_REF, "reference",
+                              name="Reference DataSet",
+                              description="Reference DataSet XML or FASTA file")
+        p.add_input_file_type(FileTypes.GFF, "gff",
+                              name="Alignment Summary GFF",
+                              description="Alignment Summary GFF")
+        p.add_output_file_type(FileTypes.REPORT, "report_json",
+                               name="Coverage Report",
+                               description="Basic coverage metrics",
+                               default_name="coverage_report")
+        p.add_int(
+            option_id=Constants.MAX_CONTIGS_ID,
+            option_str="maxContigs",
+            default=Constants.MAX_CONTIGS_DEFAULT,
+            name="Maximum number of contigs to plot",
+            description="Maximum number of contigs to plot in coverage report")
+        return p
 
-    plot_group = PlotGroup(
-        Constants.PG_COVERAGE,
-        title=get_plotgroup_title(spec, Constants.PG_COVERAGE),
-        thumbnail=thumbnail,
-        plots=plots)
-    return plot_group
+    def args_runner(self, args):
+        rpt = self.make_report(args.gff, args.reference, args.maxContigs,
+                               args.report_json, op.dirname(args.report_json))
+        log.info(rpt)
+        return 0
 
+    def resolved_tool_contract_runner(self, rtc):
+        rpt = self.make_report(
+            gff=rtc.task.input_files[1],
+            reference=rtc.task.input_files[0],
+            max_contigs_to_plot=rtc.task.options[Constants.MAX_CONTIGS_ID],
+            report=op.basename(rtc.task.output_files[0]),
+            output_dir=op.dirname(rtc.task.output_files[0]))
+        log.info(rpt)
+        return 0
 
-def _create_coverage_histo_plot_grp(stats, output_dir):
-    """
-    Returns io.model.PlotGroup object
-    Create the plotGroup element that contains the coverage plot histogram
-    :param stats: (ReferenceStats) see _get_reference_coverage_stats
-    :param output_dir: (string) where to write images
-    """
-    fig, ax = _create_histogram(stats)
-    fname, thumb = [os.path.basename(f) for f in save_figure_with_thumbnail(
-        fig, os.path.join(output_dir, 'coverage_histogram.png'))]
-    plot = Plot(Constants.P_COVERAGE_HIST, fname,
-                caption=get_plot_caption(spec, Constants.PG_COVERAGE_HIST,
-                                         Constants.P_COVERAGE_HIST),
-                title=get_plot_title(spec, Constants.PG_COVERAGE_HIST,
-                                     Constants.P_COVERAGE_HIST))
-    plot_group = PlotGroup(Constants.PG_COVERAGE_HIST,
-                           thumbnail=thumb, plots=[plot],
-                           title=get_plotgroup_title(spec, Constants.PG_COVERAGE_HIST))
-    return plot_group
+    def make_report(self, gff, reference, max_contigs_to_plot, report,
+                    output_dir):
+        """
+        Entry to report.
+        :param gff: (str) path to alignment_summary.gff
+        :param reference: (str) path to reference_dir
+        :param max_contigs_to_plot: (int) max number of contigs to plot
+        """
+        _validate_inputs(gff, reference)
+        top_contigs = get_top_contigs(reference, max_contigs_to_plot)
+        cov_map = _get_contigs_to_plot(gff, top_contigs)
+    
+        # stats may be None
+        stats = _get_reference_coverage_stats(cov_map.values())
+    
+        a1 = _get_att_mean_coverage(stats)
+        a2 = _get_att_percent_missing(stats)
+    
+        plot_grp_coverage = self._create_coverage_plot_grp(
+            top_contigs, cov_map, output_dir)
+    
+        plot_grp_histogram = None
+        if stats is not None:
+            plot_grp_histogram = self._create_coverage_histo_plot_grp(stats, output_dir)
+    
+        plotgroups = []
+        # Don't add the Plot Group if no plots are added
+        if plot_grp_coverage.plots:
+            plotgroups.append(plot_grp_coverage)
+    
+        if plot_grp_histogram is not None:
+            # Don't add the Plot Group if no plots are added
+            if plot_grp_histogram.plots:
+                plotgroups.append(plot_grp_histogram)
+    
+        rpt = Report(self.spec.id,
+                     plotgroups=plotgroups,
+                     attributes=[a1, a2],
+                     dataset_uuids=(ReferenceSet(reference).uuid,))
+    
+        rpt = self.spec.apply_view(rpt)
+        rpt.write_json(os.path.join(output_dir, report))
+        return rpt
+
+    def _create_coverage_plot_grp(self, top_contigs, cov_map, output_dir):
+        """
+        Returns io.model.PlotGroup object
+        Create the plotGroup element that contains the coverage plots of the top contigs.
+        :param top_contigs: (list of Contig objects) sorted by contig size
+        :param cov_map: (dict string:ContigCoverage) mapping of contig.id to ContigCoverage object
+        :param output_dir: (string) where to write images
+        """
+        plots = []
+        thumbnail = None
+        idx = 0
+        log.debug('Creating plots for {n} top contig(s)'.format(
+            n=str(len(top_contigs))))
+        for tc in top_contigs:
+            if not tc.id in cov_map:
+                # no coverage of this contig
+                log.debug('contig {c} has no coverage info '.format(c=tc.id))
+                continue
+            ctg_cov = cov_map[tc.id]
+            fig, ax = self._create_contig_plot(ctg_cov)
+    
+            fname = os.path.join(output_dir, ctg_cov.file_name)
+            if thumbnail is None:
+                imgfiles = save_figure_with_thumbnail(fig, fname)
+                thumbnail = os.path.basename(imgfiles[1])
+            else:
+                fig.savefig(fname)
+            plt.close(fig)
+            id_ = "coverage_contig_{i}".format(i=str(idx))
+            caption = spec.get_plotgroup_spec(Constants.PG_COVERAGE
+                ).get_plot_spec(Constants.P_COVERAGE).caption + " {c}."
+            plot = Plot(id_, os.path.basename(fname),
+                        caption.format(c=ctg_cov.name),
+                        title=caption.format(c=ctg_cov.name))
+            plots.append(plot)
+            idx += 1
+    
+        plot_group = PlotGroup(
+            Constants.PG_COVERAGE,
+            title=get_plotgroup_title(self.spec, Constants.PG_COVERAGE),
+            thumbnail=thumbnail,
+            plots=plots)
+        return plot_group
+
+    def _create_coverage_histo_plot_grp(self, stats, output_dir):
+        """
+        Returns io.model.PlotGroup object
+        Create the plotGroup element that contains the coverage plot histogram
+        :param stats: (ReferenceStats) see _get_reference_coverage_stats
+        :param output_dir: (string) where to write images
+        """
+        fig, ax = self._create_histogram(stats)
+        fname, thumb = [os.path.basename(f) for f in save_figure_with_thumbnail(
+            fig, os.path.join(output_dir, 'coverage_histogram.png'))]
+        plot = Plot(Constants.P_COVERAGE_HIST, fname,
+                    caption=get_plot_caption(self.spec, Constants.PG_COVERAGE_HIST,
+                                             Constants.P_COVERAGE_HIST),
+                    title=get_plot_title(self.spec, Constants.PG_COVERAGE_HIST,
+                                         Constants.P_COVERAGE_HIST))
+        plot_group = PlotGroup(Constants.PG_COVERAGE_HIST,
+                               thumbnail=thumb, plots=[plot],
+                               title=get_plotgroup_title(self.spec, Constants.PG_COVERAGE_HIST))
+        return plot_group
+
+    def _create_contig_plot(self, contig_coverage):
+        """
+        Returns a fig,ax plot for this contig
+        :param contig_coverage: (ContigCoverage)
+        """
+        npXData = np.array(contig_coverage.xData)
+        line_fill = LineFill(xData=npXData,
+                             yData=np.array(contig_coverage.yDataMean),
+                             linecolor=Constants.COLOR_STEEL_BLUE_DARK, alpha=0.6,
+                             yDataMin=np.array(contig_coverage.yDataStdevMinus),
+                             yDataMax=np.array(contig_coverage.yDataStdevPlus),
+                             edgecolor=Constants.COLOR_STEEL_BLUE_LIGHT,
+                             facecolor=Constants.COLOR_STEEL_BLUE_LIGHT)
+        lines_fills = [line_fill]
+        fig, ax = get_fig_axes_lpr()
+        xlabel = get_plot_xlabel(self.spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
+        ylabel = get_plot_ylabel(self.spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
+        apply_line_data(ax, lines_fills, (xlabel, ylabel))
+        apply_line_fill_data(ax, lines_fills)
+        return fig, ax
+    
+    
+    def _create_histogram(self, stats):
+        """
+        Returns a fig,ax histogram plot for this reference
+        :param stats: (ReferenceStats)
+        """
+        numBins = 100
+        binSize = max(1, int(stats.maxbin / numBins))
+        # handle case where the coverage is zero. This prevents the histogram
+        # construction from crashing with an index error.
+        m = 1 if stats.maxbin == 0.0 else stats.maxbin
+        bins = np.arange(0, m, binSize)
+        fig, ax = get_fig_axes_lpr()
+        xlabel = get_plot_xlabel(self.spec, Constants.PG_COVERAGE_HIST,
+                                 Constants.P_COVERAGE_HIST)
+        ylabel = get_plot_ylabel(self.spec, Constants.PG_COVERAGE_HIST,
+                                 Constants.P_COVERAGE_HIST)
+        apply_histogram_data(ax, stats.means, bins, (xlabel, ylabel),
+                             barcolor=Constants.COLOR_STEEL_BLUE_DARK,
+                             showEdges=False)
+        return fig, ax
 
 
 def _validate_inputs(gff, reference):
@@ -171,50 +304,6 @@ def _get_contigs_to_plot(alignment_summ_gff, contigs):
     reader.close()
 
     return cov_map
-
-
-def _create_contig_plot(contig_coverage):
-    """
-    Returns a fig,ax plot for this contig
-    :param contig_coverage: (ContigCoverage) 
-    """
-    npXData = np.array(contig_coverage.xData)
-    line_fill = LineFill(xData=npXData,
-                         yData=np.array(contig_coverage.yDataMean),
-                         linecolor=Constants.COLOR_STEEL_BLUE_DARK, alpha=0.6,
-                         yDataMin=np.array(contig_coverage.yDataStdevMinus),
-                         yDataMax=np.array(contig_coverage.yDataStdevPlus),
-                         edgecolor=Constants.COLOR_STEEL_BLUE_LIGHT,
-                         facecolor=Constants.COLOR_STEEL_BLUE_LIGHT)
-    lines_fills = [line_fill]
-    fig, ax = get_fig_axes_lpr()
-    xlabel = get_plot_xlabel(spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
-    ylabel = get_plot_ylabel(spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
-    apply_line_data(ax, lines_fills, (xlabel, ylabel))
-    apply_line_fill_data(ax, lines_fills)
-    return fig, ax
-
-
-def _create_histogram(stats):
-    """
-    Returns a fig,ax histogram plot for this reference
-    :param stats: (ReferenceStats) 
-    """
-    numBins = 100
-    binSize = max(1, int(stats.maxbin / numBins))
-    # handle case where the coverage is zero. This prevents the histogram
-    # construction from crashing with an index error.
-    m = 1 if stats.maxbin == 0.0 else stats.maxbin
-    bins = np.arange(0, m, binSize)
-    fig, ax = get_fig_axes_lpr()
-    xlabel = get_plot_xlabel(spec, Constants.PG_COVERAGE_HIST,
-                             Constants.P_COVERAGE_HIST)
-    ylabel = get_plot_ylabel(spec, Constants.PG_COVERAGE_HIST,
-                             Constants.P_COVERAGE_HIST)
-    apply_histogram_data(ax, stats.means, bins, (xlabel, ylabel),
-                         barcolor=Constants.COLOR_STEEL_BLUE_DARK,
-                         showEdges=False)
-    return fig, ax
 
 
 def _get_att_mean_coverage(stats):
@@ -414,101 +503,17 @@ class ContigCoverage(object):
 
 def make_coverage_report(gff, reference, max_contigs_to_plot, report,
                          output_dir):
-    """
-    Entry to report.
-    :param gff: (str) path to alignment_summary.gff
-    :param reference: (str) path to reference_dir
-    :param max_contigs_to_plot: (int) max number of contigs to plot
-    """
-    _validate_inputs(gff, reference)
-    top_contigs = get_top_contigs(reference, max_contigs_to_plot)
-    cov_map = _get_contigs_to_plot(gff, top_contigs)
-
-    # stats may be None
-    stats = _get_reference_coverage_stats(cov_map.values())
-
-    a1 = _get_att_mean_coverage(stats)
-    a2 = _get_att_percent_missing(stats)
-
-    plot_grp_coverage = _create_coverage_plot_grp(
-        top_contigs, cov_map, output_dir)
-
-    plot_grp_histogram = None
-    if stats is not None:
-        plot_grp_histogram = _create_coverage_histo_plot_grp(stats, output_dir)
-
-    plotgroups = []
-    # Don't add the Plot Group if no plots are added
-    if plot_grp_coverage.plots:
-        plotgroups.append(plot_grp_coverage)
-
-    if plot_grp_histogram is not None:
-        # Don't add the Plot Group if no plots are added
-        if plot_grp_histogram.plots:
-            plotgroups.append(plot_grp_histogram)
-
-    rpt = Report(spec.id,
-                 plotgroups=plotgroups,
-                 attributes=[a1, a2],
-                 dataset_uuids=(ReferenceSet(reference).uuid,))
-
-    rpt = spec.apply_view(rpt)
-    rpt.write_json(os.path.join(output_dir, report))
-    return rpt
+    return CoverageReport().make_report(gff, reference, max_contigs_to_plot,
+                                        report, output_dir)
 
 
-def args_runner(args):
-    rpt = make_coverage_report(args.gff, args.reference, args.maxContigs,
-                               args.report_json, op.dirname(args.report_json))
-    log.info(rpt)
-    return 0
-
-
-def resolved_tool_contract_runner(rtc):
-    rpt = make_coverage_report(
-        gff=rtc.task.input_files[1],
-        reference=rtc.task.input_files[0],
-        max_contigs_to_plot=rtc.task.options[Constants.MAX_CONTIGS_ID],
-        report=rtc.task.output_files[0],
-        output_dir=op.dirname(rtc.task.output_files[0]))
-    log.info(rpt)
-    return 0
-
-
-def get_parser():
-    p = get_pbparser(
-        tool_id=Constants.TOOL_ID,
-        version=__version__,
-        name="Coverage",
-        description=__doc__,
-        driver_exe=Constants.DRIVER_EXE,
-        is_distributed=True)
-    ap = p.arg_parser.parser
-    p.add_input_file_type(FileTypes.DS_REF, "reference",
-                          name="Reference DataSet",
-                          description="Reference DataSet XML or FASTA file")
-    p.add_input_file_type(FileTypes.GFF, "gff",
-                          name="Alignment Summary GFF",
-                          description="Alignment Summary GFF")
-    p.add_output_file_type(FileTypes.REPORT, "report_json",
-                           name="Coverage Report",
-                           description="Basic coverage metrics",
-                           default_name=spec.id)
-    p.add_int(
-        option_id=Constants.MAX_CONTIGS_ID,
-        option_str="maxContigs",
-        default=Constants.MAX_CONTIGS_DEFAULT,
-        name="Maximum number of contigs to plot",
-        description="Maximum number of contigs to plot in coverage report")
-    return p
-
-
-def main(argv=sys.argv[1:]):
+def main(argv=sys.argv[1:], driver_class=CoverageReport):
     """Main point of Entry"""
+    driver = driver_class()
     return pbparser_runner(argv,
-                           get_parser(),
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           driver.get_parser(),
+                           driver.args_runner,
+                           driver.resolved_tool_contract_runner,
                            log,
                            setup_log)
 
