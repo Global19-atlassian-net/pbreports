@@ -1,5 +1,5 @@
 {
-    "id": "coverage",
+    "id": "coverage_hgap",
     "version": "3.2",
     "description": null,
     "title": "Coverage",
@@ -27,7 +27,7 @@
                 {
                     "xlabel": "Reference Start Position",
                     "description": null,
-                    "caption": "Coverage Across",
+                    "caption": "Coverage Across Draft Assembly of",
                     "title": null,
                     "ylabel": "Coverage",
                     "id": "coverage_contig"

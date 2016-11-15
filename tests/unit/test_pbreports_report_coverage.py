@@ -18,11 +18,11 @@ from pbcore.io import ReferenceSet, FastaReader, FastaWriter, GffReader, GffWrit
 import pbtestdata
 
 from pbreports.util import get_top_contigs
-from pbreports.report.coverage import (make_coverage_report,
-                                       _get_contigs_to_plot, _create_contig_plot,
-                                       _get_reference_coverage_stats, _get_att_mean_coverage,
-                                       _get_att_percent_missing, _create_histogram,
-                                       _create_coverage_plot_grp, _create_coverage_histo_plot_grp)
+from pbreports.report.coverage import (make_coverage_report, CoverageReport,
+                                       _get_contigs_to_plot,
+                                       _get_reference_coverage_stats,
+                                       _get_att_mean_coverage,
+                                       _get_att_percent_missing)
 
 from base_test_case import (ROOT_DATA_DIR, LOCAL_DATA,
                             skip_if_data_dir_not_present, validate_report_complete)
@@ -110,7 +110,7 @@ class TestCoverageRpt(unittest.TestCase):
         pls = _get_contigs_to_plot(als, tcs)
         contig = tcs[0]
         c_cov = pls[contig.header]
-        fig, ax = _create_contig_plot(c_cov)
+        fig, ax = CoverageReport()._create_contig_plot(c_cov)
         self.assertIsNotNone(fig)
         self.assertIsNotNone(ax)
 
@@ -168,7 +168,7 @@ class TestCoverageRpt(unittest.TestCase):
         als = self.GFF
         pls = _get_contigs_to_plot(als, tcs)
         stats = _get_reference_coverage_stats(pls.values())
-        fig, ax = _create_histogram(stats)
+        fig, ax = CoverageReport()._create_histogram(stats)
         self.assertIsNotNone(fig)
         self.assertIsNotNone(ax)
 
@@ -179,7 +179,7 @@ class TestCoverageRpt(unittest.TestCase):
         tcs = get_top_contigs(self.REFERENCE, 25)
         als = self.GFF
         pls = _get_contigs_to_plot(als, tcs)
-        plot_group = _create_coverage_plot_grp(tcs, pls, self._output_dir)
+        plot_group = CoverageReport()._create_coverage_plot_grp(tcs, pls, self._output_dir)
         # only 1 contig in lambda
         self.assertEqual(1, len(plot_group.plots))
         self._assert_image_file(plot_group.thumbnail)
@@ -195,7 +195,7 @@ class TestCoverageRpt(unittest.TestCase):
         als = self.GFF
         pls = _get_contigs_to_plot(als, tcs)
         stats = _get_reference_coverage_stats(pls.values())
-        plot_group = _create_coverage_histo_plot_grp(stats, self._output_dir)
+        plot_group = CoverageReport()._create_coverage_histo_plot_grp(stats, self._output_dir)
         # only 1 histo
         self.assertEqual(1, len(plot_group.plots))
         self._assert_image_file(plot_group.thumbnail)
@@ -348,6 +348,16 @@ class TestManyContigs(unittest.TestCase):
 
 class TestToolContract(pbcommand.testkit.core.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.coverage"
+    INPUT_FILES = [
+        pbtestdata.get_file("lambda-fasta"),
+        pbtestdata.get_file("alignment-summary-gff")
+    ]
+    IS_DISTRIBUTED = True
+    RESOLVED_IS_DISTRIBUTED = True
+
+
+class TestToolContractHgap(pbcommand.testkit.core.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.coverage_hgap"
     INPUT_FILES = [
         pbtestdata.get_file("lambda-fasta"),
         pbtestdata.get_file("alignment-summary-gff")
