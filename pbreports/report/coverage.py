@@ -37,8 +37,6 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.1'
 
-spec = load_spec("coverage")
-
 
 class Constants(object):
     MAX_CONTIGS_ID = "pbreports.task_options.max_contigs"
@@ -177,7 +175,7 @@ class CoverageReport(object):
                 fig.savefig(fname)
             plt.close(fig)
             id_ = "coverage_contig_{i}".format(i=str(idx))
-            caption = spec.get_plotgroup_spec(Constants.PG_COVERAGE
+            caption = self.spec.get_plotgroup_spec(Constants.PG_COVERAGE
                 ).get_plot_spec(Constants.P_COVERAGE).caption + " {c}."
             plot = Plot(id_, os.path.basename(fname),
                         caption.format(c=ctg_cov.name),
