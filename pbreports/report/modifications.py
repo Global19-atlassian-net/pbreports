@@ -89,13 +89,12 @@ def plot_kinetics_scatter(basemods_h5, ax):
 
             pl = ax.scatter(coverage_, score_, c=color, label=base,
                             lw=0, alpha=0.3, s=12)
-            handles.append(pl)
         else:
             log.warn("Base {b} not found".format(b=base))
 
     ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_KIN, Constants.P_SCAT))
     ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_KIN, Constants.P_SCAT))
-    legend(handles, bases, loc='upper left')
+    ax.legend(loc='upper left')
 
     if len(coverage) > 0:
         ax.set_xlim(0, np.percentile(coverage, 95.0) * 1.4)
