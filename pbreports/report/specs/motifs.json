@@ -24,7 +24,7 @@
                     "description": "The position within the motif that is modified with a 1-based coordinate system."
                 },
                 {
-                    "header": "Motification Type",
+                    "header": "Modification Type",
                     "type": "string",
                     "format": null,
                     "id": "modification_type",
