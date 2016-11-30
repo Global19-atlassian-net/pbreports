@@ -195,7 +195,7 @@ def makeReport(inReadsFN, hq_isoforms_fq, lq_isoforms_fq, inSummaryFN, outDir):
     reader = ContigSet(inReadsFN)
     rs = [len(r.sequence) for r in reader]
     reader.close()
-    readlengths = np.array(rs)
+    readlengths = np.array(rs).astype(float)
 
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, outDir)
