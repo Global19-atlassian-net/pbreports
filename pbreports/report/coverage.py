@@ -426,7 +426,7 @@ class ContigCoverage(object):
         self.yDataStdevPlus = []
         self.yDataStdevMinus = []
 
-        seqid_clean = re.sub("\|", "_", self._seqid)  # for services
+        seqid_clean = re.sub("\|", "_", re.sub("/", "__", self._seqid))  # for services
         self.file_name = "coverage_plot_{s}.png".format(s=seqid_clean)
 
     def __repr__(self):
