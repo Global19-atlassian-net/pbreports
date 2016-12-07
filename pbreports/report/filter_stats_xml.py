@@ -182,11 +182,14 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
                  os.path.relpath(png_base, output_dir),
                  title=title, caption=title,
                  thumbnail=os.path.relpath(thumbnail_base, output_dir)))
+
+    plot_group_thumb = length_plots[-1].thumbnail if length_plots else None
+
     plot_groups = [
         PlotGroup(PlotConstants.PG_LENGTH,
                   title=title,
                   plots=length_plots,
-                  thumbnail=os.path.relpath(thumbnail_base, output_dir))
+                  thumbnail=plot_group_thumb)
     ]
     return plot_groups
 
