@@ -30,6 +30,7 @@ from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
 from pbreports.util import compute_n50, continuous_dist_shaper
 from pbreports.io.specs import *
+from pbreports.model import InvalidStatsError
 
 __version__ = '0.1.0'
 
@@ -243,8 +244,8 @@ def to_report(stats_xml, output_dir, dpi=72):
         # an sts file was provided which will generate a new random uuid
         dataset_uuids = []
     if not dset.metadata.summaryStats.readLenDists:
-        raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
-                      "key distributions")
+        raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
+                                "or missing key distributions")
 
     # we want all of the length distributions in this report to look the same,
     # so we make the shaper here and pass it around:
@@ -283,9 +284,13 @@ def args_runner(args):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
     output_dir = os.path.dirname(args.report)
-    report = to_report(args.subread_set, output_dir)
-    report.write_json(args.report)
-    return 0
+    try:
+        report = to_report(args.subread_set, output_dir)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
@@ -293,9 +298,13 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
     output_dir = os.path.dirname(rtc.task.output_files[0])
-    report = to_report(rtc.task.input_files[0], output_dir)
-    report.write_json(rtc.task.output_files[0])
-    return 0
+    try:
+        report = to_report(rtc.task.input_files[0], output_dir)
+        report.write_json(rtc.task.output_files[0])
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def _add_options_to_parser(p):

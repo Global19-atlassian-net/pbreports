@@ -21,6 +21,7 @@ from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
+from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
 
 __version__ = '0.1.0'
@@ -57,8 +58,8 @@ def to_report(stats_xml, output_dir, dpi=72):
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.medianInsertDists:
-        raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
-                      "key distributions")
+        raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
+                                "or missing key distributions")
 
     # Pull some stats:
     adapter_dimers = np.round(
@@ -115,9 +116,13 @@ def args_runner(args):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
     output_dir = os.path.dirname(args.report)
-    report = to_report(args.subread_set, output_dir)
-    report.write_json(args.report)
-    return 0
+    try:
+        report = to_report(args.subread_set, output_dir)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
@@ -125,9 +130,13 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
     output_dir = os.path.dirname(rtc.task.output_files[0])
-    report = to_report(rtc.task.input_files[0], output_dir)
-    report.write_json(rtc.task.output_files[0])
-    return 0
+    try:
+        report = to_report(rtc.task.input_files[0], output_dir)
+        report.write_json(rtc.task.output_files[0])
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def _add_options_to_parser(p):
