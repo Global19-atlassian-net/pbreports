@@ -16,6 +16,7 @@ from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import DataSet
 
+from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
 
 __version__ = '0.1.0'
@@ -52,8 +53,8 @@ def to_report(stats_xml):
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.prodDist:
-        raise IOError("Pipeline Summary Stats (sts.xml) not found or missing "
-                      "key distributions")
+        raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
+                                "or missing key distributions")
 
     dsets = [dset]
     for subdset in dset.subdatasets:
@@ -98,18 +99,25 @@ def to_report(stats_xml):
 def args_runner(args):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
-    report = to_report(args.subread_set)
-    report.write_json(args.report)
-    return 0
-
+    try:
+        report = to_report(args.subread_set)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
-    report = to_report(rtc.task.input_files[0])
-    report.write_json(rtc.task.output_files[0])
-    return 0
+    try:
+        report = to_report(rtc.task.input_files[0])
+        report.write_json(rtc.task.output_files[0])
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def _add_options_to_parser(p):
