@@ -23,7 +23,7 @@ clean:
 	rm -rf dist/
 
 test:
-	nosetests --nocapture --nologcapture --verbose tests/unit/test*.py
+	nosetests --with-xunit --nocapture --nologcapture --verbose tests/unit/test*.py
 
 pip-install:
 	@which pip > /dev/null
