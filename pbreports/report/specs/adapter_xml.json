@@ -6,14 +6,14 @@
     "attributes": [
         {
             "type": "float",
-            "format": "{p:.2f} %",
+            "format": "{f:.2f} %",
             "description": "Percentage of Prod1 ZMWs with adapter dimers",
             "name": "Adapter Dimers (0-10bp) %",
             "id": "adapter_dimers"
         },
         {
             "type": "float",
-            "format": "{p:.2f} %",
+            "format": "{f:.2f} %",
             "description": "Percentage of Prod1 ZMWs with short inserts",
             "name": "Short Inserts (11-100bp) %",
             "id": "short_inserts"
