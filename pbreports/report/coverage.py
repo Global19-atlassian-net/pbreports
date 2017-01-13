@@ -39,6 +39,8 @@ __version__ = '0.1'
 
 
 class Constants(object):
+    TOOL_ID = "pbreports.tasks.coverage_report"
+
     MAX_CONTIGS_ID = "pbreports.task_options.max_contigs"
     MAX_CONTIGS_DEFAULT = 25
 
@@ -55,7 +57,7 @@ class Constants(object):
 
 
 class CoverageReport(object):
-    TOOL_ID = "pbreports.tasks.coverage_report"
+    TOOL_ID = Constants.TOOL_ID
     DRIVER_EXE = "python -m pbreports.report.coverage --resolved-tool-contract "
     spec = load_spec("coverage")
 
