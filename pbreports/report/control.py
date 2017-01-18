@@ -323,13 +323,13 @@ def _get_attr_control_95_readlength(control_data):
     Return the 95% readlength
     :param control_data: numpy array
     """
-    sorted = np.sort(control_data[3, :])
-    index = np.ceil((95 / 100.0) * len(sorted))
+    sorted_data = np.sort(control_data[3, :])
+    index = int(np.ceil((95 / 100.0) * len(sorted_data)))
     val = None
-    if index >= len(sorted):
-        val = sorted[-1]
+    if index >= len(sorted_data):
+        val = sorted_data[-1]
     else:
-        val = sorted[index]
+        val = sorted_data[index]
     return Attribute(Constants.A_PCT95, int(val))
 
 
