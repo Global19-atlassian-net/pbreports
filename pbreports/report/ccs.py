@@ -234,9 +234,7 @@ def _make_barcode_table(bam_stats, ccs_set):
     barcode_readscores = defaultdict(list)
     is_symmetric = all([r.bcForward == r.bcReverse for r in bam_stats])
     for r in bam_stats:
-        key = r.bcForward
-        if not is_symmetric:
-            key = (r.bcForward, r.bcReverse)
+        key = (r.bcForward, r.bcReverse)
         barcode_counts[key] += 1
         barcode_nbases[key] += r.qLen
         barcode_npasses[key].append(r.numPasses)
@@ -257,13 +255,10 @@ def _make_barcode_table(bam_stats, ccs_set):
     nbases = [barcode_nbases[i_bc] for i_bc in barcode_ids]
     mean_length = [int(float(n) / c) for (c, n) in zip(counts, nbases)]
     labels = []
-    for i_bc in barcode_ids:
-        if is_symmetric:
-            labels.append(barcode_labels.get(i_bc, Constants.NO_BC_LABEL))
-        else:
-            labels.append("{f}, {r}".format(
-                          f=barcode_labels.get(i_bc[0], Constants.NO_BC_LABEL),
-                          r=barcode_labels.get(i_bc[1], Constants.NO_BC_LABEL)))
+    for (fwd, rev) in barcode_ids:
+        labels.append("{f}--{r}".format(
+                      f=barcode_labels.get(fwd, Constants.NO_BC_LABEL),
+                      r=barcode_labels.get(rev, Constants.NO_BC_LABEL)))
     npasses = [sum(barcode_npasses[i_bc]) / len(barcode_npasses[i_bc])
                for i_bc in barcode_ids]
     readquals = [sum(barcode_readscores[i_bc]) / len(barcode_readscores[i_bc])
