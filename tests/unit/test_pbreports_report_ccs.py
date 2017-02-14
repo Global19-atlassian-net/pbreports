@@ -185,7 +185,7 @@ class TestCCSBarcoded(unittest.TestCase):
         ds = ConsensusReadSet(CCS_DS)
         r = to_report(ds, tempfile.mkdtemp())
         self.assertEqual([c.values for c in r.tables[1].columns[0:4]],
-                         [["lbc1", "lbc3"], [1, 1], [1958, 1954], [1958, 1954]])
+                         [["lbc1--lbc1", "lbc3--lbc3"], [1, 1], [1958, 1954], [1958, 1954]])
         self.assertAlmostEqual(r.tables[1].columns[4].values[0], 0.9724,
                                places=4)
         self.assertAlmostEqual(r.tables[1].columns[4].values[1], 0.9926,
@@ -198,4 +198,4 @@ class TestCCSBarcoded(unittest.TestCase):
         ds = ConsensusReadSet(CCS_DS)
         r = to_report(ds, tempfile.mkdtemp())
         self.assertEqual(r.tables[1].columns[0].values,
-                         ['F5, R5', 'F8, R8', 'F20, R20', 'F29, R29', 'F30, R30'])
+                         ['F5--R5', 'F8--R8', 'F20--R20', 'F29--R29', 'F30--R30'])
