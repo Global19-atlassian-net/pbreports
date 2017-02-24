@@ -211,6 +211,9 @@ class TestLoadingRpt(XMLStatsRptsBase):
         c2 = t['columns'][2]
         c3 = t['columns'][3]
         c4 = t['columns'][4]
+        c5 = t['columns'][5]
+        c6 = t['columns'][6]
+        c7 = t['columns'][7]
 
         self.assertEqual('Collection Context', c0['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
@@ -222,26 +225,47 @@ class TestLoadingRpt(XMLStatsRptsBase):
                          'productive_zmws', c1['id'])
         self.assertEqual(2876, c1['values'][0])
 
-        self.assertEqual('Productivity 0 (%)',
+        self.assertEqual('Productivity 0',
                          c2['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
-                         'productivity_0',
+                         'productivity_0_n',
                          c2['id'])
-        self.assertAlmostEqual(54.798, c2['values'][0], delta=.0003)
+        self.assertEqual(1576, c2['values'][0])
 
-        self.assertEqual('Productivity 1 (%)',
+        self.assertEqual('(%)',
                          c3['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
-                         'productivity_1',
+                         'productivity_0_pct',
                          c3['id'])
-        self.assertAlmostEqual(31.328, c3['values'][0], delta=.0003)
+        self.assertAlmostEqual(54.798, c3['values'][0], delta=.0003)
 
-        self.assertEqual('Productivity 2 (%)',
+        self.assertEqual('Productivity 1',
                          c4['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
-                         'productivity_2',
+                         'productivity_1_n',
                          c4['id'])
-        self.assertAlmostEqual(13.873, c4['values'][0], delta=.0003)
+        self.assertEqual(901, c4['values'][0])
+
+        self.assertEqual('(%)',
+                         c5['header'])
+        self.assertEqual('loading_xml_report.loading_xml_table.'
+                         'productivity_1_pct',
+                         c5['id'])
+        self.assertAlmostEqual(31.328, c5['values'][0], delta=.0003)
+
+        self.assertEqual('Productivity 2',
+                         c6['header'])
+        self.assertEqual('loading_xml_report.loading_xml_table.'
+                         'productivity_2_n',
+                         c6['id'])
+        self.assertEqual(399, c6['values'][0])
+
+        self.assertEqual('(%)',
+                         c7['header'])
+        self.assertEqual('loading_xml_report.loading_xml_table.'
+                         'productivity_2_pct',
+                         c7['id'])
+        self.assertAlmostEqual(13.873, c7['values'][0], delta=.0003)
 
     def test_make_loading_report_with_dataset(self):
         """
@@ -258,6 +282,9 @@ class TestLoadingRpt(XMLStatsRptsBase):
         c2 = t['columns'][2]
         c3 = t['columns'][3]
         c4 = t['columns'][4]
+        c5 = t['columns'][5]
+        c6 = t['columns'][6]
+        c7 = t['columns'][7]
 
         self.assertEqual('Collection Context', c0['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
@@ -276,32 +303,59 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertEqual(2876, c1['values'][1])
         self.assertEqual(150292, c1['values'][2])
 
-        self.assertEqual('Productivity 0 (%)',
+        self.assertEqual('Productivity 0',
                          c2['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
-                         'productivity_0',
+                         'productivity_0_n',
                          c2['id'])
-        self.assertAlmostEqual(78.985, c2['values'][0], delta=.0003)
-        self.assertAlmostEqual(54.798, c2['values'][1], delta=.0003)
-        self.assertAlmostEqual(79.447, c2['values'][2], delta=.0003)
+        self.assertEqual(120979, c2['values'][0])
+        self.assertEqual(1576, c2['values'][1])
+        self.assertEqual(119403, c2['values'][2])
 
-        self.assertEqual('Productivity 1 (%)',
+        self.assertEqual('(%)',
                          c3['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
-                         'productivity_1',
+                         'productivity_0_pct',
                          c3['id'])
-        self.assertAlmostEqual(16.402, c3['values'][0], delta=.0003)
-        self.assertAlmostEqual(31.328, c3['values'][1], delta=.0003)
-        self.assertAlmostEqual(16.117, c3['values'][2], delta=.0003)
+        self.assertAlmostEqual(78.985, c3['values'][0], delta=.0003)
+        self.assertAlmostEqual(54.798, c3['values'][1], delta=.0003)
+        self.assertAlmostEqual(79.447, c3['values'][2], delta=.0003)
 
-        self.assertEqual('Productivity 2 (%)',
+        self.assertEqual('Productivity 1',
                          c4['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
-                         'productivity_2',
+                         'productivity_1_n',
                          c4['id'])
-        self.assertAlmostEqual(4.613, c4['values'][0], delta=.0003)
-        self.assertAlmostEqual(13.873, c4['values'][1], delta=.0003)
-        self.assertAlmostEqual(4.436, c4['values'][2], delta=.0003)
+        self.assertEqual(25123, c4['values'][0])
+        self.assertEqual(901, c4['values'][1])
+        self.assertEqual(24222, c4['values'][2])
+
+        self.assertEqual('(%)',
+                         c5['header'])
+        self.assertEqual('loading_xml_report.loading_xml_table.'
+                         'productivity_1_pct',
+                         c5['id'])
+        self.assertAlmostEqual(16.402, c5['values'][0], delta=.0003)
+        self.assertAlmostEqual(31.328, c5['values'][1], delta=.0003)
+        self.assertAlmostEqual(16.117, c5['values'][2], delta=.0003)
+
+        self.assertEqual('Productivity 2',
+                         c6['header'])
+        self.assertEqual('loading_xml_report.loading_xml_table.'
+                         'productivity_2_n',
+                         c6['id'])
+        self.assertEqual(7066, c6['values'][0])
+        self.assertEqual(399, c6['values'][1])
+        self.assertEqual(6667, c6['values'][2])
+
+        self.assertEqual('(%)',
+                         c7['header'])
+        self.assertEqual('loading_xml_report.loading_xml_table.'
+                         'productivity_2_pct',
+                         c7['id'])
+        self.assertAlmostEqual(4.613, c7['values'][0], delta=.0003)
+        self.assertAlmostEqual(13.873, c7['values'][1], delta=.0003)
+        self.assertAlmostEqual(4.436, c7['values'][2], delta=.0003)
         validate_report_complete(self, rpt)
 
 

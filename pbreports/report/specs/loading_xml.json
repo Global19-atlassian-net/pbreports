@@ -24,25 +24,46 @@
                     "description": "Number of productive ZMWs"
                 },
                 {
-                    "header": "Productivity 0 (%)",
-                    "type": "float",
-                    "format": "{:.2f} %",
-                    "id": "productivity_0",
-                    "description": "Productivity classification index ‘0’, corresponding to the classifier outcome ‘Empty’, otherwise known as no loading."
+                    "header": "Productivity 0",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "productivity_0_n",
+                    "description": "Number of ZMWs in productivity classification index ‘0’, corresponding to the classifier outcome ‘Empty’, otherwise known as no loading."
                 },
                 {
-                    "header": "Productivity 1 (%)",
+                    "header": "(%)",
                     "type": "float",
                     "format": "{:.2f} %",
-                    "id": "productivity_1",
-                    "description": "Productivity classification index ‘1’, corresponding to the classifier outcome ‘Productive’. Any hole that contains a HQ region and passes minimal filtering requirements is classified as ‘Productive’, even if it was multiply loaded."
+                    "id": "productivity_0_pct",
+                    "description": "Percentage of ZMWs in productivity classification index ‘0’, corresponding to the classifier outcome ‘Empty’, otherwise known as no loading."
                 },
                 {
-                    "header": "Productivity 2 (%)",
+                    "header": "Productivity 1",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "productivity_1_n",
+                    "description": "Number of ZMWs in productivity classification index ‘1’, corresponding to the classifier outcome ‘Productive’. Any hole that contains a HQ region and passes minimal filtering requirements is classified as ‘Productive’, even if it was multiply loaded."
+                },
+                {
+                    "header": "(%)",
                     "type": "float",
                     "format": "{:.2f} %",
-                    "id": "productivity_2",
-                    "description": "Productivity classification index ‘2’, corresponding to the Productivity classifier outcome ‘Other’."
+                    "id": "productivity_1_pct",
+                    "description": "Percentage of ZMWs in productivity classification index ‘1’, corresponding to the classifier outcome ‘Productive’. Any hole that contains a HQ region and passes minimal filtering requirements is classified as ‘Productive’, even if it was multiply loaded."
+                },
+                {
+                    "header": "Productivity 2",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "productivity_2_n",
+                    "description": "Number of ZMWs in productivity classification index ‘2’, corresponding to the Productivity classifier outcome ‘Other’."
+                },
+                {
+                    "header": "(%)",
+                    "type": "float",
+                    "format": "{:.2f} %",
+                    "id": "productivity_2_pct",
+                    "description": "Percentage of ZMWs in productivity classification index ‘2’, corresponding to the Productivity classifier outcome ‘Other’."
                 }
             ],
             "description": null
