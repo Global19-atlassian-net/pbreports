@@ -30,9 +30,12 @@ class Constants(object):
     T_LOADING = "loading_xml_table"
     C_CONTEXT = "collection_context"
     C_ZMWS = "productive_zmws"
-    C_PROD_0 = "productivity_0"
-    C_PROD_1 = "productivity_1"
-    C_PROD_2 = "productivity_2"
+    C_PROD_0_N = "productivity_0_n"
+    C_PROD_0_PCT = "productivity_0_pct"
+    C_PROD_1_N = "productivity_1_n"
+    C_PROD_1_PCT = "productivity_1_pct"
+    C_PROD_2_N = "productivity_2_n"
+    C_PROD_2_PCT = "productivity_2_pct"
     DECIMALS = 3
 
 log = logging.getLogger(__name__)
@@ -63,10 +66,14 @@ def to_report(stats_xml):
 
     col_ids = [Constants.C_CONTEXT,
                Constants.C_ZMWS,
-               Constants.C_PROD_0,
-               Constants.C_PROD_1,
-               Constants.C_PROD_2]
-    col_values = [[], [], [], [], []]
+               Constants.C_PROD_0_N,
+               Constants.C_PROD_0_PCT,
+               Constants.C_PROD_1_N,
+               Constants.C_PROD_1_PCT,
+               Constants.C_PROD_2_N,
+               Constants.C_PROD_2_PCT]
+
+    col_values = [[], [], [], [], [], [], [], []]
     for dset in dsets:
         if len(dsets) > 1 and len(col_values[0]) == 0:
             movie_name = "Combined"
@@ -86,7 +93,7 @@ def to_report(stats_xml):
                          decimals=Constants.DECIMALS)
         prod2 = np.round(100.0 * other / float(productive_zmws),
                          decimals=Constants.DECIMALS)
-        this_row = [movie_name, productive_zmws, prod0, prod1, prod2]
+        this_row = [movie_name, productive_zmws, empty, prod0, productive, prod1, other, prod2]
         map(lambda (x, y): x.append(y), zip(col_values, this_row))
     columns = [Column(cid, values=vals)
                for cid, vals in zip(col_ids, col_values)]
