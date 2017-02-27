@@ -12,10 +12,10 @@ dependencies:
     - git clone https://github.com/PacificBiosciences/PacBioTestData.git
     - (cd PacBioTestData && make python)
     - (cd .circleci && bash installHDF5.sh)
-    - HDF5_DIR=$PWD/.circleci/prefix pip install -r PB_REQUIREMENTS.txt
+    - HDF5_DIR=$PWD/.circleci/prefix pip install -r REQUIREMENTS_CI.txt
     - HDF5_DIR=$PWD/.circleci/prefix pip install -r REQUIREMENTS.txt
     - HDF5_DIR=$PWD/.circleci/prefix pip install -r REQUIREMENTS_DEV.txt
     
 test:
   override:
-    - make test # Run doctests in addition to the usual unit tests
+    - MPLBACKEND=Agg make test # Run doctests in addition to the usual unit tests
