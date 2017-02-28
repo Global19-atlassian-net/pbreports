@@ -186,8 +186,9 @@ def to_report(stats_xml, output_dir):
 def args_runner(args):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
+    output_dir = os.path.dirname(args.report)
     try:
-        report = to_report(args.subread_set)
+        report = to_report(args.subread_set, output_dir)
         report.write_json(args.report)
         return 0
     except InvalidStatsError as e:
