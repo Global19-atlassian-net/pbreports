@@ -174,6 +174,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
 
     def test_loading_exit_code_0(self):
         tmpdir = tempfile.mkdtemp()
+        cwd = os.getcwd()
         sts_xml = pbtestdata.get_file("subreads-sequel")
         cmd = 'loading_xml {c} {r}'.format(
             r='foo.json',
