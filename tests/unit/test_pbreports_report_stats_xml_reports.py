@@ -174,7 +174,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
 
     def test_loading_exit_code_0(self):
         tmpdir = tempfile.mkdtemp()
-        sts_xml = pbtestdata.get_file("stats-xml")
+        sts_xml = pbtestdata.get_file("subreads-sequel")
         cmd = 'loading_xml {c} {r}'.format(
             r='foo.json',
             c=sts_xml)
@@ -219,7 +219,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertEqual('Collection Context', c0['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'collection_context', c0['id'])
-        self.assertEqual('NA', c0['values'][0])
+        self.assertEqual('m54006_160504_020705', c0['values'][0])
 
         self.assertEqual('Productive ZMWs', c1['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
