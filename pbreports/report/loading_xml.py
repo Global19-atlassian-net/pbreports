@@ -125,9 +125,9 @@ def to_report(stats_xml, output_dir):
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
                                 "or missing key distributions")
 
-    readlen_dist = dset.metadata.summaryStats.getDist('readlen_dist')
-    numunfilteredbasecalls_dist = dset.metadata.summaryStats.getDist('numunfilteredbasecalls_dist')
-    hqbasefraction_dist = dset.metadata.summaryStats.getDist('hqbasefraction_dist')
+    readlen_dist = dset.metadata.summaryStats.getDist('ReadLenDist')
+    numunfilteredbasecalls_dist = dset.metadata.summaryStats.getDist('NumUnfilteredBasecallsDist')
+    hqbasefraction_dist = dset.metadata.summaryStats.getDist('HqBaseFractionDist')
 
     dsets = [dset]
     for subdset in dset.subdatasets:
