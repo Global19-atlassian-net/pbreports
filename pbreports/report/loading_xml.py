@@ -53,15 +53,15 @@ log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
-def to_hq_hist_plot(HqBaseFractionDist, output_dir):
+def to_hq_hist_plot(hqbasefraction_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_HQ, Constants.P_HQ)
     x_label = get_plot_xlabel(spec, Constants.PG_HQ, Constants.P_HQ)
     y_label = get_plot_ylabel(spec, Constants.PG_HQ, Constants.P_HQ)
-    nbins = int(HqBaseFractionDist['NumBins'].metavalue)
-    bin_counts = HqBaseFractionDist['BinCounts']
+    nbins = int(hqbasefraction_dist['NumBins'].metavalue)
+    bin_counts = hqbasefraction_dist['BinCounts']
     heights = [int(bc.metavalue) for bc in bin_counts]
-    edges = [float(bn)/float(nbins) for bn in range(0,nbins)]
-    bin_width = float(HqBaseFractionDist['BinWidth'].metavalue)
+    edges = [float(bn)/float(nbins) for bn in list(xrange(nbins))]
+    bin_width = float(hqbasefraction_dist['BinWidth'].metavalue)
     fig, ax = get_fig_axes_lpr()
     ax.bar(edges, heights, color=get_green(0), edgecolor=get_green(0), width=(bin_width * 0.75))
     ax.set_xlabel(x_label)
@@ -77,20 +77,20 @@ def to_hq_hist_plot(HqBaseFractionDist, output_dir):
 
 def expand_data(bin_counts, max_val):
     nbins = len(bin_counts)
-    midpoints = [max_val*(float(bn+0.5)/float(nbins)) for bn in range(0,nbins)]
+    midpoints = [max_val*(float(bn+0.5)/float(nbins)) for bn in list(xrange(nbins))]
     data = []
-    for i in range(0, nbins):
+    for i in list(xrange(nbins)):
         data.extend([midpoints[i]]*bin_counts[i])
     return data
 
-def to_rl_overlay_plot(NumUnfilteredBasecallsDist, ReadLenDist, output_dir):
+def to_rl_overlay_plot(numunfilteredbasecalls_dist, readlen_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_RRL, Constants.P_RRL)
     x_label = get_plot_xlabel(spec, Constants.PG_RRL, Constants.P_RRL)
     y_label = get_plot_ylabel(spec, Constants.PG_RRL, Constants.P_RRL)
-    unfiltered_bins = [int(bc.metavalue) for bc in NumUnfilteredBasecallsDist['BinCounts']]
-    poly_bins = [int(bc.metavalue) for bc in ReadLenDist['BinCounts']]
-    max_unfiltered = len(unfiltered_bins)*int(NumUnfilteredBasecallsDist['BinWidth'].metavalue)
-    max_poly = len(poly_bins)*int(ReadLenDist['BinWidth'].metavalue)
+    unfiltered_bins = [int(bc.metavalue) for bc in numunfilteredbasecalls_dist['BinCounts']]
+    poly_bins = [int(bc.metavalue) for bc in readlen_dist['BinCounts']]
+    max_unfiltered = len(unfiltered_bins)*int(numunfilteredbasecalls_dist['BinWidth'].metavalue)
+    max_poly = len(poly_bins)*int(readlen_dist['BinWidth'].metavalue)
     unfiltered_data = expand_data(unfiltered_bins, max_unfiltered)
     poly_data = expand_data(poly_bins, max_poly)
     fig, ax = get_fig_axes_lpr()
@@ -125,9 +125,9 @@ def to_report(stats_xml, output_dir):
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
                                 "or missing key distributions")
 
-    ReadLenDist = dset.metadata.summaryStats.getDist('ReadLenDist')
-    NumUnfilteredBasecallsDist = dset.metadata.summaryStats.getDist('NumUnfilteredBasecallsDist')
-    HqBaseFractionDist = dset.metadata.summaryStats.getDist('HqBaseFractionDist')
+    readlen_dist = dset.metadata.summaryStats.getDist('readlen_dist')
+    numunfilteredbasecalls_dist = dset.metadata.summaryStats.getDist('numunfilteredbasecalls_dist')
+    hqbasefraction_dist = dset.metadata.summaryStats.getDist('hqbasefraction_dist')
 
     dsets = [dset]
     for subdset in dset.subdatasets:
@@ -171,11 +171,11 @@ def to_report(stats_xml, output_dir):
     
     plot_groups = []
     plot_groups.extend(to_hq_hist_plot(
-        HqBaseFractionDist=HqBaseFractionDist,
+        hqbasefraction_dist=hqbasefraction_dist,
         output_dir=output_dir))
     plot_groups.extend(to_rl_overlay_plot(
-        NumUnfilteredBasecallsDist=NumUnfilteredBasecallsDist,
-        ReadLenDist=ReadLenDist,
+        numunfilteredbasecalls_dist=numunfilteredbasecalls_dist,
+        readlen_dist=readlen_dist,
         output_dir=output_dir))
 
     report = Report(Constants.R_ID,
