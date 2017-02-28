@@ -173,6 +173,7 @@ class TestRawDataRpt(XMLStatsRptsBase):
 class TestLoadingRpt(XMLStatsRptsBase):
 
     def test_loading_exit_code_0(self):
+        tmpdir = tempfile.mkdtemp()
         sts_xml = pbtestdata.get_file("stats-xml")
         cmd = 'loading_xml {c} {r}'.format(
             r='foo.json',
@@ -193,7 +194,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         Test that an IOError is thrown if the specified path does not exist
         """
         def _test_ioerror():
-            make_loading_report('foo')
+            make_loading_report('foo', self.get_output_dir())
         self.assertRaises((InvalidDataSetIOError, IOError), _test_ioerror)
 
     def test_make_loading_report_with_sts_xml(self):
@@ -202,7 +203,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         """
         sts_xml = data.getStats(0)
 
-        rpt = make_loading_report(sts_xml)
+        rpt = make_loading_report(sts_xml, self.get_output_dir())
         d = json.loads(rpt.to_json())
 
         t = d['tables'][0]
@@ -273,7 +274,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         """
         sts_xml = data.getXmlWithStats()
 
-        rpt = make_loading_report(sts_xml)
+        rpt = make_loading_report(sts_xml, self.get_output_dir())
         d = json.loads(rpt.to_json())
 
         t = d['tables'][0]
