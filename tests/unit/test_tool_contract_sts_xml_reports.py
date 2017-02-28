@@ -10,7 +10,7 @@ import os.path
 import pbcommand.testkit
 
 from pbcore.data import datasets as data
-
+import pbtestdata
 
 class TestLoadingReport(pbcommand.testkit.PbTestApp):
     MAX_NPROC = 12
