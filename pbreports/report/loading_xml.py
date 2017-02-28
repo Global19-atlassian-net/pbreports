@@ -60,7 +60,7 @@ def to_hq_hist_plot(hqbasefraction_dist, output_dir):
     nbins = int(hqbasefraction_dist['NumBins'].metavalue)
     bin_counts = hqbasefraction_dist['BinCounts']
     heights = [int(bc.metavalue) for bc in bin_counts]
-    edges = [float(bn)/float(nbins) for bn in list(xrange(nbins))]
+    edges = [float(bn)/float(nbins) for bn in xrange(nbins)]
     bin_width = float(hqbasefraction_dist['BinWidth'].metavalue)
     fig, ax = get_fig_axes_lpr()
     ax.bar(edges, heights, color=get_green(0), edgecolor=get_green(0), width=(bin_width * 0.75))
@@ -77,9 +77,9 @@ def to_hq_hist_plot(hqbasefraction_dist, output_dir):
 
 def expand_data(bin_counts, max_val):
     nbins = len(bin_counts)
-    midpoints = [max_val*(float(bn+0.5)/float(nbins)) for bn in list(xrange(nbins))]
+    midpoints = [max_val*(float(bn+0.5)/float(nbins)) for bn in xrange(nbins)]
     data = []
-    for i in list(xrange(nbins)):
+    for i in xrange(nbins):
         data.extend([midpoints[i]]*bin_counts[i])
     return data
 
