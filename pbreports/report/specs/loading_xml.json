@@ -33,7 +33,7 @@
                 {
                     "header": "(%)",
                     "type": "float",
-                    "format": "{:.2f} %",
+                    "format": "{:.2f}",
                     "id": "productivity_0_pct",
                     "description": "Percentage of ZMWs in productivity classification index ‘0’, corresponding to the classifier outcome ‘Empty’, otherwise known as no loading."
                 },
@@ -47,7 +47,7 @@
                 {
                     "header": "(%)",
                     "type": "float",
-                    "format": "{:.2f} %",
+                    "format": "{:.2f}",
                     "id": "productivity_1_pct",
                     "description": "Percentage of ZMWs in productivity classification index ‘1’, corresponding to the classifier outcome ‘Productive’. Any hole that contains a HQ region and passes minimal filtering requirements is classified as ‘Productive’, even if it was multiply loaded."
                 },
@@ -61,7 +61,7 @@
                 {
                     "header": "(%)",
                     "type": "float",
-                    "format": "{:.2f} %",
+                    "format": "{:.2f}",
                     "id": "productivity_2_pct",
                     "description": "Percentage of ZMWs in productivity classification index ‘2’, corresponding to the Productivity classifier outcome ‘Other’."
                 }
@@ -69,5 +69,38 @@
             "description": null
         }
     ],
-    "plotGroups": []
+    "plotGroups": [
+        {
+            "plots": [
+                {
+                    "xlabel": "Kilobases",
+                    "description": null,
+                    "caption": "Loading Evaluation",
+                    "ylabel": "Reads",
+                    "title": "Loading Evaluation",
+                    "id": "raw_read_length_plot"
+                }
+            ],
+            "description": null,
+            "legend": null,
+            "id": "raw_read_length_plot_group",
+            "title": "Loading Evaluation"
+        },
+        {
+            "plots": [
+                {
+                    "xlabel": "Fraction Bases in HQ Region",
+                    "description": null,
+                    "caption": "Loading Evaluation",
+                    "ylabel": "Reads",
+                    "title": "Loading Evaluation",
+                    "id": "hq_hist_plot"
+                }
+            ],
+            "description": null,
+            "legend": null,
+            "id": "hq_hist_plot_group",
+            "title": "Loading Evaluation"
+        }
+    ]
 }

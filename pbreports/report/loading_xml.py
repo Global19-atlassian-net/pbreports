@@ -9,12 +9,17 @@ import logging
 import sys
 import numpy as np
 
-from pbcommand.models.report import Report, Table, Column
+from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-from pbcore.io import DataSet
+from pbcore.io import DataSet, SubreadSet
+from pbcore.io.dataset.DataSetReader import parseStats
+from pbreports.plot.helper import (get_fig_axes_lpr,
+                                   save_figure_with_thumbnail,
+                                   get_green, apply_histogram_data)
+from pbreports.report.isoseq_cluster import __create_plot, _make_histogram
 
 from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
@@ -38,11 +43,72 @@ class Constants(object):
     C_PROD_2_PCT = "productivity_2_pct"
     DECIMALS = 3
 
+    P_RRL = "raw_read_length_plot"
+    PG_RRL = "raw_read_length_plot_group"
+    P_HQ = "hq_hist_plot"
+    PG_HQ = "hq_hist_plot_group"
+
+
 log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
-def to_report(stats_xml):
+def to_hq_hist_plot(HqBaseFractionDist, output_dir):
+    plot_name = get_plot_title(spec, Constants.PG_HQ, Constants.P_HQ)
+    x_label = get_plot_xlabel(spec, Constants.PG_HQ, Constants.P_HQ)
+    y_label = get_plot_ylabel(spec, Constants.PG_HQ, Constants.P_HQ)
+    nbins = int(HqBaseFractionDist['NumBins'].metavalue)
+    bin_counts = HqBaseFractionDist['BinCounts']
+    heights = [int(bc.metavalue) for bc in bin_counts]
+    edges = [float(bn)/float(nbins) for bn in range(0,nbins)]
+    bin_width = float(HqBaseFractionDist['BinWidth'].metavalue)
+    fig, ax = get_fig_axes_lpr()
+    ax.bar(edges, heights, color=get_green(0), edgecolor=get_green(0), width=(bin_width * 0.75))
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_HQ))
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi = 72)
+    hq_plot = Plot(Constants.P_HQ,
+                   os.path.relpath(png_base, output_dir),
+                   title=plot_name, caption=plot_name,
+                   thumbnail=os.path.relpath(thumbnail_base, output_dir))
+    plot_groups = [PlotGroup(Constants.PG_HQ, plots=[hq_plot])]
+    return plot_groups
+
+def expand_data(bin_counts, max_val):
+    nbins = len(bin_counts)
+    midpoints = [max_val*(float(bn+0.5)/float(nbins)) for bn in range(0,nbins)]
+    data = []
+    for i in range(0, nbins):
+        data.extend([midpoints[i]]*bin_counts[i])
+    return data
+
+def to_rl_overlay_plot(NumUnfilteredBasecallsDist, ReadLenDist, output_dir):
+    plot_name = get_plot_title(spec, Constants.PG_RRL, Constants.P_RRL)
+    x_label = get_plot_xlabel(spec, Constants.PG_RRL, Constants.P_RRL)
+    y_label = get_plot_ylabel(spec, Constants.PG_RRL, Constants.P_RRL)
+    unfiltered_bins = [int(bc.metavalue) for bc in NumUnfilteredBasecallsDist['BinCounts']]
+    poly_bins = [int(bc.metavalue) for bc in ReadLenDist['BinCounts']]
+    max_unfiltered = len(unfiltered_bins)*int(NumUnfilteredBasecallsDist['BinWidth'].metavalue)
+    max_poly = len(poly_bins)*int(ReadLenDist['BinWidth'].metavalue)
+    unfiltered_data = expand_data(unfiltered_bins, max_unfiltered)
+    poly_data = expand_data(poly_bins, max_poly)
+    fig, ax = get_fig_axes_lpr()
+    ax.hist(unfiltered_data, label="Unfiltered", histtype='stepfilled', alpha=0.3, bins=len(unfiltered_bins), range=[0,max_unfiltered])
+    ax.hist(poly_data, label="Polymerase", histtype='stepfilled', alpha=0.3, bins=len(poly_bins), range=[0,max_poly])
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.legend()
+    png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_RRL))
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi = 72)
+    rrl_plot = Plot(Constants.P_RRL,
+                   os.path.relpath(png_base, output_dir),
+                   title=plot_name, caption=plot_name,
+                   thumbnail=os.path.relpath(thumbnail_base, output_dir))
+    plot_groups = [PlotGroup(Constants.PG_RRL, plots=[rrl_plot])]
+    return plot_groups
+
+def to_report(stats_xml, output_dir):
     """Main point of entry
 
     :type stats_xml: str
@@ -58,6 +124,10 @@ def to_report(stats_xml):
     if not dset.metadata.summaryStats.prodDist:
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
                                 "or missing key distributions")
+
+    ReadLenDist = dset.metadata.summaryStats.getDist('ReadLenDist')
+    NumUnfilteredBasecallsDist = dset.metadata.summaryStats.getDist('NumUnfilteredBasecallsDist')
+    HqBaseFractionDist = dset.metadata.summaryStats.getDist('HqBaseFractionDist')
 
     dsets = [dset]
     for subdset in dset.subdatasets:
@@ -98,6 +168,16 @@ def to_report(stats_xml):
     columns = [Column(cid, values=vals)
                for cid, vals in zip(col_ids, col_values)]
     tables = [Table(Constants.T_LOADING, columns=columns)]
+    
+    plot_groups = []
+    plot_groups.extend(to_hq_hist_plot(
+        HqBaseFractionDist=HqBaseFractionDist,
+        output_dir=output_dir))
+    plot_groups.extend(to_rl_overlay_plot(
+        NumUnfilteredBasecallsDist=NumUnfilteredBasecallsDist,
+        ReadLenDist=ReadLenDist,
+        output_dir=output_dir))
+
     report = Report(Constants.R_ID,
                     tables=tables, attributes=None, plotgroups=None)
     return spec.apply_view(report)
@@ -118,8 +198,9 @@ def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
+    output_dir = os.path.dirname(rtc.task.output_files[0])
     try:
-        report = to_report(rtc.task.input_files[0])
+        report = to_report(rtc.task.input_files[0], output_dir)
         report.write_json(rtc.task.output_files[0])
         return 0
     except InvalidStatsError as e:
