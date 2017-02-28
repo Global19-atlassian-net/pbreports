@@ -10,12 +10,12 @@ import os.path
 import pbcommand.testkit
 
 from pbcore.data import datasets as data
-
+import pbtestdata
 
 class TestLoadingReport(pbcommand.testkit.PbTestApp):
     MAX_NPROC = 12
     RESOLVED_NPROC = 1
-    DATA = data.getXmlWithStats()
+    DATA = pbtestdata.get_file("subreads-sequel")
     DRIVER_BASE = "python -m pbreports.report.loading_xml "
     DRIVER_EMIT = DRIVER_BASE + " --emit-tool-contract "
     DRIVER_RESOLVE = DRIVER_BASE + " --resolved-tool-contract "

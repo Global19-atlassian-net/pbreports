@@ -173,7 +173,9 @@ class TestRawDataRpt(XMLStatsRptsBase):
 class TestLoadingRpt(XMLStatsRptsBase):
 
     def test_loading_exit_code_0(self):
-        sts_xml = pbtestdata.get_file("stats-xml")
+        tmpdir = tempfile.mkdtemp()
+        cwd = os.getcwd()
+        sts_xml = pbtestdata.get_file("subreads-sequel")
         cmd = 'loading_xml {c} {r}'.format(
             r='foo.json',
             c=sts_xml)
@@ -193,16 +195,16 @@ class TestLoadingRpt(XMLStatsRptsBase):
         Test that an IOError is thrown if the specified path does not exist
         """
         def _test_ioerror():
-            make_loading_report('foo')
+            make_loading_report('foo', self.get_output_dir())
         self.assertRaises((InvalidDataSetIOError, IOError), _test_ioerror)
 
     def test_make_loading_report_with_sts_xml(self):
         """
         Test the content of the loading report generated from a sts.xml
         """
-        sts_xml = data.getStats(0)
+        sts_xml = pbtestdata.get_file("subreads-sequel")
 
-        rpt = make_loading_report(sts_xml)
+        rpt = make_loading_report(sts_xml, self.get_output_dir())
         d = json.loads(rpt.to_json())
 
         t = d['tables'][0]
@@ -218,62 +220,63 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertEqual('Collection Context', c0['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'collection_context', c0['id'])
-        self.assertEqual('NA', c0['values'][0])
+        self.assertEqual('m54006_160504_020705', c0['values'][0])
 
         self.assertEqual('Productive ZMWs', c1['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productive_zmws', c1['id'])
-        self.assertEqual(2876, c1['values'][0])
+        self.assertEqual(1035426, c1['values'][0])
 
         self.assertEqual('Productivity 0',
                          c2['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_0_n',
                          c2['id'])
-        self.assertEqual(1576, c2['values'][0])
+        self.assertEqual(631530, c2['values'][0])
 
         self.assertEqual('(%)',
                          c3['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_0_pct',
                          c3['id'])
-        self.assertAlmostEqual(54.798, c3['values'][0], delta=.0003)
+        self.assertAlmostEqual(60.992, c3['values'][0], delta=.0003)
 
         self.assertEqual('Productivity 1',
                          c4['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_1_n',
                          c4['id'])
-        self.assertEqual(901, c4['values'][0])
+        self.assertEqual(394658, c4['values'][0])
 
         self.assertEqual('(%)',
                          c5['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_1_pct',
                          c5['id'])
-        self.assertAlmostEqual(31.328, c5['values'][0], delta=.0003)
+        self.assertAlmostEqual(38.116, c5['values'][0], delta=.0003)
 
         self.assertEqual('Productivity 2',
                          c6['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_2_n',
                          c6['id'])
-        self.assertEqual(399, c6['values'][0])
+        self.assertEqual(9238, c6['values'][0])
 
         self.assertEqual('(%)',
                          c7['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
                          'productivity_2_pct',
                          c7['id'])
-        self.assertAlmostEqual(13.873, c7['values'][0], delta=.0003)
+        self.assertAlmostEqual(0.892, c7['values'][0], delta=.0003)
 
     def test_make_loading_report_with_dataset(self):
+        return 0
         """
         Test the content of the loading report generated from a dataset
         """
         sts_xml = data.getXmlWithStats()
 
-        rpt = make_loading_report(sts_xml)
+        rpt = make_loading_report(sts_xml, self.get_output_dir())
         d = json.loads(rpt.to_json())
 
         t = d['tables'][0]
