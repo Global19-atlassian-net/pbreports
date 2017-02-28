@@ -118,8 +118,8 @@ def to_report(stats_xml, output_dir):
     :rtype: Report
     """
     log.info("Analyzing XML {f}".format(f=stats_xml))
-    dset = DataSet(stats_xml)
-    if not dset.metadata.summaryStats:
+    dset = SubreadSet(stats_xml)
+    if stats_xml.endswith(".sts.xml"):
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.prodDist:
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
