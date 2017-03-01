@@ -179,7 +179,7 @@ def to_report(stats_xml, output_dir):
         output_dir=output_dir))
 
     report = Report(Constants.R_ID,
-                    tables=tables, attributes=None, plotgroups=None)
+                    tables=tables, attributes=None, plotgroups=plot_groups)
     return spec.apply_view(report)
 
 
