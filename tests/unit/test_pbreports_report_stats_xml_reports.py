@@ -275,7 +275,6 @@ class TestLoadingRpt(XMLStatsRptsBase):
     @unittest.skipIf(not _internal_data(),
                      "Internal data not available")
     def test_make_loading_report_with_dataset(self):
-        return 0
         """
         Test the content of the loading report generated from a dataset
         """
