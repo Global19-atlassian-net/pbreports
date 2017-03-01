@@ -119,6 +119,7 @@ def to_report(stats_xml, output_dir):
     """
     log.info("Analyzing XML {f}".format(f=stats_xml))
     dset = SubreadSet(stats_xml)
+    dset.loadStats()
     if stats_xml.endswith(".sts.xml"):
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.prodDist:
@@ -149,8 +150,9 @@ def to_report(stats_xml, output_dir):
             movie_name = "Combined"
         else:
             try:
-                collection = list(dset.metadata.collections)[0]
-                movie_name = collection.context
+#                collection = list(dset.metadata.collections)[0]
+#                movie_name = collection.context
+                movie_name = dset.metadata['Collections']['CollectionMetadata'].attrib['Context']
             except AttributeError:
                 movie_name = "NA"
 
