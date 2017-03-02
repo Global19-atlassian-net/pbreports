@@ -151,7 +151,7 @@ def to_read_stats_attributes(readLenDists, readQualDists):
         attr_values=_to_read_stats_attributes(readLenDists, readQualDists))
 
 
-# XXX just Insert Length!
+# just Insert Length and N50
 def to_insert_stats_attributes(readLenDists, readQualDists):
     values = _to_read_stats_attributes(readLenDists, readQualDists)
     readlen = values[2]
