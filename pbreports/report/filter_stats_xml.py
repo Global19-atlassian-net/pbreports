@@ -47,10 +47,11 @@ class Constants(object):
     A_READ_LENGTH = "read_length"
 #    A_READ_QUALITY = "read_quality"
     A_INSERT_LENGTH = "insert_length"
+    A_INSERT_N50 = "insert_n50"
 #    A_INSERT_QUALITY = "insert_quality"
 
     READ_ATTR = [A_NBASES, A_NREADS, A_READ_LENGTH, A_READ_N50]
-    INSERT_ATTR = [A_INSERT_LENGTH]
+    INSERT_ATTR = [A_INSERT_LENGTH, A_INSERT_N50]
     PG_RL = "read_length_plot_group"
     P_RL = "read_length_plot"
     PG_IL = "insert_length_plot_group"
@@ -150,11 +151,14 @@ def to_read_stats_attributes(readLenDists, readQualDists):
         attr_values=_to_read_stats_attributes(readLenDists, readQualDists))
 
 
-# XXX just Insert Length!
+# just Insert Length and N50
 def to_insert_stats_attributes(readLenDists, readQualDists):
+    values = _to_read_stats_attributes(readLenDists, readQualDists)
+    readlen = values[2]
+    n50 = values[3]
     return _make_attributes(
         read_attr=Constants.INSERT_ATTR,
-        attr_values=[_to_read_stats_attributes(readLenDists, readQualDists)[2]])
+        attr_values=[readlen, n50])
 
 
 def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,

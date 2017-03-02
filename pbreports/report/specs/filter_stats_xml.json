@@ -38,6 +38,13 @@
             "id": "insert_length",
             "name": "Insert Length (mean)",
             "description": "The mean insert length"
+        },
+        {
+            "type": "int",
+            "format": "{:,d}",
+            "id": "insert_n50",
+            "name": "Insert N50",
+            "description": "The insert length at which 50% of the insert bases are in inserts longer than, or equal to, this value"
         }
     ],
     "tables": [],
