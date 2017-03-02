@@ -142,7 +142,9 @@ class TestRawDataRpt(XMLStatsRptsBase):
                 Constants.A_NBASES:  1672335649,
                 Constants.A_NREADS: 394658,
                 Constants.A_READ_N50: 7750,
-                Constants.A_READ_LENGTH: 4237
+                Constants.A_READ_LENGTH: 4237,
+                Constants.A_INSERT_LENGTH: 4450,
+                Constants.A_INSERT_N50: 7750
             })
 
         self.assertTrue(os.path.exists(os.path.join(
