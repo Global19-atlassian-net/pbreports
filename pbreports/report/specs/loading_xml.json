@@ -64,6 +64,13 @@
                     "format": "{:.2f}",
                     "id": "productivity_2_pct",
                     "description": "Percentage of ZMWs in productivity classification index ‘2’, corresponding to the Productivity classifier outcome ‘Other’."
+                },
+                {
+                    "header": "Loading type",
+                    "type": "string",
+                    "format": null,
+                    "id": "loading_type",
+                    "description": "Protocol used for sample loading"
                 }
             ],
             "description": null

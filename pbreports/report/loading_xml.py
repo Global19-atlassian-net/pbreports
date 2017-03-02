@@ -41,6 +41,7 @@ class Constants(object):
     C_PROD_1_PCT = "productivity_1_pct"
     C_PROD_2_N = "productivity_2_n"
     C_PROD_2_PCT = "productivity_2_pct"
+    C_LOADING_TYPE = "loading_type"
     DECIMALS = 3
 
     P_RRL = "raw_read_length_plot"
@@ -142,19 +143,21 @@ def to_report(stats_xml, output_dir):
                Constants.C_PROD_1_N,
                Constants.C_PROD_1_PCT,
                Constants.C_PROD_2_N,
-               Constants.C_PROD_2_PCT]
+               Constants.C_PROD_2_PCT,
+               Constants.C_LOADING_TYPE]
 
-    col_values = [[], [], [], [], [], [], [], []]
+    col_values = [[], [], [], [], [], [], [], [], []]
     for dset in dsets:
+        loading_type = movie_name = "NA"
         if len(dsets) > 1 and len(col_values[0]) == 0:
             movie_name = "Combined"
         else:
             try:
-#                collection = list(dset.metadata.collections)[0]
-#                movie_name = collection.context
-                movie_name = dset.metadata['Collections']['CollectionMetadata'].attrib['Context']
-            except AttributeError:
-                movie_name = "NA"
+                collection = list(dset.metadata.collections)[0]
+                movie_name = collection.context
+                loading_type = collection.automation.name
+            except (IndexError, AttributeError) as e:
+                log.warn(e)
 
         productive_zmws = int(dset.metadata.summaryStats.numSequencingZmws)
         empty, productive, other, _ = dset.metadata.summaryStats.prodDist.bins
@@ -165,7 +168,7 @@ def to_report(stats_xml, output_dir):
                          decimals=Constants.DECIMALS)
         prod2 = np.round(100.0 * other / float(productive_zmws),
                          decimals=Constants.DECIMALS)
-        this_row = [movie_name, productive_zmws, empty, prod0, productive, prod1, other, prod2]
+        this_row = [movie_name, productive_zmws, empty, prod0, productive, prod1, other, prod2, loading_type]
         map(lambda (x, y): x.append(y), zip(col_values, this_row))
     columns = [Column(cid, values=vals)
                for cid, vals in zip(col_ids, col_values)]

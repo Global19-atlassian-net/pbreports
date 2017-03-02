@@ -203,9 +203,10 @@ class TestLoadingRpt(XMLStatsRptsBase):
             make_loading_report('foo', self.get_output_dir())
         self.assertRaises((InvalidDataSetIOError, IOError), _test_ioerror)
 
-    def test_make_loading_report_with_sts_xml(self):
+    def test_make_loading_report_with_dataset(self):
         """
-        Test the content of the loading report generated from a sts.xml
+        Test the content of the loading report generated from a simple
+        SubreadSet
         """
         sts_xml = pbtestdata.get_file("subreads-sequel")
 
@@ -221,6 +222,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         c5 = t['columns'][5]
         c6 = t['columns'][6]
         c7 = t['columns'][7]
+        c8 = t['columns'][8]
 
         self.assertEqual('Collection Context', c0['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
@@ -273,12 +275,14 @@ class TestLoadingRpt(XMLStatsRptsBase):
                          'productivity_2_pct',
                          c7['id'])
         self.assertAlmostEqual(0.892, c7['values'][0], delta=.0003)
+        self.assertEqual(c8['values'][0], "Workflow_Magbead.py")
 
     @unittest.skipIf(not _internal_data(),
                      "Internal data not available")
-    def test_make_loading_report_with_dataset(self):
+    def test_make_loading_report_with_merged_dataset(self):
         """
-        Test the content of the loading report generated from a dataset
+        Test the content of the loading report generated from a dataset with
+        multiple sub-datasets
         """
         ss = get_merged_subreadset()
 
