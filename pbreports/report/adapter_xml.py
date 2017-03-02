@@ -35,9 +35,12 @@ class Constants(object):
 
     A_DIMERS = "adapter_dimers"
     A_SHORT_INSERTS = "short_inserts"
+    A_BASE_RATE = "local_base_rate_median"
 
     PG_ADAPTER = "adapter_xml_plot_group"
     P_ADAPTER = "adapter_xml_plot"
+
+    BASE_RATE_DIST = "LocalBaseRateDist"
 
 log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
@@ -68,6 +71,20 @@ def to_report(stats_xml, output_dir, dpi=72):
     short_inserts = np.round(
         100.0 * dset.metadata.summaryStats.shortInsertFraction,
         decimals=2)
+    attributes = [Attribute(i, v) for i, v in
+                  zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
+                      [adapter_dimers, short_inserts])]
+
+    if Constants.BASE_RATE_DIST in dset.metadata.summaryStats.tags:
+        dist = dset.metadata.summaryStats[Constants.BASE_RATE_DIST]
+        try:
+            base_rate = float(dist['SampleMed'].record['text'])
+        except (KeyError, ValueError) as e:
+            log.error(e)
+        else:
+            attributes.append(Attribute(Constants.A_BASE_RATE, base_rate))
+    else:
+        log.warn("No local base rate distribution available")
 
     plots = []
     # Pull some histograms (may have dupes (unmergeable distributions)):
@@ -98,10 +115,6 @@ def to_report(stats_xml, output_dir, dpi=72):
     plot_groups = [PlotGroup(Constants.PG_ADAPTER,
                              plots=plots,
                              thumbnail=os.path.relpath(thumbnail_base, output_dir))]
-    attributes = [Attribute(i, v) for i, v in
-                  zip([Constants.A_DIMERS, Constants.A_SHORT_INSERTS],
-                      [adapter_dimers, short_inserts])]
-
     tables = []
 
     report = Report(Constants.R_ID,

@@ -403,6 +403,25 @@ class TestAdapterReport(XMLStatsRptsBase):
             'interAdapterDist1.png')))
         validate_report_complete(self, rpt)
 
+    def test_make_adapter_report_dataset2(self):
+        """
+        Test make_adapter_report with a more recent dataset
+        """
+        # All of the histogram generation code should be tested in
+        # pbcore.io.dataset, not here. Just test the report.
+        xml = pbtestdata.get_file("subreads-sequel")
+        rpt = make_adapter_report(xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        a = d['attributes']
+        self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp) %')
+        self.assertEqual(a[0]['value'], 0.09)
+        self.assertEqual(a[1]['value'], 0.52)
+        self.assertEqual("{:.2f}".format(a[2]['value']), "0.00")
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'interAdapterDist0.png')))
+        validate_report_complete(self, rpt)
+
 
 class TestBinning(unittest.TestCase):
 
