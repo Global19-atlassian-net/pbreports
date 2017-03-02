@@ -119,15 +119,16 @@ def to_report(stats_xml, output_dir):
     """
     log.info("Analyzing XML {f}".format(f=stats_xml))
     dset = SubreadSet(stats_xml)
+    dset.loadStats()
     if stats_xml.endswith(".sts.xml"):
         dset.loadStats(stats_xml)
     if not dset.metadata.summaryStats.prodDist:
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
                                 "or missing key distributions")
 
-    readlen_dist = dset.metadata.summaryStats.getDist('ReadLenDist')
-    numunfilteredbasecalls_dist = dset.metadata.summaryStats.getDist('NumUnfilteredBasecallsDist')
-    hqbasefraction_dist = dset.metadata.summaryStats.getDist('HqBaseFractionDist')
+    readlen_dist = dset.metadata.summaryStats.getDist('ReadLenDist', unwrap=False)[0]
+    numunfilteredbasecalls_dist = dset.metadata.summaryStats.getDist('NumUnfilteredBasecallsDist', unwrap=False)[0]
+    hqbasefraction_dist = dset.metadata.summaryStats.getDist('HqBaseFractionDist', unwrap=False)[0]
 
     dsets = [dset]
     for subdset in dset.subdatasets:
@@ -149,8 +150,9 @@ def to_report(stats_xml, output_dir):
             movie_name = "Combined"
         else:
             try:
-                collection = list(dset.metadata.collections)[0]
-                movie_name = collection.context
+#                collection = list(dset.metadata.collections)[0]
+#                movie_name = collection.context
+                movie_name = dset.metadata['Collections']['CollectionMetadata'].attrib['Context']
             except AttributeError:
                 movie_name = "NA"
 
@@ -179,7 +181,7 @@ def to_report(stats_xml, output_dir):
         output_dir=output_dir))
 
     report = Report(Constants.R_ID,
-                    tables=tables, attributes=None, plotgroups=None)
+                    tables=tables, attributes=None, plotgroups=plot_groups)
     return spec.apply_view(report)
 
 
