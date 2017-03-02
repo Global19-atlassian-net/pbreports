@@ -17,6 +17,13 @@
             "description": "Percentage of Prod1 ZMWs with short inserts",
             "name": "Short Inserts (11-100bp) %",
             "id": "short_inserts"
+        },
+        {
+            "type": "float",
+            "format": "{:.2f}",
+            "description": "Median Local Base Rate",
+            "name": "Local Base Rate",
+            "id": "local_base_rate_median"
         }
     ],
     "tables": [],
