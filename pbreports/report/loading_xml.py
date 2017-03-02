@@ -148,13 +148,16 @@ def to_report(stats_xml, output_dir):
 
     col_values = [[], [], [], [], [], [], [], [], []]
     for dset in dsets:
+        loading_type = movie_name = "NA"
         if len(dsets) > 1 and len(col_values[0]) == 0:
             movie_name = "Combined"
-            loading_type = "NA"
         else:
-            collection = list(dset.metadata.collections)[0]
-            movie_name = collection.context
-            loading_type = collection.automation.name
+            try:
+                collection = list(dset.metadata.collections)[0]
+                movie_name = collection.context
+                loading_type = collection.automation.name
+            except (IndexError, AttributeError) as e:
+                log.warn(e)
 
         productive_zmws = int(dset.metadata.summaryStats.numSequencingZmws)
         empty, productive, other, _ = dset.metadata.summaryStats.prodDist.bins
