@@ -430,6 +430,8 @@ class TestAdapterReport(XMLStatsRptsBase):
             'interAdapterDist0.png')))
         validate_report_complete(self, rpt)
 
+    @unittest.skipIf(not _internal_data(),
+                     "Internal data not available")
     def test_make_adapter_report_merged_dataset(self):
         xml = get_merged_subreadset()
         rpt = make_adapter_report(xml, self.get_output_dir())
