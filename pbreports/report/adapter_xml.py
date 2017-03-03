@@ -77,12 +77,15 @@ def to_report(stats_xml, output_dir, dpi=72):
 
     if Constants.BASE_RATE_DIST in dset.metadata.summaryStats.tags:
         dist = dset.metadata.summaryStats[Constants.BASE_RATE_DIST]
-        try:
-            base_rate = float(dist['SampleMed'].record['text'])
-        except (KeyError, ValueError) as e:
-            log.error(e)
+        if isinstance(dist, list):
+            log.warn("Dataset was merged, local base rate not applicable")
         else:
-            attributes.append(Attribute(Constants.A_BASE_RATE, base_rate))
+            try:
+                base_rate = float(dist['SampleMed'].record['text'])
+            except (KeyError, ValueError) as e:
+                log.error(e)
+            else:
+                attributes.append(Attribute(Constants.A_BASE_RATE, base_rate))
     else:
         log.warn("No local base rate distribution available")
 

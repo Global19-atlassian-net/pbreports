@@ -430,6 +430,21 @@ class TestAdapterReport(XMLStatsRptsBase):
             'interAdapterDist0.png')))
         validate_report_complete(self, rpt)
 
+    @unittest.skipIf(not _internal_data(),
+                     "Internal data not available")
+    def test_make_adapter_report_merged_dataset(self):
+        xml = get_merged_subreadset()
+        rpt = make_adapter_report(xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        a = d['attributes']
+        self.assertEqual(len(a), 2)
+        self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp) %')
+        self.assertEqual(a[0]['value'], 0.06)
+        self.assertEqual(a[1]['value'], 0.64)
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'interAdapterDist0.png')))
+
 
 class TestBinning(unittest.TestCase):
 
