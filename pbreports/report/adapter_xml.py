@@ -80,12 +80,8 @@ def to_report(stats_xml, output_dir, dpi=72):
         if len(dist) > 1:
             log.warn("Dataset was merged, local base rate not applicable")
         else:
-            try:
-                base_rate = dist[0].sampleMed
-            except (KeyError, ValueError) as e:
-                log.error(e)
-            else:
-                attributes.append(Attribute(Constants.A_BASE_RATE, base_rate))
+            base_rate = dist[0].sampleMed
+            attributes.append(Attribute(Constants.A_BASE_RATE, base_rate))
     else:
         log.warn("No local base rate distribution available")
 
