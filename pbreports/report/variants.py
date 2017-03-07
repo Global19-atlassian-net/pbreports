@@ -26,7 +26,7 @@ from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.util import (openReference,
+from pbreports.util import (openReference, average_or_none,
                             add_base_options_pbcommand,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
@@ -333,13 +333,11 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
 
     mean_contig_length = 0.0
-    if len(ordered_ids) > 0:
-        mean_contig_length = sum_lengths / len(ordered_ids)
-    if sum_lengths > 0:
-        mean_bases_called = mean_bases_called / sum_lengths
-        mean_coverage = mean_coverage / sum_lengths
-        if mean_concord is not None:
-            mean_concord = mean_concord / sum_lengths
+    mean_contig_length = average_or_none(sum_lengths, len(ordered_ids), 0.0)
+    mean_bases_called = average_or_none(mean_bases_called, sum_lengths, 0.0)
+    mean_coverage = average_or_none(mean_coverage, sum_lengths, 0.0)
+    if mean_concord is not None:
+        mean_concord = mean_concord / sum_lengths
 
     attributes = []
     if mean_concord is not None:

@@ -597,3 +597,10 @@ def continuous_dist_shaper(dist_list, nbins=40, trim_excess=False):
     shaper = dist_shaper(generic_dist_list, nbins=nbins,
                          trim_excess=trim_excess)
     return functools.partial(_cont_dist_shaper, shaper)
+
+
+def average_or_none(total, n, default_value=None):
+    if n != 0:
+        return total / n
+    else:
+        return default_value
