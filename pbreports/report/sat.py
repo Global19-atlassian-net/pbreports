@@ -130,7 +130,12 @@ def _get_read_hole_data(reads_by_cell, instrument):
     :param reads_by_cell_then_set: (dict) _get_reads_info
     """
     if len(reads_by_cell) == 0:
-        raise ValueError("NO CELLS found!")
+        return {
+            Constants.A_INSTRUMENT: instrument,
+            "reads_set_1": 0,
+            Constants.A_READS: 0
+        }
+        #raise ValueError("NO CELLS found!")
     yield_, yield_1 = None, None
 
     cell = reads_by_cell.keys()[0]
@@ -156,10 +161,13 @@ def _get_reads_info(aligned_reads_file):
     :return tuple (reads_by_cell_then_set, instrument) (dict, string): A dictionary of dictionaries,
     instrument name
     """
-    inst = None
+    instruments = set()
     reads_by_cell = defaultdict(set)
     with AlignmentSet(aligned_reads_file) as ds:
         for bamfile in ds.resourceReaders():
+            for rg in bamfile.readGroupTable:
+                cell = movie_to_cell(rg.MovieName)
+                instruments.add(_cell_2_inst(cell))
             if ds.isIndexed:
                 logging.info("Indexed file - will use fast loop.")
                 for (hole, rgId) in zip(bamfile.holeNumber, bamfile.qId):
@@ -176,7 +184,7 @@ def _get_reads_info(aligned_reads_file):
                     if inst is None:
                         inst = _cell_2_inst(cell)
                     reads_by_cell[cell].add(hole)
-    return reads_by_cell, inst
+    return reads_by_cell, ", ".join(sorted(list(instruments)))
 
 
 def summarize_report(report_file, out=sys.stdout):
