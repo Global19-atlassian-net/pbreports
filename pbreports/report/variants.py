@@ -285,9 +285,9 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     ordered_ids = _ref_ids_ordered_by_len(ref_data)
 
     sum_lengths = 0.0
-    mean_bases_called = 0
+    mean_bases_called = 0.0
     mean_concord = 'NA'
-    mean_coverage = 0
+    mean_coverage = 0.0
 
     columns = []
     columns.append(Column(Constants.C_CONTIG_NAME))
@@ -332,13 +332,14 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         table.add_data_by_column_id(Constants.C_CONCORDANCE, concord)
         table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
 
-    mean_contig_length = mean_bases_called = mean_coverage = 0.0
-    if sum_lengths > 0 and len(ordered_ids) > 0:
+    mean_contig_length = 0.0
+    if len(ordered_ids) > 0:
         mean_contig_length = sum_lengths / len(ordered_ids)
+    if sum_lengths > 0:
         mean_bases_called = mean_bases_called / sum_lengths
+        mean_coverage = mean_coverage / sum_lengths
         if mean_concord != 'NA':
             mean_concord = mean_concord / sum_lengths
-        mean_coverage = mean_coverage / sum_lengths
 
     attributes = []
     if mean_concord != 'NA':
