@@ -286,7 +286,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
 
     sum_lengths = 0.0
     mean_bases_called = 0.0
-    mean_concord = 'NA'
+    mean_concord = None
     mean_coverage = 0.0
 
     columns = []
@@ -309,7 +309,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         bases_called = 1.0 - gaps / length
         mean_bases_called += bases_called * length
 
-        concord = 'NA'
+        concord = None
         if length != gaps:
 
             log.info('length {f}'.format(f=length))
@@ -317,7 +317,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
             log.info('errors {f}'.format(f=errors))
 
             concord = 1.0 - errors / (length - gaps)
-            if mean_concord == 'NA':
+            if mean_concord is None:
                 mean_concord = concord * length
             else:
                 mean_concord += concord * length
@@ -338,11 +338,11 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     if sum_lengths > 0:
         mean_bases_called = mean_bases_called / sum_lengths
         mean_coverage = mean_coverage / sum_lengths
-        if mean_concord != 'NA':
+        if mean_concord is not None:
             mean_concord = mean_concord / sum_lengths
 
     attributes = []
-    if mean_concord != 'NA':
+    if mean_concord is not None:
         attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
     else:
         attributes.append(Attribute(Constants.MEAN_CONCORDANCE, 0.0))
