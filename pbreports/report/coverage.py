@@ -323,7 +323,7 @@ def _get_att_percent_missing(stats):
     """
     v = None
     if stats is None:
-        v = 'NA'
+        v = 100.0 # no mapped reads, so all bases are missing
     else:
         v = stats.perc_missing_bases/100
     a = Attribute(Constants.A_MISSING, v)

@@ -26,7 +26,7 @@ from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.util import (openReference,
+from pbreports.util import (openReference, average_or_none,
                             add_base_options_pbcommand,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
@@ -285,9 +285,9 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     ordered_ids = _ref_ids_ordered_by_len(ref_data)
 
     sum_lengths = 0.0
-    mean_bases_called = 0
-    mean_concord = 'NA'
-    mean_coverage = 0
+    mean_bases_called = 0.0
+    mean_concord = None
+    mean_coverage = 0.0
 
     columns = []
     columns.append(Column(Constants.C_CONTIG_NAME))
@@ -309,7 +309,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         bases_called = 1.0 - gaps / length
         mean_bases_called += bases_called * length
 
-        concord = 'NA'
+        concord = None
         if length != gaps:
 
             log.info('length {f}'.format(f=length))
@@ -317,7 +317,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
             log.info('errors {f}'.format(f=errors))
 
             concord = 1.0 - errors / (length - gaps)
-            if mean_concord is 'NA':
+            if mean_concord is None:
                 mean_concord = concord * length
             else:
                 mean_concord += concord * length
@@ -332,17 +332,24 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         table.add_data_by_column_id(Constants.C_CONCORDANCE, concord)
         table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
 
-    mean_contig_length = sum_lengths / len(ordered_ids)
-    mean_bases_called = mean_bases_called / sum_lengths
-    if mean_concord is not 'NA':
+    mean_contig_length = 0.0
+    mean_contig_length = average_or_none(sum_lengths, len(ordered_ids), 0.0)
+    mean_bases_called = average_or_none(mean_bases_called, sum_lengths, 0.0)
+    mean_coverage = average_or_none(mean_coverage, sum_lengths, 0.0)
+    if mean_concord is not None:
         mean_concord = mean_concord / sum_lengths
-    mean_coverage = mean_coverage / sum_lengths
 
     attributes = []
-    attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
+    if mean_concord is not None:
+        attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
+    else:
+        attributes.append(Attribute(Constants.MEAN_CONCORDANCE, 0.0))
     attributes.append(
         Attribute(Constants.MEAN_CONTIG_LENGTH, mean_contig_length))
-    attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
+    if len(ordered_ids) > 0:
+        attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
+    else:
+        attributes.append(Attribute(Constants.LONGEST_CONTIG, "NA"))
     attributes.append(
         Attribute(Constants.MEAN_BASES_CALLED, mean_bases_called))
     attributes.append(Attribute(Constants.MEAN_COVERAGE, mean_coverage))
