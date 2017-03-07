@@ -10,6 +10,7 @@ source tmp/venv/bin/activate
 
 (cd repos/PacBioTestData && make python)
 (cd repos/pbcommand && make install)
+pip install --no-cache-dir h5py
 pip install -r PB_REQUIREMENTS.txt
 (cd repos/pbcore && make install)
 pip install -r REQUIREMENTS.txt
