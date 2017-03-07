@@ -146,9 +146,9 @@ def _get_read_hole_data(reads_by_cell, instrument):
 
     yield_ = len(reads)
     d = {}
-    d['instrument'] = instrument
+    d[Constants.A_INSTRUMENT] = instrument
     d['reads_set_1'] = yield_1
-    d['reads_in_cell'] = yield_
+    d[Constants.A_READS] = yield_
     return d
 
 
@@ -173,8 +173,6 @@ def _get_reads_info(aligned_reads_file):
                 for (hole, rgId) in zip(bamfile.holeNumber, bamfile.qId):
                     movie_name = bamfile.readGroupInfo(rgId).MovieName
                     cell = movie_to_cell(movie_name)
-                    if inst is None:
-                        inst = _cell_2_inst(cell)
                     reads_by_cell[cell].add(hole)
             else:
                 for aln in bamfile:
