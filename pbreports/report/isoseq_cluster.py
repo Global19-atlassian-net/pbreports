@@ -99,26 +99,17 @@ def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
 
     rax = ax.twinx()
 
-    def to_cdf(points):
-        """Given a list of points, return its cdf."""
-        _total = 0
-        datum = []
-        for x, y in points:
-            _total += int(x * y)
-            datum.append(_total)
-        return datum
-
     log.debug("Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
 
-    cdf = to_cdf(zip(bin_edges[:-1], bins))
-    max_cdf = max(cdf)
-    sdf = [max_cdf - i for i in cdf]
+    csum = np.append([0],np.cumsum(bins)[:-1])
+    sdf = [csum[-1] - i for i in csum]
 
     log.debug((len(bin_edges), len(sdf)))
 
     # Plot the data
     rax.plot(bin_edges[:-1], sdf, 'k')
     rax.set_xlim(bin_edges.min(), bin_edges.max())
+    rax.set_ylim(ymin=0)
 
     if len(axis_labels) == 3:
         rax.set_ylabel(axis_labels[2])
