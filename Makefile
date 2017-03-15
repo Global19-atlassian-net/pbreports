@@ -23,7 +23,8 @@ clean:
 	rm -rf dist/
 
 test:
-	nosetests --with-xunit --nocapture --nologcapture --verbose tests/unit/test*.py
+	nosetests --with-coverage --cover-xml-file=coverage.xml --cover-package=pbreports --cover-xml --with-xunit -v tests
+	sed -i -e 's@filename="@filename="./@g' coverage.xml
 
 pip-install:
 	@which pip > /dev/null
