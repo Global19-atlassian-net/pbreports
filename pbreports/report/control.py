@@ -11,9 +11,7 @@ from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
 from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail,
-                                   get_green, apply_histogram_data)
-from pbreports.report.isoseq_cluster import __create_plot, _make_histogram
+                                   save_figure_with_thumbnail)
 
 from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
