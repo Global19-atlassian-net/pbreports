@@ -10,7 +10,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
-from pbreports.plot.helper import (get_fig_axes_lpr,
+from pbreports.plot.helper import (get_fig_axes_lpr, get_green,
                                    save_figure_with_thumbnail)
 
 from pbreports.model import InvalidStatsError
@@ -45,17 +45,17 @@ def to_nreads(readlen_dist):
     return attribute
 
 def to_readlength_mean(readlen_dist):
-    readlength_mean = 50
+    readlength_mean = float(readlen_dist['SampleMean'].metavalue)
     attribute = Attribute(Constants.A_READLENGTH_MEAN, readlength_mean)
     return attribute
 
 def to_concordance_mean(readqual_dist):
-    concordance_mean = 95.1
+    concordance_mean = float(readqual_dist['SampleMean'].metavalue)
     attribute = Attribute(Constants.A_CONCORDANCE_MEAN, concordance_mean)
     return attribute
 
 def to_concordance_mode(readqual_dist):
-    concordance_mode = 89.1
+    concordance_mode = float(89.1)
     attribute = Attribute(Constants.A_CONCORDANCE_MODE, concordance_mode)
     return attribute
 
@@ -69,7 +69,17 @@ def to_attributes(readlen_dist, readqual_dist):
 
 def to_readlen_plotgroup(readlen_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
+    x_label = get_plot_xlabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
+    y_label = get_plot_ylabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
+    nbins = int(readlen_dist['NumBins'].metavalue)
+    bin_counts = readlen_dist['BinCounts']
+    heights = [int(bc.metavalue) for bc in bin_counts]
+    edges = [float(bn)/float(nbins) for bn in xrange(nbins)]
+    bin_width = float(readlen_dist['BinWidth'].metavalue)
     fig, ax = get_fig_axes_lpr()
+    ax.bar(edges, heights, color=get_green(0), edgecolor=get_green(0), width=(bin_width * 0.75))
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
     png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_READLENGTH))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi = 72)
     readlen_plot = Plot(Constants.P_READLENGTH,
@@ -81,7 +91,17 @@ def to_readlen_plotgroup(readlen_dist, output_dir):
 
 def to_concordance_plotgroup(readqual_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_CONCORDANCE, Constants.P_CONCORDANCE)
+    x_label = get_plot_xlabel(spec, Constants.PG_CONCORDANCE, Constants.P_CONCORDANCE)
+    y_label = get_plot_ylabel(spec, Constants.PG_CONCORDANCE, Constants.P_CONCORDANCE)
+    nbins = int(readqual_dist['NumBins'].metavalue)
+    bin_counts = readqual_dist['BinCounts']
+    heights = [int(bc.metavalue) for bc in bin_counts]
+    edges = [float(bn)/float(nbins) for bn in xrange(nbins)]
+    bin_width = float(readqual_dist['BinWidth'].metavalue)
     fig, ax = get_fig_axes_lpr()
+    ax.bar(edges, heights, color=get_green(0), edgecolor=get_green(0), width=(bin_width * 0.75))
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
     png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_CONCORDANCE))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi = 72)
     concordance_plot = Plot(Constants.P_CONCORDANCE,

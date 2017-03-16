@@ -40,9 +40,9 @@
                 {
                     "xlabel": "Read Length",
                     "description": null,
-                    "caption": "Control Read Length",
+                    "caption": "Polymerase RL",
                     "ylabel": "Reads",
-                    "title": "Control Read Length",
+                    "title": "Polymerase RL",
                     "id": "readlength_plot"
                 }
             ],
@@ -56,9 +56,9 @@
                 {
                     "xlabel": "Read Quality",
                     "description": null,
-                    "caption": "Polymerase Read Quality",
+                    "caption": "Concordance",
                     "ylabel": "Reads",
-                    "title": "Polymerase Read Quality",
+                    "title": "Concordance",
                     "id": "concordance_plot"
                 }
             ],
