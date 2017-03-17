@@ -3,6 +3,7 @@ import os.path as op
 import logging
 import sys
 import numpy as np
+import functools
 
 from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup, Attribute
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
@@ -12,9 +13,9 @@ from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
 from pbreports.plot.helper import (get_fig_axes_lpr, get_green,
                                    save_figure_with_thumbnail)
-
 from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
+from pbreports.util import _cont_dist_shaper, dist_shaper
 
 __version__ = '0.1.0'
 
@@ -67,6 +68,16 @@ def to_attributes(readlen_dist, readqual_dist):
     attributes.append(to_concordance_mode(readqual_dist))
     return attributes
 
+def reshape(readlen_dist, edges, heights):
+    lenDistShaper = functools.partial(_cont_dist_shaper, dist_shaper([(heights, edges)], nbins=40, trim_excess=False))
+    readlen_dist = lenDistShaper(readlen_dist)
+    nbins = int(readlen_dist['NumBins'].metavalue)
+    bin_counts = readlen_dist['BinCounts']
+    heights = [int(bc.metavalue) for bc in bin_counts]
+    bin_width = float(readlen_dist['BinWidth'].metavalue)
+    edges = [float(bn)*bin_width for bn in xrange(nbins)]
+    return edges, heights, bin_width
+
 def to_readlen_plotgroup(readlen_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
     x_label = get_plot_xlabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
@@ -74,8 +85,9 @@ def to_readlen_plotgroup(readlen_dist, output_dir):
     nbins = int(readlen_dist['NumBins'].metavalue)
     bin_counts = readlen_dist['BinCounts']
     heights = [int(bc.metavalue) for bc in bin_counts]
-    edges = [float(bn)/float(nbins) for bn in xrange(nbins)]
     bin_width = float(readlen_dist['BinWidth'].metavalue)
+    edges = [float(bn)*bin_width for bn in xrange(nbins)]
+    edges, heights, bin_width = reshape(readlen_dist, edges, heights)
     fig, ax = get_fig_axes_lpr()
     ax.bar(edges, heights, color=get_green(0), edgecolor=get_green(0), width=(bin_width * 0.75))
     ax.set_xlabel(x_label)
