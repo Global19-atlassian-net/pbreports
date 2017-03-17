@@ -31,6 +31,10 @@ else:
 # Need to rethink this? Not sure we'll have the correct privileges?
 outdir = os.path.join(_DIR_NAME, 'output')
 
+def internal_data_present():
+    if os.path.exists("/pbi/dept/secondary/siv/testdata"):
+        return True
+    return False
 
 def _get_root_data_dir():
     """Get the root level directory which contains all the unittests files"""
