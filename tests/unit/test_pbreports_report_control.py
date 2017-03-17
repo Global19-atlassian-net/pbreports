@@ -12,7 +12,7 @@ from pbcore.util.Process import backticks
 from pbcore.io import SubreadSet
 
 from pbreports.report.control import to_report
-from base_test_case import internal_data_present
+from base_test_case import skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -34,8 +34,7 @@ class TestControlRpt(unittest.TestCase):
         if op.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
-    @unittest.skipIf(not internal_data_present(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_make_control_report(self):
               
         ss = get_control_subreadset()
