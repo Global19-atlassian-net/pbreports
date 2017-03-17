@@ -12,8 +12,8 @@
             "id": "reads_n"
         },
         {
-            "type": "float",
-            "format": "{:,.2f}",
+            "type": "int",
+            "format": "{:,d}",
             "description": null,
             "name": "Control Read Length Mean",
             "id": "readlength_mean"
