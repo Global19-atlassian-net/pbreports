@@ -31,6 +31,7 @@ else:
 # Need to rethink this? Not sure we'll have the correct privileges?
 outdir = os.path.join(_DIR_NAME, 'output')
 
+
 def _get_root_data_dir():
     """Get the root level directory which contains all the unittests files"""
     log.info("Loading data config from {f}".format(f=_NOSE_REPORT_CFG))
