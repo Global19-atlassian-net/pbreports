@@ -27,14 +27,9 @@ from pbreports.report.filter_stats_xml import to_report as make_filter_report
 from pbreports.report.filter_stats_xml import Constants
 from pbreports.report.adapter_xml import to_report as make_adapter_report
 
-from base_test_case import validate_report_complete
+from base_test_case import validate_report_complete, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
-
-def _internal_data():
-    if os.path.exists("/pbi/dept/secondary/siv/testdata"):
-        return True
-    return False
 
 
 def get_fixed_bin_sts():
@@ -277,8 +272,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertAlmostEqual(0.892, c7['values'][0], delta=.0003)
         self.assertEqual(c8['values'][0], "Workflow_Magbead.py")
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_make_loading_report_with_merged_dataset(self):
         """
         Test the content of the loading report generated from a dataset with
@@ -430,8 +424,7 @@ class TestAdapterReport(XMLStatsRptsBase):
             'interAdapterDist0.png')))
         validate_report_complete(self, rpt)
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_make_adapter_report_merged_dataset(self):
         xml = get_merged_subreadset()
         rpt = make_adapter_report(xml, self.get_output_dir())
@@ -448,8 +441,7 @@ class TestAdapterReport(XMLStatsRptsBase):
 
 class TestBinning(unittest.TestCase):
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_reports_with_fixed_bins(self):
         # TODO readQualDists are currently unpopulated, turn back on when
         # they're repopulated
@@ -512,8 +504,7 @@ class TestBinning(unittest.TestCase):
                     self.assertEqual(sum(dists[0].bins),
                                      sum(fixed_dists[0].bins))
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_abstract_dist_shaper(self):
         bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
         labels1 = [i * 5 for i in range(len(bins1))]
@@ -541,8 +532,7 @@ class TestBinning(unittest.TestCase):
                                      [i*5 for i in range(len(merged))])
                 """
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_abstract_dist_shaper_float_bwidth(self):
         bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
         labels1 = [i * 0.2 for i in range(len(bins1))]
