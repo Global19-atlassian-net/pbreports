@@ -73,7 +73,7 @@ def reshape(readlen_dist, edges, heights):
     readlen_dist = lenDistShaper(readlen_dist)
     nbins = int(readlen_dist.numBins.metavalue)
     bin_counts = readlen_dist.binCounts
-    heights = [int(bc.metavalue) for bc in bin_counts]
+    heights = readlen_dist.bins
     bin_width = float(readlen_dist.binWidth.metavalue)
     edges = [float(bn)*bin_width for bn in xrange(nbins)]
     return edges, heights, bin_width
@@ -84,7 +84,7 @@ def to_readlen_plotgroup(readlen_dist, output_dir):
     y_label = get_plot_ylabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
     nbins = int(readlen_dist.numBins.metavalue)
     bin_counts = readlen_dist.binCounts
-    heights = [int(bc.metavalue) for bc in bin_counts]
+    heights = readlen_dist.bins
     bin_width = float(readlen_dist.binWidth.metavalue)
     edges = [float(bn)*bin_width for bn in xrange(nbins)]
     edges, heights, bin_width = reshape(readlen_dist, edges, heights)
@@ -107,7 +107,7 @@ def to_concordance_plotgroup(readqual_dist, output_dir):
     y_label = get_plot_ylabel(spec, Constants.PG_CONCORDANCE, Constants.P_CONCORDANCE)
     nbins = int(readqual_dist.numBins.metavalue)
     bin_counts = readqual_dist.binCounts
-    heights = [int(bc.metavalue) for bc in bin_counts]
+    heights = readlen_dist.bins
     edges = [float(bn)/float(nbins) for bn in xrange(nbins)]
     bin_width = float(readqual_dist.binWidth.metavalue)
     fig, ax = get_fig_axes_lpr()
