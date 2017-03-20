@@ -12,7 +12,7 @@ from pbcore.util.Process import backticks
 from pbcore.io import SubreadSet
 
 from pbreports.report.control import to_report
-from base_test_case import skip_if_data_dir_not_present
+from base_test_case import validate_report_complete, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
 
@@ -54,4 +54,4 @@ class TestControlRpt(unittest.TestCase):
             'readlength_plot.png')))
         self.assertTrue(os.path.exists(os.path.join(self._output_dir,
             'readlength_plot_thumb.png')))
-       
+        validate_report_complete(self, rpt)
