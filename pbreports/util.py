@@ -16,9 +16,10 @@ from pbcore.util.Process import backticks
 from pbcore.io import FastaReader, ReferenceSet
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.models import FileTypes
-from pbcommand.models.report import Column, Table
+from pbcommand.models.report import Attribute, Column, Table
 from pbcommand import common_options
 
+from pbreports.io.validators import validate_output_dir, validate_report
 
 log = logging.getLogger(__name__)
 

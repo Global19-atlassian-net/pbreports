@@ -4,15 +4,15 @@ import os
 import unittest
 import nose
 
-from base_test_case import BaseTestCase
-from pbreports.util import (validate_output_dir, validate_report,
-                            movie_to_cell, get_fasta_readlengths,
+from pbcommand.models.report import Attribute
+
+from pbreports.util import (movie_to_cell, get_fasta_readlengths,
                             compute_n50_from_file, compute_n50,
-                            validate_file, validate_nonempty_file,
                             accuracy_as_phred_qv, report_to_attributes,
                             attributes_to_table)
+from pbreports.io.validators import validate_output_dir, validate_report, validate_file, validate_nonempty_file
 
-from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present, LOCAL_DATA
+from base_test_case import BaseTestCase, ROOT_DATA_DIR, skip_if_data_dir_not_present, LOCAL_DATA
 
 _NAME = 'amplicon_analysis_consensus'
 _EMPTY = 'amplicon_analysis_consensus_empty'
@@ -215,5 +215,5 @@ class TestUtil(BaseTestCase):
 
     def test_report_to_attributes(self):
         rpt = os.path.join(LOCAL_DATA, "isoseq", "isoseq_cluster_report.json")
-        attr = report_to_attributes(fn)
+        attr = report_to_attributes(rpt)
         self.assertEqual(len(attr), 4)
