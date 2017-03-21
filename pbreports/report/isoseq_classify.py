@@ -32,7 +32,7 @@ from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
-__version__ = '0.1.0.132615'  # The last 6 digits is changelist
+__version__ = '0.2.0'
 
 
 class Constants(object):
