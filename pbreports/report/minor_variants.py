@@ -11,6 +11,10 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
+from pbreports.model import InvalidStatsError
+import csv
+
+__version__ = '0.1.0'
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.minor_variants_report"
@@ -28,13 +32,51 @@ class Constants(object):
     VARIANT_FILE = "variant_summary.csv"
 
 
-def to_variant_table(juliet_summary, output_dir):
-    samples = positions = ref_codons = sample_codons = frequencies = 
+log = logging.getLogger(__name__)
+spec = load_spec(Constants.R_ID)
+
+
+def get_hap_vals(hap_hits, hap_vals):
+    haps = []
+    for i in xrange(len(hap_hits)):
+        if hap_hits[i]:
+           haps.append(hap_vals[i])
+    return haps
+
+
+def to_variant_table(juliet_summary):
+    samples = positions = ref_codons = sample_codons = frequencies = []
     coverage = genes = drms = haplotype_names = haplotype_frequencies = []
-    
+    _all_hap_names = _all_hap_freqs = []
+
+    for sample in juliet_summary.keys():
+        for haplotype in juliet_summary[sample]['haplotypes']:
+            _all_hap_names.append(haplotype['name'])
+            _all_hap_freqs.append(haplotype['frequency'])
+        for gene in juliet_summary[sample]['genes']:
+            _genes = gene['name']
+            for position in gene['variant_positions']:
+                _coverage = position['coverage']
+                _ref_codons = position['ref_codon']
+                _position = position['ref_position']
+                for aa in position['variant_amino_acids']:
+                    for variant in aa['variant_codons']:
+                        samples.append(sample)
+                        positions.append(_position)
+                        ref_codons.append(_ref_codons)
+                        sample_codons.append(variant['codon'])
+                        frequencies.append(variant['frequency'])
+                        coverage.append(_coverage)
+                        genes.append(_genes)
+                        drms.append(variant['known_drm'])
+                        haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names))
+                        haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs))
+
+            
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
     
+    print variant_table
     return variant_table
 
 
@@ -52,15 +94,11 @@ def aggregate_variant_table(variant_table):
         
 
 def to_sample_table(variant_table):
-    samples, coverage, variants, genes, drms, haploytypes, 
-    max_hap_freq = aggregate_variant_table(variant_table)
+    samples, coverage, variants, genes, drms, haploytypes, max_hap_freq = []
     
-    columns = [Column(Constants.C_SAMPLES),
-               Column(Constants.C_COVERAGE),
-               Column(Constants.C_VARIANTS),
-               Column(Constants.C_GENES),
-               Column(Constants.C_DRMS),
-               Column(Constants.C_HAPLOTYPES),
+    columns = [Column(Constants.C_SAMPLES), Column(Constants.C_COVERAGE),
+               Column(Constants.C_VARIANTS), Column(Constants.C_GENES),
+               Column(Constants.C_DRMS), Column(Constants.C_HAPLOTYPES),
                Column(Constants.C_HAP_FREQ)]
     sample_table = Table(Constants.T_ID, columns=columns)
     sample.table.add_data_by_column_id(Constants.C_SAMPLES, samples)
@@ -81,10 +119,24 @@ def to_report(juliet_summary_file, output_dir):
 
     variant_table = to_variant_table(juliet_summary)
     write_variant_table(variant_table, output_dir)
-    tables = [to_sample_table(variant_table)]
+#    tables = [to_sample_table(variant_table)]
+    tables = []
     report = Report(Constants.R_ID, tables=tables)
 
     return spec.apply_view(report)
+
+
+def args_runner(args):
+    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
+                                        v=__version__))
+    output_dir = os.path.dirname(args.report)
+    try:
+        report = to_report(args.subread_set, output_dir)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
