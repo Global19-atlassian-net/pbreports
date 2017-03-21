@@ -42,7 +42,7 @@ import numpy as np
 from pbcore.util.Process import backticks
 from pbcore.io import CmpH5Reader, CmpH5Alignment
 
-from pbreports.io.validators import validate_fofn, fofn_to_files
+from pbreports.io.validators import validate_fofn, fofn_to_files, validate_file
 
 __version__ = '2.0'
 
@@ -139,13 +139,6 @@ log_warn_once_per_movie = _log_warn_once_per_movie()
 
 def _is_cmp_h5(file_name):
     return file_name.lower().endswith('.cmp.h5')
-
-
-def validate_file_or_none(path):
-    if path is None:
-        return path
-    else:
-        return validate_file(path)
 
 
 def get_parser():
