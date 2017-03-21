@@ -26,6 +26,7 @@ from pbcore.io import ContigSet
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue)
 from pbreports.io.specs import *
+from pbreports.util import attributes_to_table, report_to_attributes
 
 log = logging.getLogger(__name__)
 
@@ -54,24 +55,6 @@ class Constants(object):
     T_ATTR = "isoseq_classify_table"
 
 spec = load_spec(Constants.R_ID)
-
-
-def _report_to_attributes(report_file):
-    report = load_report_from_json(report_file)
-    return report.attributes
-
-
-def attributesToTable(attributes):
-    """Build a report table from Iso-Seq cluster attributes."""
-    columns = [Column(x.id, header="") for x in attributes]
-
-    table = Table(Constants.T_ATTR,
-                  columns=columns)
-
-    for x in attributes:
-        table.add_data_by_column_id(x.id, x.value)
-
-    return table
 
 
 def _make_histogram(datum, axis_labels, nbins, barcolor):
@@ -209,12 +192,12 @@ def makeReport(inReadsFN, hq_isoforms_fq, lq_isoforms_fq, inSummaryFN, outDir):
              format(f=inSummaryFN))
     # Produce attributes based on summary.
     dataset_uuids = [ContigSet(inReadsFN).uuid]
-    attributes = _report_to_attributes(inSummaryFN)
+    attributes = report_to_attributes(inSummaryFN)
     r = load_report_from_json(inSummaryFN)
     # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
     # reports; should we be?
 
-    table = attributesToTable(attributes)
+    table = attributes_to_table(attributes, Constants.T_ATTR)
     log.info(str(table))
 
     # A report is consist of ID, tables, attributes, and plotgroups.

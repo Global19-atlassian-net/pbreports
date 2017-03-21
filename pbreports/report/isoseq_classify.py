@@ -26,7 +26,7 @@ from pbcore.io import ContigSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue)
-from pbreports.util import validate_file
+from pbreports.util import validate_file, attributes_to_table, report_to_attributes
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -51,26 +51,6 @@ class Constants(object):
     T_ATTR = "isoseq_classify_table"
 
 spec = load_spec(Constants.R_ID)
-
-
-def _report_to_attributes(summary_json):
-    report = load_report_from_json(summary_json)
-    return [Attribute(attr.id, attr.value) for attr in report.attributes]
-
-
-def _attributes_to_table(attributes):
-    """Build a report table from Iso-Seq Classify attributes.
-
-    """
-    columns = [Column(x.id) for x in attributes]
-
-    table = Table(Constants.T_ATTR,
-                  columns=columns)
-
-    for x in attributes:
-        table.add_data_by_column_id(x.id, x.value)
-
-    return table
 
 
 def _make_histogram(datum, axis_labels, nbins, barcolor):
@@ -200,12 +180,12 @@ def make_report(contig_set, summary_txt, output_dir):
              format(f=summary_txt))
     dataset_uuids = [ContigSet(contig_set).uuid]
     # Produce attributes based on summary.
-    attributes = _report_to_attributes(summary_txt)
+    attributes = report_to_attributes(summary_txt)
     r = load_report_from_json(summary_txt)
     # FIXME(nechols)(2016-03-22) not using the dataset UUIDs from these
     # reports; should we be?
 
-    table = _attributes_to_table(attributes)
+    table = attributes_to_table(attributes, Constants.T_ATTR)
     log.info(str(table))
 
     # A report is consist of ID, tables, attributes, and plotgroups.

@@ -14,7 +14,9 @@ from copy import deepcopy
 
 from pbcore.util.Process import backticks
 from pbcore.io import FastaReader, ReferenceSet
+from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.models import FileTypes
+from pbcommand.models.report import Column, Table
 from pbcommand import common_options
 
 
@@ -67,121 +69,6 @@ def log_timing(func):
         f=name, s=run_time, m=run_time / 60.0))
 
     return wrapper
-
-
-def _nfs_exists_check(ff):
-    """
-    Central place for all NFS hackery
-
-    Return whether a file or a dir ff exists or not.
-    Call ls instead of python os.path.exists to eliminate NFS errors.
-
-    Added try/catch black hole exception cases to help trigger an NFS refresh
-
-    :rtype bool:
-    """
-    # try to trigger refresh for File case
-    try:
-        f = open(ff, 'r')
-        f.close()
-    except Exception:
-        pass
-
-    # try to trigger refresh for Directory case
-    try:
-        _ = os.stat(ff)
-        _ = os.listdir(ff)
-    except Exception:
-        pass
-
-    # Call externally
-    # this is taken from Yuan
-    cmd = "ls %s" % ff
-    _, rcode, _ = backticks(cmd)
-
-    return rcode == 0
-
-
-def _validate_resource(func, resource):
-    """Validate the existence of a file/dir"""
-    # Attempt to trigger an NFS metadata refresh
-    _ = _nfs_exists_check(resource)
-
-    if func(resource):
-        return os.path.abspath(resource)
-    else:
-        raise IOError("Unable to find {f}".format(f=resource))
-
-validate_file = functools.partial(_validate_resource, os.path.isfile)
-validate_dir = functools.partial(_validate_resource, os.path.isdir)
-validate_output_dir = functools.partial(_validate_resource, os.path.isdir)
-
-
-def validate_nonempty_file(resource):
-    try:
-        resource_path = validate_file(resource)
-    except IOError as e:
-        raise e
-    try:
-        with open(resource_path) as handle:
-            l = [handle.next() for i in range(2)]
-    except StopIteration:
-        raise IOError("{f} appears to be empty".format(f=resource))
-    return resource_path
-
-
-def validate_report(report):
-    """
-    Raise ValueError if report contains path seps
-    """
-    if not os.path.basename(report) == report:
-        raise ValueError(
-            "Path separators are not allowed: {r}".format(r=report))
-    return report
-
-
-def validate_fofn(fofn):
-    """Validate existence of FOFN and files within the FOFN.
-
-    :param fofn: (str) Path to File of file names.
-    :raises: IOError if any file is not found.
-    :return: (str) abspath of the input fofn
-    """
-    _ = _nfs_exists_check(fofn)
-
-    if os.path.isfile(fofn):
-        file_names = bas_fofn_to_bas_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(
-            n=len(file_names), f=fofn))
-        return os.path.abspath(fofn)
-    else:
-        raise IOError("Unable to find {f}".format(f=fofn))
-
-
-def fofn_to_files(fofn):
-    """Util func to convert a bas/bax fofn file to a list of bas/bax files."""
-
-    _ = _nfs_exists_check(fofn)
-
-    if os.path.exists(fofn):
-        with open(fofn, 'r') as f:
-            bas_files = {line.strip() for line in f.readlines()}
-
-        for bas_file in bas_files:
-            if not os.path.isfile(bas_file):
-                # try one more time to find the file by
-                # performing an NFS refresh
-                found = _nfs_exists_check(bas_file)
-                if not found:
-                    raise IOError(
-                        "Unable to find bas/bax file '{f}'".format(f=bas_file))
-
-        return list(bas_files)
-    else:
-        raise IOError("Unable to find FOFN {f}".format(f=fofn))
-
-# For backward compatibility
-bas_fofn_to_bas_files = fofn_to_files
 
 
 def movie_to_cell(movie):
@@ -604,3 +491,17 @@ def average_or_none(total, n, default_value=None):
         return total / n
     else:
         return default_value
+
+
+def report_to_attributes(summary_json):
+    report = load_report_from_json(summary_json)
+    return [Attribute(attr.id, attr.value) for attr in report.attributes]
+
+
+def attributes_to_table(attributes, table_id):
+    """Build a report table from Iso-Seq cluster attributes."""
+    columns = [Column(x.id, header="") for x in attributes]
+    table = Table(table_id, columns=columns)
+    for x in attributes:
+        table.add_data_by_column_id(x.id, x.value)
+    return table

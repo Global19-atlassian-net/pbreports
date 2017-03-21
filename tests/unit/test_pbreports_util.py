@@ -199,3 +199,15 @@ class TestUtil(BaseTestCase):
         qv = accuracy_as_phred_qv([0.95, 1.0, 0.99999])
         qvs = [int(round(x)) for x in qv]
         self.assertEqual(qvs, [13, 70, 50])
+
+    def test_attributes_to_table(self):
+        attr = [
+            Attribute("id1", value=1234),
+            Attribute("id2", value=1.234),
+            Attribute("id3", value="1234"),
+            Attribute("id4", value=True)
+        ]
+        t = attributes_to_table(attr, "table1")
+        self.assertEqual(len(t.columns), 4)
+        self.assertEqual(t.columns[0].id, "id1")
+        self.assertEqual(t.columns[0].values, [1234])
