@@ -26,7 +26,8 @@ from pbcore.io import ContigSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
                                    get_blue)
-from pbreports.util import validate_file, attributes_to_table, report_to_attributes
+from pbreports.util import attributes_to_table, report_to_attributes
+from pbreports.io.validators import validate_file
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
