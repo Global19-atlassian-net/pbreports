@@ -9,9 +9,10 @@ from pbreports.util import (validate_output_dir, validate_report,
                             movie_to_cell, get_fasta_readlengths,
                             compute_n50_from_file, compute_n50,
                             validate_file, validate_nonempty_file,
-                            accuracy_as_phred_qv)
+                            accuracy_as_phred_qv, report_to_attributes,
+                            attributes_to_table)
 
-from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
+from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present, LOCAL_DATA
 
 _NAME = 'amplicon_analysis_consensus'
 _EMPTY = 'amplicon_analysis_consensus_empty'
@@ -211,3 +212,8 @@ class TestUtil(BaseTestCase):
         self.assertEqual(len(t.columns), 4)
         self.assertEqual(t.columns[0].id, "id1")
         self.assertEqual(t.columns[0].values, [1234])
+
+    def test_report_to_attributes(self):
+        rpt = os.path.join(LOCAL_DATA, "isoseq", "isoseq_cluster_report.json")
+        attr = report_to_attributes(fn)
+        self.assertEqual(len(attr), 4)
