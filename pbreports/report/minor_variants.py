@@ -71,11 +71,11 @@ def to_variant_table(juliet_summary):
     _all_hap_names = []
     _all_hap_freqs = []
 
-    for sample in juliet_summary.keys():
-        for haplotype in juliet_summary[sample]['haplotypes']:
+    for sample_name, sample_details in juliet_summary.iteritems():
+        for haplotype in sample_details['haplotypes']:
             _all_hap_names.append(haplotype['name'])
             _all_hap_freqs.append(haplotype['frequency'])
-        for gene in juliet_summary[sample]['genes']:
+        for gene in sample_details['genes']:
             _genes = gene['name']
             for position in gene['variant_positions']:
                 _coverage = position['coverage']
@@ -83,7 +83,7 @@ def to_variant_table(juliet_summary):
                 _position = position['ref_position']
                 for aa in position['variant_amino_acids']:
                     for variant in aa['variant_codons']:
-                        samples.append(sample)
+                        samples.append(sample_name)
                         positions.append(_position)
                         ref_codons.append(_ref_codons)
                         sample_codons.append(variant['codon'])
