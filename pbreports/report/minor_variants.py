@@ -38,15 +38,6 @@ log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
-def get_drm_vals(drms):
-    """Returns list of drms for a given variant, 
-       using the boolean array and list of possible values"""
-    split_drms = drms.split(" + ")
-    drm_vals = []
-    for drm in split_drms:
-        drm_vals.append(str(drm))
-    return drm_vals
-
 def get_hap_vals(hap_hits, hap_vals, _type):
     """Returns list of haplotype name or frequency values
        for a given variant, using the boolean array and
@@ -90,7 +81,7 @@ def to_variant_table(juliet_summary):
                         frequencies.append(variant['frequency'])
                         coverage.append(_coverage)
                         genes.append(_genes)
-                        drms.append(get_drm_vals(variant['known_drm']))
+                        drms.append(variant['known_drm'].split(" + "))
                         haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names, str))
                         haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs, float))
 
