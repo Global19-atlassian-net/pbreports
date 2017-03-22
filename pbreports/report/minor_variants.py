@@ -2,18 +2,19 @@ import os
 import os.path as op
 import logging
 import sys
-import numpy as np
+import csv
+import itertools
 import json
 
-from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup, Attribute
+import numpy as np
+
+from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
 from pbreports.model import InvalidStatsError
-import csv
-import matplotlib.mlab as ml
 
 __version__ = '0.1.0'
 
@@ -38,17 +39,22 @@ spec = load_spec(Constants.R_ID)
 
 
 def get_drm_vals(drms):
+    """Returns list of drms for a given variant, 
+       using the boolean array and list of possible values"""
     split_drms = drms.split(" + ")
     drm_vals = []
     for drm in split_drms:
         drm_vals.append(str(drm))
     return drm_vals
 
-def get_hap_vals(hap_hits, hap_vals):
+def get_hap_vals(hap_hits, hap_vals, _type):
+    """Returns list of haplotype name or frequency values
+       for a given variant, using the boolean array and
+       list of possible values"""
     haps = []
-    for i in xrange(len(hap_hits)):
-        if hap_hits[i]:
-           haps.append(hap_vals[i])
+    for i, hap_hit in enumerate(hap_hits):
+        if hap_hit:
+           haps.append(_type(hap_vals[i]))
     return haps
 
 def to_variant_table(juliet_summary):
@@ -85,8 +91,8 @@ def to_variant_table(juliet_summary):
                         coverage.append(_coverage)
                         genes.append(_genes)
                         drms.append(get_drm_vals(variant['known_drm']))
-                        haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names))
-                        haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs))
+                        haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names, str))
+                        haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs, float))
 
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
@@ -94,30 +100,30 @@ def to_variant_table(juliet_summary):
     return variant_table
 
 
+def join_col(col):
+    """Converts an array of arrays into an array of strings, using ';' as the sep."""
+    joined_col = []
+    for item in col:
+        joined_col.append(";".join(map(str, item)))
+    return joined_col
+
 def write_variant_table(variant_table, output_dir):
+    for i in [7,8,9]:
+        variant_table[i] = join_col(variant_table[i])
     variant_table_tr = zip(*variant_table)
     with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
         writer = csv.writer(csvfile)
         [writer.writerow(r) for r in variant_table_tr]
 
 
-def my_unique(my_list):
-    long_list = []
-    for a_list in my_list:
-        long_list.extend(a_list)
-    unique_items = np.unique(long_list)
-    return unique_items
-
-def my_max(my_list):
-    max_item = 0
-    long_list = []
-    for _list in my_list:
-        for item in _list:
-            if type(item) == float:
-                long_list.append(item)
-    if len(long_list) > 0:
-        max_item = max(long_list)
-    return max_item
+def my_agg(my_list, _func):
+    """Performs the specified function on an array of arrays, 
+       returning None in the case of a ValueError"""
+    try:
+        return _func(i for i in itertools.chain(*my_list))
+    except ValueError:
+       # case for max of empty list
+       return None
 
 def aggregate_variant_table(variant_table):
 
@@ -141,9 +147,9 @@ def aggregate_variant_table(variant_table):
         coverage.append(int(np.median(_coverage)))
         variants.append(len(_coverage))
         genes.append(len(np.unique(_genes)))
-        drms.append(len(my_unique(_drms)))
-        haplotypes.append(len(my_unique(_haplotypes)))
-        max_hap_freq.append(float(my_max(_max_hap_freq)))
+        drms.append(len(my_agg(_drms, np.unique)))
+        haplotypes.append(len(my_agg(_haplotypes, np.unique)))
+        max_hap_freq.append(float(my_agg(_max_hap_freq, max)))
 
     sample_table = [samples, coverage, variants, genes, drms, haplotypes, max_hap_freq]
 
@@ -159,8 +165,8 @@ def to_sample_table(variant_table):
                Constants.C_HAP_FREQ]
 
     columns = []
-    for i in xrange(len(col_ids)):
-        columns.append(Column(col_ids[i], sample_table[i]))
+    for i, col_id in enumerate(col_ids):
+        columns.append(Column(col_id, values=sample_table[i]))
 
     sample_table_r = Table(Constants.T_ID, columns=columns)
 
@@ -177,7 +183,7 @@ def to_report(juliet_summary_file, output_dir):
     tables = [to_sample_table(variant_table)]
     report = Report(Constants.R_ID, tables=tables)
 
-    return spec.apply_view(report)
+    return spec.apply_view(report, force=True)
 
 
 def args_runner(args):
