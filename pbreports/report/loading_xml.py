@@ -3,25 +3,24 @@
 Generate XML report on ZMW loading and productivity.
 """
 
-import os
-import os.path as op
+import functools
 import logging
+import os
 import sys
+
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
-from pbcore.io import DataSet, SubreadSet
-from pbcore.io.dataset.DataSetReader import parseStats
-from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail,
-                                   get_green, apply_histogram_data)
-from pbreports.report.isoseq_cluster import __create_plot, _make_histogram
+from pbcore.io import SubreadSet
 
+from pbreports.plot.helper import (get_fig_axes_lpr, get_green,
+                                   save_figure_with_thumbnail)
 from pbreports.model import InvalidStatsError
+from pbreports.util import (get_subreads_report_parser,
+                            arg_runner_subreads_report,
+                            rtc_runner_subreads_report)
 from pbreports.io.specs import *
 
 __version__ = '0.1.0'
@@ -76,6 +75,7 @@ def to_hq_hist_plot(hqbasefraction_dist, output_dir):
     plot_groups = [PlotGroup(Constants.PG_HQ, plots=[hq_plot])]
     return plot_groups
 
+
 def expand_data(bin_counts, max_val):
     nbins = len(bin_counts)
     midpoints = [max_val*(float(bn+0.5)/float(nbins)) for bn in xrange(nbins)]
@@ -83,6 +83,7 @@ def expand_data(bin_counts, max_val):
     for i in xrange(nbins):
         data.extend([midpoints[i]]*bin_counts[i])
     return data
+
 
 def to_rl_overlay_plot(numunfilteredbasecalls_dist, readlen_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_RRL, Constants.P_RRL)
@@ -188,77 +189,14 @@ def to_report(stats_xml, output_dir):
     return spec.apply_view(report)
 
 
-def args_runner(args):
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
-    output_dir = os.path.dirname(args.report)
-    try:
-        report = to_report(args.subread_set, output_dir)
-        report.write_json(args.report)
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
-
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
-    output_dir = os.path.dirname(rtc.task.output_files[0])
-    try:
-        report = to_report(rtc.task.input_files[0], output_dir)
-        report.write_json(rtc.task.output_files[0])
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
-
-
-def _add_options_to_parser(p):
-    p.add_input_file_type(
-        FileTypes.DS_SUBREADS,
-        file_id="subread_set",
-        name="SubreadSet",
-        description="SubreadSet")
-    p.add_output_file_type(FileTypes.REPORT, "report", spec.title,
-                           description=("Filename of JSON output report. Should be name only, "
-                                        "and will be written to output dir"),
-                           default_name="report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
-def _get_parser_core():
-    p = get_pbparser(
-        Constants.TOOL_ID,
-        __version__,
-        "Loading XML Report",
-        __doc__,
-        Constants.DRIVER_EXE,
-        is_distributed=True)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+resolved_tool_contract_runner = functools.partial(rtc_runner_subreads_report,
+                                                  to_report)
+args_runner = functools.partial(arg_runner_subreads_report, to_report)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
+    mp = get_subreads_report_parser(Constants.TOOL_ID, __version__, spec.title,
+                                    __doc__, Constants.DRIVER_EXE)
     return pbparser_runner(argv[1:],
                            mp,
                            args_runner,

@@ -1,3 +1,4 @@
+
 import os
 import os.path as op
 import logging
@@ -6,16 +7,18 @@ import numpy as np
 import functools
 
 from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup, Attribute
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
+
 from pbreports.plot.helper import (get_fig_axes_lpr, get_green,
                                    save_figure_with_thumbnail)
 from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
-from pbreports.util import _cont_dist_shaper, dist_shaper
+from pbreports.util import (_cont_dist_shaper, dist_shaper,
+                            get_subreads_report_parser,
+                            arg_runner_subreads_report,
+                            rtc_runner_subreads_report)
 
 __version__ = '0.1.0'
 
@@ -123,13 +126,17 @@ def to_concordance_plotgroup(readqual_dist, output_dir):
     plot_groups = [PlotGroup(Constants.PG_CONCORDANCE, plots=[concordance_plot])]
     return plot_groups
 
+
 def to_plotgroups(readlen_dist, readqual_dist, output_dir):
     plotgroups = []
     plotgroups.extend(to_readlen_plotgroup(readlen_dist, output_dir))
     plotgroups.extend(to_concordance_plotgroup(readqual_dist, output_dir))
     return plotgroups
 
+
 def to_report(stats_xml, output_dir):
+    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
+                                        v=__version__))
     log.info("Analyzing XML {f}".format(f=stats_xml))
     dset = SubreadSet(stats_xml)
     dset.loadStats()
@@ -150,77 +157,15 @@ def to_report(stats_xml, output_dir):
 
     return spec.apply_view(report)
 
-def args_runner(args):
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
-    output_dir = os.path.dirname(args.report)
-    try:
-        report = to_report(args.subread_set, output_dir)
-        report.write_json(args.report)
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
-    output_dir = os.path.dirname(rtc.task.output_files[0])
-    try:
-        report = to_report(rtc.task.input_files[0], output_dir)
-        report.write_json(rtc.task.output_files[0])
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
-
-
-def _add_options_to_parser(p):
-    p.add_input_file_type(
-        FileTypes.DS_SUBREADS,
-        file_id="subread_set",
-        name="SubreadSet",
-        description="SubreadSet")
-    p.add_output_file_type(FileTypes.REPORT, "report", spec.title,
-                           description=("Filename of JSON output report. Should be name only, "
-                                        "and will be written to output dir"),
-                           default_name="report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
-def _get_parser_core():
-    p = get_pbparser(
-        Constants.TOOL_ID,
-        __version__,
-        "Control Report",
-        __doc__,
-        Constants.DRIVER_EXE,
-        is_distributed=True)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+resolved_tool_contract_runner = functools.partial(rtc_runner_subreads_report,
+                                                  to_report)
+args_runner = functools.partial(arg_runner_subreads_report, to_report)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
+    mp = get_subreads_report_parser(Constants.TOOL_ID, __version__, spec.title,
+                                    __doc__, Constants.DRIVER_EXE)
     return pbparser_runner(argv[1:],
                            mp,
                            args_runner,

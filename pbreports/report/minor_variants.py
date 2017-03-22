@@ -9,12 +9,10 @@ import json
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
-from pbreports.model import InvalidStatsError
 
 __version__ = '0.1.0'
 
@@ -47,6 +45,7 @@ def get_hap_vals(hap_hits, hap_vals, _type):
         if hap_hit:
            haps.append(_type(hap_vals[i]))
     return haps
+
 
 def to_variant_table(juliet_summary):
     samples = []
@@ -98,6 +97,7 @@ def join_col(col):
         joined_col.append(";".join(map(str, item)))
     return joined_col
 
+
 def write_variant_table(variant_table, output_dir):
     for i in [7,8,9]:
         variant_table[i] = join_col(variant_table[i])
@@ -115,6 +115,7 @@ def my_agg(my_list, _func):
     except ValueError:
        # case for max of empty list
        return None
+
 
 def aggregate_variant_table(variant_table):
 
@@ -169,6 +170,8 @@ def to_sample_table(variant_table):
 
 
 def to_report(juliet_summary_file, output_dir):
+    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
+                                        v=__version__))
     
     with open(juliet_summary_file) as f:
         juliet_summary = json.load(f)
@@ -182,30 +185,17 @@ def to_report(juliet_summary_file, output_dir):
 
 
 def args_runner(args):
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
     output_dir = os.path.dirname(args.report)
-    try:
-        report = to_report(args.subread_set, output_dir)
-        report.write_json(args.report)
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
+    report = to_report(args.subread_set, output_dir)
+    report.write_json(args.report)
+    return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
+def resolved_tool_contract_runner(rtc):
     output_dir = os.path.dirname(rtc.task.output_files[0])
-    try:
-        report = to_report(rtc.task.input_files[0], output_dir)
-        report.write_json(rtc.task.output_files[0])
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
+    report = to_report(rtc.task.input_files[0], output_dir)
+    report.write_json(rtc.task.output_files[0])
+    return 0
 
 
 def _add_options_to_parser(p):
@@ -222,20 +212,6 @@ def _add_options_to_parser(p):
                            description=("Filename of CSV output table. Should be name only, "
                                         "and will be written to output dir"),
                            default_name="report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
 
 
 def _get_parser_core():

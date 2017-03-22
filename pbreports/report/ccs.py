@@ -30,7 +30,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import ConsensusReadSet, BarcodeSet
 
-from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
+from pbreports.plot.helper import (get_fig_axes_lpr, make_histogram,
                                    get_blue, get_green, Line, apply_line_data)
 from pbreports.util import accuracy_as_phred_qv
 from pbreports.io.specs import *
@@ -275,20 +275,6 @@ def _make_barcode_table(bam_stats, ccs_set):
     return Table(Constants.T_BARCODES, columns=columns)
 
 
-def _make_histogram(data, axis_labels, nbins, barcolor):
-    """Create a fig, ax instance and generate a histogram.
-
-    :param data: np.array
-    :param axis_labels: (tuple of str) (axis label, y axis label)
-    :return: matplotlib fig, ax
-    """
-    # axis_labels = ('Median Distance Between Adapters', 'Pre-Filter Reads')
-    fig, ax = get_fig_axes_lpr()
-    apply_histogram_data(
-        ax, data, nbins, axis_labels=axis_labels, barcolor=barcolor)
-    return fig, ax
-
-
 def to_cdf(points):
     _total = 0
     data = []
@@ -298,70 +284,31 @@ def to_cdf(points):
     return data
 
 
-def _make_histogram_with_cdf(data, axis_labels, nbins, barcolor):
-    """
-
-    """
-    fig, ax = _make_histogram(data, axis_labels, nbins, barcolor)
-
-    bins, bin_edges = np.histogram(data, bins=nbins)
-
-    rax = ax.twinx()
-
-    log.debug(
-        "Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
-
-    cdf = to_cdf(zip(bin_edges[:-1], bins))
-    max_cdf = max(cdf)
-    sdf = [max_cdf - i for i in cdf]
-
-    log.debug((len(bin_edges), len(sdf)))
-
-    # Plot the data
-    rax.plot(bin_edges[:-1], sdf, 'k')
-    rax.set_xlim(bin_edges.min(), bin_edges.max())
-
-    if len(axis_labels) == 3:
-        rax.set_ylabel(axis_labels[2])
-
-    return fig, ax
-
-
 def _custom_histogram_with_cdf(new_rlabel, threshold, data, axis_labels, nbins, barcolor):
-    fig, ax = _make_histogram(data, axis_labels, nbins, barcolor)
-
+    fig, ax = make_histogram(data, axis_labels, nbins, barcolor)
     bins, bin_edges = np.histogram(data, bins=nbins)
-
     rax = ax.twinx()
-
     log.debug(
         "Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
-
     cdf = to_cdf(zip(bin_edges[:-1], bins))
     max_cdf = max(cdf)
-
     exceeded_threshold = False
     if max_cdf > threshold:
         exceeded_threshold = True
         tmp_cdf = [x / float(threshold) for x in cdf]
         cdf = tmp_cdf
         max_cdf = max(cdf)
-
     sdf = [max_cdf - i for i in cdf]
-
     log.debug((len(bin_edges), len(sdf)))
-
     # Plot the data
     rax.plot(bin_edges[:-1], sdf, 'k')
     rax.set_xlim(bin_edges.min(), bin_edges.max())
-
     if len(axis_labels) == 3:
         if exceeded_threshold:
             rax.set_ylabel(new_rlabel)
         else:
             # use the default rlabel given
             rax.set_ylabel(axis_labels[2])
-
     return fig, ax
 
 
@@ -437,7 +384,7 @@ create_accuracy_plot = functools.partial(
     80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
 create_npasses_plot = functools.partial(
-    create_plot, _make_histogram, Constants.P_NPASSES,
+    create_plot, make_histogram, Constants.P_NPASSES,
     (get_plot_xlabel(spec, Constants.PG_NPASSES, Constants.P_NPASSES),
      get_plot_ylabel(spec, Constants.PG_NPASSES, Constants.P_NPASSES)),
     80, Constants.I_CCS_NUM_PASSES_HIST, "#F18B17")

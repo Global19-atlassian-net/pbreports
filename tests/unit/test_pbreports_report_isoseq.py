@@ -89,7 +89,10 @@ class _TestIsoSeqBase(unittest.TestCase):
 
 
 class TestIsoSeqClassify(_TestIsoSeqBase):
-    pass
+
+    def test_get_parser(self):
+        p = pbreports.report.isoseq_classify.get_contract_parser()
+        self.assertTrue(len(p.tool_contract_parser.input_types), 2)
 
 
 class TestIsoSeqCluster(_TestIsoSeqBase):
@@ -111,6 +114,10 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
                   j=cls.report_json)
         cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
+
+    def test_get_parser(self):
+        p = pbreports.report.isoseq_cluster.get_contract_parser()
+        self.assertTrue(len(p.tool_contract_parser.input_types), 2)
 
 
 class TestIsoSeqClassifyTCI(PbTestApp):
