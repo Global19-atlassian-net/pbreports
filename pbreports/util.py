@@ -513,8 +513,8 @@ def get_subreads_report_parser(tool_id, version, title, desc, driver_exe):
         description="SubreadSet")
     p.add_output_file_type(FileTypes.REPORT, "report", title,
                            description=("Filename of JSON output report. "
-                                       "Should be name only, and will be "
-                                       "written to output dir"),
+                                        "Should be name only, and will be "
+                                        "written to output dir"),
                            default_name="report")
     return p
 

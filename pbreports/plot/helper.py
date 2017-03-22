@@ -418,7 +418,7 @@ def make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
     bin_edges = np.array(bin_edges)
     rax = ax.twinx()
     log.debug("Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
-    csum = np.append([0],np.cumsum(bins)[:-1])
+    csum = np.append([0], np.cumsum(bins)[:-1])
     sdf = [csum[-1] - i for i in csum]
     log.debug((len(bin_edges), len(sdf)))
     # Plot the data

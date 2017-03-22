@@ -69,7 +69,8 @@ class _TestIsoSeqBase(unittest.TestCase):
         r = self._to_report()
         report_plot_group_ids = [p.id for p in r.plotGroups]
         plot_group_ids = get_plot_groups_from_constants(self.report_constants)
-        self.assertSequenceEqual(sorted(report_plot_group_ids), sorted(plot_group_ids))
+        self.assertSequenceEqual(
+            sorted(report_plot_group_ids), sorted(plot_group_ids))
 
     def test_images_exist(self):
         image_names = get_image_names_from_constants(self.report_constants)
@@ -111,7 +112,8 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
                   hq=cls.input_hq_isoforms_fq, lq=cls.input_lq_isoforms_fq,
                   s=cls.output_summary_json,
                   j=cls.report_json)
-        cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(**_d)
+        cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(
+            **_d)
         cls.code = run_backticks(cmd)
 
     def test_get_parser(self):

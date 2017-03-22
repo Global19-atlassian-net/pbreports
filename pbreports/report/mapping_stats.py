@@ -863,7 +863,7 @@ class MappingStatsCollector(object):
             with SubreadSet(self.subreads_file) as subreads:
                 subreads.updateCounts()
                 n_bases_raw = subreads.totalLength
-                attr_values = {a.id:a.value for a in attributes}
+                attr_values = {a.id: a.value for a in attributes}
                 n_bases_mapped = attr_values[Constants.A_SUBREAD_NBASES]
                 pct_bases_mapped = 0.0
                 if n_bases_raw > 0:

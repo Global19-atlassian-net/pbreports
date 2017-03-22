@@ -34,10 +34,12 @@ def get_fixed_bin_sts():
            'm54009_160323_173323.sts.xml')
     return sfn
 
+
 def get_merged_subreadset():
     sfn = ('/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/'
            'loading/merged.dataset.xml')
     return sfn
+
 
 def get_fixed_bin_dataset():
     sfn = get_fixed_bin_sts()

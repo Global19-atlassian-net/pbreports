@@ -16,6 +16,7 @@ from pbreports.io.specs import *
 
 __version__ = '0.1.0'
 
+
 class Constants(object):
     TOOL_ID = "pbreports.tasks.minor_variants_report"
     DRIVER_EXE = ("python -m pbreports.report.minor_variants "
@@ -43,7 +44,7 @@ def get_hap_vals(hap_hits, hap_vals, _type):
     haps = []
     for i, hap_hit in enumerate(hap_hits):
         if hap_hit:
-           haps.append(_type(hap_vals[i]))
+            haps.append(_type(hap_vals[i]))
     return haps
 
 
@@ -81,12 +82,14 @@ def to_variant_table(juliet_summary):
                         coverage.append(_coverage)
                         genes.append(_genes)
                         drms.append(variant['known_drm'].split(" + "))
-                        haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names, str))
-                        haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs, float))
+                        haplotype_names.append(get_hap_vals(
+                            variant['haplotype_hit'], _all_hap_names, str))
+                        haplotype_frequencies.append(get_hap_vals(
+                            variant['haplotype_hit'], _all_hap_freqs, float))
 
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
-   
+
     return variant_table
 
 
@@ -99,7 +102,7 @@ def join_col(col):
 
 
 def write_variant_table(variant_table, output_dir):
-    for i in [7,8,9]:
+    for i in [7, 8, 9]:
         variant_table[i] = join_col(variant_table[i])
     variant_table_tr = zip(*variant_table)
     with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
@@ -113,8 +116,8 @@ def my_agg(my_list, _func):
     try:
         return _func(i for i in itertools.chain(*my_list))
     except ValueError:
-       # case for max of empty list
-       return None
+        # case for max of empty list
+        return None
 
 
 def aggregate_variant_table(variant_table):
@@ -147,13 +150,14 @@ def aggregate_variant_table(variant_table):
         else:
             max_hap_freq.append(None)
 
-    sample_table = [samples, coverage, variants, genes, drms, haplotypes, max_hap_freq]
+    sample_table = [samples, coverage, variants,
+                    genes, drms, haplotypes, max_hap_freq]
 
     return sample_table
-        
+
 
 def to_sample_table(variant_table):
-    
+
     sample_table = aggregate_variant_table(variant_table)
 
     col_ids = [Constants.C_SAMPLES, Constants.C_COVERAGE, Constants.C_VARIANTS,
@@ -172,7 +176,7 @@ def to_sample_table(variant_table):
 def to_report(juliet_summary_file, output_dir):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
-    
+
     with open(juliet_summary_file) as f:
         juliet_summary = json.load(f)
 
@@ -243,4 +247,3 @@ def main(argv=sys.argv):
 
 if __name__ == "__main__":
     sys.exit(main())
-

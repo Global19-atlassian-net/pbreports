@@ -92,7 +92,8 @@ def make_report(contig_set, summary_txt, output_dir):
             for record in f:
                 yield len(record.sequence)
 
-    readlengths = np.fromiter(_get_reads(), dtype=np.int64, count=-1).astype(float)
+    readlengths = np.fromiter(
+        _get_reads(), dtype=np.int64, count=-1).astype(float)
 
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, output_dir)

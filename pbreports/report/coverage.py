@@ -111,35 +111,36 @@ class CoverageReport(object):
         _validate_inputs(gff, reference)
         top_contigs = get_top_contigs(reference, max_contigs_to_plot)
         cov_map = _get_contigs_to_plot(gff, top_contigs)
-    
+
         # stats may be None
         stats = _get_reference_coverage_stats(cov_map.values())
-    
+
         a1 = _get_att_mean_coverage(stats)
         a2 = _get_att_percent_missing(stats)
-    
+
         plot_grp_coverage = self._create_coverage_plot_grp(
             top_contigs, cov_map, output_dir)
-    
+
         plot_grp_histogram = None
         if stats is not None:
-            plot_grp_histogram = self._create_coverage_histo_plot_grp(stats, output_dir)
-    
+            plot_grp_histogram = self._create_coverage_histo_plot_grp(
+                stats, output_dir)
+
         plotgroups = []
         # Don't add the Plot Group if no plots are added
         if plot_grp_coverage.plots:
             plotgroups.append(plot_grp_coverage)
-    
+
         if plot_grp_histogram is not None:
             # Don't add the Plot Group if no plots are added
             if plot_grp_histogram.plots:
                 plotgroups.append(plot_grp_histogram)
-    
+
         rpt = Report(self.spec.id,
                      plotgroups=plotgroups,
                      attributes=[a1, a2],
                      dataset_uuids=(ReferenceSet(reference).uuid,))
-    
+
         rpt = self.spec.apply_view(rpt)
         rpt.write_json(os.path.join(output_dir, report))
         return rpt
@@ -164,7 +165,7 @@ class CoverageReport(object):
                 continue
             ctg_cov = cov_map[tc.id]
             fig, ax = self._create_contig_plot(ctg_cov)
-    
+
             fname = os.path.join(output_dir, ctg_cov.file_name)
             if thumbnail is None:
                 imgfiles = save_figure_with_thumbnail(fig, fname)
@@ -174,13 +175,13 @@ class CoverageReport(object):
             plt.close(fig)
             id_ = "coverage_contig_{i}".format(i=str(idx))
             caption = self.spec.get_plotgroup_spec(Constants.PG_COVERAGE
-                ).get_plot_spec(Constants.P_COVERAGE).caption + " {c}."
+                                                   ).get_plot_spec(Constants.P_COVERAGE).caption + " {c}."
             plot = Plot(id_, os.path.basename(fname),
                         caption.format(c=ctg_cov.name),
                         title=caption.format(c=ctg_cov.name))
             plots.append(plot)
             idx += 1
-    
+
         plot_group = PlotGroup(
             Constants.PG_COVERAGE,
             title=get_plotgroup_title(self.spec, Constants.PG_COVERAGE),
@@ -217,19 +218,21 @@ class CoverageReport(object):
         line_fill = LineFill(xData=npXData,
                              yData=np.array(contig_coverage.yDataMean),
                              linecolor=Constants.COLOR_STEEL_BLUE_DARK, alpha=0.6,
-                             yDataMin=np.array(contig_coverage.yDataStdevMinus),
+                             yDataMin=np.array(
+                                 contig_coverage.yDataStdevMinus),
                              yDataMax=np.array(contig_coverage.yDataStdevPlus),
                              edgecolor=Constants.COLOR_STEEL_BLUE_LIGHT,
                              facecolor=Constants.COLOR_STEEL_BLUE_LIGHT)
         lines_fills = [line_fill]
         fig, ax = get_fig_axes_lpr()
-        xlabel = get_plot_xlabel(self.spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
-        ylabel = get_plot_ylabel(self.spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
+        xlabel = get_plot_xlabel(
+            self.spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
+        ylabel = get_plot_ylabel(
+            self.spec, Constants.PG_COVERAGE, Constants.P_COVERAGE)
         apply_line_data(ax, lines_fills, (xlabel, ylabel))
         apply_line_fill_data(ax, lines_fills)
         return fig, ax
-    
-    
+
     def _create_histogram(self, stats):
         """
         Returns a fig,ax histogram plot for this reference
@@ -319,9 +322,9 @@ def _get_att_percent_missing(stats):
     """
     v = None
     if stats is None:
-        v = 100.0 # no mapped reads, so all bases are missing
+        v = 100.0  # no mapped reads, so all bases are missing
     else:
-        v = stats.perc_missing_bases/100
+        v = stats.perc_missing_bases / 100
     a = Attribute(Constants.A_MISSING, v)
     return a
 
@@ -424,7 +427,8 @@ class ContigCoverage(object):
         self.yDataStdevPlus = []
         self.yDataStdevMinus = []
 
-        seqid_clean = re.sub("\|", "_", re.sub("/", "__", self._seqid))  # for services
+        seqid_clean = re.sub("\|", "_", re.sub(
+            "/", "__", self._seqid))  # for services
         self.file_name = "coverage_plot_{s}.png".format(s=seqid_clean)
 
     def __repr__(self):
