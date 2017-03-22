@@ -20,7 +20,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
-from pbreports.util import validate_nonempty_file
+from pbreports.io.validators import validate_nonempty_file
 from pbreports.io.specs import *
 
 

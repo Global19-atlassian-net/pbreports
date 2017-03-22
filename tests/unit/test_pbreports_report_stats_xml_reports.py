@@ -21,7 +21,6 @@ from pbcore.io import SubreadSet
 import pbtestdata
 
 from pbreports.util import dist_shaper, continuous_dist_shaper
-from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
 from pbreports.report.filter_stats_xml import Constants
