@@ -5,13 +5,8 @@ import unittest
 import logging
 import json
 import os
-import os.path as op
-import re
-
-import pysam
 
 from pbcore.util.Process import backticks
-from pbcore.io import BarcodeSet, SubreadSet, FastaWriter
 import pbcommand.testkit
 
 import pbtestdata

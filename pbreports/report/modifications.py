@@ -7,27 +7,20 @@ Generates plots showing the distribution of kinetics across all bases, taken
 from ipdSummary output.
 """
 
-import collections
-import argparse
 import logging
-import gzip
 import os
-import os.path as op
 import sys
 
-from pylab import legend, arange
 import numpy as np
 import h5py
 
 from pbcommand.models.report import Report, PlotGroup, Plot
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
 import pbreports.plot.helper as PH
-from pbreports.util import (add_base_and_plot_options,
-                            add_base_options_pbcommand)
+from pbreports.util import add_base_and_plot_options
 from pbreports.util import Constants as BaseConstants
 from pbreports.io.specs import *
 
@@ -117,7 +110,7 @@ def plot_kinetics_hist(basemods_h5, ax):
         binLim = np.percentile(scores, 99.9) * 1.2
     log.debug("binLim = {l}".format(l=binLim))
     ax.set_xlim(0, binLim)
-    bins = arange(0, binLim, step=binLim / 75)
+    bins = np.arange(0, binLim, step=binLim / 75)
 
     for base, color in zip(base_ids, colors):
         baseHits = bases == base

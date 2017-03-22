@@ -1,9 +1,6 @@
 
-# FIXME use dataset subreads-sequel in PacBioTestData
-
 import os
 import logging
-import traceback
 import json
 import unittest
 import tempfile

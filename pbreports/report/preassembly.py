@@ -15,7 +15,6 @@ For HGAP5, the Report generator is part of another pbsmrtpipe Task.
 
 import logging
 import os
-import sys
 
 from pbcommand.models.report import (Report, Attribute)
 #from pbcommand.common_options import add_debug_option

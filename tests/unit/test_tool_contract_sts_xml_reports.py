@@ -5,7 +5,6 @@ resolve functions should have a class here.
 """
 
 import unittest
-import os.path
 
 import pbcommand.testkit
 

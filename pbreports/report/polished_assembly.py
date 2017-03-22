@@ -2,11 +2,9 @@
 
 """Generate a report based on the polished assembly"""
 
-from collections import OrderedDict
 import logging
 import csv
 import os
-import os.path as op
 import sys
 
 import numpy as np

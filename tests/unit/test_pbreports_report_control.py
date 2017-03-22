@@ -1,15 +1,11 @@
 import os
 import logging
-import traceback
 import json
 import unittest
 import tempfile
 import shutil
 import numpy as np
 import os.path as op
-
-from pbcore.util.Process import backticks
-from pbcore.io import SubreadSet
 
 from pbreports.report.control import to_report
 from base_test_case import validate_report_complete, skip_if_data_dir_not_present

@@ -1,12 +1,10 @@
 
 import os
-import os.path as op
 import logging
 import sys
-import numpy as np
 import functools
 
-from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup, Attribute
+from pbcommand.models.report import Report, Plot, PlotGroup, Attribute
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet

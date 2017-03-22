@@ -8,7 +8,6 @@ from pprint import pformat
 import datetime
 import logging
 import os
-import os.path as op
 import re
 import sys
 
@@ -18,7 +17,6 @@ from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
-from pbcommand.utils import setup_log
 
 from pbreports.io.validators import validate_nonempty_file
 from pbreports.io.specs import *

@@ -7,14 +7,11 @@
 Generate a report summarizing Circular Consensus Read (CCS) results.
 """
 
-from collections import OrderedDict, Counter, defaultdict, namedtuple
+from collections import defaultdict, namedtuple
 import functools
 import os
-import os.path as op
 import sys
 import logging
-import argparse
-import time
 from pprint import pformat
 
 import numpy as np

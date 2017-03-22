@@ -4,17 +4,13 @@ I/O handling for BAM alignment files.
 """
 
 import warnings
-import copy
-import os.path as op
-import os
 import logging
 import re
+import sys
 
 import numpy as np
-import pysam
 
 from pbcore.io import IndexedBamReader
-import sys
 
 log = logging.getLogger(__name__)
 

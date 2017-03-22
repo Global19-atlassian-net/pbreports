@@ -5,13 +5,7 @@ Generate a report on SubreadSet barcoding.
 
 from collections import defaultdict
 from pprint import pformat
-import functools
-import argparse
 import logging
-import time
-import os
-import os.path as op
-import re
 import sys
 
 from pbcommand.cli import pbparser_runner

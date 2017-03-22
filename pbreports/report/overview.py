@@ -5,11 +5,8 @@
 Counts the number of movies and cells in the input dataset.
 """
 
-import os
-import os.path as op
-import sys
-import argparse
 import logging
+import sys
 
 from pbcommand.models.report import Report, Attribute
 from pbcommand.models import FileTypes, get_pbparser

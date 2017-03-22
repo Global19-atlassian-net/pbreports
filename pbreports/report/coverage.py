@@ -5,9 +5,6 @@ Generates a report showing coverage plots for the top 25 contigs of the
 supplied reference.
 """
 
-from collections import OrderedDict
-import argparse
-import hashlib
 import logging
 import re
 import os.path as op
@@ -25,8 +22,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.io.validators import validate_file, validate_dir
-from pbreports.util import get_top_contigs, add_base_and_plot_options
+from pbreports.util import get_top_contigs
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data,
                                    apply_line_fill_data, apply_histogram_data,
                                    LineFill, save_figure_with_thumbnail)

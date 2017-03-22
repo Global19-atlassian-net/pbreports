@@ -1,12 +1,9 @@
 """Summarize the Long Amplicon Analysis using the ZMW results"""
 
-from collections import defaultdict
 from pprint import pformat
-import argparse
 import logging
 import csv
 import os
-import os.path as op
 import sys
 
 from pbcommand.models.report import Report, Table, Column

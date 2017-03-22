@@ -1,10 +1,7 @@
 
 import os
 import logging
-import subprocess
 import unittest
-
-from pbcore.io import IndexedBamReader
 
 import pbtestdata
 

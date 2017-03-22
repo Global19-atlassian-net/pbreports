@@ -2,7 +2,6 @@
 """Summarizes the Long Amplicon Analysis"""
 
 import os
-import os.path as op
 import sys
 import logging
 from pprint import pformat

@@ -5,7 +5,6 @@ Blasr/pbalign.
 """
 
 from collections import OrderedDict
-import multiprocessing
 import sys
 import os
 import os.path as op
@@ -19,7 +18,7 @@ import numpy as np
 from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
 
-from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import openAlignmentFile, openDataSet, openDataFile
@@ -614,15 +613,6 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
             log.warn(
                 "model {m}. Skipping movie {r}".format(m=repr(model), r=movie))
             pass
-
-
-def _harvest_file_data(file_name):
-    log.info("reading {f}.pbi".format(f=file_name))
-    try:
-        return alignment_info_from_bam(file_name)
-    except Exception as err:
-        # multiprocessing does not handle uncaught Exceptions gracefully
-        return err
 
 
 def analyze_movies(movies, alignment_file_names, stats_models):

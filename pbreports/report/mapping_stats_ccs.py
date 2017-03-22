@@ -7,8 +7,6 @@ with Blasr/pbalign.
 from collections import OrderedDict
 import logging
 import sys
-import os
-import os.path as op
 import numpy as np
 
 from pbcommand.models import get_pbparser, FileTypes

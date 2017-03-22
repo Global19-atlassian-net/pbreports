@@ -1,6 +1,5 @@
 
 import functools
-import itertools
 import tempfile
 import unittest
 import logging
@@ -9,15 +8,11 @@ import numpy
 import os
 
 import pbcommand.testkit
-from pbcore.io import CmpH5Reader, GffIO, AlignmentSet, IndexedBamReader
+from pbcore.io import GffIO, AlignmentSet
 
 import pbtestdata
 
 from pbreports.report.summarize_coverage import interval_tree, summarize_coverage
-
-from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
-
-SC_DATA_DIR = os.path.join(ROOT_DATA_DIR, 'summarize_coverage')
 
 log = logging.getLogger(__name__)
 

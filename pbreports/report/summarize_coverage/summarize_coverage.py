@@ -15,9 +15,8 @@ import time
 
 import numpy
 
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffIO, openDataSet
 

@@ -6,7 +6,6 @@ import logging
 import shutil
 import unittest
 import tempfile
-from pprint import pformat
 
 from pbcommand.models.report import Report
 from pbcommand.pb_io.report import load_report_from_json
