@@ -140,7 +140,11 @@ def aggregate_variant_table(variant_table):
         genes.append(len(np.unique(_genes)))
         drms.append(len(my_agg(_drms, np.unique)))
         haplotypes.append(len(my_agg(_haplotypes, np.unique)))
-        max_hap_freq.append(float(my_agg(_max_hap_freq, max)))
+        agg_max_hap_freq = my_agg(_max_hap_freq, max)
+        if agg_max_hap_freq is not None:
+            max_hap_freq.append(float(my_agg(_max_hap_freq, max)))
+        else:
+            max_hap_freq.append(None)
 
     sample_table = [samples, coverage, variants, genes, drms, haplotypes, max_hap_freq]
 
@@ -174,7 +178,7 @@ def to_report(juliet_summary_file, output_dir):
     tables = [to_sample_table(variant_table)]
     report = Report(Constants.R_ID, tables=tables)
 
-    return spec.apply_view(report, force=True)
+    return spec.apply_view(report)
 
 
 def args_runner(args):
