@@ -49,13 +49,6 @@ class MovieIdx(object):
         return "<MovieIdx name:{n}>".format(n=self.name)
 
 
-def _getPct(percentile, vector):
-    """Returns the specified percentile value of the numpy vector"""
-    sorted_vector = np.sort(vector)
-    index = np.ceil((percentile / 100.0) * len(sorted_vector))
-    return sorted_vector[-1] if index >= len(sorted_vector) else sorted_vector[index]
-
-
 class MovieAlignmentInfo(object):
 
     def __init__(self, bam_file_name, movie_name):

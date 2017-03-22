@@ -4,14 +4,15 @@ import os
 import unittest
 import nose
 
-from base_test_case import BaseTestCase
-from pbreports.util import (validate_output_dir, validate_report,
-                            movie_to_cell, get_fasta_readlengths,
-                            compute_n50_from_file, compute_n50,
-                            validate_file, validate_nonempty_file,
-                            accuracy_as_phred_qv)
+from pbcommand.models.report import Attribute
 
-from base_test_case import ROOT_DATA_DIR, skip_if_data_dir_not_present
+from pbreports.util import (movie_to_cell, get_fasta_readlengths,
+                            compute_n50_from_file, compute_n50,
+                            accuracy_as_phred_qv, report_to_attributes,
+                            attributes_to_table)
+from pbreports.io.validators import validate_output_dir, validate_report, validate_file, validate_nonempty_file
+
+from base_test_case import BaseTestCase, ROOT_DATA_DIR, skip_if_data_dir_not_present, LOCAL_DATA
 
 _NAME = 'amplicon_analysis_consensus'
 _EMPTY = 'amplicon_analysis_consensus_empty'
@@ -199,3 +200,20 @@ class TestUtil(BaseTestCase):
         qv = accuracy_as_phred_qv([0.95, 1.0, 0.99999])
         qvs = [int(round(x)) for x in qv]
         self.assertEqual(qvs, [13, 70, 50])
+
+    def test_attributes_to_table(self):
+        attr = [
+            Attribute("id1", value=1234),
+            Attribute("id2", value=1.234),
+            Attribute("id3", value="1234"),
+            Attribute("id4", value=True)
+        ]
+        t = attributes_to_table(attr, "table1")
+        self.assertEqual(len(t.columns), 4)
+        self.assertEqual(t.columns[0].id, "id1")
+        self.assertEqual(t.columns[0].values, [1234])
+
+    def test_report_to_attributes(self):
+        rpt = os.path.join(LOCAL_DATA, "isoseq", "isoseq_cluster_report.json")
+        attr = report_to_attributes(rpt)
+        self.assertEqual(len(attr), 4)

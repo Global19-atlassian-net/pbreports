@@ -2,15 +2,21 @@ import os
 import os.path as op
 import logging
 import sys
-import numpy as np
+import csv
+import itertools
 import json
 
-from pbcommand.models.report import Report, Table, Column, Plot, PlotGroup, Attribute
+import numpy as np
+
+from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import TaskTypes, FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
+from pbreports.model import InvalidStatsError
+
+__version__ = '0.1.0'
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.minor_variants_report"
@@ -28,50 +34,138 @@ class Constants(object):
     VARIANT_FILE = "variant_summary.csv"
 
 
-def to_variant_table(juliet_summary, output_dir):
-    samples = positions = ref_codons = sample_codons = frequencies = 
-    coverage = genes = drms = haplotype_names = haplotype_frequencies = []
-    
+log = logging.getLogger(__name__)
+spec = load_spec(Constants.R_ID)
+
+
+def get_hap_vals(hap_hits, hap_vals, _type):
+    """Returns list of haplotype name or frequency values
+       for a given variant, using the boolean array and
+       list of possible values"""
+    haps = []
+    for i, hap_hit in enumerate(hap_hits):
+        if hap_hit:
+           haps.append(_type(hap_vals[i]))
+    return haps
+
+def to_variant_table(juliet_summary):
+    samples = []
+    positions = []
+    ref_codons = []
+    sample_codons = []
+    frequencies = []
+    coverage = []
+    genes = []
+    drms = []
+    haplotype_names = []
+    haplotype_frequencies = []
+    _all_hap_names = []
+    _all_hap_freqs = []
+
+    for sample_name, sample_details in juliet_summary.iteritems():
+        for haplotype in sample_details['haplotypes']:
+            _all_hap_names.append(haplotype['name'])
+            _all_hap_freqs.append(haplotype['frequency'])
+        for gene in sample_details['genes']:
+            _genes = gene['name']
+            for position in gene['variant_positions']:
+                _coverage = position['coverage']
+                _ref_codons = position['ref_codon']
+                _position = position['ref_position']
+                for aa in position['variant_amino_acids']:
+                    for variant in aa['variant_codons']:
+                        samples.append(sample_name)
+                        positions.append(_position)
+                        ref_codons.append(_ref_codons)
+                        sample_codons.append(variant['codon'])
+                        frequencies.append(variant['frequency'])
+                        coverage.append(_coverage)
+                        genes.append(_genes)
+                        drms.append(variant['known_drm'].split(" + "))
+                        haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names, str))
+                        haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs, float))
+
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
-    
+   
     return variant_table
 
 
+def join_col(col):
+    """Converts an array of arrays into an array of strings, using ';' as the sep."""
+    joined_col = []
+    for item in col:
+        joined_col.append(";".join(map(str, item)))
+    return joined_col
+
 def write_variant_table(variant_table, output_dir):
+    for i in [7,8,9]:
+        variant_table[i] = join_col(variant_table[i])
+    variant_table_tr = zip(*variant_table)
     with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
         writer = csv.writer(csvfile)
-        [writer.writerow(r) for r in variant_table]
+        [writer.writerow(r) for r in variant_table_tr]
 
 
+def my_agg(my_list, _func):
+    """Performs the specified function on an array of arrays, 
+       returning None in the case of a ValueError"""
+    try:
+        return _func(i for i in itertools.chain(*my_list))
+    except ValueError:
+       # case for max of empty list
+       return None
 
 def aggregate_variant_table(variant_table):
-    samples = coverage = variants = genes = drms = haploytypes = max_hap_freq = []
-    
-    return samples, coverage, variants, genes, drms, haploytypes, max_hap_freq
+
+    samples = []
+    coverage = []
+    variants = []
+    genes = []
+    drms = []
+    haplotypes = []
+    max_hap_freq = []
+
+    for sample in set(variant_table[0]):
+        indices = [i for i, x in enumerate(variant_table[0]) if x == sample]
+        _coverage = [variant_table[5][i] for i in indices]
+        _genes = [variant_table[6][i] for i in indices]
+        _drms = [variant_table[7][i] for i in indices]
+        _haplotypes = [variant_table[8][i] for i in indices]
+        _max_hap_freq = [variant_table[9][i] for i in indices]
+
+        samples.append(str(sample))
+        coverage.append(int(np.median(_coverage)))
+        variants.append(len(_coverage))
+        genes.append(len(np.unique(_genes)))
+        drms.append(len(my_agg(_drms, np.unique)))
+        haplotypes.append(len(my_agg(_haplotypes, np.unique)))
+        agg_max_hap_freq = my_agg(_max_hap_freq, max)
+        if agg_max_hap_freq is not None:
+            max_hap_freq.append(float(my_agg(_max_hap_freq, max)))
+        else:
+            max_hap_freq.append(None)
+
+    sample_table = [samples, coverage, variants, genes, drms, haplotypes, max_hap_freq]
+
+    return sample_table
         
 
 def to_sample_table(variant_table):
-    samples, coverage, variants, genes, drms, haploytypes, 
-    max_hap_freq = aggregate_variant_table(variant_table)
     
-    columns = [Column(Constants.C_SAMPLES),
-               Column(Constants.C_COVERAGE),
-               Column(Constants.C_VARIANTS),
-               Column(Constants.C_GENES),
-               Column(Constants.C_DRMS),
-               Column(Constants.C_HAPLOTYPES),
-               Column(Constants.C_HAP_FREQ)]
-    sample_table = Table(Constants.T_ID, columns=columns)
-    sample.table.add_data_by_column_id(Constants.C_SAMPLES, samples)
-    sample.table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
-    sample.table.add_data_by_column_id(Constants.C_VARIANTS, variants)
-    sample.table.add_data_by_column_id(Constants.C_GENES, genes)
-    sample.table.add_data_by_column_id(Constants.C_DRMS, drms)
-    sample.table.add_data_by_column_id(Constants.C_HAPLOTYPES, haplotypes)
-    sample.table.add_data_by_column_id(Constants.C_HAP_FREQ, max_hap_freq)
+    sample_table = aggregate_variant_table(variant_table)
 
-    return sample_table
+    col_ids = [Constants.C_SAMPLES, Constants.C_COVERAGE, Constants.C_VARIANTS,
+               Constants.C_GENES, Constants.C_DRMS, Constants.C_HAPLOTYPES,
+               Constants.C_HAP_FREQ]
+
+    columns = []
+    for i, col_id in enumerate(col_ids):
+        columns.append(Column(col_id, values=sample_table[i]))
+
+    sample_table_r = Table(Constants.T_ID, columns=columns)
+
+    return sample_table_r
 
 
 def to_report(juliet_summary_file, output_dir):
@@ -85,6 +179,19 @@ def to_report(juliet_summary_file, output_dir):
     report = Report(Constants.R_ID, tables=tables)
 
     return spec.apply_view(report)
+
+
+def args_runner(args):
+    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
+                                        v=__version__))
+    output_dir = os.path.dirname(args.report)
+    try:
+        report = to_report(args.subread_set, output_dir)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
 
 
 def resolved_tool_contract_runner(resolved_tool_contract):
