@@ -439,20 +439,6 @@ def _add_options_to_parser(p):
     return p
 
 
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
 def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
@@ -461,7 +447,6 @@ def _get_parser_core():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-
     return p
 
 

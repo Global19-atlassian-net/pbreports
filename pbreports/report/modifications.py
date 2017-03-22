@@ -174,16 +174,6 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     return 0
 
 
-def add_options_to_parser(p):
-    from pbreports.io.validators import validate_file
-    p.description = __doc__  # FIXME which is probably wrong
-    p.version = __version__
-    p = add_base_and_plot_options(p)
-    p.add_argument("basemods_h5", help="modifications.h5", type=validate_file)
-    p.set_defaults(func=_args_runner)
-    return p
-
-
 def args_runner(args):
     return make_modifications_report(
         modifications_h5=args.basemods_h5,

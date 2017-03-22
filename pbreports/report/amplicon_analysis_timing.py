@@ -168,20 +168,6 @@ def _add_options_to_parser(p):
         default_name="timing_report")
 
 
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
 def _get_parser_core():
     driver_exe = ("python -m "
                   "pbreports.report.amplicon_analysis_timing "
