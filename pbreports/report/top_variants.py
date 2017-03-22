@@ -33,7 +33,6 @@ class Constants(object):
     BATCH_SORT_SIZE_ID = "pbreports.task_options.batch_sort_size"
     HOW_MANY_DEFAULT = 100
     BATCH_SORT_SIZE_DEFAULT = 10000
-    T_MINOR = "top_minor_variants_table"
     C_SEQ = 'sequence'
     C_POS = 'position'
     C_VAR = 'variant'
@@ -48,7 +47,7 @@ spec = load_spec(Constants.R_ID)
 
 
 def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
-                            output_dir, is_minor_variants_rpt=False):
+                            output_dir):
     """
     Entry to report.
     :param gff: (str) path to variants.gff (or rare_variants.gff). Note, could also be *.gz
@@ -57,16 +56,10 @@ def make_topvariants_report(gff, reference, how_many, batch_sort_size, report,
     :param batch_sort_size: (int)
     :param report: (str) report name
     :param batch_sort_size: (str) output dir
-    :param is_minor_variants_rpt: (bool) True to create a minor top variant report. False to
-    create a variant report.
     """
     _validate_inputs(gff, reference, how_many, batch_sort_size)
 
-    table_builder = None
-    if is_minor_variants_rpt:
-        table_builder = MinorVariantTableBuilder()
-    else:
-        table_builder = VariantTableBuilder()
+    table_builder = VariantTableBuilder()
     vf = VariantFinder(gff, reference, how_many, batch_sort_size)
     top = vf.find_top()
     for v in top:
@@ -138,7 +131,7 @@ class BaseVariantTableBuilder(object):
 
     def _add_common_variant_atts(self, variant):
         """
-        Add variant attributes common to the "top" and "top minor" variant reports.
+        Add variant attributes common to the top variant report.
         :param variant: Variant
         """
         self._table.add_data_by_column_id(Constants.C_SEQ, variant.contig)
@@ -147,23 +140,6 @@ class BaseVariantTableBuilder(object):
         self._table.add_data_by_column_id(Constants.C_TYP, variant.type)
         self._table.add_data_by_column_id(Constants.C_COV, variant.coverage)
         self._table.add_data_by_column_id(Constants.C_CON, variant.confidence)
-
-
-class MinorVariantTableBuilder(BaseVariantTableBuilder):
-
-    def __init__(self):
-        super(MinorVariantTableBuilder, self).__init__()
-        self._table.columns.append(Column(Constants.C_FRE))
-
-    def _get_table_title(self):
-        return ""
-
-    def _get_table_id(self):
-        return Constants.T_MINOR
-
-    def add_variant(self, variant):
-        self._add_common_variant_atts(variant)
-        self._table.add_data_by_column_id(Constants.C_FRE, variant.frequency)
 
 
 class VariantTableBuilder(BaseVariantTableBuilder):
@@ -326,15 +302,6 @@ def add_options_to_parser(p):
     return _add_options_to_parser(p)
 
 
-def add_options_to_parser_minor(p):
-    desc = 'Generates a report showing a table of minor top variants sorted by confidence.'
-    p = add_base_options(p)
-    p = _add_options_to_parser(p)
-    p.description = desc
-    p.set_defaults(func=args_runner_minor)
-    return p
-
-
 def get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
@@ -364,7 +331,6 @@ def get_contract_parser():
               default=Constants.BATCH_SORT_SIZE_DEFAULT,
               name="Batch sort size",
               description="Intermediate sort size parameter (default=10000)")
-    # XXX do we need a flag for minor variants?
     return p
 
 
@@ -378,17 +344,6 @@ def args_runner(args):
         output_dir=os.path.dirname(args.report))
 
 
-def args_runner_minor(args):
-    return make_topvariants_report(
-        gff=args.gff,
-        reference=args.reference,
-        how_many=args.how_many,
-        batch_sort_size=args.batch_sort_size,
-        report=args.report,
-        output_dir=os.path.dirname(args.report),
-        is_minor_variants_rpt=True)
-
-
 def resolved_tool_contract_runner(resolved_tool_contract):
     rtc = resolved_tool_contract
     return make_topvariants_report(
@@ -397,8 +352,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         how_many=rtc.task.options[Constants.HOW_MANY_ID],
         batch_sort_size=rtc.task.options[Constants.BATCH_SORT_SIZE_ID],
         report=rtc.task.output_files[0],
-        output_dir=os.path.dirname(rtc.task.output_files[0]),
-        is_minor_variants_rpt=False)
+        output_dir=os.path.dirname(rtc.task.output_files[0]))
 
 
 def main(argv=sys.argv):
