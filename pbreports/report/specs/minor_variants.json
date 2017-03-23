@@ -48,7 +48,7 @@
                     "header": "Number of Haplotypes",
                     "type": "int",
                     "format": "{:,d}",
-                    "id": "haploypes",
+                    "id": "haplotypes",
                     "description": ""
                 },
                 {
