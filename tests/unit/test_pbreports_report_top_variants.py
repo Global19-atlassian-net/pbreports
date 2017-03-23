@@ -1,6 +1,4 @@
 
-from unittest import SkipTest
-import traceback
 import tempfile
 import unittest
 import logging

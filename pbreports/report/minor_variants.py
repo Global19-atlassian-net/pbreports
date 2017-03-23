@@ -9,14 +9,13 @@ import json
 import numpy as np
 
 from pbcommand.models.report import Report, Table, Column
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
-from pbreports.model import InvalidStatsError
 
 __version__ = '0.1.0'
+
 
 class Constants(object):
     TOOL_ID = "pbreports.tasks.minor_variants_report"
@@ -45,8 +44,9 @@ def get_hap_vals(hap_hits, hap_vals, _type):
     haps = []
     for i, hap_hit in enumerate(hap_hits):
         if hap_hit:
-           haps.append(_type(hap_vals[i]))
+            haps.append(_type(hap_vals[i]))
     return haps
+
 
 def to_variant_table(juliet_summary):
     samples = []
@@ -59,10 +59,10 @@ def to_variant_table(juliet_summary):
     drms = []
     haplotype_names = []
     haplotype_frequencies = []
-    _all_hap_names = []
-    _all_hap_freqs = []
 
     for sample_name, sample_details in juliet_summary.iteritems():
+        _all_hap_names = []
+        _all_hap_freqs = []
         for haplotype in sample_details['haplotypes']:
             _all_hap_names.append(haplotype['name'])
             _all_hap_freqs.append(haplotype['frequency'])
@@ -74,20 +74,22 @@ def to_variant_table(juliet_summary):
                 _position = position['ref_position']
                 for aa in position['variant_amino_acids']:
                     for variant in aa['variant_codons']:
-                        samples.append(sample_name)
-                        positions.append(_position)
-                        ref_codons.append(_ref_codons)
-                        sample_codons.append(variant['codon'])
-                        frequencies.append(variant['frequency'])
-                        coverage.append(_coverage)
-                        genes.append(_genes)
-                        drms.append(variant['known_drm'].split(" + "))
-                        haplotype_names.append(get_hap_vals(variant['haplotype_hit'], _all_hap_names, str))
-                        haplotype_frequencies.append(get_hap_vals(variant['haplotype_hit'], _all_hap_freqs, float))
+                        samples.append(str(sample_name))
+                        positions.append(int(_position))
+                        ref_codons.append(str(_ref_codons))
+                        sample_codons.append(str(variant['codon']))
+                        frequencies.append(float(variant['frequency']))
+                        coverage.append(int(_coverage))
+                        genes.append(str(_genes))
+                        drms.append([str(v) for v in variant['known_drm'].split(" + ")])
+                        haplotype_names.append(get_hap_vals(
+                            variant['haplotype_hit'], _all_hap_names, str))
+                        haplotype_frequencies.append(get_hap_vals(
+                            variant['haplotype_hit'], _all_hap_freqs, float))
 
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
-   
+
     return variant_table
 
 
@@ -98,23 +100,26 @@ def join_col(col):
         joined_col.append(";".join(map(str, item)))
     return joined_col
 
+
 def write_variant_table(variant_table, output_dir):
-    for i in [7,8,9]:
-        variant_table[i] = join_col(variant_table[i])
-    variant_table_tr = zip(*variant_table)
+    variant_table_csv = variant_table[:]
+    for i in [7, 8, 9]:
+        variant_table_csv[i] = join_col(variant_table_csv[i])
+    variant_table_csv_tr = zip(*variant_table_csv)
     with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
         writer = csv.writer(csvfile)
-        [writer.writerow(r) for r in variant_table_tr]
+        [writer.writerow(r) for r in variant_table_csv_tr]
 
 
 def my_agg(my_list, _func):
     """Performs the specified function on an array of arrays, 
        returning None in the case of a ValueError"""
     try:
-        return _func(i for i in itertools.chain(*my_list))
+        return _func([i for i in itertools.chain(*my_list)])
     except ValueError:
-       # case for max of empty list
-       return None
+        # case for max of empty list
+        return None
+
 
 def aggregate_variant_table(variant_table):
 
@@ -146,13 +151,14 @@ def aggregate_variant_table(variant_table):
         else:
             max_hap_freq.append(None)
 
-    sample_table = [samples, coverage, variants, genes, drms, haplotypes, max_hap_freq]
+    sample_table = [samples, coverage, variants,
+                    genes, drms, haplotypes, max_hap_freq]
 
     return sample_table
-        
+
 
 def to_sample_table(variant_table):
-    
+
     sample_table = aggregate_variant_table(variant_table)
 
     col_ids = [Constants.C_SAMPLES, Constants.C_COVERAGE, Constants.C_VARIANTS,
@@ -169,7 +175,9 @@ def to_sample_table(variant_table):
 
 
 def to_report(juliet_summary_file, output_dir):
-    
+    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
+                                        v=__version__))
+
     with open(juliet_summary_file) as f:
         juliet_summary = json.load(f)
 
@@ -182,30 +190,17 @@ def to_report(juliet_summary_file, output_dir):
 
 
 def args_runner(args):
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
     output_dir = os.path.dirname(args.report)
-    try:
-        report = to_report(args.subread_set, output_dir)
-        report.write_json(args.report)
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
+    report = to_report(args.subread_set, output_dir)
+    report.write_json(args.report)
+    return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
+def resolved_tool_contract_runner(rtc):
     output_dir = os.path.dirname(rtc.task.output_files[0])
-    try:
-        report = to_report(rtc.task.input_files[0], output_dir)
-        report.write_json(rtc.task.output_files[0])
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
+    report = to_report(rtc.task.input_files[0], output_dir)
+    report.write_json(rtc.task.output_files[0])
+    return 0
 
 
 def _add_options_to_parser(p):
@@ -222,20 +217,6 @@ def _add_options_to_parser(p):
                            description=("Filename of CSV output table. Should be name only, "
                                         "and will be written to output dir"),
                            default_name="report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
 
 
 def _get_parser_core():
@@ -267,4 +248,3 @@ def main(argv=sys.argv):
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -5,14 +5,12 @@ Create Kinetics report from motifs.gff.gz and motif_summary.csv
 
 
 import os
-import os.path as op
 from pprint import pformat
 import sys
 import gzip
 import csv
 import logging
 import collections
-import argparse
 import operator
 
 import numpy as np
@@ -21,9 +19,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Report, PlotGroup, Plot, Table, Column
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 

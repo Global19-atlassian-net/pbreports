@@ -8,7 +8,6 @@ from pprint import pformat
 import datetime
 import logging
 import os
-import os.path as op
 import re
 import sys
 
@@ -18,7 +17,6 @@ from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
-from pbcommand.utils import setup_log
 
 from pbreports.io.validators import validate_nonempty_file
 from pbreports.io.specs import *
@@ -168,20 +166,6 @@ def _add_options_to_parser(p):
         name=spec.title,
         description="Timing Report JSON",
         default_name="timing_report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
 
 
 def _get_parser_core():

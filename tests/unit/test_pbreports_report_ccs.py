@@ -17,7 +17,7 @@ from pbcore.io import ConsensusReadSet
 import pbtestdata
 
 from pbreports.report.ccs import to_report, Constants
-from base_test_case import (run_backticks, LOCAL_DATA, ROOT_DATA_DIR,
+from base_test_case import (run_backticks, ROOT_DATA_DIR,
                             validate_report_complete, skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)

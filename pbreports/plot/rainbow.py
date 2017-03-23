@@ -6,23 +6,19 @@ represents the concordance and length of a single subread as measured by a local
 alignment to the reference. The points are colored by qv-score.
 """
 
-import argparse
 import logging
 import time
 import os
-import sys
 
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from pbcore.io import openDataFile, DataSet, CmpH5Reader
+from pbcore.io import openDataFile, CmpH5Reader
 from pbcommand.models.report import Report, PlotGroup, Plot
 
 from pbreports.plot.helper import save_figure_with_thumbnail
-from pbreports.io.validators import (validate_file,
-                                     validate_output_dir)
 
 log = logging.getLogger(__name__)
 

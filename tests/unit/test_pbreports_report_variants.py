@@ -2,19 +2,15 @@
 # TODO(nechols)(2016-02-10): refactor so this doesn't need to generate the
 # report every time (which slows down the test with large data)
 
-from unittest import SkipTest
-import traceback
 import tempfile
 import unittest
 import logging
 import shutil
-import json
 import os.path as op
 import os
 
 from pbcommand.models.report import PbReportError
 import pbcommand.testkit
-from pbcore.util.Process import backticks
 from pbcore.io import ReferenceSet
 
 import pbtestdata
@@ -22,7 +18,7 @@ import pbtestdata
 from pbreports.util import openReference
 from pbreports.util import get_top_contigs_from_ref_entry
 from pbreports.report.variants import (make_variants_report, _extract_alignment_summ_data,
-                                       LENGTH, GAPS, ERR, COV,
+                                       LENGTH, ERR,
                                        _append_variants_gff_data,
                                        _get_consensus_table_and_attributes,
                                        _ref_ids_ordered_by_len,

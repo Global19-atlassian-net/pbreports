@@ -2,7 +2,6 @@
 import functools
 import argparse
 import logging
-import glob
 import time
 import math
 import os
@@ -12,14 +11,13 @@ import numpy as np
 
 from copy import deepcopy
 
-from pbcore.util.Process import backticks
 from pbcore.io import FastaReader, ReferenceSet
 from pbcommand.pb_io.report import load_report_from_json
-from pbcommand.models import FileTypes
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.models.report import Attribute, Column, Table
-from pbcommand import common_options
 
 from pbreports.io.validators import validate_output_dir, validate_report
+from pbreports.model import InvalidStatsError
 
 log = logging.getLogger(__name__)
 
@@ -199,9 +197,6 @@ def add_base_options_pbcommand(parser, title="JSON report"):
     """
     Eventual replacement for add_base_options(parser).
     """
-    # XXX this is handled elsewhere now
-    # common_options.add_debug_option(parser.arg_parser.parser)
-    # NOTE 'output' is not part of tool contract!
     parser.arg_parser.parser.add_argument(
         "output",
         type=validate_output_dir,
@@ -506,3 +501,41 @@ def attributes_to_table(attributes, table_id):
     for x in attributes:
         table.add_data_by_column_id(x.id, x.value)
     return table
+
+
+def get_subreads_report_parser(tool_id, version, title, desc, driver_exe):
+    p = get_pbparser(tool_id, version, title, desc, driver_exe,
+                     is_distributed=True)
+    p.add_input_file_type(
+        FileTypes.DS_SUBREADS,
+        file_id="subread_set",
+        name="SubreadSet",
+        description="SubreadSet")
+    p.add_output_file_type(FileTypes.REPORT, "report", title,
+                           description=("Filename of JSON output report. "
+                                        "Should be name only, and will be "
+                                        "written to output dir"),
+                           default_name="report")
+    return p
+
+
+def arg_runner_subreads_report(report_func, args):
+    output_dir = os.path.dirname(args.report)
+    try:
+        report = report_func(args.subread_set, output_dir)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
+
+
+def rtc_runner_subreads_report(report_func, rtc):
+    output_dir = os.path.dirname(rtc.task.output_files[0])
+    try:
+        report = report_func(rtc.task.input_files[0], output_dir)
+        report.write_json(rtc.task.output_files[0])
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1

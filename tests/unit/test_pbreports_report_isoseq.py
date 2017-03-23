@@ -6,7 +6,6 @@ import logging
 import shutil
 import unittest
 import tempfile
-from pprint import pformat
 
 from pbcommand.models.report import Report
 from pbcommand.pb_io.report import load_report_from_json
@@ -70,7 +69,8 @@ class _TestIsoSeqBase(unittest.TestCase):
         r = self._to_report()
         report_plot_group_ids = [p.id for p in r.plotGroups]
         plot_group_ids = get_plot_groups_from_constants(self.report_constants)
-        self.assertSequenceEqual(sorted(report_plot_group_ids), sorted(plot_group_ids))
+        self.assertSequenceEqual(
+            sorted(report_plot_group_ids), sorted(plot_group_ids))
 
     def test_images_exist(self):
         image_names = get_image_names_from_constants(self.report_constants)
@@ -89,7 +89,10 @@ class _TestIsoSeqBase(unittest.TestCase):
 
 
 class TestIsoSeqClassify(_TestIsoSeqBase):
-    pass
+
+    def test_get_parser(self):
+        p = pbreports.report.isoseq_classify.get_contract_parser()
+        self.assertTrue(len(p.tool_contract_parser.input_types), 2)
 
 
 class TestIsoSeqCluster(_TestIsoSeqBase):
@@ -109,8 +112,13 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
                   hq=cls.input_hq_isoforms_fq, lq=cls.input_lq_isoforms_fq,
                   s=cls.output_summary_json,
                   j=cls.report_json)
-        cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(**_d)
+        cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(
+            **_d)
         cls.code = run_backticks(cmd)
+
+    def test_get_parser(self):
+        p = pbreports.report.isoseq_cluster.get_contract_parser()
+        self.assertTrue(len(p.tool_contract_parser.input_types), 2)
 
 
 class TestIsoSeqClassifyTCI(PbTestApp):

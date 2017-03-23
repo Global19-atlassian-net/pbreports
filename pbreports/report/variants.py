@@ -5,13 +5,10 @@ Generates a table showing consensus stats and a report showing variants plots
 for the top 25 contigs of the supplied reference.
 """
 
-from collections import OrderedDict
-import argparse
 import logging
-import os
-import os.path as op
-import sys
 import hashlib
+import os
+import sys
 
 import numpy as np
 import matplotlib
@@ -20,14 +17,13 @@ import matplotlib.pyplot as plt
 
 from pbcommand.models.report import (Table, Column, Attribute, Report,
                                      PlotGroup, Plot, PbReportError)
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
 from pbreports.util import (openReference, average_or_none,
-                            add_base_options_pbcommand,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
 from pbreports.io.specs import *
@@ -443,20 +439,6 @@ def _add_options_to_parser(p):
     return p
 
 
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
 def _get_parser_core():
     p = get_pbparser(
         Constants.TOOL_ID,
@@ -465,7 +447,6 @@ def _get_parser_core():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-
     return p
 
 

@@ -3,31 +3,27 @@
 Generate a report for a Iso-Seq Classify run, given both primer-trimmed,
 non-chimeric, full-length reads and a classify summary.
 """
-import functools
-import os
-import os.path as op
-import sys
-import logging
-import argparse
+
 from pprint import pformat
+import functools
+import logging
+import os
+import sys
 
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 
-from pbcommand.models.report import (Report, Table, Column, Attribute, Plot,
-                                     PlotGroup)
+from pbcommand.models.report import Report, PlotGroup
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import ContigSet
 
-from pbreports.plot.helper import (get_fig_axes_lpr, apply_histogram_data,
-                                   get_blue)
+from pbreports.plot.helper import (create_plot_impl, get_blue,
+                                   make_histogram_with_cdf)
 from pbreports.util import attributes_to_table, report_to_attributes
-from pbreports.io.validators import validate_file
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -53,81 +49,8 @@ class Constants(object):
 
 spec = load_spec(Constants.R_ID)
 
-
-def _make_histogram(datum, axis_labels, nbins, barcolor):
-    """Create a fig, ax instance and generate a histogram.
-
-    :param datum: np.array
-    :param axis_labels: (tuple of str) (axis label, y axis label)
-    :return: matplotlib fig, ax
-    """
-    # axis_labels = ('Median Distance Between Adapters', 'Pre-Filter Reads')
-    fig, ax = get_fig_axes_lpr()
-    apply_histogram_data(ax, datum, nbins, axis_labels=axis_labels,
-                         barcolor=barcolor)
-    return fig, ax
-
-
-def _make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
-    """
-    Make a histogram png file with cdf.
-    """
-    fig, ax = _make_histogram(datum, axis_labels, nbins, barcolor)
-
-    bins, bin_edges = np.histogram(datum, bins=nbins)
-    bin_edges = np.array(bin_edges)
-
-    rax = ax.twinx()
-
-    log.debug("Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
-
-    csum = np.append([0],np.cumsum(bins)[:-1])
-    sdf = [csum[-1] - i for i in csum]
-
-    log.debug((len(bin_edges), len(sdf)))
-
-    # Plot the data
-    rax.plot(bin_edges[:-1], sdf, 'k')
-    rax.set_xlim(bin_edges.min(), bin_edges.max())
-    rax.set_ylim(ymin=0)
-
-    if len(axis_labels) == 3:
-        rax.set_ylabel(axis_labels[2])
-
-    return fig, ax
-
-
-def __create_plot(_make_plot_func, plot_id, axis_labels, nbins,
-                  plot_name, barcolor, datum, output_dir, dpi=72):
-    """Internal function used to create Plot instances.
-
-    This should probably have a special container class to capture all the
-    plot config options.
-    """
-
-    fig, _ax = _make_plot_func(datum, axis_labels, nbins, barcolor)
-    path = os.path.join(output_dir, plot_name)
-    try:
-        fig.tight_layout()
-    except AttributeError as e:  # FIXME bug 25872
-        log.warn("figure.tight_layout() not available")
-        log.warn(str(e))
-    except ValueError as e:
-        log.error(str(e))
-    fig.savefig(path, dpi=dpi)
-    log.debug("Saved plot with id {i} to {p}".format(p=path, i=plot_id))
-    thumbnail = plot_name.replace(".png", "_thumb.png")
-
-    fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
-    plt.close(fig)
-    log.debug("Saved plot to {p}".format(p=thumbnail))
-    plot = Plot(plot_id, os.path.basename(plot_name),
-                thumbnail=os.path.basename(thumbnail))
-
-    return plot
-
 create_readlength_plot = functools.partial(
-    __create_plot, _make_histogram_with_cdf, Constants.P_READLENGTH,
+    create_plot_impl, make_histogram_with_cdf, Constants.P_READLENGTH,
     ("Read Length", "Reads", "Reads > Read Length"),
     80, "fulllength_nonchimeric_readlength_hist.png", get_blue(3))
 
@@ -169,7 +92,8 @@ def make_report(contig_set, summary_txt, output_dir):
             for record in f:
                 yield len(record.sequence)
 
-    readlengths = np.fromiter(_get_reads(), dtype=np.int64, count=-1).astype(float)
+    readlengths = np.fromiter(
+        _get_reads(), dtype=np.int64, count=-1).astype(float)
 
     # Plot read length histogram
     readlength_plot = create_readlength_plot(readlengths, output_dir)

@@ -9,26 +9,24 @@ Generates:
    readscore
 """
 
-from collections import OrderedDict
 import functools
 import logging
 import os
-import os.path as op
 import sys
 
 import numpy as np
 
 from pbcommand.utils import setup_log
-from pbcommand.models.report import (Report, Table, Column, Plot, Attribute,
-                                     PlotGroup)
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models.report import Report, Plot, Attribute, PlotGroup
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
                                    save_figure_with_thumbnail, get_green)
-from pbreports.util import compute_n50, continuous_dist_shaper
+from pbreports.util import (compute_n50, continuous_dist_shaper,
+                            get_subreads_report_parser,
+                            arg_runner_subreads_report,
+                            rtc_runner_subreads_report)
 from pbreports.io.specs import *
 from pbreports.model import InvalidStatsError
 
@@ -287,79 +285,14 @@ def to_report(stats_xml, output_dir, dpi=72):
     return spec.apply_view(report)
 
 
-def args_runner(args):
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
-    output_dir = os.path.dirname(args.report)
-    try:
-        report = to_report(args.subread_set, output_dir)
-        report.write_json(args.report)
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
-
-
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
-                                        v=__version__))
-    output_dir = os.path.dirname(rtc.task.output_files[0])
-    try:
-        report = to_report(rtc.task.input_files[0], output_dir)
-        report.write_json(rtc.task.output_files[0])
-        return 0
-    except InvalidStatsError as e:
-        log.error(e)
-        return 1
-
-
-def _add_options_to_parser(p):
-    p.add_input_file_type(
-        FileTypes.DS_SUBREADS,
-        file_id="subread_set",
-        name="SubreadSet",
-        description="SubreadSet")
-    p.add_output_file_type(
-        FileTypes.REPORT, "report", spec.title,
-        description=("Filename of JSON output report. Should be name only, "
-                     "and will be written to output dir"),
-        default_name="report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
-def _get_parser_core():
-    p = get_pbparser(
-        Constants.TOOL_ID,
-        __version__,
-        "Raw Dataset Statistics XML Report",
-        __doc__,
-        Constants.DRIVER_EXE,
-        is_distributed=True)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+resolved_tool_contract_runner = functools.partial(rtc_runner_subreads_report,
+                                                  to_report)
+args_runner = functools.partial(arg_runner_subreads_report, to_report)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
+    mp = get_subreads_report_parser(Constants.TOOL_ID, __version__, spec.title,
+                                    __doc__, Constants.DRIVER_EXE)
     return pbparser_runner(argv[1:],
                            mp,
                            args_runner,
