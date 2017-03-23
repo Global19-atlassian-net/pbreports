@@ -74,14 +74,14 @@ def to_variant_table(juliet_summary):
                 _position = position['ref_position']
                 for aa in position['variant_amino_acids']:
                     for variant in aa['variant_codons']:
-                        samples.append(sample_name)
-                        positions.append(_position)
-                        ref_codons.append(_ref_codons)
-                        sample_codons.append(variant['codon'])
-                        frequencies.append(variant['frequency'])
-                        coverage.append(_coverage)
-                        genes.append(_genes)
-                        drms.append(variant['known_drm'].split(" + "))
+                        samples.append(str(sample_name))
+                        positions.append(int(_position))
+                        ref_codons.append(str(_ref_codons))
+                        sample_codons.append(str(variant['codon']))
+                        frequencies.append(float(variant['frequency']))
+                        coverage.append(int(_coverage))
+                        genes.append(str(_genes))
+                        drms.append([str(v) for v in variant['known_drm'].split(" + ")])
                         haplotype_names.append(get_hap_vals(
                             variant['haplotype_hit'], _all_hap_names, str))
                         haplotype_frequencies.append(get_hap_vals(
@@ -89,7 +89,6 @@ def to_variant_table(juliet_summary):
 
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
-
 
     return variant_table
 
@@ -116,7 +115,7 @@ def my_agg(my_list, _func):
     """Performs the specified function on an array of arrays, 
        returning None in the case of a ValueError"""
     try:
-        return _func(i for i in itertools.chain(*my_list))
+        return _func([i for i in itertools.chain(*my_list)])
     except ValueError:
         # case for max of empty list
         return None
