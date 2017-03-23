@@ -2,7 +2,6 @@
 """Summarizes the Long Amplicon Analysis"""
 
 import os
-import os.path as op
 import sys
 import logging
 from pprint import pformat
@@ -128,20 +127,6 @@ def _add_options_to_parser(p):
         name="Amplicon Consensus Report",
         description="Summary of amplicon consensus analysis",
         default_name="consensus_report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
 
 
 def _get_parser_core():

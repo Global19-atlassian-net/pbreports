@@ -33,13 +33,11 @@ import re
 import math
 import time
 import argparse
-import functools
 import logging
 from pprint import pformat
 
 import numpy as np
 
-from pbcore.util.Process import backticks
 from pbcore.io import CmpH5Reader, CmpH5Alignment
 
 from pbreports.io.validators import validate_fofn, fofn_to_files, validate_file

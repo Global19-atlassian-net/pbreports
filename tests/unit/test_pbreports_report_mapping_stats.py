@@ -7,7 +7,6 @@ import shutil
 import pprint
 import json
 import os.path as op
-import os
 import sys
 
 from pbcommand.pb_io.report import dict_to_report, load_report_from_json

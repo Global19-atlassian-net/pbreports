@@ -3,8 +3,6 @@ from cStringIO import StringIO
 import tempfile
 import os
 import logging
-import traceback
-import json
 import tempfile
 import unittest
 import shutil
@@ -13,11 +11,10 @@ from pbcommand.models.report import PbReportError
 import pbcommand.testkit
 from pbcommand.pb_io.report import load_report_from_json
 from pbcore.util.Process import backticks
-from pbcore.io import AlignmentSet
 
 import pbtestdata
 
-from pbreports.util import get_top_contigs_from_ref_entry, movie_to_cell
+from pbreports.util import movie_to_cell
 from pbreports.report.sat import (_validate_inputs, _get_read_hole_data,
                                   _cell_2_inst, _get_variants_data,
                                   _get_mapping_stats_data,

@@ -4,16 +4,14 @@
 Generates the SAT metric performance attributes
 """
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 import logging
-import json
 import os
-import os.path as op
 import sys
 
 from pbcommand.models.report import Attribute, Report, PbReportError
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
-from pbcommand.pb_io.report import load_report_from_json, dict_to_report
+from pbcommand.models import FileTypes, get_pbparser
+from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.common_options import add_debug_option
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -233,20 +231,6 @@ def _add_options_to_parser(p):
                           name="Mapping statistics JSON",
                           description="The mapping statistics report - i.e., "
                           "mapping_stats_report.json")
-    return p
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
     return p
 
 

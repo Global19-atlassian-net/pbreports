@@ -4,20 +4,17 @@
 Generates a report showing a table of top variants sorted by confidence.
 """
 
-import argparse
 import logging
 import os
-import os.path as op
 import sys
 
 from pbcommand.models.report import Table, Column, Report, PbReportError
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.util import (add_base_options, openReference,
-                            add_base_options_pbcommand)
+from pbreports.util import add_base_options, openReference
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -282,24 +279,6 @@ class Variant(object):
     def _toDictionary(self, attributeString):
         """convert an attribute line to a dictionary"""
         return dict(item.split("=") for item in attributeString.split(";"))
-
-
-def _add_options_to_parser(p):
-    p.add_argument("gff", help="variants.gff (can be gzip'ed)")
-    p.add_argument("reference", help="reference file or directory", type=str)
-    p.add_argument("--how_many", default=100,
-                   help="number of top variants to show (default=100)")
-    p.add_argument("--batch_sort_size", default=10000,
-                   help="Intermediate sort size parameter (default=10000)")
-    return p
-
-
-def add_options_to_parser(p):
-    p.description = __doc__
-    p.version = __version__
-    p = add_base_options(p)
-    p.set_defaults(func=args_runner)
-    return _add_options_to_parser(p)
 
 
 def get_contract_parser():

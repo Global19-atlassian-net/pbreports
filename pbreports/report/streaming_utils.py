@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Plot, PlotGroup
 
-from pbreports.plot.helper import get_fig_axes_lpr, get_blue, get_green
+from pbreports.plot.helper import get_fig_axes_lpr, get_green
 
 log = logging.getLogger(__name__)
 

@@ -2,11 +2,9 @@
 
 """Generate a report based on the polished assembly"""
 
-from collections import OrderedDict
 import logging
 import csv
 import os
-import os.path as op
 import sys
 
 import numpy as np
@@ -290,20 +288,6 @@ def _add_options_to_parser(p):
         name="Polished Assembly Report",
         description="Summary of polishing results",
         default_name="polished_assembly_report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
 
 
 def _get_parser_core():

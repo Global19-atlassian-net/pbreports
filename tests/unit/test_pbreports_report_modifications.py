@@ -1,5 +1,4 @@
 
-import traceback
 import warnings
 import tempfile
 import unittest
@@ -11,7 +10,6 @@ import os
 
 import h5py
 
-from pbcommand.models.report import PbReportError
 from pbcommand.pb_io.report import dict_to_report
 import pbcommand.testkit
 from pbcore.util.Process import backticks

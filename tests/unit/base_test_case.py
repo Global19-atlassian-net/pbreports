@@ -1,5 +1,4 @@
 import functools
-import json
 import os
 import sys
 import logging
@@ -9,7 +8,6 @@ import shutil
 import traceback
 import inspect
 
-from pbcommand.pb_io.report import dict_to_report
 from pbcore.util.Process import backticks
 
 

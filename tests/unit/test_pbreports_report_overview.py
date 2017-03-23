@@ -1,5 +1,4 @@
-import os
-import os.path as op
+
 from pprint import pformat
 import tempfile
 import unittest

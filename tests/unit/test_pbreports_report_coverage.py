@@ -1,14 +1,10 @@
 
-import traceback
 import tempfile
 import unittest
 import logging
 import shutil
-import json
 import os.path as op
-import os
 import sys
-from pprint import pformat
 
 from pbcommand.models.report import PbReportError
 import pbcommand.testkit.core

@@ -1,12 +1,9 @@
 """Summarize the Long Amplicon Analysis using the ZMW results"""
 
-from collections import defaultdict
 from pprint import pformat
-import argparse
 import logging
 import csv
 import os
-import os.path as op
 import sys
 
 from pbcommand.models.report import Report, Table, Column
@@ -129,20 +126,6 @@ def _add_options_to_parser(p):
         name="LAA Input Report",
         description="Summary of input amplicon quality",
         default_name="amplicon_input_report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
 
 
 def _get_parser_core():

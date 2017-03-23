@@ -37,9 +37,7 @@ Attributes
 """
 
 import os
-import os.path as op
 import sys
-import argparse
 import logging
 import functools
 import itertools
