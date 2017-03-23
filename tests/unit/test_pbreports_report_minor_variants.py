@@ -5,8 +5,6 @@ import tempfile
 import shutil
 import os.path as op
 
-import numpy
-
 from pbreports.report.minor_variants import to_report
 from base_test_case import LOCAL_DATA, validate_report_complete
 

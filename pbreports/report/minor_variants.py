@@ -189,14 +189,14 @@ def to_report(juliet_summary_file, output_dir):
     return spec.apply_view(report)
 
 
-def args_runner(args):
+def _args_runner(args):
     output_dir = os.path.dirname(args.report)
     report = to_report(args.subread_set, output_dir)
     report.write_json(args.report)
     return 0
 
 
-def resolved_tool_contract_runner(rtc):
+def _resolved_tool_contract_runner(rtc):
     output_dir = os.path.dirname(rtc.task.output_files[0])
     report = to_report(rtc.task.input_files[0], output_dir)
     report.write_json(rtc.task.output_files[0])
@@ -217,9 +217,10 @@ def _add_options_to_parser(p):
                            description=("Filename of CSV output table. Should be name only, "
                                         "and will be written to output dir"),
                            default_name="report")
+    return p
 
 
-def _get_parser_core():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -227,21 +228,14 @@ def _get_parser_core():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

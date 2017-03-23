@@ -148,7 +148,7 @@ def _run(fasta_file, hq_isoforms_fq, lq_isoforms_fq, summary_txt, json_report, o
     return 0
 
 
-def args_runner(args):
+def _args_runner(args):
     return _run(
         fasta_file=args.reads_fasta,
         hq_isoforms_fq=args.hq_isoforms_fq,
@@ -158,8 +158,7 @@ def args_runner(args):
         output_dir=os.path.dirname(args.outJson))
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     return _run(
         fasta_file=rtc.task.input_files[0],
         hq_isoforms_fq=rtc.task.input_files[2],
@@ -169,7 +168,7 @@ def resolved_tool_contract_runner(resolved_tool_contract):
         output_dir=os.path.dirname(rtc.task.output_files[0]))
 
 
-def get_contract_parser():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -198,11 +197,10 @@ def get_contract_parser():
 
 
 def main(argv=sys.argv):
-    mp = get_contract_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

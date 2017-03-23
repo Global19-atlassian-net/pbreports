@@ -626,7 +626,7 @@ def _to_mod_report(args):
     return _write_report(report, args.report_json)
 
 
-def args_runner(args):
+def _args_runner(args):
     return _to_motif_report(
         gff_file=args.gff_file,
         motif_summary_csv=args.motif_summary_csv,
@@ -635,17 +635,17 @@ def args_runner(args):
         max_motifs=args.maxMotifs)
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    report_json = resolved_tool_contract.task.output_files[0]
+def _resolved_tool_contract_runner(rtc):
+    report_json = rtc.task.output_files[0]
     return _to_motif_report(
-        gff_file=resolved_tool_contract.task.input_files[0],
-        motif_summary_csv=resolved_tool_contract.task.input_files[1],
+        gff_file=rtc.task.input_files[0],
+        motif_summary_csv=rtc.task.input_files[1],
         output=os.path.dirname(report_json),
         report_json=os.path.basename(report_json),
-        max_motifs=resolved_tool_contract.task.options[Constants.MAX_MOTIFS_ID])
+        max_motifs=rtc.task.options[Constants.MAX_MOTIFS_ID])
 
 
-def get_parser():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -670,11 +670,10 @@ def get_parser():
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

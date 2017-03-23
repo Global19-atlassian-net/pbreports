@@ -14,7 +14,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.util import add_base_options, openReference
+from pbreports.util import openReference
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -281,7 +281,7 @@ class Variant(object):
         return dict(item.split("=") for item in attributeString.split(";"))
 
 
-def get_contract_parser():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -313,7 +313,7 @@ def get_contract_parser():
     return p
 
 
-def args_runner(args):
+def _args_runner(args):
     return make_topvariants_report(
         gff=args.gff,
         reference=args.reference,
@@ -323,8 +323,7 @@ def args_runner(args):
         output_dir=os.path.dirname(args.report))
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     return make_topvariants_report(
         gff=rtc.task.input_files[0],
         reference=rtc.task.input_files[1],
@@ -335,11 +334,10 @@ def resolved_tool_contract_runner(resolved_tool_contract):
 
 
 def main(argv=sys.argv):
-    mp = get_contract_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

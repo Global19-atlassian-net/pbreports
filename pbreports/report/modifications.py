@@ -20,7 +20,6 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 
 import pbreports.plot.helper as PH
-from pbreports.util import add_base_and_plot_options
 from pbreports.util import Constants as BaseConstants
 from pbreports.io.specs import *
 
@@ -174,22 +173,21 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     return 0
 
 
-def args_runner(args):
+def _args_runner(args):
     return make_modifications_report(
         modifications_h5=args.basemods_h5,
         report=os.path.basename(args.report),
         output_dir=os.path.dirname(args.report))
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     return make_modifications_report(
         modifications_h5=rtc.task.input_files[0],
         report=os.path.basename(rtc.task.output_files[0]),
         output_dir=os.path.dirname(rtc.task.output_files[0]))
 
 
-def get_parser():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -206,11 +204,10 @@ def get_parser():
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

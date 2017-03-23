@@ -45,7 +45,7 @@ class _TestIsoSeqBase(unittest.TestCase):
         _d = dict(o=cls.results_dir, f=cls.input_fasta,
                   s=cls.output_summary_json,
                   j=cls.report_json)
-        cmd = 'isoseq_classify_report --debug {f} {s} {j}'.format(**_d)
+        cmd = 'python -m pbreports.report.isoseq_classify --debug {f} {s} {j}'.format(**_d)
         cls.code = run_backticks(cmd)
 
     def test_exit_code(self):
@@ -90,9 +90,16 @@ class _TestIsoSeqBase(unittest.TestCase):
 
 class TestIsoSeqClassify(_TestIsoSeqBase):
 
-    def test_get_parser(self):
-        p = pbreports.report.isoseq_classify.get_contract_parser()
-        self.assertTrue(len(p.tool_contract_parser.input_types), 2)
+    def test_make_report(self):
+        tmpdir = tempfile.mkdtemp()
+        r = pbreports.report.isoseq_classify.make_report(
+            self.input_fasta, self.output_summary_json, tmpdir)
+        j = r.to_json()
+        attr = {a.id:a.value for a in r.attributes}
+        r2 = load_report_from_json(self.output_summary_json)
+        attr2 = {a.id:a.value for a in r2.attributes}
+        for k,v in attr2.iteritems():
+            self.assertEqual(attr[k], v)
 
 
 class TestIsoSeqCluster(_TestIsoSeqBase):
@@ -112,13 +119,9 @@ class TestIsoSeqCluster(_TestIsoSeqBase):
                   hq=cls.input_hq_isoforms_fq, lq=cls.input_lq_isoforms_fq,
                   s=cls.output_summary_json,
                   j=cls.report_json)
-        cmd = 'isoseq_cluster_report --debug {f} {hq} {lq} {s} {j}'.format(
+        cmd = 'python -m pbreports.report.isoseq_cluster --debug {f} {hq} {lq} {s} {j}'.format(
             **_d)
         cls.code = run_backticks(cmd)
-
-    def test_get_parser(self):
-        p = pbreports.report.isoseq_cluster.get_contract_parser()
-        self.assertTrue(len(p.tool_contract_parser.input_types), 2)
 
 
 class TestIsoSeqClassifyTCI(PbTestApp):

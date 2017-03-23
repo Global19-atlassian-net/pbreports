@@ -455,21 +455,21 @@ def run_report(
     return 0
 
 
-def args_runner(args):
+def _args_runner(args):
     return run_report(
         input_file=args.ccs_in,
         report_json=args.report_json,
         output_dir=args.output_dir)
 
 
-def resolved_tool_contract_runner(rtc):
+def _resolved_tool_contract_runner(rtc):
     return run_report(
         input_file=rtc.task.input_files[0],
         report_json=rtc.task.output_files[0],
         output_dir=os.path.dirname(rtc.task.output_files[0]))
 
 
-def get_parser():
+def _get_parser():
     p = get_pbparser(
         tool_id=Constants.TOOL_ID,
         version=__version__,
@@ -496,9 +496,9 @@ def main(argv=sys.argv):
     """Main point of Entry"""
     return pbparser_runner(
         argv=argv[1:],
-        parser=get_parser(),
-        args_runner_func=args_runner,
-        contract_runner_func=resolved_tool_contract_runner,
+        parser=_get_parser(),
+        args_runner_func=_args_runner,
+        contract_runner_func=_resolved_tool_contract_runner,
         alog=log,
         setup_log_func=setup_log)
 

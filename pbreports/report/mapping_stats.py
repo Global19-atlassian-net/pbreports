@@ -1023,17 +1023,17 @@ def _args_runner(args):
     return run_and_write_report(args.alignment_file, args.report_json)
 
 
-def _resolved_tool_contract_runner(resolved_contract):
+def _resolved_tool_contract_runner(rtc):
     """
     Run the mapping report from a resolved tool contract.
 
-    :param resolved_contract:
-    :type resolved_contract: ResolvedToolContract
+    :param rtc:
+    :type rtc: ResolvedToolContract
     :return: Exit code
     """
     return run_and_write_report(
-        alignment_file=resolved_contract.task.input_files[0],
-        json_report=resolved_contract.task.output_files[0])
+        alignment_file=rtc.task.input_files[0],
+        json_report=rtc.task.output_files[0])
 
 
 def _get_parser():
@@ -1055,9 +1055,8 @@ def _get_parser():
 def main(argv=sys.argv, get_parser_func=_get_parser,
          args_runner_func=_args_runner,
          rtc_runner_func=_resolved_tool_contract_runner):
-    mp = get_parser_func()
     return pbparser_runner(argv[1:],
-                           mp,
+                           get_parser_func(),
                            args_runner_func,
                            rtc_runner_func,
                            log,

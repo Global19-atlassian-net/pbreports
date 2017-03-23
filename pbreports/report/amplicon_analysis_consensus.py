@@ -11,7 +11,6 @@ import numpy as np
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
 from pbreports.util import recfromcsv
@@ -102,14 +101,13 @@ def amplicon_analysis_consensus(incsv, outjson):
     return 0
 
 
-def args_runner(args):
+def _args_runner(args):
     validate_nonempty_file(args.report_csv)
     amplicon_analysis_consensus(args.report_csv, args.report_json)
     return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     amplicon_analysis_consensus(rtc.task.input_files[0],
                                 rtc.task.output_files[0])
     return 0
@@ -127,9 +125,10 @@ def _add_options_to_parser(p):
         name="Amplicon Consensus Report",
         description="Summary of amplicon consensus analysis",
         default_name="consensus_report")
+    return p
 
 
-def _get_parser_core():
+def _get_parser():
     driver_exe = ("python -m "
                   "pbreports.report.amplicon_analysis_consensus "
                   "--resolved-tool-contract ")
@@ -139,21 +138,14 @@ def _get_parser_core():
         spec.title,
         __doc__,
         driver_exe)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 
