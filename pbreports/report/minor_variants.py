@@ -59,10 +59,10 @@ def to_variant_table(juliet_summary):
     drms = []
     haplotype_names = []
     haplotype_frequencies = []
-    _all_hap_names = []
-    _all_hap_freqs = []
 
     for sample_name, sample_details in juliet_summary.iteritems():
+        _all_hap_names = []
+        _all_hap_freqs = []
         for haplotype in sample_details['haplotypes']:
             _all_hap_names.append(haplotype['name'])
             _all_hap_freqs.append(haplotype['frequency'])
@@ -90,6 +90,7 @@ def to_variant_table(juliet_summary):
     variant_table = [samples, positions, ref_codons, sample_codons, frequencies,
                      coverage, genes, drms, haplotype_names, haplotype_frequencies]
 
+
     return variant_table
 
 
@@ -102,12 +103,13 @@ def join_col(col):
 
 
 def write_variant_table(variant_table, output_dir):
+    variant_table_csv = variant_table[:]
     for i in [7, 8, 9]:
-        variant_table[i] = join_col(variant_table[i])
-    variant_table_tr = zip(*variant_table)
+        variant_table_csv[i] = join_col(variant_table_csv[i])
+    variant_table_csv_tr = zip(*variant_table_csv)
     with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
         writer = csv.writer(csvfile)
-        [writer.writerow(r) for r in variant_table_tr]
+        [writer.writerow(r) for r in variant_table_csv_tr]
 
 
 def my_agg(my_list, _func):
