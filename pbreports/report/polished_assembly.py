@@ -11,7 +11,6 @@ import numpy as np
 
 from pbcommand.models.report import (Attribute, Report, Plot, PlotGroup,
                                      PbReportError)
-from pbcommand.common_options import add_debug_option
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
@@ -252,23 +251,20 @@ class ContigInfo(object):
         return self._cov.meanCoveragePerBase()
 
 
-def args_runner(args):
+def _args_runner(args):
     output_dir, report = os.path.split(args.polished_assembly_rpt)
-    make_polished_assembly_report(report,
-                                  args.aln_summary_gff,
-                                  args.polished_assembly,
-                                  output_dir)
-    return 0
+    return make_polished_assembly_report(report,
+                                         args.aln_summary_gff,
+                                         args.polished_assembly,
+                                         output_dir)
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    make_polished_assembly_report(
+def _resolved_tool_contract_runner(rtc):
+    return make_polished_assembly_report(
         rtc.task.output_files[0],
         rtc.task.input_files[0],
         rtc.task.input_files[1],
         os.path.dirname(rtc.task.output_files[0]))
-    return 0
 
 
 def _add_options_to_parser(p):
@@ -288,9 +284,10 @@ def _add_options_to_parser(p):
         name="Polished Assembly Report",
         description="Summary of polishing results",
         default_name="polished_assembly_report")
+    return p
 
 
-def _get_parser_core():
+def _get_parser():
     driver_exe = ("python -m "
                   "pbreports.report.polished_assembly "
                   "--resolved-tool-contract ")
@@ -300,21 +297,14 @@ def _get_parser_core():
         spec.title,
         __doc__,
         driver_exe)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

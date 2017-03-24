@@ -132,7 +132,7 @@ def _run(contig_set, summary_txt, output_dir, json_report):
     return 0
 
 
-def args_runner(args):
+def _args_runner(args):
     return _run(
         contig_set=args.inReadsFN,
         summary_txt=args.inSummaryFN,
@@ -140,19 +140,15 @@ def args_runner(args):
         output_dir=os.path.dirname(args.outJson))
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     return _run(
         contig_set=rtc.task.input_files[0],
         summary_txt=rtc.task.input_files[1],
         json_report=rtc.task.output_files[0],
         output_dir=os.path.dirname(rtc.task.output_files[0]))
 
-# XXX this module is *not* used by the main 'pbreports' app, so we can skip
-# the separate argparse-only parser
 
-
-def get_contract_parser():
+def _get_contract_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -174,11 +170,10 @@ def get_contract_parser():
 
 
 def main(argv=sys.argv):
-    mp = get_contract_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_contract_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

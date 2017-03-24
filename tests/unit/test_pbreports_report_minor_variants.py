@@ -4,8 +4,8 @@ import unittest
 import tempfile
 import shutil
 import os.path as op
-
-import numpy
+import csv
+import itertools
 
 from pbreports.report.minor_variants import to_report
 from base_test_case import LOCAL_DATA, validate_report_complete
@@ -13,6 +13,16 @@ from base_test_case import LOCAL_DATA, validate_report_complete
 log = logging.getLogger(__name__)
 
 _DATA_DIR = op.join(LOCAL_DATA, 'minor_variants')
+
+
+def make_table_from_csv(csvpath):
+    table_tr = []
+    with open(csvpath, 'rb') as csvfile:
+        t = csv.reader(csvfile)
+        for row in t:
+            table_tr.append(row)
+    table = zip(*table_tr)
+    return table
 
 class TestMinorVariantsRpt(unittest.TestCase):
 
@@ -24,7 +34,35 @@ class TestMinorVariantsRpt(unittest.TestCase):
         if op.exists(self._output_dir):
             shutil.rmtree(self._output_dir)
 
-    def test_make_control_report(self):
+    def test_make_mv_supplementary_table(self):
+
+        juliet_summary = op.join(_DATA_DIR, 'mix.json')
+        rpt = to_report(juliet_summary, self._output_dir)
+        var_csv = 'variant_summary.csv'
+
+        self.assertTrue(op.exists(op.join(self._output_dir, var_csv)))
+
+        ref_supp_csv = op.join(_DATA_DIR, var_csv)
+        test_supp_csv = op.join(self._output_dir, var_csv)
+
+        ref_supp_table = make_table_from_csv(ref_supp_csv)
+        test_supp_table = make_table_from_csv(test_supp_csv)        
+
+        exact_cols = [0, 1, 2, 3, 5, 6, 7, 8]
+        approx_cols = [4, 9]
+ 
+        for col in exact_cols:
+            self.assertEqual(ref_supp_table[col], test_supp_table[col])
+
+        for col in approx_cols:
+            ref_supp_table_col = [float(a) for a in itertools.chain(*[item.split(";") for item in ref_supp_table[col]])]
+            test_supp_table_col = [float(a) for a in itertools.chain(*[item.split(";") for item in test_supp_table[col]])]
+            self.assertEqual(len(ref_supp_table_col), len(test_supp_table_col))
+            for item in zip(ref_supp_table_col, test_supp_table_col):
+                self.assertAlmostEqual(item[0], item[1], delta=.0003)
+
+
+    def test_make_mv_report_table(self):
 
         juliet_summary = op.join(_DATA_DIR, 'mix.json')
 
@@ -74,8 +112,5 @@ class TestMinorVariantsRpt(unittest.TestCase):
         self.assertEqual('minor_variants.sample_table.haplotype_frequency', c6['id'])
         self.assertAlmostEqual(0.0425456790123457, c6['values'][0], delta=.0003)
         self.assertAlmostEqual(0.958553791887125, c6['values'][1], delta=.0003)
-
-        self.assertTrue(op.exists(op.join(self._output_dir,
-                                                    'variant_summary.csv')))
 
         validate_report_complete(self, rpt)

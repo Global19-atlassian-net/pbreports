@@ -19,7 +19,6 @@ from pbcommand.models.report import (Table, Column, Attribute, Report,
                                      PlotGroup, Plot, PbReportError)
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
@@ -396,15 +395,14 @@ class ContigVariants(object):
         self.variants.append((startPos, inse, de1e, snv))
 
 
-def args_runner(args):
+def _args_runner(args):
     rpt = make_variants_report(args.aln_summ_gff, args.variants_gff, args.reference, args.maxContigs,
                                args.report, os.path.dirname(args.report))
     log.info(rpt)
     return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     rpt = make_variants_report(
         aln_summ_gff=rtc.task.input_files[1],
         variants_gff=rtc.task.input_files[2],
@@ -439,7 +437,7 @@ def _add_options_to_parser(p):
     return p
 
 
-def _get_parser_core():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -447,21 +445,14 @@ def _get_parser_core():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

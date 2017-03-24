@@ -60,17 +60,17 @@ def make_report(input_ds, output_json):
     return 0
 
 
-def args_runner(args):
+def _args_runner(args):
     return make_report(input_ds=args.input_ds, output_json=args.output_json)
 
 
-def resolved_tool_contract_runner(rtc):
+def _resolved_tool_contract_runner(rtc):
     return make_report(
         input_ds=rtc.task.input_files[0],
         output_json=rtc.task.output_files[0])
 
 
-def get_parser():
+def _get_parser():
     p = get_pbparser(
         tool_id=Constants.TOOL_ID,
         version=__version__,
@@ -88,12 +88,11 @@ def get_parser():
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(
         argv=argv[1:],
-        parser=mp,
-        args_runner_func=args_runner,
-        contract_runner_func=resolved_tool_contract_runner,
+        parser=_get_parser(),
+        args_runner_func=_args_runner,
+        contract_runner_func=_resolved_tool_contract_runner,
         alog=log,
         setup_log_func=setup_log)
 

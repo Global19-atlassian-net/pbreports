@@ -55,7 +55,6 @@ def _labels_reads_iterator(reads, barcodes, subreads=True):
                 zmws = sorted(list(zmws_by_barcode[i_bc]))
                 for (movie, zmw) in zmws:
                     for rr, i_read in reads_by_zmw[(movie, zmw)]:
-                        # FIXME(nechols)(2016-03-15) this will not work on CCS
                         qlen = rr.pbi.qEnd[i_read] - rr.pbi.qStart[i_read]
                         barcode_id = "{f}--{r}".format(
                             f=bcs[rr.pbi.bcForward[i_read]].id,
