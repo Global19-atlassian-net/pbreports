@@ -56,7 +56,8 @@ def to_concordance_mean(readqual_dist):
     return attribute
 
 def to_concordance_mode(readqual_dist):
-    concordance_mode = float(89.1)
+#    concordance_mode = readqual_dist.sampleMode
+    concordance_mode = None
     attribute = Attribute(Constants.A_CONCORDANCE_MODE, concordance_mode)
     return attribute
 
