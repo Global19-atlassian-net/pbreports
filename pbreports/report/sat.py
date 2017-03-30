@@ -4,17 +4,14 @@
 Generates the SAT metric performance attributes
 """
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 import logging
-import json
 import os
-import os.path as op
 import sys
 
 from pbcommand.models.report import Attribute, Report, PbReportError
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
-from pbcommand.pb_io.report import load_report_from_json, dict_to_report
-from pbcommand.common_options import add_debug_option
+from pbcommand.models import FileTypes, get_pbparser
+from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import AlignmentSet
@@ -130,7 +127,12 @@ def _get_read_hole_data(reads_by_cell, instrument):
     :param reads_by_cell_then_set: (dict) _get_reads_info
     """
     if len(reads_by_cell) == 0:
-        raise ValueError("NO CELLS found!")
+        return {
+            Constants.A_INSTRUMENT: instrument,
+            "reads_set_1": 0,
+            Constants.A_READS: 0
+        }
+        #raise ValueError("NO CELLS found!")
     yield_, yield_1 = None, None
 
     cell = reads_by_cell.keys()[0]
@@ -141,9 +143,9 @@ def _get_read_hole_data(reads_by_cell, instrument):
 
     yield_ = len(reads)
     d = {}
-    d['instrument'] = instrument
+    d[Constants.A_INSTRUMENT] = instrument
     d['reads_set_1'] = yield_1
-    d['reads_in_cell'] = yield_
+    d[Constants.A_READS] = yield_
     return d
 
 
@@ -156,17 +158,18 @@ def _get_reads_info(aligned_reads_file):
     :return tuple (reads_by_cell_then_set, instrument) (dict, string): A dictionary of dictionaries,
     instrument name
     """
-    inst = None
+    instruments = set()
     reads_by_cell = defaultdict(set)
     with AlignmentSet(aligned_reads_file) as ds:
         for bamfile in ds.resourceReaders():
+            for rg in bamfile.readGroupTable:
+                cell = movie_to_cell(rg.MovieName)
+                instruments.add(_cell_2_inst(cell))
             if ds.isIndexed:
                 logging.info("Indexed file - will use fast loop.")
                 for (hole, rgId) in zip(bamfile.holeNumber, bamfile.qId):
                     movie_name = bamfile.readGroupInfo(rgId).MovieName
                     cell = movie_to_cell(movie_name)
-                    if inst is None:
-                        inst = _cell_2_inst(cell)
                     reads_by_cell[cell].add(hole)
             else:
                 for aln in bamfile:
@@ -176,7 +179,7 @@ def _get_reads_info(aligned_reads_file):
                     if inst is None:
                         inst = _cell_2_inst(cell)
                     reads_by_cell[cell].add(hole)
-    return reads_by_cell, inst
+    return reads_by_cell, ", ".join(sorted(list(instruments)))
 
 
 def summarize_report(report_file, out=sys.stdout):
@@ -190,7 +193,7 @@ def summarize_report(report_file, out=sys.stdout):
     return coverage.value == 1 and concordance.value == 1
 
 
-def args_runner(args):
+def _args_runner(args):
     make_sat_report(
         aligned_reads_file=args.alignment_file,
         mapping_stats_report=args.mapping_stats_rpt,
@@ -200,12 +203,12 @@ def args_runner(args):
     return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    report_file = resolved_tool_contract.task.output_files[0]
+def _resolved_tool_contract_runner(rtc):
+    report_file = rtc.task.output_files[0]
     make_sat_report(
-        aligned_reads_file=resolved_tool_contract.task.input_files[0],
-        mapping_stats_report=resolved_tool_contract.task.input_files[2],
-        variants_report=resolved_tool_contract.task.input_files[1],
+        aligned_reads_file=rtc.task.input_files[0],
+        mapping_stats_report=rtc.task.input_files[2],
+        variants_report=rtc.task.input_files[1],
         report=os.path.basename(report_file),
         output_dir=os.path.dirname(report_file))
     return 0
@@ -230,21 +233,7 @@ def _add_options_to_parser(p):
     return p
 
 
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
-def _get_parser_core():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -252,21 +241,14 @@ def _get_parser_core():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

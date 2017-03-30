@@ -3,7 +3,6 @@ import logging
 import tempfile
 import unittest
 import json
-import nose
 from pprint import pformat
 
 from pbcommand.models.report import Report

@@ -1,18 +1,14 @@
 """Summarize the Long Amplicon Analysis using the ZMW results"""
 
-from collections import defaultdict
 from pprint import pformat
-import argparse
 import logging
 import csv
 import os
-import os.path as op
 import sys
 
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
 from pbreports.io.specs import *
@@ -106,15 +102,13 @@ def amplicon_analysis_input(summary_csv, report_json):
     return 0
 
 
-def args_runner(args):
-    amplicon_analysis_input(args.report_csv, args.report_json)
-    return 0
+def _args_runner(args):
+    return amplicon_analysis_input(args.report_csv, args.report_json)
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
-    amplicon_analysis_input(rtc.task.input_files[0], rtc.task.output_files[0])
-    return 0
+def _resolved_tool_contract_runner(rtc):
+    return amplicon_analysis_input(rtc.task.input_files[0],
+                                   rtc.task.output_files[0])
 
 
 def _add_options_to_parser(p):
@@ -129,44 +123,24 @@ def _add_options_to_parser(p):
         name="LAA Input Report",
         description="Summary of input amplicon quality",
         default_name="amplicon_input_report")
-
-
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
     return p
 
 
-def _get_parser_core():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
         "Amplicon Analysis Input",
         __doc__,
         Constants.DRIVER_EXE)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

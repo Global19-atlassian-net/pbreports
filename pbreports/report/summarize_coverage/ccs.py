@@ -22,22 +22,19 @@ class Constants(object):
         m="pbreports.report.summarize_coverage.ccs")
 
 
-def get_parser():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
         "Summarize Coverage (CCS)",
         __doc__,
         Constants.DRIVER_EXE)
-    return p
+    return summarize_coverage.add_options_to_parser(p, ds_type=FileTypes.DS_ALIGN_CCS)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
-    summarize_coverage.add_options_to_parser(
-        mp, ds_type=FileTypes.DS_ALIGN_CCS)
     return pbparser_runner(argv[1:],
-                           mp,
+                           _get_parser(),
                            summarize_coverage.args_runner,
                            summarize_coverage.resolved_tool_contract_runner,
                            log,

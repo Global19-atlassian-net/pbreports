@@ -5,8 +5,6 @@ Separate wrapper for HGAP version of mapping stats report.
 
 import logging
 import sys
-import os
-import os.path as op
 
 from pbcommand.models import get_pbparser, FileTypes
 

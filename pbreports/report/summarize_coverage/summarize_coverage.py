@@ -15,9 +15,8 @@ import time
 
 import numpy
 
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffIO, openDataSet
 
@@ -453,8 +452,7 @@ def args_runner(args):
     return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def resolved_tool_contract_runner(rtc):
     summarize_coverage(
         aln_set=rtc.task.input_files[0],
         aln_summ_gff=rtc.task.output_files[0],
@@ -513,9 +511,10 @@ def add_options_to_parser(p, ds_type=FileTypes.DS_ALIGN):
             "regions per reference, otherwise the coverage summary report "
             "will optimize the number of regions in the case of many "
             "references.  Not compatible with a fixed region size."))
+    return p
 
 
-def _get_parser_core():
+def _get_parser():
     driver_exe = ("python -m "
                   "pbreports.report.summarize_coverage.summarize_coverage "
                   "--resolved-tool-contract ")
@@ -525,19 +524,12 @@ def _get_parser_core():
         "Summarize Coverage",
         __doc__,
         driver_exe)
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    add_options_to_parser(p)
-    return p
+    return add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
+                           _get_parser(),
                            args_runner,
                            resolved_tool_contract_runner,
                            log,

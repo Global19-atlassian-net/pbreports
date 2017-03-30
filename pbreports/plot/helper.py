@@ -8,6 +8,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
+from pbcommand.models.report import Plot
+
 log = logging.getLogger(__name__)
 
 
@@ -392,3 +394,66 @@ def get_green(shade):
 def get_orange():
     """Counter-balancing orange color for variants bar charts"""
     return "#F18B17"
+
+
+def make_histogram(datum, axis_labels, nbins, barcolor):
+    """Create a fig, ax instance and generate a histogram.
+
+    :param datum: np.array
+    :param axis_labels: (tuple of str) (axis label, y axis label)
+    :return: matplotlib fig, ax
+    """
+    fig, ax = get_fig_axes_lpr()
+    apply_histogram_data(ax, datum, nbins, axis_labels=axis_labels,
+                         barcolor=barcolor)
+    return fig, ax
+
+
+def make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
+    """
+    Make a histogram png file with cdf.
+    """
+    fig, ax = make_histogram(datum, axis_labels, nbins, barcolor)
+    bins, bin_edges = np.histogram(datum, bins=nbins)
+    bin_edges = np.array(bin_edges)
+    rax = ax.twinx()
+    log.debug("Min edges {e} bins {b}".format(e=len(bin_edges), b=len(bins)))
+    csum = np.append([0], np.cumsum(bins)[:-1])
+    sdf = [csum[-1] - i for i in csum]
+    log.debug((len(bin_edges), len(sdf)))
+    # Plot the data
+    rax.plot(bin_edges[:-1], sdf, 'k')
+    rax.set_xlim(bin_edges.min(), bin_edges.max())
+    rax.set_ylim(ymin=0)
+    if len(axis_labels) == 3:
+        rax.set_ylabel(axis_labels[2])
+    return fig, ax
+
+
+def create_plot_impl(_make_plot_func, plot_id, axis_labels, nbins,
+                     plot_name, barcolor, datum, output_dir, dpi=72):
+    """Internal function used to create Plot instances.
+
+    This should probably have a special container class to capture all the
+    plot config options.
+    """
+
+    fig, _ax = _make_plot_func(datum, axis_labels, nbins, barcolor)
+    path = os.path.join(output_dir, plot_name)
+    try:
+        fig.tight_layout()
+    except AttributeError as e:  # FIXME bug 25872
+        log.warn("figure.tight_layout() not available")
+        log.warn(str(e))
+    except ValueError as e:
+        log.error(str(e))
+    fig.savefig(path, dpi=dpi)
+    log.debug("Saved plot with id {i} to {p}".format(p=path, i=plot_id))
+    thumbnail = plot_name.replace(".png", "_thumb.png")
+
+    fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    plt.close(fig)
+    log.debug("Saved plot to {p}".format(p=thumbnail))
+    plot = Plot(plot_id, os.path.basename(plot_name),
+                thumbnail=os.path.basename(thumbnail))
+    return plot

@@ -7,27 +7,19 @@ Generates plots showing the distribution of kinetics across all bases, taken
 from ipdSummary output.
 """
 
-import collections
-import argparse
 import logging
-import gzip
 import os
-import os.path as op
 import sys
 
-from pylab import legend, arange
 import numpy as np
 import h5py
 
 from pbcommand.models.report import Report, PlotGroup, Plot
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 
 import pbreports.plot.helper as PH
-from pbreports.util import (add_base_and_plot_options,
-                            add_base_options_pbcommand)
 from pbreports.util import Constants as BaseConstants
 from pbreports.io.specs import *
 
@@ -117,7 +109,7 @@ def plot_kinetics_hist(basemods_h5, ax):
         binLim = np.percentile(scores, 99.9) * 1.2
     log.debug("binLim = {l}".format(l=binLim))
     ax.set_xlim(0, binLim)
-    bins = arange(0, binLim, step=binLim / 75)
+    bins = np.arange(0, binLim, step=binLim / 75)
 
     for base, color in zip(base_ids, colors):
         baseHits = bases == base
@@ -181,32 +173,21 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     return 0
 
 
-def add_options_to_parser(p):
-    from pbreports.io.validators import validate_file
-    p.description = __doc__  # FIXME which is probably wrong
-    p.version = __version__
-    p = add_base_and_plot_options(p)
-    p.add_argument("basemods_h5", help="modifications.h5", type=validate_file)
-    p.set_defaults(func=_args_runner)
-    return p
-
-
-def args_runner(args):
+def _args_runner(args):
     return make_modifications_report(
         modifications_h5=args.basemods_h5,
         report=os.path.basename(args.report),
         output_dir=os.path.dirname(args.report))
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     return make_modifications_report(
         modifications_h5=rtc.task.input_files[0],
         report=os.path.basename(rtc.task.output_files[0]),
         output_dir=os.path.dirname(rtc.task.output_files[0]))
 
 
-def get_parser():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -223,11 +204,10 @@ def get_parser():
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

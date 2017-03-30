@@ -5,13 +5,8 @@ import unittest
 import logging
 import json
 import os
-import os.path as op
-import re
-
-import pysam
 
 from pbcore.util.Process import backticks
-from pbcore.io import BarcodeSet, SubreadSet, FastaWriter
 import pbcommand.testkit
 
 import pbtestdata
@@ -40,7 +35,8 @@ class TestBarcodeReportBasic(unittest.TestCase):
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
-        self.assertEqual(report.tables[0].columns[0].values, ['lbc1--lbc1', 'lbc3--lbc3'])
+        self.assertEqual(report.tables[0].columns[0].values, [
+                         'lbc1--lbc1', 'lbc3--lbc3'])
         self.assertEqual(report.tables[0].columns[1].values, [1, 1])
         self.assertEqual(report.tables[0].columns[2].values, [1436, 204])
 

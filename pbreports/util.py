@@ -2,7 +2,6 @@
 import functools
 import argparse
 import logging
-import glob
 import time
 import math
 import os
@@ -12,11 +11,13 @@ import numpy as np
 
 from copy import deepcopy
 
-from pbcore.util.Process import backticks
 from pbcore.io import FastaReader, ReferenceSet
-from pbcommand.models import FileTypes
-from pbcommand import common_options
+from pbcommand.pb_io.report import load_report_from_json
+from pbcommand.models import FileTypes, get_pbparser
+from pbcommand.models.report import Attribute, Column, Table
 
+from pbreports.io.validators import validate_output_dir, validate_report
+from pbreports.model import InvalidStatsError
 
 log = logging.getLogger(__name__)
 
@@ -67,121 +68,6 @@ def log_timing(func):
         f=name, s=run_time, m=run_time / 60.0))
 
     return wrapper
-
-
-def _nfs_exists_check(ff):
-    """
-    Central place for all NFS hackery
-
-    Return whether a file or a dir ff exists or not.
-    Call ls instead of python os.path.exists to eliminate NFS errors.
-
-    Added try/catch black hole exception cases to help trigger an NFS refresh
-
-    :rtype bool:
-    """
-    # try to trigger refresh for File case
-    try:
-        f = open(ff, 'r')
-        f.close()
-    except Exception:
-        pass
-
-    # try to trigger refresh for Directory case
-    try:
-        _ = os.stat(ff)
-        _ = os.listdir(ff)
-    except Exception:
-        pass
-
-    # Call externally
-    # this is taken from Yuan
-    cmd = "ls %s" % ff
-    _, rcode, _ = backticks(cmd)
-
-    return rcode == 0
-
-
-def _validate_resource(func, resource):
-    """Validate the existence of a file/dir"""
-    # Attempt to trigger an NFS metadata refresh
-    _ = _nfs_exists_check(resource)
-
-    if func(resource):
-        return os.path.abspath(resource)
-    else:
-        raise IOError("Unable to find {f}".format(f=resource))
-
-validate_file = functools.partial(_validate_resource, os.path.isfile)
-validate_dir = functools.partial(_validate_resource, os.path.isdir)
-validate_output_dir = functools.partial(_validate_resource, os.path.isdir)
-
-
-def validate_nonempty_file(resource):
-    try:
-        resource_path = validate_file(resource)
-    except IOError as e:
-        raise e
-    try:
-        with open(resource_path) as handle:
-            l = [handle.next() for i in range(2)]
-    except StopIteration:
-        raise IOError("{f} appears to be empty".format(f=resource))
-    return resource_path
-
-
-def validate_report(report):
-    """
-    Raise ValueError if report contains path seps
-    """
-    if not os.path.basename(report) == report:
-        raise ValueError(
-            "Path separators are not allowed: {r}".format(r=report))
-    return report
-
-
-def validate_fofn(fofn):
-    """Validate existence of FOFN and files within the FOFN.
-
-    :param fofn: (str) Path to File of file names.
-    :raises: IOError if any file is not found.
-    :return: (str) abspath of the input fofn
-    """
-    _ = _nfs_exists_check(fofn)
-
-    if os.path.isfile(fofn):
-        file_names = bas_fofn_to_bas_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(
-            n=len(file_names), f=fofn))
-        return os.path.abspath(fofn)
-    else:
-        raise IOError("Unable to find {f}".format(f=fofn))
-
-
-def fofn_to_files(fofn):
-    """Util func to convert a bas/bax fofn file to a list of bas/bax files."""
-
-    _ = _nfs_exists_check(fofn)
-
-    if os.path.exists(fofn):
-        with open(fofn, 'r') as f:
-            bas_files = {line.strip() for line in f.readlines()}
-
-        for bas_file in bas_files:
-            if not os.path.isfile(bas_file):
-                # try one more time to find the file by
-                # performing an NFS refresh
-                found = _nfs_exists_check(bas_file)
-                if not found:
-                    raise IOError(
-                        "Unable to find bas/bax file '{f}'".format(f=bas_file))
-
-        return list(bas_files)
-    else:
-        raise IOError("Unable to find FOFN {f}".format(f=fofn))
-
-# For backward compatibility
-bas_fofn_to_bas_files = fofn_to_files
 
 
 def movie_to_cell(movie):
@@ -311,9 +197,6 @@ def add_base_options_pbcommand(parser, title="JSON report"):
     """
     Eventual replacement for add_base_options(parser).
     """
-    # XXX this is handled elsewhere now
-    # common_options.add_debug_option(parser.arg_parser.parser)
-    # NOTE 'output' is not part of tool contract!
     parser.arg_parser.parser.add_argument(
         "output",
         type=validate_output_dir,
@@ -597,3 +480,62 @@ def continuous_dist_shaper(dist_list, nbins=40, trim_excess=False):
     shaper = dist_shaper(generic_dist_list, nbins=nbins,
                          trim_excess=trim_excess)
     return functools.partial(_cont_dist_shaper, shaper)
+
+
+def average_or_none(total, n, default_value=None):
+    if n != 0:
+        return total / n
+    else:
+        return default_value
+
+
+def report_to_attributes(summary_json):
+    report = load_report_from_json(summary_json)
+    return [Attribute(attr.id, attr.value) for attr in report.attributes]
+
+
+def attributes_to_table(attributes, table_id):
+    """Build a report table from Iso-Seq cluster attributes."""
+    columns = [Column(x.id, header="") for x in attributes]
+    table = Table(table_id, columns=columns)
+    for x in attributes:
+        table.add_data_by_column_id(x.id, x.value)
+    return table
+
+
+def get_subreads_report_parser(tool_id, version, title, desc, driver_exe):
+    p = get_pbparser(tool_id, version, title, desc, driver_exe,
+                     is_distributed=True)
+    p.add_input_file_type(
+        FileTypes.DS_SUBREADS,
+        file_id="subread_set",
+        name="SubreadSet",
+        description="SubreadSet")
+    p.add_output_file_type(FileTypes.REPORT, "report", title,
+                           description=("Filename of JSON output report. "
+                                        "Should be name only, and will be "
+                                        "written to output dir"),
+                           default_name="report")
+    return p
+
+
+def arg_runner_subreads_report(report_func, args):
+    output_dir = os.path.dirname(args.report)
+    try:
+        report = report_func(args.subread_set, output_dir)
+        report.write_json(args.report)
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1
+
+
+def rtc_runner_subreads_report(report_func, rtc):
+    output_dir = os.path.dirname(rtc.task.output_files[0])
+    try:
+        report = report_func(rtc.task.input_files[0], output_dir)
+        report.write_json(rtc.task.output_files[0])
+        return 0
+    except InvalidStatsError as e:
+        log.error(e)
+        return 1

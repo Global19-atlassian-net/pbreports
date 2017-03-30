@@ -1,9 +1,6 @@
 
-# FIXME use dataset subreads-sequel in PacBioTestData
-
 import os
 import logging
-import traceback
 import json
 import unittest
 import tempfile
@@ -21,20 +18,14 @@ from pbcore.io import SubreadSet
 import pbtestdata
 
 from pbreports.util import dist_shaper, continuous_dist_shaper
-from pbreports.io.filtered_summary_reader import FilteredSummaryReader
 from pbreports.report.loading_xml import to_report as make_loading_report
 from pbreports.report.filter_stats_xml import to_report as make_filter_report
 from pbreports.report.filter_stats_xml import Constants
 from pbreports.report.adapter_xml import to_report as make_adapter_report
 
-from base_test_case import validate_report_complete
+from base_test_case import validate_report_complete, skip_if_data_dir_not_present
 
 log = logging.getLogger(__name__)
-
-def _internal_data():
-    if os.path.exists("/pbi/dept/secondary/siv/testdata"):
-        return True
-    return False
 
 
 def get_fixed_bin_sts():
@@ -43,10 +34,12 @@ def get_fixed_bin_sts():
            'm54009_160323_173323.sts.xml')
     return sfn
 
+
 def get_merged_subreadset():
     sfn = ('/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/'
            'loading/merged.dataset.xml')
     return sfn
+
 
 def get_fixed_bin_dataset():
     sfn = get_fixed_bin_sts()
@@ -145,7 +138,9 @@ class TestRawDataRpt(XMLStatsRptsBase):
                 Constants.A_NBASES:  1672335649,
                 Constants.A_NREADS: 394658,
                 Constants.A_READ_N50: 7750,
-                Constants.A_READ_LENGTH: 4237
+                Constants.A_READ_LENGTH: 4237,
+                Constants.A_INSERT_LENGTH: 4450,
+                Constants.A_INSERT_N50: 7750
             })
 
         self.assertTrue(os.path.exists(os.path.join(
@@ -201,9 +196,10 @@ class TestLoadingRpt(XMLStatsRptsBase):
             make_loading_report('foo', self.get_output_dir())
         self.assertRaises((InvalidDataSetIOError, IOError), _test_ioerror)
 
-    def test_make_loading_report_with_sts_xml(self):
+    def test_make_loading_report_with_dataset(self):
         """
-        Test the content of the loading report generated from a sts.xml
+        Test the content of the loading report generated from a simple
+        SubreadSet
         """
         sts_xml = pbtestdata.get_file("subreads-sequel")
 
@@ -219,6 +215,7 @@ class TestLoadingRpt(XMLStatsRptsBase):
         c5 = t['columns'][5]
         c6 = t['columns'][6]
         c7 = t['columns'][7]
+        c8 = t['columns'][8]
 
         self.assertEqual('Collection Context', c0['header'])
         self.assertEqual('loading_xml_report.loading_xml_table.'
@@ -271,12 +268,26 @@ class TestLoadingRpt(XMLStatsRptsBase):
                          'productivity_2_pct',
                          c7['id'])
         self.assertAlmostEqual(0.892, c7['values'][0], delta=.0003)
+        self.assertEqual(c8['values'][0], "Workflow_Magbead.py")
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'hq_hist_plot.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'hq_hist_plot_thumb.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'raw_read_length_plot.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'raw_read_length_plot_thumb.png')))
+        validate_report_complete(self, rpt)
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
-    def test_make_loading_report_with_dataset(self):
+    @skip_if_data_dir_not_present
+    def test_make_loading_report_with_merged_dataset(self):
         """
-        Test the content of the loading report generated from a dataset
+        Test the content of the loading report generated from a dataset with
+        multiple sub-datasets
         """
         ss = get_merged_subreadset()
 
@@ -363,6 +374,18 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertAlmostEqual(0.188, c7['values'][0], delta=.0003)
         self.assertAlmostEqual(0.281, c7['values'][1], delta=.0003)
         self.assertAlmostEqual(0.095, c7['values'][2], delta=.0003)
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'hq_hist_plot.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'hq_hist_plot_thumb.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'raw_read_length_plot.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'raw_read_length_plot_thumb.png')))
         validate_report_complete(self, rpt)
 
 
@@ -405,11 +428,43 @@ class TestAdapterReport(XMLStatsRptsBase):
             'interAdapterDist1.png')))
         validate_report_complete(self, rpt)
 
+    def test_make_adapter_report_dataset2(self):
+        """
+        Test make_adapter_report with a more recent dataset
+        """
+        # All of the histogram generation code should be tested in
+        # pbcore.io.dataset, not here. Just test the report.
+        xml = pbtestdata.get_file("subreads-sequel")
+        rpt = make_adapter_report(xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        a = d['attributes']
+        self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp) %')
+        self.assertEqual(a[0]['value'], 0.09)
+        self.assertEqual(a[1]['value'], 0.52)
+        self.assertEqual("{:.2f}".format(a[2]['value']), "0.00")
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'interAdapterDist0.png')))
+        validate_report_complete(self, rpt)
+
+    @skip_if_data_dir_not_present
+    def test_make_adapter_report_merged_dataset(self):
+        xml = get_merged_subreadset()
+        rpt = make_adapter_report(xml, self.get_output_dir())
+        d = json.loads(rpt.to_json())
+        a = d['attributes']
+        self.assertEqual(len(a), 2)
+        self.assertEqual(a[0]['name'], 'Adapter Dimers (0-10bp) %')
+        self.assertEqual(a[0]['value'], 0.06)
+        self.assertEqual(a[1]['value'], 0.64)
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            'interAdapterDist0.png')))
+
 
 class TestBinning(unittest.TestCase):
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_reports_with_fixed_bins(self):
         # TODO readQualDists are currently unpopulated, turn back on when
         # they're repopulated
@@ -472,8 +527,7 @@ class TestBinning(unittest.TestCase):
                     self.assertEqual(sum(dists[0].bins),
                                      sum(fixed_dists[0].bins))
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_abstract_dist_shaper(self):
         bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
         labels1 = [i * 5 for i in range(len(bins1))]
@@ -501,8 +555,7 @@ class TestBinning(unittest.TestCase):
                                      [i*5 for i in range(len(merged))])
                 """
 
-    @unittest.skipIf(not _internal_data(),
-                     "Internal data not available")
+    @skip_if_data_dir_not_present
     def test_abstract_dist_shaper_float_bwidth(self):
         bins1 = [0, 2, 3, 4, 3, 2, 0, 0, 0, 0]
         labels1 = [i * 0.2 for i in range(len(bins1))]

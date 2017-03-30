@@ -5,7 +5,6 @@ Blasr/pbalign.
 """
 
 from collections import OrderedDict
-import multiprocessing
 import sys
 import os
 import os.path as op
@@ -19,7 +18,7 @@ import numpy as np
 from pbcommand.models.report import (Attribute, Report, Table, Column, Plot,
                                      PlotGroup)
 
-from pbcommand.models import TaskTypes, FileTypes, SymbolTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import openAlignmentFile, openDataSet, openDataFile
@@ -616,15 +615,6 @@ def _process_movie_data(movie, alignment_file, stats_models, movie_names,
             pass
 
 
-def _harvest_file_data(file_name):
-    log.info("reading {f}.pbi".format(f=file_name))
-    try:
-        return alignment_info_from_bam(file_name)
-    except Exception as err:
-        # multiprocessing does not handle uncaught Exceptions gracefully
-        return err
-
-
 def analyze_movies(movies, alignment_file_names, stats_models):
     all_results = []
     log.info("collecting data from {n} BAM files...".format(
@@ -873,7 +863,7 @@ class MappingStatsCollector(object):
             with SubreadSet(self.subreads_file) as subreads:
                 subreads.updateCounts()
                 n_bases_raw = subreads.totalLength
-                attr_values = {a.id:a.value for a in attributes}
+                attr_values = {a.id: a.value for a in attributes}
                 n_bases_mapped = attr_values[Constants.A_SUBREAD_NBASES]
                 pct_bases_mapped = 0.0
                 if n_bases_raw > 0:
@@ -1033,17 +1023,17 @@ def _args_runner(args):
     return run_and_write_report(args.alignment_file, args.report_json)
 
 
-def _resolved_tool_contract_runner(resolved_contract):
+def _resolved_tool_contract_runner(rtc):
     """
     Run the mapping report from a resolved tool contract.
 
-    :param resolved_contract:
-    :type resolved_contract: ResolvedToolContract
+    :param rtc:
+    :type rtc: ResolvedToolContract
     :return: Exit code
     """
     return run_and_write_report(
-        alignment_file=resolved_contract.task.input_files[0],
-        json_report=resolved_contract.task.output_files[0])
+        alignment_file=rtc.task.input_files[0],
+        json_report=rtc.task.output_files[0])
 
 
 def _get_parser():
@@ -1065,9 +1055,8 @@ def _get_parser():
 def main(argv=sys.argv, get_parser_func=_get_parser,
          args_runner_func=_args_runner,
          rtc_runner_func=_resolved_tool_contract_runner):
-    mp = get_parser_func()
     return pbparser_runner(argv[1:],
-                           mp,
+                           get_parser_func(),
                            args_runner_func,
                            rtc_runner_func,
                            log,

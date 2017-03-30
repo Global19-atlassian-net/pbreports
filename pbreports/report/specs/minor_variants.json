@@ -1,0 +1,67 @@
+{
+    "id": "minor_variants",
+    "version": "3.2",
+    "title": "Minor Variants",
+    "description": "Produces a summary table of the juliet json report",
+    "attributes": [],
+    "tables": [
+        {
+            "id": "sample_table",
+            "description": null,
+            "columns": [
+                {
+                    "header": "Barcode Name",
+                    "type": "string",
+                    "format": null,
+                    "id": "barcode",
+                    "description": ""
+                },
+                {
+                    "header": "Median Coverage",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "coverage",
+                    "description": ""
+                },
+                {
+                    "header": "Number of Variants",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "variants",
+                    "description": ""
+                },
+                {
+                    "header": "Number of Genes",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "genes",
+                    "description": ""
+                },
+                {
+                    "header": "Number of DRMs",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "drms",
+                    "description": ""
+                },
+                {
+                    "header": "Number of Haplotypes",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "haplotypes",
+                    "description": ""
+                },
+                {
+                    "header": "Maximum Frequency Haplotype (%)",
+                    "type": "float",
+                    "format": "{p:.2f}",
+                    "id": "haplotype_frequency",
+                    "description": ""
+                }
+
+            ],
+            "title": "By Sample"
+        }
+    ],
+    "plotGroups": []
+}

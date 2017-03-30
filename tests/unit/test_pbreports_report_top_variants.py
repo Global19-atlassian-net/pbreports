@@ -1,6 +1,4 @@
 
-from unittest import SkipTest
-import traceback
 import tempfile
 import unittest
 import logging
@@ -17,8 +15,8 @@ from pbcore.io import ReferenceSet
 
 import pbtestdata
 
-from pbreports.report.top_variants import (make_topvariants_report, VariantFinder,
-                                           MinorVariantTableBuilder, VariantTableBuilder)
+from pbreports.report.top_variants import (make_topvariants_report,
+                                           VariantFinder, VariantTableBuilder)
 
 from base_test_case import _get_root_data_dir, run_backticks, \
     skip_if_data_dir_not_present, LOCAL_DATA, validate_report_complete
@@ -133,32 +131,6 @@ class TestTopVariantsReport(unittest.TestCase):
         for i in range(7):
             self.assertEqual(self.TABLE_ROW_LAST[i], columns[i].values[-1])
 
-    def test_minor_variant_table_builder(self):
-        """
-        Test the length and values of a table produced by the minor variant table builder
-        """
-        tb = MinorVariantTableBuilder()
-
-        self.assertEqual('top_minor_variants_table', tb.table.id)
-
-        columns = tb.table.columns
-        self.assertEqual(7, len(columns))
-
-        ref = self.REFERENCE
-        gff = self.RARE_VARIANTS_GFF
-        vf = VariantFinder(gff, ref, 100, 10000)
-        v = vf.find_top()[0]
-
-        tb.add_variant(v)
-        columns = tb.table.columns
-        self.assertEqual(self.CONTIG_ID, columns[0].values[0])
-        self.assertEqual(35782L, columns[1].values[0])
-        self.assertEqual('35782G>T', columns[2].values[0])
-        self.assertEqual('SUB', columns[3].values[0])
-        self.assertEqual(742, columns[4].values[0])
-        self.assertEqual(7, columns[5].values[0])
-        self.assertEqual(9, columns[6].values[0])
-
     def test_make_topvariants_report(self):
         """
         Call the main report generation method. Deserialize report, check content.
@@ -167,23 +139,6 @@ class TestTopVariantsReport(unittest.TestCase):
         gff = self.VARIANTS_GFF
         make_topvariants_report(gff, ref, 100, 10000,
                                 'rpt.json', self._output_dir)
-
-        # deserialize report
-        s = None
-        with open(os.path.join(self._output_dir, 'rpt.json'), 'r') as f:
-            s = json.load(f)
-
-        report = dict_to_report(s)
-        validate_report_complete(self, report)
-
-    def test_make_minor_topvariants_report(self):
-        """
-        Call the main report generation method with minor kwarg==True. Deserialize report, check content.
-        """
-        ref = self.REFERENCE
-        gff = self.RARE_VARIANTS_GFF
-        make_topvariants_report(
-            gff, ref, 100, 10000, 'rpt.json', self._output_dir, is_minor_variants_rpt=True)
 
         # deserialize report
         s = None
@@ -242,28 +197,6 @@ class TestTopVariantsReport(unittest.TestCase):
             print(m)
         self.assertEquals(0, c)
 
-    @unittest.skip("TEMPORARILY DISABLED")
-    def test_exit_code_0_minor(self):
-        """
-        Like a cram test. Create the minor report in a subprocess. Assert that the report is correct.
-        """
-        ref = self.REFERENCE
-        gff = self.RARE_VARIANTS_GFF
-        cmd = 'pbreport minor-topvariants rpt.json {g} {r}'.format(g=gff, r=ref)
-        log.info(cmd)
-        o, c, m = backticks(cmd)
-        if c is not 0:
-            log.error(m)
-            log.error(o)
-            print(m)
-        self.assertEquals(0, c)
-        # deserialize report
-        s = None
-        with open("rpt.json") as f:
-            s = json.load(f)
-        report = dict_to_report(s)
-        self.assertEqual('Frequency', report.tables[0].columns[6].header)
-
 
 @skip_if_data_dir_not_present
 class TestTopVariantsReportEcoli(TestTopVariantsReport):
@@ -291,9 +224,6 @@ class TestTopVariantsReportEcoli(TestTopVariantsReport):
         40,
         'haploid',
     ]
-
-    def test_minor_variant_table_builder(self):
-        raise SkipTest("IGNORE")
 
 
 class TestPbreportTopVariants(pbcommand.testkit.PbTestApp):

@@ -1,15 +1,14 @@
-import traceback
+
 import unittest
 import tempfile
 import logging
 import shutil
 import json
 import os.path as op
-import os
 import sys
 
 from pbcommand.pb_io.report import dict_to_report
-import pbcommand.testkit.core
+import pbcommand.testkit
 from pbcore.util.Process import backticks
 
 from pbreports.report.polished_assembly import (make_polished_assembly_report,

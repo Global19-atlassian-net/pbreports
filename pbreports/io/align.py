@@ -4,17 +4,13 @@ I/O handling for BAM alignment files.
 """
 
 import warnings
-import copy
-import os.path as op
-import os
 import logging
 import re
+import sys
 
 import numpy as np
-import pysam
 
 from pbcore.io import IndexedBamReader
-import sys
 
 log = logging.getLogger(__name__)
 
@@ -47,13 +43,6 @@ class MovieIdx(object):
 
     def __repr__(self):
         return "<MovieIdx name:{n}>".format(n=self.name)
-
-
-def _getPct(percentile, vector):
-    """Returns the specified percentile value of the numpy vector"""
-    sorted_vector = np.sort(vector)
-    index = np.ceil((percentile / 100.0) * len(sorted_vector))
-    return sorted_vector[-1] if index >= len(sorted_vector) else sorted_vector[index]
 
 
 class MovieAlignmentInfo(object):

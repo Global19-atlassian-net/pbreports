@@ -5,13 +5,10 @@ Generates a table showing consensus stats and a report showing variants plots
 for the top 25 contigs of the supplied reference.
 """
 
-from collections import OrderedDict
-import argparse
 import logging
-import os
-import os.path as op
-import sys
 import hashlib
+import os
+import sys
 
 import numpy as np
 import matplotlib
@@ -20,14 +17,12 @@ import matplotlib.pyplot as plt
 
 from pbcommand.models.report import (Table, Column, Attribute, Report,
                                      PlotGroup, Plot, PbReportError)
-from pbcommand.models import TaskTypes, FileTypes, get_pbparser
+from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
-from pbcommand.common_options import add_debug_option
 from pbcommand.utils import setup_log
 from pbcore.io import GffReader, ReferenceSet
 
-from pbreports.util import (openReference,
-                            add_base_options_pbcommand,
+from pbreports.util import (openReference, average_or_none,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
 from pbreports.io.specs import *
@@ -285,9 +280,9 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
     ordered_ids = _ref_ids_ordered_by_len(ref_data)
 
     sum_lengths = 0.0
-    mean_bases_called = 0
-    mean_concord = 'NA'
-    mean_coverage = 0
+    mean_bases_called = 0.0
+    mean_concord = None
+    mean_coverage = 0.0
 
     columns = []
     columns.append(Column(Constants.C_CONTIG_NAME))
@@ -309,7 +304,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         bases_called = 1.0 - gaps / length
         mean_bases_called += bases_called * length
 
-        concord = 'NA'
+        concord = None
         if length != gaps:
 
             log.info('length {f}'.format(f=length))
@@ -317,7 +312,7 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
             log.info('errors {f}'.format(f=errors))
 
             concord = 1.0 - errors / (length - gaps)
-            if mean_concord is 'NA':
+            if mean_concord is None:
                 mean_concord = concord * length
             else:
                 mean_concord += concord * length
@@ -332,17 +327,24 @@ def _get_consensus_table_and_attributes(ref_data, reference_entry):
         table.add_data_by_column_id(Constants.C_CONCORDANCE, concord)
         table.add_data_by_column_id(Constants.C_COVERAGE, coverage)
 
-    mean_contig_length = sum_lengths / len(ordered_ids)
-    mean_bases_called = mean_bases_called / sum_lengths
-    if mean_concord is not 'NA':
+    mean_contig_length = 0.0
+    mean_contig_length = average_or_none(sum_lengths, len(ordered_ids), 0.0)
+    mean_bases_called = average_or_none(mean_bases_called, sum_lengths, 0.0)
+    mean_coverage = average_or_none(mean_coverage, sum_lengths, 0.0)
+    if mean_concord is not None:
         mean_concord = mean_concord / sum_lengths
-    mean_coverage = mean_coverage / sum_lengths
 
     attributes = []
-    attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
+    if mean_concord is not None:
+        attributes.append(Attribute(Constants.MEAN_CONCORDANCE, mean_concord))
+    else:
+        attributes.append(Attribute(Constants.MEAN_CONCORDANCE, 0.0))
     attributes.append(
         Attribute(Constants.MEAN_CONTIG_LENGTH, mean_contig_length))
-    attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
+    if len(ordered_ids) > 0:
+        attributes.append(Attribute(Constants.LONGEST_CONTIG, ordered_ids[0]))
+    else:
+        attributes.append(Attribute(Constants.LONGEST_CONTIG, "NA"))
     attributes.append(
         Attribute(Constants.MEAN_BASES_CALLED, mean_bases_called))
     attributes.append(Attribute(Constants.MEAN_COVERAGE, mean_coverage))
@@ -393,15 +395,14 @@ class ContigVariants(object):
         self.variants.append((startPos, inse, de1e, snv))
 
 
-def args_runner(args):
+def _args_runner(args):
     rpt = make_variants_report(args.aln_summ_gff, args.variants_gff, args.reference, args.maxContigs,
                                args.report, os.path.dirname(args.report))
     log.info(rpt)
     return 0
 
 
-def resolved_tool_contract_runner(resolved_tool_contract):
-    rtc = resolved_tool_contract
+def _resolved_tool_contract_runner(rtc):
     rpt = make_variants_report(
         aln_summ_gff=rtc.task.input_files[1],
         variants_gff=rtc.task.input_files[2],
@@ -436,21 +437,7 @@ def _add_options_to_parser(p):
     return p
 
 
-def add_options_to_parser(p):
-    """
-    API function for extending main pbreport arg parser (independently of
-    tool contract interface).
-    """
-    p_wrap = _get_parser_core()
-    p_wrap.arg_parser.parser = p
-    p.description = __doc__
-    add_debug_option(p)
-    _add_options_to_parser(p_wrap)
-    p.set_defaults(func=args_runner)
-    return p
-
-
-def _get_parser_core():
+def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
@@ -458,22 +445,14 @@ def _get_parser_core():
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=True)
-
-    return p
-
-
-def get_parser():
-    p = _get_parser_core()
-    _add_options_to_parser(p)
-    return p
+    return _add_options_to_parser(p)
 
 
 def main(argv=sys.argv):
-    mp = get_parser()
     return pbparser_runner(argv[1:],
-                           mp,
-                           args_runner,
-                           resolved_tool_contract_runner,
+                           _get_parser(),
+                           _args_runner,
+                           _resolved_tool_contract_runner,
                            log,
                            setup_log)
 

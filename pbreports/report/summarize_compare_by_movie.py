@@ -33,14 +33,14 @@ import re
 import math
 import time
 import argparse
-import functools
 import logging
 from pprint import pformat
 
 import numpy as np
 
-from pbcore.util.Process import backticks
 from pbcore.io import CmpH5Reader, CmpH5Alignment
+
+from pbreports.io.validators import validate_fofn, fofn_to_files, validate_file
 
 __version__ = '2.0'
 
@@ -135,75 +135,8 @@ def _log_warn_once_per_movie():
 log_warn_once_per_movie = _log_warn_once_per_movie()
 
 
-def _validate_resource(func, resource):
-    """Validate the existence of a file/dir"""
-    if func(resource):
-        return os.path.abspath(resource)
-    else:
-        raise IOError("Unable to find {f}".format(f=resource))
-
-validate_file = functools.partial(_validate_resource, os.path.isfile)
-validate_dir = functools.partial(_validate_resource, os.path.isdir)
-validate_output_dir = functools.partial(_validate_resource, os.path.isdir)
-
-
-def _nfs_exists_check(ff):
-    """Return whether a file or a dir ff exists or not.
-    Call ls instead of python os.path.exists to eliminate NFS errors.
-    """
-    # this is taken from Yuan
-    cmd = "ls %s" % ff
-    _, rcode, _ = backticks(cmd)
-    return rcode == 0
-
-
-def fofn_to_files(fofn):
-    """Util func to convert a bas/bax fofn file to a list of bas/bax files."""
-    if os.path.exists(fofn):
-        with open(fofn, 'r') as f:
-            bas_files = {line.strip() for line in f.readlines()}
-
-        for bas_file in bas_files:
-            if not os.path.isfile(bas_file):
-                # try one more time to find the file by
-                # performing an NFS refresh
-                found = _nfs_exists_check(bas_file)
-                if not found:
-                    raise IOError(
-                        "Unable to find bas/bax file '{f}'".format(f=bas_file))
-
-        return list(bas_files)
-    else:
-        raise IOError("Unable to find FOFN {f}".format(f=fofn))
-
-
-def validate_fofn(fofn):
-    """Validate existence of FOFN and files within the FOFN.
-
-    :param fofn: (str) Path to File of file names.
-    :raises: IOError if any file is not found.
-    :return: (str) abspath of the input fofn
-
-   :rtype: str
-    """
-    if os.path.isfile(fofn):
-        file_names = fofn_to_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(
-            n=len(file_names), f=fofn))
-        return os.path.abspath(fofn)
-    else:
-        raise IOError("Unable to find {f}".format(f=fofn))
-
-
 def _is_cmp_h5(file_name):
     return file_name.lower().endswith('.cmp.h5')
-
-
-def validate_file_or_none(path):
-    if path is None:
-        return path
-    else:
-        return validate_file(path)
 
 
 def get_parser():

@@ -15,7 +15,6 @@ For HGAP5, the Report generator is part of another pbsmrtpipe Task.
 
 import logging
 import os
-import sys
 
 from pbcommand.models.report import (Report, Attribute)
 #from pbcommand.common_options import add_debug_option
@@ -91,10 +90,13 @@ def produce_report(
     attrs.append(Attribute('preassembled_n50', preassembled_n50))
     attrs.append(Attribute('preassembled_p95', preassembled_p95))
     attrs.append(Attribute('preassembled_bases', preassembled_bases))
-    attrs.append(Attribute('preassembled_coverage', int(round(preassembled_coverage))))
+    attrs.append(Attribute('preassembled_coverage',
+                           int(round(preassembled_coverage))))
     attrs.append(Attribute('preassembled_yield', preassembled_yield))
-    attrs.append(Attribute('preassembled_seed_fragmentation', preassembled_seed_fragmentation))
-    attrs.append(Attribute('preassembled_seed_truncation', preassembled_seed_truncation))
+    attrs.append(Attribute('preassembled_seed_fragmentation',
+                           preassembled_seed_fragmentation))
+    attrs.append(Attribute('preassembled_seed_truncation',
+                           preassembled_seed_truncation))
 
     report = Report(Constants.R_ID, title='Preassembly', attributes=attrs)
 
