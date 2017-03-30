@@ -24,13 +24,6 @@
                     "description": null
                 },
                 {
-                    "header": "Mean Length of Insertions",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "insertions_mean",
-                    "description": null
-                },
-                {
                     "header": "Total Bases of Insertions",
                     "type": "int",
                     "format": "{:,d}",
@@ -42,13 +35,6 @@
                     "type": "int",
                     "format": "{:,d}",
                     "id": "deletions_n",
-                    "description": null
-                },
-                {
-                    "header": "Mean Length of Deletions",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "deletions_mean",
                     "description": null
                 },
                 {

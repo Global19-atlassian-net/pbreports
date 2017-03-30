@@ -25,10 +25,8 @@ class Constants(object):
     T_ID = "anno_table"
     C_ANNOTATION = "annotation"
     C_INS_N = "insertions_n"
-    C_INS_MEAN = "insertions_mean"
     C_INS_SUM = "insertions_sum"
     C_DEL_N = "deletions_n"
-    C_DEL_MEAN = "deletions_mean"
     C_DEL_SUM = "deletions_sum"
     C_INDEL_N = "indel_n"
     C_INDEL_SUM = "indel_sum"
@@ -45,15 +43,14 @@ spec = load_spec(Constants.R_ID)
 
 def to_sv_table(table_json):
     
-    col_ids = [Constants.C_ANNOTATION, Constants.C_INS_N, Constants.C_INS_MEAN,
-               Constants.C_INS_SUM, Constants.C_DEL_N, Constants.C_DEL_MEAN,
-               Constants.C_DEL_SUM, Constants.C_INDEL_N, Constants.C_INDEL_SUM]
+    col_ids = [Constants.C_ANNOTATION, Constants.C_INS_N, Constants.C_INS_SUM, 
+               Constants.C_DEL_N, Constants.C_DEL_SUM, Constants.C_INDEL_N,
+               Constants.C_INDEL_SUM]
 
     t = []
-    for anno, vals in table_json.iteritems():
-        r = [str(anno)]
-        r.extend([int(x) for x in vals[0:6]])
-        r.extend([float(x) for x in vals[6:8]])
+    for row in table_json:
+        r = [str(row[0])]
+        r.extend([int(x) for x in row[1]])
         t.append(r)
 
     table = zip(*t)
