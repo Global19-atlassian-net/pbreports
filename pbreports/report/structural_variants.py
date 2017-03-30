@@ -64,7 +64,22 @@ def to_sv_table(table_json):
     return sv_table
     
 
-def to_plotgroup(data, pg, p, bin_n, r, output_dir):
+def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
+    """
+    This plots a stacked histogram given a length 2 array of arrays
+    :param data: array containing insertion array and deletion array
+    :type data: array
+    :param pg: plotgroup id
+    :type pg: string
+    :param p: plot id
+    :type p: string
+    :param bin_n: number of bins for the histogram
+    :type bin_n: int
+    :param _range: the min and max x values to plot
+    :type _range: array
+    :param output_dir: output directory for the plots
+    :type output_dir: string
+    """
     plot_name = get_plot_title(spec, pg, p)
     x_label = get_plot_xlabel(spec, pg, p)
     y_label = get_plot_ylabel(spec, pg, p)
@@ -72,9 +87,9 @@ def to_plotgroup(data, pg, p, bin_n, r, output_dir):
     deletions = data[1]
     fig, ax = get_fig_axes_lpr()
     ax.hist(insertions, label="Insertions", histtype='barstacked',
-            alpha=0.3, bins=bin_n, range=r)
+            alpha=0.3, bins=bin_n, range=_range)
     ax.hist(deletions, label="Deletions", histtype='barstacked',
-            alpha=0.3, bins=bin_n, range=r)
+            alpha=0.3, bins=bin_n, range=_range)
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.legend()
