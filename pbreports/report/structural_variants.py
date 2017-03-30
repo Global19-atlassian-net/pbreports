@@ -50,7 +50,7 @@ def to_sv_table(table_json):
     t = []
     for row in table_json:
         r = [str(row[0])]
-        r.extend([int(x) for x in row[1]])
+        r.extend([int(x) for x in row[1:7]])
         t.append(r)
 
     table = zip(*t)
@@ -71,10 +71,18 @@ def to_plotgroup(data, pg, p, bin_n, r, output_dir):
     insertions = data[0]
     deletions = data[1]
     fig, ax = get_fig_axes_lpr()
-    ax.hist(insertions, label="Insertions", histtype='barstacked',
-            alpha=0.3, bins=bin_n, range=r)
-    ax.hist(deletions, label="Deletions", histtype='barstacked',
-            alpha=0.3, bins=bin_n, range=r)
+    if len(insertions + deletions) == 0:
+        ax.plot(insertions, label="Insertions", histtype='barstacked',
+                alpha=0.3, bins=bin_n, range=r)
+        ax.plot(deletions, label="Deletions", histtype='barstacked',
+                alpha=0.3, bins=bin_n, range=r)
+    else:
+        if len(insertions) > 0:
+            ax.hist(insertions, label="Insertions", histtype='barstacked',
+                    alpha=0.3, bins=bin_n, range=r)
+        if len(deletions) > 0:
+            ax.hist(deletions, label="Deletions", histtype='barstacked',
+                    alpha=0.3, bins=bin_n, range=r)
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.legend()
@@ -155,7 +163,7 @@ def _get_parser():
         "Structural Variants Report",
         __doc__,
         Constants.DRIVER_EXE,
-        is_distributed=True)
+        is_distributed=False)
     return _add_options_to_parser(p)
 
 
