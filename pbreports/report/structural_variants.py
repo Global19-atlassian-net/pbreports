@@ -3,7 +3,7 @@ import os.path as op
 import logging
 import sys
 import json
-
+import itertools
 
 from pbcommand.models.report import Report, Table, Column, Plotgroup, Plot
 from pbcommand.models import FileTypes, get_pbparser
