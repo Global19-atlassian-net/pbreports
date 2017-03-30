@@ -39,8 +39,7 @@ from pprint import pformat
 import numpy as np
 
 from pbcore.io import CmpH5Reader, CmpH5Alignment
-
-from pbreports.io.validators import validate_fofn, fofn_to_files, validate_file
+from pbcommand.validators import validate_fofn, fofn_to_files, validate_file
 
 __version__ = '2.0'
 

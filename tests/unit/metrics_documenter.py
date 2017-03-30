@@ -9,6 +9,7 @@ from pprint import pformat
 from jinja2 import Environment, FileSystemLoader
 
 from pbcommand.pb_io.report import dict_to_report
+from pbcommand.validators import fofn_to_files
 
 from base_test_case import _NOSE_REPORT_CFG, ROOT_DATA_DIR, BaseTestCase
 
@@ -154,7 +155,7 @@ class TestMetricsDocumenter(unittest.TestCase):
         """
         Creates and returns a Reads of Insert report.
         """
-        from pbreports.report.reads_of_insert import fofn_to_files, to_report
+        from pbreports.report.reads_of_insert import to_report
         from test_pbreports_report_reads_of_insert import _DATA_DIR as datadir
         log.info(
             'Creating reads_of_insert report using datadir {d}'.format(d=datadir))
@@ -212,7 +213,7 @@ class TestMetricsDocumenter(unittest.TestCase):
         """
         Creates and returns a Mapping Stats report
         """
-        from pbreports.report.mapping_stats import to_report, bas_fofn_to_bas_files
+        from pbreports.report.mapping_stats import to_report
         from test_pbreports_report_mapping_stats import _IO_DATA_DIR as datadir
 
         log.info(
@@ -228,8 +229,8 @@ class TestMetricsDocumenter(unittest.TestCase):
         mode = "external"
         report_json = 'mapping_report.json'
         output_json = os.path.join(self._output_dir, 'mapping_report.json')
-        bas_files = bas_fofn_to_bas_files(input_fofn)
-        region_files = bas_fofn_to_bas_files(filtered_regions_fofn)
+        bas_files = fofn_to_files(input_fofn)
+        region_files = fofn_to_files(filtered_regions_fofn)
 
         report = to_report(bas_files, region_files,
                            aligned_reads_cmph5, report_json,
@@ -246,7 +247,7 @@ class TestMetricsDocumenter(unittest.TestCase):
         """
         Creates and returns a Mapping Stats gmap report
         """
-        from pbreports.report.mapping_stats import to_report, bas_fofn_to_bas_files
+        from pbreports.report.mapping_stats import to_report
         from test_pbreports_report_mapping_stats import _GMAP_DATA_DIR as datadir
 
         log.info(
@@ -262,8 +263,8 @@ class TestMetricsDocumenter(unittest.TestCase):
         mode = "external"
         report_json = 'mapping_report.json'
         output_json = os.path.join(self._output_dir, 'mapping_report.json')
-        bas_files = bas_fofn_to_bas_files(input_fofn)
-        region_files = bas_fofn_to_bas_files(filtered_regions_fofn)
+        bas_files = fofn_to_files(input_fofn)
+        region_files = fofn_to_files(filtered_regions_fofn)
 
         report = to_report(bas_files, region_files,
                            aligned_reads_cmph5, report_json,
@@ -382,14 +383,14 @@ class TestMetricsDocumenter(unittest.TestCase):
         """
         Creates and returns an Overview report
         """
-        from pbreports.report.overview import run, bas_fofn_to_bas_files
+        from pbreports.report.overview import run
         from test_pbreports_report_overview import _DATA_DIR as datadir
         log.info(
             'Creating Overview report using datadir {d}'.format(d=datadir))
 
         input_name = 'input.fofn'
         input_fofn = os.path.join(datadir, input_name)
-        bas_files = bas_fofn_to_bas_files(input_fofn)
+        bas_files = fofn_to_files(input_fofn)
         report_json = 'overview.json'
         output_json = os.path.join(self._output_dir, report_json)
         report = run(bas_files)

@@ -16,8 +16,8 @@ from numpy import median
 from pbcommand.models.report import Report, Table, Column
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
+from pbcommand.validators import validate_nonempty_file
 
-from pbreports.io.validators import validate_nonempty_file
 from pbreports.io.specs import *
 
 
