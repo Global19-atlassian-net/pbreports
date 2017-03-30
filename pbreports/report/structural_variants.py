@@ -5,11 +5,13 @@ import sys
 import json
 import itertools
 
-from pbcommand.models.report import Report, Table, Column, Plotgroup, Plot
+from pbcommand.models.report import Report, Table, Column, PlotGroup, Plot
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
+from pbreports.plot.helper import (get_fig_axes_lpr,
+                                   save_figure_with_thumbnail)
 
 __version__ = '0.1.0'
 
@@ -34,7 +36,7 @@ class Constants(object):
     PG_SHORT_SV = "short_sv_plot_group"
     P_SHORT_SV = "short_sv_plot"
     PG_LONG_SV = "long_sv_plot_group"
-    PG_LONG_SV = "long_sv_plot"
+    P_LONG_SV = "long_sv_plot"
 
 
 log = logging.getLogger(__name__)
@@ -65,52 +67,39 @@ def to_sv_table(table_json):
     return sv_table
     
 
-def to_short_plotgroup(plot_json, output_dir):
-    plot_name = get_plot_title(spec, Constants.PG_SHORT_SV, Constants.P_SHORT_SV)
-    x_label = get_plot_xlabel(spec, Constants.PG_SHORT_SV, Constants.P_SHORT_SV)
-    y_label = get_plot_ylabel(spec, Constants.PG_SHORT_SV, Constants.P_SHORT_SV)
-    insertions = [x for x in plot_json["Insertion"] if x < 1000]
-    deletions = [x for x in plot_json["Deletion"] if x < 1000]
+def to_plotgroup(data, pg, p, bin_n, r, output_dir):
+    plot_name = get_plot_title(spec, pg, p)
+    x_label = get_plot_xlabel(spec, pg, p)
+    y_label = get_plot_ylabel(spec, pg, p)
+    insertions = data[0]
+    deletions = data[1]
     fig, ax = get_fig_axes_lpr()
     ax.hist(insertions, label="Insertions", histtype='barstacked',
-            alpha=0.3, bins=20, range=[0, 1000])
+            alpha=0.3, bins=bin_n, range=r)
     ax.hist(deletions, label="Deletions", histtype='barstacked',
-            alpha=0.3, bins=20, range=[0, 1000])
+            alpha=0.3, bins=bin_n, range=r)
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.legend()
-    png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_SHORT_SV))
+    png_fn = os.path.join(output_dir, "{p}.png".format(p=p))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
-    short_plot = Plot(Constants.P_SHORT_SV,
-                    os.path.relpath(png_base, output_dir),
+    plot = Plot(p, os.path.relpath(png_base, output_dir),
                     title=plot_name, caption=plot_name,
                     thumbnail=os.path.relpath(thumbnail_base, output_dir))
-    plot_group = PlotGroup(Constants.PG_SHORT_SV, plots=[short_plot])
+    plot_group = PlotGroup(pg, plots=[plot])
     return plot_group
 
 
-def to_long_plotgroup(plot_json, output_dir):
-    plot_name = get_plot_title(spec, Constants.PG_LONG_SV, Constants.P_LONG_SV)
-    x_label = get_plot_xlabel(spec, Constants.PG_LONG_SV, Constants.P_LONG_SV)
-    y_label = get_plot_ylabel(spec, Constants.PG_LONG_SV, Constants.P_LONG_SV)
-    insertions = [x for x in plot_json["Insertion"] if 1000 <= x < 20000]
-    deletions = [x for x in plot_json["Deletion"] if 1000 <= x < 20000]
-    fig, ax = get_fig_axes_lpr()
-    ax.hist(insertions, label="Insertions", histtype='barstacked',
-            alpha=0.3, bins=38, range=[1000, 20000])
-    ax.hist(deletions, label="Deletions", histtype='barstacked',
-            alpha=0.3, bins=38, range=[1000, 20000])
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
-    ax.legend()
-    png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_LONG_SV))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
-    short_plot = Plot(Constants.P_LONG_SV,
-                    os.path.relpath(png_base, output_dir),
-                    title=plot_name, caption=plot_name,
-                    thumbnail=os.path.relpath(thumbnail_base, output_dir))
-    plot_group = PlotGroup(Constants.PG_LONG_SV, plots=[long_plot])
-    return plot_group
+def to_plotgroups(plot_json, output_dir):
+    short_ins = [x for x in plot_json["Insertion"] if x < 1000]
+    short_del = [x for x in plot_json["Deletion"] if x < 1000]
+    plotgroups = [to_plotgroup([short_ins, short_del], Constants.PG_SHORT_SV,
+                               Constants.P_SHORT_SV, 20, [0, 1000], output_dir)]
+    long_ins = [x for x in plot_json["Insertion"] if 1000 <= x < 20000]
+    long_del = [x for x in plot_json["Deletion"] if 1000 <= x < 20000]
+    plotgroups.append(to_plotgroup([short_ins, short_del], Constants.PG_LONG_SV,
+                               Constants.P_LONG_SV, 38, [1000, 20000], output_dir))
+    return plotgroups
 
 
 def to_report(table_json_file, plot_json_file, output_dir):
@@ -124,8 +113,7 @@ def to_report(table_json_file, plot_json_file, output_dir):
         plot_json = json.load(f)
 
     tables = [to_sv_table(table_json)]
-    plotgroups = [to_short_plotgroup(plot_json, output_dir),
-                  to_long_plotgroup(plot_json, output_dir)]
+    plotgroups = to_plotgroups(plot_json, output_dir)
     report = Report(Constants.R_ID, tables=tables, plotgroups=plotgroups)
 
     return spec.apply_view(report)
