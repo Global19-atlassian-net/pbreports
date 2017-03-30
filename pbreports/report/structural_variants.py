@@ -28,6 +28,8 @@ class Constants(object):
     C_DEL_N = "deletions_n"
     C_DEL_MEAN = "deletions_mean"
     C_DEL_SUM = "deletions_sum"
+    C_INDEL_N = "indel_n"
+    C_INDEL_SUM = "indel_sum"
 
     PG_SHORT_SV = "short_sv_plot_group"
     P_SHORT_SV = "short_sv_plot"
@@ -43,12 +45,20 @@ def to_sv_table(table_json):
     
     col_ids = [Constants.C_ANNOTATION, Constants.C_INS_N, Constants.C_INS_MEAN,
                Constants.C_INS_SUM, Constants.C_DEL_N, Constants.C_DEL_MEAN,
-               Constants.C_DEL_SUM]
+               Constants.C_DEL_SUM, Constants.C_INDEL_N, Constants.C_INDEL_SUM]
 
+    t = []
+    for anno, vals in table_json.iteritems():
+        r = [str(anno)]
+        r.extend([int(x) for x in vals[0:6]])
+        r.extend([float(x) for x in vals[6:8]])
+        t.append(r)
+
+    table = zip(*t)
 
     columns = []
     for i, col_id in enumerate(col_ids):
-        columns.append(Column(col_id, values=[]))
+        columns.append(Column(col_id, values=table[i]))
 
     sv_table = Table(Constants.T_ID, columns=columns)
 
@@ -62,9 +72,9 @@ def to_short_plotgroup(plot_json, output_dir):
     insertions = [x for x in plot_json["Insertion"] if x < 1000]
     deletions = [x for x in plot_json["Deletion"] if x < 1000]
     fig, ax = get_fig_axes_lpr()
-    ax.hist(insertions, label="Insertions", histtype='stepfilled',
+    ax.hist(insertions, label="Insertions", histtype='barstacked',
             alpha=0.3, bins=20, range=[0, 1000])
-    ax.hist(deletions, label="Deletions", histtype='stepfilled',
+    ax.hist(deletions, label="Deletions", histtype='barstacked',
             alpha=0.3, bins=20, range=[0, 1000])
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
@@ -86,9 +96,9 @@ def to_long_plotgroup(plot_json, output_dir):
     insertions = [x for x in plot_json["Insertion"] if 1000 <= x < 20000]
     deletions = [x for x in plot_json["Deletion"] if 1000 <= x < 20000]
     fig, ax = get_fig_axes_lpr()
-    ax.hist(insertions, label="Insertions", histtype='stepfilled',
+    ax.hist(insertions, label="Insertions", histtype='barstacked',
             alpha=0.3, bins=38, range=[1000, 20000])
-    ax.hist(deletions, label="Deletions", histtype='stepfilled',
+    ax.hist(deletions, label="Deletions", histtype='barstacked',
             alpha=0.3, bins=38, range=[1000, 20000])
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
