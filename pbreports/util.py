@@ -15,8 +15,8 @@ from pbcore.io import FastaReader, ReferenceSet
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.models.report import Attribute, Column, Table
+from pbcommand.validators import validate_output_dir, validate_report
 
-from pbreports.io.validators import validate_output_dir, validate_report
 from pbreports.model import InvalidStatsError
 
 log = logging.getLogger(__name__)
@@ -26,48 +26,6 @@ class Constants(object):
     DPI_ID = "pbreports.task_options.dpi"
     DUMPDATA_ID = "pbreports.task_options.dumpdata"
     LOG_10 = math.log(10)
-
-
-def setup_log(alog, file_name=None, level=logging.DEBUG, str_formatter=None):
-    """
-    Util function for setting up logging.
-
-    Due to how smrtpipe logs, the default behavior is that the stdout
-    is where the logging is redirected. If a file name is given the log
-    will be written to that file.
-
-    :param log: (log instance) Log instance that handlers and filters will
-    be added.
-    :param file_name: (str, None), Path to file. If None, stdout will be used.
-    :param level: (int) logging level
-    """
-    if file_name is None:
-        handler = logging.StreamHandler(sys.stdout)
-    else:
-        handler = logging.FileHandler(file_name)
-
-    if str_formatter is None:
-        str_formatter = '[%(levelname)s] %(asctime)-15s [%(name)s %(funcName)s %(lineno)d] %(message)s'
-
-    formatter = logging.Formatter(str_formatter)
-    handler.setFormatter(formatter)
-    alog.addHandler(handler)
-    alog.setLevel(level)
-
-
-def log_timing(func):
-    """Simple deco to log the runtime of func"""
-    started_at = time.time()
-
-    def wrapper(*args, **kw):
-        return func(*args, **kw)
-
-    run_time = time.time() - started_at
-    name = func.__name__
-    log.info("Func {f} took {s:.2f} sec ({m:.2f} min)".format(
-        f=name, s=run_time, m=run_time / 60.0))
-
-    return wrapper
 
 
 def movie_to_cell(movie):

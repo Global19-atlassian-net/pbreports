@@ -28,6 +28,7 @@ setup(
     package_data={'pbreports': ['report/specs/*.json']},
     zip_safe=False,
     install_requires=_get_requirements(_get_local_file(_REQUIREMENTS_FILE)),
+    tests_require=['h5py','nose'],
     entry_points={'console_scripts': [
         'overview_report = pbreports.report.overview:main',
         'ccs_report = pbreports.report.ccs:main',
