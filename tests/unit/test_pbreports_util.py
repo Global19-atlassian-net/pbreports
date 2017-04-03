@@ -10,7 +10,6 @@ from pbreports.util import (movie_to_cell, get_fasta_readlengths,
                             compute_n50_from_file, compute_n50,
                             accuracy_as_phred_qv, report_to_attributes,
                             attributes_to_table)
-from pbreports.io.validators import validate_output_dir, validate_report, validate_file, validate_nonempty_file
 
 from base_test_case import BaseTestCase, ROOT_DATA_DIR, skip_if_data_dir_not_present, LOCAL_DATA
 
