@@ -103,12 +103,12 @@ def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
 
 
 def to_plotgroups(plot_json, output_dir):
-    short_ins = [x for x in plot_json["Insertion"] if x < 1000]
-    short_del = [x for x in plot_json["Deletion"] if x < 1000]
+    short_ins = [x for x in plot_json.get("Insertion", []) if x < 1000]
+    short_del = [x for x in plot_json.get("Deletion", []) if x < 1000]
     plotgroups = [to_plotgroup([short_ins, short_del], Constants.PG_SHORT_SV,
                                Constants.P_SHORT_SV, 20, [0, 1000], output_dir)]
-    long_ins = [x for x in plot_json["Insertion"] if 1000 <= x < 20000]
-    long_del = [x for x in plot_json["Deletion"] if 1000 <= x < 20000]
+    long_ins = [x for x in plot_json.get("Insertion", []) if 1000 <= x < 20000]
+    long_del = [x for x in plot_json.get("Deletion", []) if 1000 <= x < 20000]
     plotgroups.append(to_plotgroup([short_ins, short_del], Constants.PG_LONG_SV,
                                Constants.P_LONG_SV, 38, [1000, 20000], output_dir))
     return plotgroups
