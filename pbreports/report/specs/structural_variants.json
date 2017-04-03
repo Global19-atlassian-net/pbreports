@@ -46,15 +46,15 @@
                 },
                 {
                     "header": "Number of Ins/Del",
-                    "type": "float",
+                    "type": "int",
                     "format": "{:,d}",
                     "id": "indel_n",
                     "description": null
                 },
                 {
                     "header": "Total Bases of Ins/Del",
-                    "type": "float",
-                    "format": "{:,.2f}",
+                    "type": "int",
+                    "format": "{:,d}",
                     "id": "indel_sum",
                     "description": null
                 }
