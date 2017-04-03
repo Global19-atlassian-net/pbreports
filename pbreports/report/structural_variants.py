@@ -86,10 +86,10 @@ def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
     insertions = data[0]
     deletions = data[1]
     fig, ax = get_fig_axes_lpr()
-    if len(insertions) > 0:
+    if insertions:
         ax.hist(insertions, label="Insertions", histtype='barstacked',
                 alpha=0.3, bins=bin_n, range=_range)
-    if len(deletions) > 0:
+    if deletions:
         ax.hist(deletions, label="Deletions", histtype='barstacked',
                 alpha=0.3, bins=bin_n, range=_range)
     ax.set_xlabel(x_label)
