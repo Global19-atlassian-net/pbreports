@@ -90,3 +90,19 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot_thumb.png')))
 
         validate_report_complete(self, rpt)
+
+    def test_make_sv_report_table_empty_plots(self):
+
+        table = op.join(_DATA_DIR, 'svann.json')
+        plot = op.join(_DATA_DIR, 'svlengths_empty.json')
+
+        rpt = to_report(table, plot, self._output_dir)
+        d = json.loads(rpt.to_json())
+
+        self.assertTrue(op.exists(op.join(self._output_dir, 'short_sv_plot.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'short_sv_plot_thumb.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot_thumb.png')))
+
+        validate_report_complete(self, rpt)
+
