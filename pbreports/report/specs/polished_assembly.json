@@ -26,6 +26,13 @@
             "id": "n_50_contig_length"
         },
         {
+            "type": "float",
+            "format": "{:,.0f}",
+            "description": "E-size is suggested (for contigs) by Aleksey Zimin. It can be thought of as the weighted average of contig lengths (sum of squares of contig lengths divided by sum of contig lengths). It tells you, if you pick a random base from all contigs, what length contig it came from.",
+            "name": "E-size (sum of squares / sum)",
+            "id": "esize"
+        },
+        {
             "type": "int",
             "format": "{:,d}",
             "description": "Total length of all contigs",
