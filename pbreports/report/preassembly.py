@@ -40,6 +40,7 @@ def produce_report(
     raw_mean,
     raw_n50,
     raw_p95,
+    raw_esize,
     raw_bases,
     raw_coverage,
     length_cutoff,
@@ -48,11 +49,13 @@ def produce_report(
     seed_mean,
     seed_n50,
     seed_p95,
+    seed_esize,
     seed_coverage,
     preassembled_reads,
     preassembled_mean,
     preassembled_n50,
     preassembled_p95,
+    preassembled_esize,
     preassembled_bases,
     preassembled_coverage,
     preassembled_yield,
@@ -76,6 +79,7 @@ def produce_report(
     attrs.append(Attribute('raw_mean', int(round(raw_mean))))
     attrs.append(Attribute('raw_n50', raw_n50))
     attrs.append(Attribute('raw_p95', raw_p95))
+    attrs.append(Attribute('raw_esize', raw_esize))
     attrs.append(Attribute('raw_bases', raw_bases))
     attrs.append(Attribute('raw_coverage', raw_coverage))
     attrs.append(Attribute('length_cutoff', length_cutoff))
@@ -83,12 +87,14 @@ def produce_report(
     attrs.append(Attribute('seed_mean', int(round(seed_mean))))
     attrs.append(Attribute('seed_n50', seed_n50))
     attrs.append(Attribute('seed_p95', seed_p95))
+    attrs.append(Attribute('seed_esize', seed_esize))
     attrs.append(Attribute('seed_bases', seed_bases))
     attrs.append(Attribute('seed_coverage', seed_coverage))
     attrs.append(Attribute('preassembled_reads', preassembled_reads))
     attrs.append(Attribute('preassembled_mean', int(round(preassembled_mean))))
     attrs.append(Attribute('preassembled_n50', preassembled_n50))
     attrs.append(Attribute('preassembled_p95', preassembled_p95))
+    attrs.append(Attribute('preassembled_esize', preassembled_esize))
     attrs.append(Attribute('preassembled_bases', preassembled_bases))
     attrs.append(Attribute('preassembled_coverage',
                            int(round(preassembled_coverage))))

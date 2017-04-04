@@ -36,6 +36,13 @@
             "description": null
         },
         {
+            "id": "raw_esize",
+            "name": "E-size of all Subreads",
+            "type": "float",
+            "format": "{:,.0f}",
+            "description": null
+        },
+        {
             "id": "raw_bases",
             "name": "Number of Filtered Subread Bases",
             "type": "int",
@@ -85,6 +92,13 @@
             "description": null
         },
         {
+            "id": "seed_esize",
+            "name": "E-size of Seed Reads",
+            "type": "float",
+            "format": "{:,.0f}",
+            "description": null
+        },
+        {
             "id": "seed_bases",
             "name": "Number of Seed Bases (total)",
             "type": "int",
@@ -125,6 +139,13 @@
             "type": "int",
             "format": "{:,d}",
             "description": null
+        },
+        {
+            "id": "preassembled_esize",
+            "name": "E-size of Pre-Assembled Reads",
+            "type": "float",
+            "format": "{:,.0f}",
+            "description": "E-size is suggested (for contigs) by Aleksey Zimin. It can be thought of as the weighted average of contig lengths (sum of squares of contig lengths divided by sum of contig lengths). It tells you, if you pick a random base from all contigs, what length contig it came from. Even though these are not contigs, the metric is still interesting."
         },
         {
             "id": "preassembled_bases",
