@@ -60,6 +60,10 @@ def to_report(stats_xml, output_dir, dpi=72):
     dset = SubreadSet(stats_xml)
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
+    return to_report_impl(dset, output_dir, dpi)
+
+
+def to_report_impl(dset, output_dir, dpi=72):
     if not dset.metadata.summaryStats.medianInsertDists:
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
                                 "or missing key distributions")
