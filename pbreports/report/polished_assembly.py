@@ -195,7 +195,7 @@ def _get_att_esize_contig_length(read_lengths):
     else:
         sum1 = sum(read_lengths)
         sum2 = sum(r*r for r in read_lengths)
-        val = float(sum1) / float(sum2)
+        val = float(sum2) / float(sum1)
     return Attribute(Constants.A_ESIZE, val)
 
 
