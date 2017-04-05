@@ -68,16 +68,16 @@
                 {
                     "xlabel": "length (bp)",
                     "description": null,
-                    "caption": "Short Strucural Variants",
+                    "caption": "Short Structural Variants",
                     "ylabel": "count",
-                    "title": "Short Strucural Variants",
+                    "title": "Short Structural Variants",
                     "id": "short_sv_plot"
                 }
             ],
             "description": null,
             "legend": null,
             "id": "short_sv_plot_group",
-            "title": "Short Strucural Variants"
+            "title": "Short Structural Variants"
         },
         {
             "plots": [

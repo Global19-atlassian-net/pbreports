@@ -5,6 +5,8 @@ import sys
 import json
 import itertools
 
+import matplotlib.ticker as ticker
+
 from pbcommand.models.report import Report, Table, Column, PlotGroup, Plot
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.cli import pbparser_runner
@@ -64,7 +66,7 @@ def to_sv_table(table_json):
     return sv_table
     
 
-def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
+def to_plotgroup(data, pg, p, bin_n, x_ticks, output_dir):
     """
     This plots a stacked histogram given a length 2 array of arrays
     :param data: array containing insertion array and deletion array
@@ -75,7 +77,7 @@ def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
     :type p: string
     :param bin_n: number of bins for the histogram
     :type bin_n: int
-    :param _range: the min and max x values to plot
+    :param x_ticks: the values to place on the x axis
     :type _range: array
     :param output_dir: output directory for the plots
     :type output_dir: string
@@ -88,13 +90,16 @@ def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
     fig, ax = get_fig_axes_lpr()
     if insertions:
         ax.hist(insertions, label="Insertions", histtype='barstacked',
-                alpha=0.3, bins=bin_n, range=_range)
+                alpha=0.3, bins=bin_n, range=[x_ticks[0], x_ticks[-1]])
     if deletions:
         ax.hist(deletions, label="Deletions", histtype='barstacked',
-                alpha=0.3, bins=bin_n, range=_range)
+                alpha=0.3, bins=bin_n, range=[x_ticks[0], x_ticks[-1]])
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.legend()
+    ax.set_ylim(bottom=0)
+    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    ax.set_xticks(x_ticks)
     png_fn = os.path.join(output_dir, "{p}.png".format(p=p))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
     plot = Plot(p, os.path.relpath(png_base, output_dir),
@@ -107,12 +112,14 @@ def to_plotgroup(data, pg, p, bin_n, _range, output_dir):
 def to_plotgroups(plot_json, output_dir):
     short_ins = [x for x in plot_json.get("Insertion", []) if x < 1000]
     short_del = [x for x in plot_json.get("Deletion", []) if x < 1000]
+    x_ticks = range(0,1100,100)
     plotgroups = [to_plotgroup([short_ins, short_del], Constants.PG_SHORT_SV,
-                               Constants.P_SHORT_SV, 20, [0, 1000], output_dir)]
+                               Constants.P_SHORT_SV, 20, x_ticks, output_dir)]
     long_ins = [x for x in plot_json.get("Insertion", []) if 1000 <= x < 20000]
     long_del = [x for x in plot_json.get("Deletion", []) if 1000 <= x < 20000]
-    plotgroups.append(to_plotgroup([short_ins, short_del], Constants.PG_LONG_SV,
-                               Constants.P_LONG_SV, 38, [1000, 20000], output_dir))
+    x_ticks = [1000, 5000, 10000, 15000, 20000]
+    plotgroups.append(to_plotgroup([long_ins, long_del], Constants.PG_LONG_SV,
+                               Constants.P_LONG_SV, 38, x_ticks, output_dir))
     return plotgroups
 
 
