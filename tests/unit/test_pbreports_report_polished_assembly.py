@@ -96,6 +96,13 @@ class TestPolishedAssemblyReport(_BaseTestCase):
     GFF = op.join(LOCAL_DATA, "polished_assembly", "alignment_summary.gff")
     FASTQ = op.join(LOCAL_DATA, "polished_assembly", "assembly.fastq.gz")
 
+def test_get_esize():
+    from pbreports.report.polished_assembly import get_esize
+    from nose.tools import assert_equal
+    assert_equal(0,0, get_esize([]))
+    assert_equal(1.0, get_esize([1]))
+    assert_equal(5.0, get_esize([2, 6]))
+
 
 class TestPolishedAssemblyReportQuiver(TestPolishedAssemblyReport):
     FASTQ = op.join(LOCAL_DATA, "polished_assembly",
