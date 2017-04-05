@@ -34,10 +34,9 @@ def to_reports(subreads, output_dir):
                             ("adapter_xml", adapter_xml.to_report_impl),
                             ("loading_xml", loading_xml.to_report_impl),
                             ("control", control.to_report_impl)]:
-        os.chdir(output_dir)
         try:
-            os.mkdir(base)
             rpt_output_dir = os.path.join(output_dir, base)
+            os.mkdir(rpt_output_dir)
             file_name = os.path.join(rpt_output_dir, "{b}.json".format(b=base))
             report = to_report(ds, rpt_output_dir)
             log.info("Writing {f}".format(f=file_name))
