@@ -87,7 +87,6 @@ def to_plotgroup(data, pg, p, bin_n, x_ticks, output_dir):
     y_label = get_plot_ylabel(spec, pg, p)
     insertions = data[0]
     deletions = data[1]
-    print insertions, deletions
     fig, ax = get_fig_axes_lpr()
     if insertions:
         ax.hist(insertions, label="Insertions", histtype='barstacked',
