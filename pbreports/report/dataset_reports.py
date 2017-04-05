@@ -30,10 +30,13 @@ def to_reports(subreads, output_dir):
     log.info("Loading {f}".format(f=subreads))
     ds = SubreadSet(subreads)
     ds.loadStats()
-    for base, to_report in [("filter_stats_xml", filter_stats_xml.to_report_impl),
-                            ("adapter_xml", adapter_xml.to_report_impl),
-                            ("loading_xml", loading_xml.to_report_impl),
-                            ("control", control.to_report_impl)]:
+    for base, module in [("filter_stats_xml", filter_stats_xml),
+                         ("adapter_xml", adapter_xml),
+                         ("loading_xml", loading_xml),
+                         ("control", control)]:
+        constants = getattr(module, "Constants")
+        task_id = constants.TOOL_ID
+        to_report = getattr(module, "to_report_impl")
         try:
             rpt_output_dir = os.path.join(output_dir, base)
             os.mkdir(rpt_output_dir)
@@ -43,7 +46,7 @@ def to_reports(subreads, output_dir):
             report.write_json(file_name)
             output_files.append(DataStoreFile(
                 uuid=report.uuid,
-                source_id="pbreports.report.dataset_reports",
+                source_id=task_id,
                 type_id=FileTypes.REPORT.file_type_id,
                 path=file_name,
                 is_chunked=False,
