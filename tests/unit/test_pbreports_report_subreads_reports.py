@@ -7,7 +7,7 @@ import os.path as op
 from pbcore.util.Process import backticks
 from pbcommand.models import DataStore
 
-from pbreports.report import dataset_reports
+from pbreports.report import subreads_reports
 
 from test_pbreports_report_control import get_control_subreadset
 
@@ -26,7 +26,7 @@ class TestDataSetReports(unittest.TestCase):
     @skip_if_no_testdata
     def test_sequel_subreads(self):
         data = pbtestdata.get_file("subreads-sequel")
-        datastore = dataset_reports.to_reports(data, self._output_dir)
+        datastore = subreads_reports.to_reports(data, self._output_dir)
         datastore_files = [f for u,f in datastore.files.iteritems()]
         self.assertEqual(sorted([f.file_id for f in datastore_files]),
                          ["pbreports.tasks.adapter_report_xml",
@@ -35,7 +35,7 @@ class TestDataSetReports(unittest.TestCase):
 
     def test_integration(self):
         ds_out = op.join(self._output_dir, "datastore.json")
-        args = ["python", "-m", "pbreports.report.dataset_reports",
+        args = ["python", "-m", "pbreports.report.subreads_reports",
                 pbtestdata.get_file("subreads-sequel"), ds_out]
         o, c, m = backticks(" ".join(args))
         self.assertEqual(c, 0)
@@ -51,7 +51,7 @@ class TestDataSetReports(unittest.TestCase):
                          "Requires local test data")
     def test_with_control(self):
         data = get_control_subreadset()
-        datastore = dataset_reports.to_reports(data, self._output_dir)
+        datastore = subreads_reports.to_reports(data, self._output_dir)
         datastore_files = [f for u,f in datastore.files.iteritems()]
         self.assertEqual(sorted([f.file_id for f in datastore_files]),
                          ["pbreports.tasks.adapter_report_xml",
