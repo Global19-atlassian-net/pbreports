@@ -182,21 +182,22 @@ def _get_att_n_50_contig_length(read_lengths):
     return Attribute(Constants.A_N50_LEN, int(n50))
 
 
+def get_esize(read_lengths):
+    if not read_lengths:
+        return 0.0
+    else:
+        sum1 = sum(read_lengths)
+        sum2 = sum(r*r for r in read_lengths)
+        return float(sum2) / float(sum1)
+
+
 def _get_att_esize_contig_length(read_lengths):
     """
     Get esize, or 0.0 if empty.
     :param read_lengths: sorted list
     :return: (float) E-size of contigs
     """
-    val = 0
-    l = len(read_lengths)
-    if l == 0:
-        val = 0.0
-    else:
-        sum1 = sum(read_lengths)
-        sum2 = sum(r*r for r in read_lengths)
-        val = float(sum2) / float(sum1)
-    return Attribute(Constants.A_ESIZE, val)
+    return Attribute(Constants.A_ESIZE, get_esize(read_lengths))
 
 
 def _validate_inputs(infile, desc="input file"):
