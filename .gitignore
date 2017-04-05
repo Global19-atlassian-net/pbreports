@@ -4,3 +4,6 @@
 build
 dist
 pbreports-unittest.log
+.coverage
+coverage.xml
+nosetests.xml

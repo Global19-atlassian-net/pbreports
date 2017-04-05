@@ -241,12 +241,16 @@ def to_report(stats_xml, output_dir, dpi=72):
     log.info("Analyzing XML {f}".format(f=stats_xml))
     # stats_xml should be a dataset:
     dset = SubreadSet(stats_xml)
-
-    dataset_uuids = [dset.uuid]
-    # but if it isn't, no problem:
+    from_sts_xml = False
     if not dset.metadata.summaryStats:
         dset.loadStats(stats_xml)
-        # an sts file was provided which will generate a new random uuid
+        from_sts_xml = True
+    return to_report_impl(dset, output_dir, dpi, from_sts_xml)
+
+
+def to_report_impl(dset, output_dir, dpi=72, from_sts_xml=False):
+    dataset_uuids = [dset.uuid]
+    if from_sts_xml:
         dataset_uuids = []
     if not dset.metadata.summaryStats.readLenDists:
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "

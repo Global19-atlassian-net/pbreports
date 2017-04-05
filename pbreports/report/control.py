@@ -160,6 +160,10 @@ def to_report(stats_xml, output_dir):
     dset.loadStats()
     if stats_xml.endswith(".sts.xml"):
         dset.loadStats(stats_xml)
+    return to_report_impl(dset, output_dir)
+
+
+def to_report_impl(dset, output_dir):
     if not dset.metadata.summaryStats.controlReadLenDist:
         raise InvalidStatsError("Control Read Length Distribution not found")
     if not dset.metadata.summaryStats.controlReadQualDist:
