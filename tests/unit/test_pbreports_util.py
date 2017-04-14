@@ -10,7 +10,6 @@ from pbreports.util import (movie_to_cell, get_fasta_readlengths,
                             compute_n50_from_file, compute_n50,
                             accuracy_as_phred_qv, report_to_attributes,
                             attributes_to_table)
-from pbreports.io.validators import validate_output_dir, validate_report, validate_file, validate_nonempty_file
 
 from base_test_case import BaseTestCase, ROOT_DATA_DIR, skip_if_data_dir_not_present, LOCAL_DATA
 
@@ -67,79 +66,6 @@ class TestUtil(BaseTestCase):
             log.error(err)
             tb = traceback.format_exc()
             log.error(tb)
-            raise
-
-    @skip_if_data_dir_not_present
-    def test_validate_file(self):
-        """
-        Test: Return abspath if file found
-        """
-        file_path = validate_file(DATA_REL_PATH)
-        self.assertEqual(file_path, DATA_ABS_PATH)
-
-    @nose.tools.raises(IOError)
-    def test_validate_file_fails(self):
-        """
-        Test: Raise IOError if file not found
-        """
-        validate_file("this_file_doesn't_exist")
-
-    @skip_if_data_dir_not_present
-    def test_validate_nonempty_file(self):
-        """
-        Test: Return abspath if file found and not empty
-        """
-        file_path = validate_nonempty_file(DATA_REL_PATH)
-        self.assertEqual(file_path, DATA_ABS_PATH)
-
-    @skip_if_data_dir_not_present
-    @nose.tools.raises(IOError)
-    def test_validate_nonempty_file_fails(self):
-        """
-        Test: Raise IOError if file found but empty
-        """
-        validate_nonempty_file(EMPTY_REL_PATH)
-
-    def test_validate_report(self):
-        """
-        Test: Raise ValueError if report has path sep
-        """
-        try:
-
-            log.info(TestUtil.test_validate_report.__doc__)
-
-            # we know this gets made
-            validate_report('foo')
-
-            try:
-                validate_report('/foo')
-                self.fail('No path separators allowed')
-            except ValueError:
-                pass
-
-        except:
-            log.error(traceback.format_exc())
-            raise
-
-    def test_validate_output_dir(self):
-        """
-        Test: Raise IOError if output does not exist
-        """
-        try:
-
-            log.info(TestUtil.test_validate_output_dir.__doc__)
-
-            # we know this gets made
-            validate_output_dir(self.get_output_dir())
-
-            try:
-                validate_output_dir('/whatev')
-                self.fail('Did not validate dir')
-            except IOError:
-                pass
-
-        except:
-            log.error(traceback.format_exc())
             raise
 
     def test_movie_2_cell(self):

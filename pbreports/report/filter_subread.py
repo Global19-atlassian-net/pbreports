@@ -49,8 +49,8 @@ from pbcommand.models.report import Report, Attribute
 from pbcommand.cli import (pacbio_args_runner,
                            get_default_argparser_with_base_opts)
 from pbcommand.utils import setup_log
+from pbcommand.validators import validate_dir, validate_file
 
-from pbreports.io.validators import validate_dir, validate_file
 from pbreports.plot.helper import get_green
 from pbreports.util import compute_n50
 from pbreports.report.streaming_utils import (PlotViewProperties,

@@ -12,7 +12,6 @@ import os
 import sys
 
 import numpy as np
-import h5py
 
 from pbcommand.models.report import Report, PlotGroup, Plot
 from pbcommand.models import FileTypes, get_pbparser
@@ -160,6 +159,10 @@ def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
     """
     Entry point to report generation.
     """
+    try:
+        import h5py
+    except ImportError:
+        raise ImportError("This module requires that h5py be installed")
     basemods_h5 = h5py.File(modifications_h5)
     scatter = get_qmod_plot(basemods_h5, output_dir, dpi)
     hist = get_qmod_hist(basemods_h5, output_dir, dpi)

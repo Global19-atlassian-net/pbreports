@@ -1,0 +1,100 @@
+{
+    "id": "structural_variants",
+    "version": "3.2",
+    "title": "Structural Variants Report",
+    "description": "Generates a report summarizing structural variant analysis results.",
+    "attributes": [],
+    "tables": [
+        {
+            "id": "anno_table",
+            "description": null,
+            "columns": [
+                {
+                    "header": "Annotation",
+                    "type": "string",
+                    "format": null,
+                    "id": "annotation",
+                    "description": null
+                },
+                {
+                    "header": "Number of Insertions",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "insertions_n",
+                    "description": null
+                },
+                {
+                    "header": "Total Bases of Insertions",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "insertions_sum",
+                    "description": null
+                },
+                {
+                    "header": "Number of Deletions",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "deletions_n",
+                    "description": null
+                },
+                {
+                    "header": "Total Bases of Deletions",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "deletions_sum",
+                    "description": null
+                },
+                {
+                    "header": "Number of Ins/Del",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "indel_n",
+                    "description": null
+                },
+                {
+                    "header": "Total Bases of Ins/Del",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "indel_sum",
+                    "description": null
+                }
+            ],
+            "title": "By Annotation"
+        }
+    ],
+    "plotGroups": [
+        {
+            "plots": [
+                {
+                    "xlabel": "length (bp)",
+                    "description": null,
+                    "caption": "Short Structural Variants",
+                    "ylabel": "count",
+                    "title": "Short Structural Variants",
+                    "id": "short_sv_plot"
+                }
+            ],
+            "description": null,
+            "legend": null,
+            "id": "short_sv_plot_group",
+            "title": "Short Structural Variants"
+        },
+        {
+            "plots": [
+                {
+                    "xlabel": "length (bp)",
+                    "description": null,
+                    "caption": "Long Structural Variants",
+                    "ylabel": "counts",
+                    "title": "Long Structural Variants",
+                    "id": "long_sv_plot"
+                }
+            ],
+            "description": null,
+            "legend": null,
+            "id": "long_sv_plot_group",
+            "title": "Long Structural Variants"
+        }
+    ]
+}
+

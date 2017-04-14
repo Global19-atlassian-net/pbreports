@@ -16,7 +16,14 @@ def load_spec(report_id):
     global REGISTERED_SPECS
     if not report_id in REGISTERED_SPECS:
         for file_name in os.listdir(SPEC_DIR):
-            spec = load_report_spec_from_json(op.join(SPEC_DIR, file_name))
+            full_file_name = op.join(SPEC_DIR, file_name)
+            try:
+                spec = load_report_spec_from_json(full_file_name)
+            except ValueError as err:
+                import traceback
+                msg = 'Failed to load report spec from {!r}:\n{}'.format(
+                    op.abspath(full_file_name), traceback.format_exc())
+                raise ValueError(msg)
             REGISTERED_SPECS[spec.id] = spec
     return REGISTERED_SPECS[report_id]
 

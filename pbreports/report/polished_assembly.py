@@ -35,6 +35,7 @@ class Constants(object):
     A_MAX_LEN = "max_contig_length"
     A_N50_LEN = "n_50_contig_length"
     A_SUM_LEN = "sum_contig_lengths"
+    A_ESIZE = "esize"
     PG_COVERAGE = "coverage_based"
     P_COVERAGE = "cov_vs_qual"
 
@@ -73,6 +74,7 @@ def make_polished_assembly_report(report, gff, fastq, output_dir):
     rep.add_attribute(_get_att_max_contig_length(read_lengths))
     rep.add_attribute(_get_att_n_50_contig_length(read_lengths))
     rep.add_attribute(_get_att_sum_contig_lengths(read_lengths))
+    rep.add_attribute(_get_att_esize_contig_length(read_lengths))
     rep.add_plotgroup(pgrp)
     rep = spec.apply_view(rep)
 
@@ -178,6 +180,24 @@ def _get_att_n_50_contig_length(read_lengths):
     """
     n50 = compute_n50(read_lengths)
     return Attribute(Constants.A_N50_LEN, int(n50))
+
+
+def get_esize(read_lengths):
+    if not read_lengths:
+        return 0.0
+    else:
+        sum1 = sum(read_lengths)
+        sum2 = sum(r*r for r in read_lengths)
+        return float(sum2) / float(sum1)
+
+
+def _get_att_esize_contig_length(read_lengths):
+    """
+    Get esize, or 0.0 if empty.
+    :param read_lengths: sorted list
+    :return: (float) E-size of contigs
+    """
+    return Attribute(Constants.A_ESIZE, get_esize(read_lengths))
 
 
 def _validate_inputs(infile, desc="input file"):

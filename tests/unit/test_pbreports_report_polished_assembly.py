@@ -83,7 +83,7 @@ class _BaseTestCase(AttributesTestBase, unittest.TestCase):
         with open(op.join(self._output_dir, 'rpt.json'), 'r') as f:
             s = json.load(f)
         report = dict_to_report(s)
-        self.assertEqual(4, len(report.attributes))
+        self.assertEqual(5, len(report.attributes))
 
 
 class TestPolishedAssemblyReport(_BaseTestCase):
@@ -95,6 +95,13 @@ class TestPolishedAssemblyReport(_BaseTestCase):
     }
     GFF = op.join(LOCAL_DATA, "polished_assembly", "alignment_summary.gff")
     FASTQ = op.join(LOCAL_DATA, "polished_assembly", "assembly.fastq.gz")
+
+def test_get_esize():
+    from pbreports.report.polished_assembly import get_esize
+    from nose.tools import assert_equal
+    assert_equal(0,0, get_esize([]))
+    assert_equal(1.0, get_esize([1]))
+    assert_equal(5.0, get_esize([2, 6]))
 
 
 class TestPolishedAssemblyReportQuiver(TestPolishedAssemblyReport):
@@ -126,6 +133,7 @@ class TestPolishedAssemblyReportBig(_BaseTestCase):
         "max_contig_length": 7070936,
         "n_50_contig_length": 4204013,
         "sum_contig_lengths": 28553574,
+        "esize": 0.0,
     }
     FASTQ = op.join(ROOT_DATA_DIR, 'polished_assembly',
                     'polished_assembly.fastq.gz')

@@ -6,3 +6,4 @@ sphinx
 pep8
 pylint
 jinja2
+h5py
