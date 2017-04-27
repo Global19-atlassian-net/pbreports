@@ -10,7 +10,7 @@
             "description": null,
             "columns": [
                 {
-                    "header": null,
+                    "header": "",
                     "type": "string",
                     "format": null,
                     "id": "annotation",

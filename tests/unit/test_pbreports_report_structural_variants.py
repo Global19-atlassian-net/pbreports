@@ -42,43 +42,43 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         c5 = t['columns'][5]
         c6 = t['columns'][6]
 
-        self.assertEqual('Annotation', c0['header'])
+        self.assertEqual("", c0['header'])
         self.assertEqual('structural_variants.anno_table.annotation', c0['id'])
         self.assertEqual('Unannotated', c0['values'][0])
         self.assertEqual('ALU', c0['values'][1])
         self.assertEqual('Totals', c0['values'][2])
 
-        self.assertEqual('Number of Insertions', c1['header'])
+        self.assertEqual('Insertions (count)', c1['header'])
         self.assertEqual('structural_variants.anno_table.insertions_n', c1['id'])
         self.assertEqual(2, c1['values'][0])
         self.assertEqual(1, c1['values'][1])
         self.assertEqual(3, c1['values'][2])
 
-        self.assertEqual('Total Bases of Insertions', c2['header'])
+        self.assertEqual('Insertions (total bp)', c2['header'])
         self.assertEqual('structural_variants.anno_table.insertions_sum', c2['id'])
         self.assertEqual(21, c2['values'][0])
         self.assertEqual(5, c2['values'][1])
         self.assertEqual(26, c2['values'][2])
 
-        self.assertEqual('Number of Deletions', c3['header'])
+        self.assertEqual('Deletions (count)', c3['header'])
         self.assertEqual('structural_variants.anno_table.deletions_n', c3['id'])
         self.assertEqual(5, c3['values'][0])
         self.assertEqual(0, c3['values'][1])
         self.assertEqual(5, c3['values'][2])
 
-        self.assertEqual('Total Bases of Deletions', c4['header'])
+        self.assertEqual('Deletions (total bp)', c4['header'])
         self.assertEqual('structural_variants.anno_table.deletions_sum', c4['id'])
         self.assertEqual(9898, c4['values'][0])
         self.assertEqual(0, c4['values'][1])   
         self.assertEqual(9898, c4['values'][2])
 
-        self.assertEqual('Number of Ins/Del', c5['header'])
+        self.assertEqual('All Variants (count)', c5['header'])
         self.assertEqual('structural_variants.anno_table.indel_n', c5['id'])
         self.assertEqual(7, c5['values'][0])
         self.assertEqual(1, c5['values'][1])
         self.assertEqual(8, c5['values'][2])
 
-        self.assertEqual('Total Bases of Ins/Del', c6['header'])
+        self.assertEqual('All Variants (total bp)', c6['header'])
         self.assertEqual('structural_variants.anno_table.indel_sum', c6['id'])
         self.assertEqual(9919, c6['values'][0])
         self.assertEqual(5, c6['values'][1])
