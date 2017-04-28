@@ -66,11 +66,11 @@
         {
             "plots": [
                 {
-                    "xlabel": "length (bp)",
+                    "xlabel": "variant length (bp)",
                     "description": null,
-                    "caption": "Short Structural Variants",
+                    "caption": "Length Histogram (<1 kb)",
                     "ylabel": "count",
-                    "title": "Short Structural Variants",
+                    "title": "Length Histogram (<1 kb)",
                     "id": "short_sv_plot"
                 }
             ],
@@ -82,11 +82,11 @@
         {
             "plots": [
                 {
-                    "xlabel": "length (bp)",
+                    "xlabel": "variant length (kb)",
                     "description": null,
-                    "caption": "Long Structural Variants",
-                    "ylabel": "counts",
-                    "title": "Long Structural Variants",
+                    "caption": "Length Histogram (≥1 kb)",
+                    "ylabel": "count",
+                    "title": "Length Histogram (≥1 kb)",
                     "id": "long_sv_plot"
                 }
             ],
