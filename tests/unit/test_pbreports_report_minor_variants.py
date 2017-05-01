@@ -24,6 +24,12 @@ def make_table_from_csv(csvpath):
     table = zip(*table_tr)
     return table
 
+def stringify(a):
+    if type(a) is float:
+        return repr(a)
+    else:
+        return str(a)
+
 class TestMinorVariantsRpt(unittest.TestCase):
 
     def setUp(self):
@@ -63,7 +69,33 @@ class TestMinorVariantsRpt(unittest.TestCase):
                 self.assertAlmostEqual(item[0], item[1], delta=.0003)
 
 
-    def test_make_mv_report_table(self):
+    def test_make_mv_variant_table(self):
+        juliet_summary = op.join(_DATA_DIR, 'mix.json')
+        rpt = to_report(juliet_summary, self._output_dir)
+        var_csv = 'variant_summary.csv'
+
+        self.assertTrue(op.exists(op.join(self._output_dir, var_csv)))
+
+        test_supp_csv = op.join(self._output_dir, var_csv)
+        test_supp_table = make_table_from_csv(test_supp_csv)
+        rpt_var_table = json.loads(rpt.to_json())['tables'][1]
+        
+        test_supp_col_formatted = []
+        for item in test_supp_table[9][1:]:
+                s = item.split(";")
+                vals = ["{0:.2f}".format(round(float(x),2)) for x in s]
+                val_string = ";".join(vals)
+                test_supp_col_formatted.append(val_string)
+
+        test_supp_table[9] = [test_supp_table[9][0], test_supp_col_formatted]
+
+        for col in xrange(9):
+            rpt_var_col = [str(rpt_var_table['columns'][col]['header'])]
+            rpt_var_col.extend(stringify(v) for v in rpt_var_table['columns'][col]['values'])
+            self.assertEqual(list(test_supp_table[col]), rpt_var_col)
+
+
+    def test_make_mv_sample_table(self):
 
         juliet_summary = op.join(_DATA_DIR, 'mix.json')
 
