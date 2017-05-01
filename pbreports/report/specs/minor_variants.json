@@ -58,7 +58,6 @@
                     "id": "haplotype_frequency",
                     "description": ""
                 }
-
             ],
             "title": "By Sample"
         },
@@ -139,7 +138,6 @@
             ],
             "title": "Variants per Sample"
         }
-
     ],
     "plotGroups": []
 }

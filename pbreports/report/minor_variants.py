@@ -24,27 +24,30 @@ class Constants(object):
     R_ID = "minor_variants"
 
     T_SAMPLES = "sample_table"
-    C_SAMPLES = "barcode"
-    C_COVERAGE = "coverage"
-    C_VARIANTS = "variants"
-    C_GENES = "genes"
-    C_DRMS = "drms"
-    C_HAPLOTYPES = "haplotypes"
-    C_HAP_FREQ = "haplotype_frequency"
+    C_SAMPLES_S = "barcode"
+    C_COVERAGE_S = "coverage"
+    C_VARIANTS_S = "variants"
+    C_GENES_S = "genes"
+    C_DRMS_S = "drms"
+    C_HAPLOTYPES_S = "haplotypes"
+    C_HAP_FREQ_S = "haplotype_frequency"
+    SAMPLES_COL_IDS = [C_SAMPLES_S, C_COVERAGE_S, C_VARIANTS_S, C_GENES_S,
+                       C_DRMS_S, C_HAPLOTYPES_S, C_HAP_FREQ_S]
+
 
     T_VARIANTS = "variant_table"
-    C_SAMPLES = "barcode"
-    C_POSITION = "position"
-    C_REF_CODON = "ref_codon"
-    C_VAR_CODON = "var_codon"
-    C_VAR_FREQ = "var_freq"
-    C_COVERAGE = "coverage"
-    C_ORF = "orf"
-    C_DRMS = "drms"
-    C_HAPLOTYPES = "haplotypes"
-    C_HAP_FREQ = "haplotype_frequencies"
-    VARIANTS_COL_IDS = [C_SAMPLES, C_POSITION, C_REF_CODON, C_VAR_CODON, C_VAR_FREQ, 
-                        C_COVERAGE, C_ORF, C_DRMS, C_HAPLOTYPES, C_HAP_FREQ]
+    C_SAMPLES_V = "barcode"
+    C_POSITION_V = "position"
+    C_REF_CODON_V = "ref_codon"
+    C_VAR_CODON_V = "var_codon"
+    C_VAR_FREQ_V = "var_freq"
+    C_COVERAGE_V = "coverage"
+    C_ORF_V = "orf"
+    C_DRMS_V = "drms"
+    C_HAPLOTYPES_V = "haplotypes"
+    C_HAP_FREQ_V = "haplotype_frequencies"
+    VARIANTS_COL_IDS = [C_SAMPLES_V, C_POSITION_V, C_REF_CODON_V, C_VAR_CODON_V, C_VAR_FREQ_V, 
+                        C_COVERAGE_V, C_ORF_V, C_DRMS_V, C_HAPLOTYPES_V, C_HAP_FREQ_V]
 
 
 
@@ -210,12 +213,8 @@ def to_sample_table(variant_table):
 
     sample_table = aggregate_variant_table(variant_table)
 
-    col_ids = [Constants.C_SAMPLES, Constants.C_COVERAGE, Constants.C_VARIANTS,
-               Constants.C_GENES, Constants.C_DRMS, Constants.C_HAPLOTYPES,
-               Constants.C_HAP_FREQ]
-
     columns = []
-    for i, col_id in enumerate(col_ids):
+    for i, col_id in enumerate(Constants.SAMPLES_COL_IDS):
         columns.append(Column(col_id, values=sample_table[i]))
 
     sample_table_r = Table(Constants.T_SAMPLES, columns=columns)
@@ -240,7 +239,6 @@ def to_report(juliet_summary_file, output_dir):
     report = Report(Constants.R_ID, tables=tables)
 
     return spec.apply_view(report)
-
 
 def _args_runner(args):
     output_dir = os.path.dirname(args.report)
