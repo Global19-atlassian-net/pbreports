@@ -22,7 +22,8 @@ class Constants(object):
     DRIVER_EXE = ("python -m pbreports.report.minor_variants "
                   "--resolved-tool-contract ")
     R_ID = "minor_variants"
-    T_ID = "sample_table"
+
+    T_SAMPLES = "sample_table"
     C_SAMPLES = "barcode"
     C_COVERAGE = "coverage"
     C_VARIANTS = "variants"
@@ -30,6 +31,23 @@ class Constants(object):
     C_DRMS = "drms"
     C_HAPLOTYPES = "haplotypes"
     C_HAP_FREQ = "haplotype_frequency"
+
+    T_VARIANTS = "variant_table"
+    C_SAMPLES = "barcode"
+    C_POSITION = "position"
+    C_REF_CODON = "ref_codon"
+    C_VAR_CODON = "var_codon"
+    C_VAR_FREQ = "var_freq"
+    C_COVERAGE = "coverage"
+    C_ORF = "orf"
+    C_DRMS = "drms"
+    C_HAPLOTYPES = "haplotypes"
+    C_HAP_FREQ = "haplotype_frequencies"
+    VARIANTS_COL_IDS = [C_SAMPLES, C_POSITION, C_REF_CODON, C_VAR_CODON, C_VAR_FREQ, 
+                        C_COVERAGE, C_ORF, C_DRMS, C_HAPLOTYPES, C_HAP_FREQ]
+
+
+
     VARIANT_FILE = "variant_summary.csv"
 
 
@@ -44,7 +62,10 @@ def get_hap_vals(hap_hits, hap_vals, _type):
     haps = []
     for i, hap_hit in enumerate(hap_hits):
         if hap_hit:
-            haps.append(_type(hap_vals[i]))
+            if _type is float:
+                haps.append(100*_type(hap_vals[i]))
+            else:
+                haps.append(_type(hap_vals[i]))
     return haps
 
 
@@ -78,7 +99,7 @@ def to_variant_table(juliet_summary):
                         positions.append(int(_position))
                         ref_codons.append(str(_ref_codons))
                         sample_codons.append(str(variant['codon']))
-                        frequencies.append(float(variant['frequency']))
+                        frequencies.append(100*float(variant['frequency']))
                         coverage.append(int(_coverage))
                         genes.append(str(_genes))
                         drms.append([str(v) for v in variant['known_drm'].split(" + ")])
@@ -100,15 +121,43 @@ def join_col(col):
         joined_col.append(";".join(map(str, item)))
     return joined_col
 
-
 def write_variant_table(variant_table, output_dir):
+    header_row = []
+    for c_id in Constants.VARIANTS_COL_IDS:
+        header_row.append(spec.get_table_spec(Constants.T_VARIANTS).get_column_spec(c_id).header)
     variant_table_csv = variant_table[:]
     for i in [7, 8, 9]:
         variant_table_csv[i] = join_col(variant_table_csv[i])
     variant_table_csv_tr = zip(*variant_table_csv)
     with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
         writer = csv.writer(csvfile)
+        writer.writerow(header_row)
         [writer.writerow(r) for r in variant_table_csv_tr]
+
+
+def _round(freqs):
+    rounded = []
+    for item in freqs:
+        rounded.append("{0:.2f}".format(round(item,2)))
+    return rounded
+
+def to_rpt_variant_table(variant_table):
+
+    variant_table_r = variant_table[:]
+    
+    variant_table_r[9] = map(lambda x: _round(x), variant_table_r[9])
+
+    for i in [7, 8, 9]:
+        variant_table_r[i] = join_col(variant_table_r[i])
+
+    columns = []
+    for i, col_id in enumerate(Constants.VARIANTS_COL_IDS):
+        columns.append(Column(col_id, values=variant_table_r[i]))
+
+    variant_table_rpt = Table(Constants.T_VARIANTS, columns=columns)
+
+    return variant_table_rpt
+
 
 
 def my_agg(my_list, _func):
@@ -169,7 +218,7 @@ def to_sample_table(variant_table):
     for i, col_id in enumerate(col_ids):
         columns.append(Column(col_id, values=sample_table[i]))
 
-    sample_table_r = Table(Constants.T_ID, columns=columns)
+    sample_table_r = Table(Constants.T_SAMPLES, columns=columns)
 
     return sample_table_r
 
@@ -183,7 +232,11 @@ def to_report(juliet_summary_file, output_dir):
 
     variant_table = to_variant_table(juliet_summary)
     write_variant_table(variant_table, output_dir)
-    tables = [to_sample_table(variant_table)]
+
+    rpt_variant_table = to_rpt_variant_table(variant_table)
+    sample_table = to_sample_table(variant_table)
+    tables = [sample_table, rpt_variant_table]
+
     report = Report(Constants.R_ID, tables=tables)
 
     return spec.apply_view(report)
