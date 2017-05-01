@@ -10,49 +10,49 @@
             "description": null,
             "columns": [
                 {
-                    "header": "Annotation",
+                    "header": "",
                     "type": "string",
                     "format": null,
                     "id": "annotation",
                     "description": null
                 },
                 {
-                    "header": "Number of Insertions",
+                    "header": "Insertions (count)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "insertions_n",
                     "description": null
                 },
                 {
-                    "header": "Total Bases of Insertions",
+                    "header": "Insertions (total bp)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "insertions_sum",
                     "description": null
                 },
                 {
-                    "header": "Number of Deletions",
+                    "header": "Deletions (count)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "deletions_n",
                     "description": null
                 },
                 {
-                    "header": "Total Bases of Deletions",
+                    "header": "Deletions (total bp)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "deletions_sum",
                     "description": null
                 },
                 {
-                    "header": "Number of Ins/Del",
+                    "header": "All Variants (count)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "indel_n",
                     "description": null
                 },
                 {
-                    "header": "Total Bases of Ins/Del",
+                    "header": "All Variants (total bp)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "indel_sum",
