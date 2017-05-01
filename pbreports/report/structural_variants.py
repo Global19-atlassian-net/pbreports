@@ -7,7 +7,6 @@ import itertools
 
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
-import numpy as np
 
 from pbcommand.models.report import Report, Table, Column, PlotGroup, Plot
 from pbcommand.models import FileTypes, get_pbparser
