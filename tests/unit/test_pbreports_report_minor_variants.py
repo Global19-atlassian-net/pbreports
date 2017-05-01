@@ -55,9 +55,10 @@ class TestMinorVariantsRpt(unittest.TestCase):
             self.assertEqual(ref_supp_table[col], test_supp_table[col])
 
         for col in approx_cols:
-            ref_supp_table_col = [float(a) for a in itertools.chain(*[item.split(";") for item in ref_supp_table[col]])]
-            test_supp_table_col = [float(a) for a in itertools.chain(*[item.split(";") for item in test_supp_table[col]])]
-            self.assertEqual(len(ref_supp_table_col), len(test_supp_table_col))
+            self.assertEqual(ref_supp_table[col][0], test_supp_table[col][0])
+            ref_supp_table_col = [float(a) for a in itertools.chain(*[item.split(";") for item in ref_supp_table[col][1:]])]
+            test_supp_table_col = [float(a) for a in itertools.chain(*[item.split(";") for item in test_supp_table[col][1:]])]
+            self.assertEqual(len(ref_supp_table_col), len(test_supp_table_col)) 
             for item in zip(ref_supp_table_col, test_supp_table_col):
                 self.assertAlmostEqual(item[0], item[1], delta=.0003)
 
@@ -110,7 +111,7 @@ class TestMinorVariantsRpt(unittest.TestCase):
 
         self.assertEqual('Maximum Frequency Haplotype (%)', c6['header'])
         self.assertEqual('minor_variants.sample_table.haplotype_frequency', c6['id'])
-        self.assertAlmostEqual(0.0425456790123457, c6['values'][0], delta=.0003)
-        self.assertAlmostEqual(0.958553791887125, c6['values'][1], delta=.0003)
+        self.assertAlmostEqual(4.25456790123457, c6['values'][0], delta=.0003)
+        self.assertAlmostEqual(95.8553791887125, c6['values'][1], delta=.0003)
 
         validate_report_complete(self, rpt)
