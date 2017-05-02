@@ -33,10 +33,10 @@ class Constants(object):
     C_INDEL_N = "indel_n"
     C_INDEL_SUM = "indel_sum"
 
-    R_TANDEM = "TANDEM"
-    R_ALU = "ALU"
+    R_TANDEM = "Tandem Repeat"
+    R_ALU = "Alu"
     R_L1 = "L1"
-    R_SVA = "SVA_A"
+    R_SVA = "SVA"
     R_UNANNOTATED = "Unannotated"
     R_TOTAL = "Totals"
 
@@ -59,15 +59,11 @@ def to_sv_table(table_json):
     row_ids = [Constants.R_TANDEM, Constants.R_ALU, Constants.R_L1,
                Constants.R_SVA, Constants.R_UNANNOTATED, Constants.R_TOTAL]
 
-    row_names = {Constants.R_TANDEM: "Tandem Repeat",  Constants.R_ALU: "Alu", 
-                 Constants.R_L1: "L1", Constants.R_SVA: "SVA", 
-                 Constants.R_UNANNOTATED: "Unannotated", Constants.R_TOTAL: "Totals"}
-
     t = []
     for _id in row_ids:
         for row in table_json:
             if _id == row[0]:
-                r = [row_names[row[0]]]
+                r = [row[0]]
                 r.extend([int(x) for x in row[1:7]])
                 t.append(r)
 
