@@ -96,7 +96,7 @@ def to_plotgroup(data, pg, p, bin_n, x_ticks, x_lims, x_labels, output_dir):
     fig, ax = get_fig_axes_lpr()
     if insertions or deletions:
         ax.hist([deletions, insertions], label=["Deletions", "Insertions"], histtype='barstacked',
-                color=["#FF7E79", "#A9D18E"], edgecolor = "none", bins=bin_n,
+                color=["#FF7E79", "#A9D18E"], edgecolor="none", bins=bin_n,
                 width=0.85*(x_lims[1] - x_lims[0])/bin_n, range=[x_lims[0], x_lims[1]])
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
