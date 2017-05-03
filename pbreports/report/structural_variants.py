@@ -39,7 +39,7 @@ class Constants(object):
     R_L1 = "L1"
     R_SVA = "SVA"
     R_UNANNOTATED = "Unannotated"
-    R_TOTAL = "Totals"
+    R_TOTAL = "Total"
 
     PG_SHORT_SV = "short_sv_plot_group"
     P_SHORT_SV = "short_sv_plot"

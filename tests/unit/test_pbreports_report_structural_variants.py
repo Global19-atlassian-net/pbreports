@@ -46,7 +46,7 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         self.assertEqual('structural_variants.anno_table.annotation', c0['id'])
         self.assertEqual('Alu', c0['values'][0])
         self.assertEqual('Unannotated', c0['values'][1])
-        self.assertEqual('Totals', c0['values'][2])
+        self.assertEqual('Total', c0['values'][2])
 
         self.assertEqual('Insertions (count)', c1['header'])
         self.assertEqual('structural_variants.anno_table.insertions_n', c1['id'])
