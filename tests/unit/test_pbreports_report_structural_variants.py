@@ -25,13 +25,15 @@ class TestStructuralVariantsRpt(unittest.TestCase):
             shutil.rmtree(self._output_dir)
 
 
-    def test_make_sv_report_table(self):
+    def test_make_sv_report(self):
 
         table = op.join(_DATA_DIR, 'svann.json')
         plot = op.join(_DATA_DIR, 'svlengths.json')
 
         rpt = to_report(table, plot, self._output_dir)
         d = json.loads(rpt.to_json())
+
+        self.assertEqual('Report structural_variants', d['title'])
 
         t = d['tables'][0]
         c0 = t['columns'][0]
@@ -41,6 +43,8 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         c4 = t['columns'][4]
         c5 = t['columns'][5]
         c6 = t['columns'][6]
+
+        self.assertEqual('Count by Annotation', t['title'])
 
         self.assertEqual("", c0['header'])
         self.assertEqual('structural_variants.anno_table.annotation', c0['id'])

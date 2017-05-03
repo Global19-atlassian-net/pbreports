@@ -1,7 +1,7 @@
 {
     "id": "structural_variants",
     "version": "3.2",
-    "title": "Structural Variants Report",
+    "title": "Report",
     "description": "Generates a report summarizing structural variant analysis results.",
     "attributes": [],
     "tables": [
@@ -59,7 +59,7 @@
                     "description": null
                 }
             ],
-            "title": "By Annotation"
+            "title": "Count by Annotation"
         }
     ],
     "plotGroups": [

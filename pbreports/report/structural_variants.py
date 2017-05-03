@@ -206,7 +206,7 @@ def _get_parser():
     p = get_pbparser(
         Constants.TOOL_ID,
         __version__,
-        "Structural Variants Report",
+        "Report",
         __doc__,
         Constants.DRIVER_EXE,
         is_distributed=False)
