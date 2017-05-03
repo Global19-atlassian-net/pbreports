@@ -33,9 +33,7 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         rpt = to_report(table, plot, self._output_dir)
         d = json.loads(rpt.to_json())
 
-
         self.assertEqual('Report structural_variants', d['title'])
-
 
         t = d['tables'][0]
         c0 = t['columns'][0]
