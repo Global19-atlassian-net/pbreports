@@ -54,7 +54,7 @@
                 {
                     "header": "Maximum Frequency Haplotype (%)",
                     "type": "float",
-                    "format": "{p:.2f}",
+                    "format": "{:.2f}%",
                     "id": "haplotype_frequency",
                     "description": ""
                 }
