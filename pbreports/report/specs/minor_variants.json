@@ -59,7 +59,7 @@
                     "description": ""
                 }
             ],
-            "title": "By Sample"
+            "title": "Summary"
         },
         {
             "id": "variant_table",
@@ -136,7 +136,7 @@
                     "description": ""
                 }
             ],
-            "title": "Variants per Sample"
+            "title": "Variants Per Sample"
         }
     ],
     "plotGroups": []
