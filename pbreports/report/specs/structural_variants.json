@@ -1,7 +1,7 @@
 {
     "id": "structural_variants",
     "version": "3.2",
-    "title": "Structural Variants Report",
+    "title": "Report",
     "description": "Generates a report summarizing structural variant analysis results.",
     "attributes": [],
     "tables": [
@@ -10,67 +10,67 @@
             "description": null,
             "columns": [
                 {
-                    "header": "Annotation",
+                    "header": "",
                     "type": "string",
                     "format": null,
                     "id": "annotation",
                     "description": null
                 },
                 {
-                    "header": "Number of Insertions",
+                    "header": "Insertions (count)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "insertions_n",
                     "description": null
                 },
                 {
-                    "header": "Total Bases of Insertions",
+                    "header": "Insertions (total bp)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "insertions_sum",
                     "description": null
                 },
                 {
-                    "header": "Number of Deletions",
+                    "header": "Deletions (count)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "deletions_n",
                     "description": null
                 },
                 {
-                    "header": "Total Bases of Deletions",
+                    "header": "Deletions (total bp)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "deletions_sum",
                     "description": null
                 },
                 {
-                    "header": "Number of Ins/Del",
+                    "header": "All Variants (count)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "indel_n",
                     "description": null
                 },
                 {
-                    "header": "Total Bases of Ins/Del",
+                    "header": "All Variants (total bp)",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "indel_sum",
                     "description": null
                 }
             ],
-            "title": "By Annotation"
+            "title": "Count by Annotation"
         }
     ],
     "plotGroups": [
         {
             "plots": [
                 {
-                    "xlabel": "length (bp)",
+                    "xlabel": "variant length (bp)",
                     "description": null,
-                    "caption": "Short Structural Variants",
+                    "caption": "Length Histogram (<1 kb)",
                     "ylabel": "count",
-                    "title": "Short Structural Variants",
+                    "title": "Length Histogram (<1 kb)",
                     "id": "short_sv_plot"
                 }
             ],
@@ -82,11 +82,11 @@
         {
             "plots": [
                 {
-                    "xlabel": "length (bp)",
+                    "xlabel": "variant length (kb)",
                     "description": null,
-                    "caption": "Long Structural Variants",
-                    "ylabel": "counts",
-                    "title": "Long Structural Variants",
+                    "caption": "Length Histogram (≥1 kb)",
+                    "ylabel": "count",
+                    "title": "Length Histogram (≥1 kb)",
                     "id": "long_sv_plot"
                 }
             ],
