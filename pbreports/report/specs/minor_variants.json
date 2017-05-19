@@ -38,7 +38,7 @@
                     "description": ""
                 },
                 {
-                    "header": "Number of DRMs",
+                    "header": "Number of Drugs with Resistance Mutations",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "drms",

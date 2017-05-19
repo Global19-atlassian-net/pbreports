@@ -131,7 +131,7 @@ class TestMinorVariantsRpt(unittest.TestCase):
         self.assertEqual(1, c3['values'][0])
         self.assertEqual(1, c3['values'][1])
 
-        self.assertEqual('Number of DRMs', c4['header'])
+        self.assertEqual('Number of Drugs with Resistance Mutations', c4['header'])
         self.assertEqual('minor_variants.sample_table.drms', c4['id'])
         self.assertEqual(7, c4['values'][0])
         self.assertEqual(4, c4['values'][1])   
