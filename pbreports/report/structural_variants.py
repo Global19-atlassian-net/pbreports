@@ -45,6 +45,12 @@ class Constants(object):
     P_SHORT_SV = "short_sv_plot"
     PG_LONG_SV = "long_sv_plot_group"
     P_LONG_SV = "long_sv_plot"
+    
+    OVERFLOW_BIN_X = 11250
+    SV_LEN_CUTOFF_SHORT = 1000
+    SV_LEN_CUTOFF_LONG = 10000
+    BIN_WIDTH_SHORT = 100
+    BIN_WIDTH_LONG = 500
 
 
 log = logging.getLogger(__name__)
@@ -134,18 +140,21 @@ def to_plotgroup(data, pg, p, bin_n, x_ticks, x_lims, x_labels, output_dir):
 
 
 def to_plotgroups(plot_json, output_dir):
-    short_ins = [x for x in plot_json.get("Insertion", []) if x < 1000]
-    short_del = [x for x in plot_json.get("Deletion", []) if x < 1000]
-    x_ticks = range(0,1100,100)
+    short_ins = [x for x in plot_json.get("Insertion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
+    short_del = [x for x in plot_json.get("Deletion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
+    x_ticks = range(0,Constants.SV_LEN_CUTOFF_SHORT + 100,100)
     x_lims = [x_ticks[0], x_ticks[-1]]
     x_labels = ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1,000"]
     plotgroups = [to_plotgroup([short_ins, short_del], Constants.PG_SHORT_SV,
                                Constants.P_SHORT_SV, 20, x_ticks, x_lims, x_labels, output_dir)]
-    long_ins = [x for x in plot_json.get("Insertion", []) if x >= 1000]
-    long_del = [x for x in plot_json.get("Deletion", []) if x >= 1000]
-    long_ins_clipped = [11250 if x > 10000 else x for x in long_ins]
-    long_del_clipped = [11250 if x > 10000 else x for x in long_del]
-    x_ticks = range(0,11000,1000) + [11250]
+    long_ins = [x for x in plot_json.get("Insertion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
+    long_del = [x for x in plot_json.get("Deletion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
+    #mapping all lengths above 10k to a constant
+    long_ins_clipped = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_LONG
+                            else x for x in long_ins]
+    long_del_clipped = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_LONG
+                            else x for x in long_del]
+    x_ticks = range(0,Constants.SV_LEN_CUTOFF_LONG + 1000,1000) + [Constants.OVERFLOW_BIN_X]
     x_lims = [0, 12000]
     x_labels = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", ">10"]
     plotgroups.append(to_plotgroup([long_ins_clipped, long_del_clipped], Constants.PG_LONG_SV,
