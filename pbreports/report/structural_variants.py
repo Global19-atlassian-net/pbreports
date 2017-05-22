@@ -143,13 +143,13 @@ def to_plotgroups(plot_json, output_dir):
                                Constants.P_SHORT_SV, 20, x_ticks, x_lims, x_labels, output_dir)]
     long_ins = [x for x in plot_json.get("Insertion", []) if x >= 1000]
     long_del = [x for x in plot_json.get("Deletion", []) if x >= 1000]
-    long_ins_clipped = [22250 if x > 20000 else x for x in long_ins]
-    long_del_clipped = [22250 if x > 20000 else x for x in long_del]
-    x_ticks = [1000, 5000, 10000, 15000, 20000, 22250]
-    x_lims = [1000, 23000]
-    x_labels = ["1", "5", "10", "15", "20", ">20"]
+    long_ins_clipped = [11250 if x > 10000 else x for x in long_ins]
+    long_del_clipped = [11250 if x > 10000 else x for x in long_del]
+    x_ticks = range(0,11000,1000) + [11250]
+    x_lims = [0, 12000]
+    x_labels = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", ">10"]
     plotgroups.append(to_plotgroup([long_ins_clipped, long_del_clipped], Constants.PG_LONG_SV,
-                               Constants.P_LONG_SV, 44, x_ticks, x_lims, x_labels, output_dir))
+                               Constants.P_LONG_SV, 24, x_ticks, x_lims, x_labels, output_dir))
     return plotgroups
 
 
