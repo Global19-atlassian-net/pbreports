@@ -432,8 +432,8 @@ def _add_options_to_parser(p):
                           description="Variants GFF")
     p.add_int(Constants.MAX_CONTIGS_ID, "maxContigs",
               default=Constants.MAX_CONTIGS_DEFAULT,
-              name="Max contigs",
-              description="Max number of contigs to plot. Defaults to 25.")
+              name="Maximum contigs",
+              description="Maximum number of contigs to plot. Defaults to 25.")
     return p
 
 

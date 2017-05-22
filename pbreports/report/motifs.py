@@ -664,7 +664,7 @@ def _get_parser():
     p.add_int(Constants.MAX_MOTIFS_ID,
               option_str="maxMotifs",
               default=Constants.MAX_MOTIFS_DEFAULT,
-              name="Max. number of motifs in QV plot",
+              name="Maximum number of motifs in QV plot",
               description="Control number of motifs whose QVs are plotted")
     return p
 
