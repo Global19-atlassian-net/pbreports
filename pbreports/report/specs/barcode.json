@@ -24,6 +24,13 @@
                     "description": "The number of reads associated with the barcode."
                 },
                 {
+                    "header": "Subreads",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "number_of_subreads",
+                    "description": "The number of subreads associated with the barcode."
+                },
+                {
                     "header": "Bases",
                     "type": "int",
                     "format": "{:,d}",
