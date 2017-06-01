@@ -11,9 +11,10 @@ import pbcommand.testkit
 
 import pbtestdata
 
-from pbreports.report.barcode import run_to_report
+from pbreports.report.barcode import run_to_report, iter_reads_by_barcode
 
-from base_test_case import validate_report_complete
+from base_test_case import (validate_report_complete,
+                            skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
 
@@ -30,15 +31,35 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.barcodes = pbtestdata.get_file("barcodeset")
         self.subreads = pbtestdata.get_file("barcoded-subreadset")
 
+    def test_iter_reads_by_barcode(self):
+        table = list(iter_reads_by_barcode(self.subreads, self.barcodes))
+        self.assertEqual(table, [('lbc1--lbc1', (0, 0), 1436, 1),
+                                 ('lbc3--lbc3', (2, 2), 204, 1)])
+
     def test_basic(self):
-        report = run_to_report(self.subreads, self.barcodes, subreads=True)
+        report = run_to_report(self.subreads, self.barcodes)
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
         self.assertEqual(report.tables[0].columns[0].values, [
                          'lbc1--lbc1', 'lbc3--lbc3'])
         self.assertEqual(report.tables[0].columns[1].values, [1, 1])
-        self.assertEqual(report.tables[0].columns[2].values, [1436, 204])
+        self.assertEqual(report.tables[0].columns[2].values, [1, 1])
+        self.assertEqual(report.tables[0].columns[3].values, [1436, 204])
+
+    @skip_if_data_dir_not_present
+    def test_large_dataset(self):
+        SUBREADS = "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_tiny_barcoded/m54008_160219_003234.tiny.subreadset.xml"
+        BARCODES = "/pbi/dept/secondary/siv/barcodes/Sequel_RSII_384_barcodes_v1/Sequel_RSII_384_barcodes_v1.barcodeset.xml"
+        report = run_to_report(SUBREADS, BARCODES)
+        validate_report_complete(self, report)
+        d = report.to_dict()
+        self.assertIsNotNone(d)
+        self.assertEqual(report.tables[0].columns[0].values,
+                         ['bc1001--bc1001', 'bc1002--bc1002', 'bc1003--bc1003'])
+        self.assertEqual(report.tables[0].columns[1].values, [1091, 1116, 989])
+        self.assertEqual(report.tables[0].columns[2].values, [5370, 5053, 4710])
+        self.assertEqual(report.tables[0].columns[3].values, [10306688, 10034254, 9452616])
 
 
 class TestBarcodeIntegration(unittest.TestCase):

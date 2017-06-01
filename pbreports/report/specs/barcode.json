@@ -17,11 +17,18 @@
                     "description": "A string containing the pair of barcode indices for which the following metrics apply, or a 0 if not barcoded. The barcode entries are represented as a pair of dash-separated number, with each number representing one of the two barcodes used for that amplicon."
                 },
                 {
-                    "header": "Reads",
+                    "header": "Polymerase Reads",
                     "type": "int",
                     "format": "{:,d}",
                     "id": "number_of_reads",
-                    "description": "The number of reads associated with the barcode."
+                    "description": "The number of polymerase reads associated with the barcode."
+                },
+                {
+                    "header": "Subreads",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "number_of_subreads",
+                    "description": "The number of subreads associated with the barcode."
                 },
                 {
                     "header": "Bases",
