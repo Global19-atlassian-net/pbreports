@@ -45,11 +45,11 @@ class Constants(object):
     P_SHORT_SV = "short_sv_plot"
     PG_LONG_SV = "long_sv_plot_group"
     P_LONG_SV = "long_sv_plot"
-    
+
     OVERFLOW_BIN_X = 11250
     SV_LEN_CUTOFF_SHORT = 1000
     SV_LEN_CUTOFF_LONG = 10000
-    BIN_WIDTH_SHORT = 100
+    BIN_WIDTH_SHORT = 50
     BIN_WIDTH_LONG = 500
 
 
@@ -58,8 +58,8 @@ spec = load_spec(Constants.R_ID)
 
 
 def to_sv_table(table_json):
-    
-    col_ids = [Constants.C_ANNOTATION, Constants.C_INS_N, Constants.C_INS_SUM, 
+
+    col_ids = [Constants.C_ANNOTATION, Constants.C_INS_N, Constants.C_INS_SUM,
                Constants.C_DEL_N, Constants.C_DEL_SUM, Constants.C_INDEL_N,
                Constants.C_INDEL_SUM]
 
@@ -83,7 +83,7 @@ def to_sv_table(table_json):
     sv_table = Table(Constants.T_ID, columns=columns)
 
     return sv_table
-    
+
 
 def comma_formatter(x, pos=0):
     return ("{0:,d}".format(int(x)))
@@ -142,7 +142,7 @@ def to_plotgroup(data, pg, p, bin_n, x_ticks, x_lims, x_labels, output_dir):
 def to_plotgroups(plot_json, output_dir):
     short_ins = [x for x in plot_json.get("Insertion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
     short_del = [x for x in plot_json.get("Deletion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
-    x_ticks = range(0,Constants.SV_LEN_CUTOFF_SHORT + 100,100)
+    x_ticks = range(0,Constants.SV_LEN_CUTOFF_SHORT + 100, 100)
     x_lims = [x_ticks[0], x_ticks[-1]]
     x_labels = ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1,000"]
     n_bins = x_lims[1]/Constants.BIN_WIDTH_SHORT
