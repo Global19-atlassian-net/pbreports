@@ -271,12 +271,6 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertEqual(c8['values'][0], "Workflow_Magbead.py")
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
-            'hq_hist_plot.png')))
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
-            'hq_hist_plot_thumb.png')))
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
             'raw_read_length_plot.png')))
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
@@ -374,12 +368,6 @@ class TestLoadingRpt(XMLStatsRptsBase):
         self.assertAlmostEqual(0.188, c7['values'][0], delta=.0003)
         self.assertAlmostEqual(0.281, c7['values'][1], delta=.0003)
         self.assertAlmostEqual(0.095, c7['values'][2], delta=.0003)
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
-            'hq_hist_plot.png')))
-        self.assertTrue(os.path.exists(os.path.join(
-            self.get_output_dir(),
-            'hq_hist_plot_thumb.png')))
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'raw_read_length_plot.png')))
