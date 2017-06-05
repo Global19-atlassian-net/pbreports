@@ -34,7 +34,7 @@ class TestBarcodeReportBasic(unittest.TestCase):
     def test_iter_reads_by_barcode(self):
         table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)))
         self.assertEqual(table, [
-            ('Not barcoded', (-1,-1), 9791, 1),
+            ('Not Barcoded', (-1,-1), 9791, 1),
             ('lbc1--lbc1', (0, 0), 1436, 1),
             ('lbc3--lbc3', (2, 2), 204, 1)])
 
@@ -44,7 +44,7 @@ class TestBarcodeReportBasic(unittest.TestCase):
         d = report.to_dict()
         self.assertIsNotNone(d)
         self.assertEqual(report.tables[0].columns[0].values, [
-                         'lbc1--lbc1', 'lbc3--lbc3', 'Not barcoded'])
+                         'lbc1--lbc1', 'lbc3--lbc3', 'Not Barcoded'])
         self.assertEqual(report.tables[0].columns[1].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[2].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[3].values, [1436, 204, 9791])

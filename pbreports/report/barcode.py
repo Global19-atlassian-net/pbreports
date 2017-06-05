@@ -30,7 +30,7 @@ class Constants(object):
     C_NREADS = 'number_of_reads'
     C_NSUBREADS = 'number_of_subreads'
     C_NBASES = 'number_of_bases'
-    LABEL_NONE = "Not barcoded"
+    LABEL_NONE = "Not Barcoded"
 
 
 def iter_reads_by_barcode(reads, barcodes):
