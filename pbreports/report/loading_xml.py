@@ -53,6 +53,7 @@ log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
+# XXX currently disabled
 def to_hq_hist_plot(hqbasefraction_dist, output_dir):
     plot_name = get_plot_title(spec, Constants.PG_HQ, Constants.P_HQ)
     x_label = get_plot_xlabel(spec, Constants.PG_HQ, Constants.P_HQ)
@@ -191,9 +192,10 @@ def to_report_impl(dset, output_dir):
     tables = [Table(Constants.T_LOADING, columns=columns)]
 
     plot_groups = []
-    plot_groups.extend(to_hq_hist_plot(
-        hqbasefraction_dist=hqbasefraction_dist,
-        output_dir=output_dir))
+    # XXX see SL-1408
+    #plot_groups.extend(to_hq_hist_plot(
+    #    hqbasefraction_dist=hqbasefraction_dist,
+    #    output_dir=output_dir))
     plot_groups.extend(to_rl_overlay_plot(
         numunfilteredbasecalls_dist=numunfilteredbasecalls_dist,
         readlen_dist=readlen_dist,

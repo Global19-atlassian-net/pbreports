@@ -30,6 +30,7 @@ class Constants(object):
     C_NREADS = 'number_of_reads'
     C_NSUBREADS = 'number_of_subreads'
     C_NBASES = 'number_of_bases'
+    LABEL_NONE = "Not Barcoded"
 
 
 def iter_reads_by_barcode(reads, barcodes):
@@ -55,8 +56,11 @@ def iter_reads_by_barcode(reads, barcodes):
             bc_ids = sorted(zmws_by_barcode.keys())
             bcs = [bc for bc in ds_bc]
             for i_bc, (barcode_fw, barcode_rev) in enumerate(bc_ids):
-                barcode_id = "{f}--{r}".format(f=bcs[barcode_fw].id,
-                                               r=bcs[barcode_rev].id)
+                if barcode_fw == -1:
+                    barcode_id = Constants.LABEL_NONE
+                else:
+                    barcode_id = "{f}--{r}".format(f=bcs[barcode_fw].id,
+                                                   r=bcs[barcode_rev].id)
                 zmws = sorted(list(zmws_by_barcode[(barcode_fw,barcode_rev)]))
                 for (movie, zmw) in zmws:
                     qlen = n_subreads = 0
@@ -96,6 +100,9 @@ def run_to_report(reads, barcodes, subreads=True, dataset_uuids=()):
 
     table = Table('barcode_table', columns=columns)
     labels = sorted(label2row.keys())
+    if Constants.LABEL_NONE in labels:
+        labels.remove(Constants.LABEL_NONE)
+        labels.append(Constants.LABEL_NONE)
     for label in labels:
         row = label2row[label]
         table.add_data_by_column_id(Constants.C_BARCODE, label)
