@@ -3,6 +3,7 @@
 Generate a report on SubreadSet barcoding.
 """
 
+from __future__ import division
 from collections import defaultdict
 from pprint import pformat
 import logging
@@ -32,7 +33,7 @@ class Constants(object):
     A_MAX_READS = "max_reads"
     A_MIN_READS = "min_reads"
     A_MEAN_RL = "mean_read_length"
-    A_MEAN_MAX_SRL = "mean_longest_subread_legnth"
+    A_MEAN_MAX_SRL = "mean_longest_subread_length"
 
     C_BARCODE = 'barcode'
     C_NREADS = 'number_of_reads'
@@ -96,7 +97,7 @@ def iter_reads_by_barcode(reads, barcodes):
                     yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq)
 
 
-def make_report(read_info):
+def make_report(read_info, dataset_uuids=()):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
     """
@@ -146,17 +147,18 @@ def make_report(read_info):
     if n_barcodes > 0:
         n_reads_all = [label2row[k].reads for k in labels_bc]
         n_reads_sum = sum(n_reads_all)
-        rl_sum = sum([label2row[k].bases for k in labels_bc])
-        srl_max_sum = 0
+        #rl_sum = sum([label2row[k].bases for k in labels_bc])
+        srl_max_sum = rl_sum = 0
         for k in labels_bc:
+            rl_sum += sum([b.qmax for b in bc_info[k]])
             srl_max_sum += max([b.srl_max for b in bc_info[k]])
         attributes.extend([
-            Attribute(Constants.A_MEAN_READS, value=n_reads_sum/n_barcodes),
+            Attribute(Constants.A_MEAN_READS, value=int(n_reads_sum/n_barcodes)),
             Attribute(Constants.A_MAX_READS, value=max(n_reads_all)),
             Attribute(Constants.A_MIN_READS, value=min(n_reads_all)),
             # XXX these need to be clarified
-            Attribute(Constants.A_MEAN_RL, value=rl_sum/n_reads_sum),
-            Attribute(Constants.A_MEAN_MAX_SRL, value=srl_max_sum/n_barcodes)
+            Attribute(Constants.A_MEAN_RL, value=int(rl_sum/n_reads_sum)),
+            Attribute(Constants.A_MEAN_MAX_SRL, value=int(srl_max_sum/n_barcodes))
         ])
 
     report = Report(spec.id,
@@ -166,12 +168,12 @@ def make_report(read_info):
     return spec.apply_view(report)
 
 
-def run_to_report(reads, barcodes, dataset_uuids):
+def run_to_report(reads, barcodes, dataset_uuids=()):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
     return make_report(
-        reads_info=iter_reads_by_barcode(reads, barcodes),
+        read_info=iter_reads_by_barcode(reads, barcodes),
         dataset_uuids=dataset_uuids)
 
 

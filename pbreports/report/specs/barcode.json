@@ -43,7 +43,7 @@
             "description": "Mean Longest Subread Length",
             "type": "int",
             "format": "{:,d}",
-            "id": "mean_longest_subread_legnth",
+            "id": "mean_longest_subread_length",
             "name": "Mean Longest Subread Length"
         }
     ],

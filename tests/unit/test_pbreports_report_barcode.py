@@ -11,7 +11,7 @@ import pbcommand.testkit
 
 import pbtestdata
 
-from pbreports.report.barcode import run_to_report, iter_reads_by_barcode
+from pbreports.report.barcode import ReadInfo, make_report, run_to_report, iter_reads_by_barcode
 
 from base_test_case import (validate_report_complete,
                             skip_if_data_dir_not_present)
@@ -38,9 +38,24 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
         self.assertEqual([r.n_subreads for r in table], [1,1,1])
 
-    @unittest.skip("Not implemented")
     def test_make_report(self):
-        pass # TODO
+        read_info = [ # totally synthetic data
+            # label nbases qmax srl_max bq
+            ReadInfo("bc1", 1140, 1000, 400, [0.5]*7),
+            ReadInfo("bc1", 2400, 2000, 100, [0.8]*20),
+            ReadInfo("bc2", 2380, 2000, 200, [0.9]*19),
+            ReadInfo("bc2", 3560, 3000, 300, [0.6]*28),
+            ReadInfo("bc3", 2720, 2500, 300, [0.7]*22),
+            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90)
+        ]
+        report = make_report(read_info)
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr["mean_read_length"], 2100)
+        self.assertEqual(attr["mean_longest_subread_length"], 333)
+        self.assertEqual(attr["min_reads"], 1)
+        self.assertEqual(attr["max_reads"], 2)
+        self.assertEqual(attr["n_barcodes"], 3)
+        self.assertEqual(attr["mean_reads"], 1)
 
     def test_run_to_report(self):
         report = run_to_report(self.subreads, self.barcodes)
@@ -49,8 +64,8 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertIsNotNone(d)
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr, {
-            'mean_read_length': 820,
-            'mean_longest_subread_legnth': 820,
+            'mean_read_length': 5341,
+            'mean_longest_subread_length': 820,
             'min_reads': 1,
             'mean_reads': 1,
             'n_barcodes': 2,
@@ -72,8 +87,8 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertIsNotNone(d)
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr, {
-            'mean_read_length': 9322,
-            'mean_longest_subread_legnth': 28314,
+            'mean_read_length': 14411,
+            'mean_longest_subread_length': 28314,
             'min_reads': 989,
             'mean_reads': 1065,
             'n_barcodes': 3,
