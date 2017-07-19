@@ -32,17 +32,30 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.subreads = pbtestdata.get_file("barcoded-subreadset")
 
     def test_iter_reads_by_barcode(self):
-        table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)))
-        self.assertEqual(table, [
-            ('Not Barcoded', (-1,-1), 9791, 1),
-            ('lbc1--lbc1', (0, 0), 1436, 1),
-            ('lbc3--lbc3', (2, 2), 204, 1)])
+        table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
+        self.assertEqual([r.label for r in table],
+                         ["Not Barcoded", "lbc1--lbc1", "lbc3--lbc3"])
+        self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
+        self.assertEqual([r.n_subreads for r in table], [1,1,1])
 
-    def test_basic(self):
+    @unittest.skip("Not implemented")
+    def test_make_report(self):
+        pass # TODO
+
+    def test_run_to_report(self):
         report = run_to_report(self.subreads, self.barcodes)
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr, {
+            'mean_read_length': 820,
+            'mean_longest_subread_legnth': 820,
+            'min_reads': 1,
+            'mean_reads': 1,
+            'n_barcodes': 2,
+            'max_reads': 1
+        })
         self.assertEqual(report.tables[0].columns[0].values, [
                          'lbc1--lbc1', 'lbc3--lbc3', 'Not Barcoded'])
         self.assertEqual(report.tables[0].columns[1].values, [1, 1, 1])
@@ -57,6 +70,15 @@ class TestBarcodeReportBasic(unittest.TestCase):
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr, {
+            'mean_read_length': 9322,
+            'mean_longest_subread_legnth': 28314,
+            'min_reads': 989,
+            'mean_reads': 1065,
+            'n_barcodes': 3,
+            'max_reads': 1116
+        })
         self.assertEqual(report.tables[0].columns[0].values,
                          ['bc1001--bc1001', 'bc1002--bc1002', 'bc1003--bc1003'])
         self.assertEqual(report.tables[0].columns[1].values, [1091, 1116, 989])
@@ -76,12 +98,10 @@ class TestBarcodeIntegration(unittest.TestCase):
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
         json_report_file_name = temp_file.name
         temp_file.close()
-        ccs = " --ccs " if self.ccs else ""
-        cmd = "{e} --debug {ccs} {b} {ba} {r}".format(e=exe,
-                                                      b=self.subreads,
-                                                      ba=self.barcodes,
-                                                      r=json_report_file_name,
-                                                      ccs=ccs)
+        cmd = "{e} --debug {b} {ba} {r}".format(e=exe,
+                                                b=self.subreads,
+                                                ba=self.barcodes,
+                                                r=json_report_file_name)
         log.info("Running cmd {c}".format(c=cmd))
         output, rcode, emsg = backticks(cmd)
         if rcode != 0:
@@ -94,31 +114,3 @@ class TestBarcodeIntegration(unittest.TestCase):
         log.info(pformat(s))
         # cleanup
         os.remove(json_report_file_name)
-
-
-@unittest.skip("TODO")
-class TestReadsOfInsertBarcodeReportBasic(unittest.TestCase):
-
-    def setUp(self):
-        dir_name = os.path.join(_DATA_DIR, 'ccs_01')
-        self.barcodes = os.path.join(dir_name, 'barcode.fofn')
-        self.subreads = os.path.join(dir_name, 'reads_of_insert.fofn')
-        self.ccs = True
-
-    def test_basic(self):
-        report = run_to_report(self.subreads, self.barcodes,
-                               subreads=False)
-        d = report.to_dict()
-        self.assertIsNotNone(d)
-        log.info(pformat(d))
-        log.info(str(report.tables[0]))
-
-
-@unittest.skip("TODO")
-class TestReadsOfInsertBarcodeIntegration(TestBarcodeIntegration):
-
-    def setUp(self):
-        dir_name = os.path.join(_DATA_DIR, 'ccs_01')
-        self.barcodes = os.path.join(dir_name, 'barcode.fofn')
-        self.subreads = os.path.join(dir_name, 'reads_of_insert.fofn')
-        self.ccs = True
