@@ -8,6 +8,7 @@ from collections import defaultdict
 from pprint import pformat
 import itertools
 import logging
+import os.path as op
 import sys
 
 from matplotlib import pyplot as plt
@@ -90,7 +91,7 @@ def make_2d_histogram(x, y, n_bins, ylabel):
     return fig
 
 
-def make_readlength_hist2d(bc_groups):
+def make_readlength_hist2d(bc_groups, base_dir):
     """
     Create 2D histogram of read lengths per barcoded sample.
     """
@@ -106,12 +107,12 @@ def make_readlength_hist2d(bc_groups):
                             ylabel="Read Length")
     img_name = "hist2d_readlength.png"
     thumb_name = "hist2d_readlength_thumb.png"
-    fig.savefig(img_name, dpi=72)
-    fig.savefig(thumb_name, dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
     return Plot(Constants.P_HIST2D_RL, img_name, thumbnail=thumb_name)
 
 
-def make_bcqual_hist2d(bc_groups):
+def make_bcqual_hist2d(bc_groups, base_dir):
     """
     Create 2D histogram of barcode quality scores per barcoded sample.
     """
@@ -127,8 +128,8 @@ def make_bcqual_hist2d(bc_groups):
                             ylabel="Read Barcode Quality Score")
     img_name = "hist2d_bcqual.png"
     thumb_name = "hist2d_bcqual_thumb.png"
-    fig.savefig(img_name, dpi=72)
-    fig.savefig(thumb_name, dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
     return Plot(Constants.P_HIST2D_BQ, img_name, thumbnail=thumb_name)
 
 
@@ -152,7 +153,7 @@ class BarcodeBin(object):
         return len(self.readlengths)
 
 
-def make_histograms_2d(bc_info):
+def make_histograms_2d(bc_info, base_dir):
     log.info("Generating 2D histograms...")
     groups = []
     for bc_label, reads in bc_info.iteritems():
@@ -165,8 +166,8 @@ def make_histograms_2d(bc_info):
     groups.sort(lambda a, b: cmp(b.n_reads, a.n_reads))
     x = []
     y = []
-    plot_rl = make_readlength_hist2d(groups)
-    plot_bq = make_bcqual_hist2d(groups)
+    plot_rl = make_readlength_hist2d(groups, base_dir)
+    plot_bq = make_bcqual_hist2d(groups, base_dir)
     return PlotGroup(Constants.PG_HIST2D, plots=[plot_rl, plot_bq])
 
 
@@ -240,10 +241,12 @@ def iter_reads_by_barcode(reads, barcodes):
                     yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
 
 
-def make_report(read_info, dataset_uuids=()):
+def make_report(read_info, dataset_uuids=(), base_dir=None):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
     """
+    if base_dir == None:
+        base_dir = os.getcwd()
 
     class MyRow(object):
         __slots__ = ["label", "bases", "reads", "subreads"]
@@ -313,7 +316,7 @@ def make_report(read_info, dataset_uuids=()):
         attributes.extend([Attribute(ID, value=0) for ID in ids])
 
     plotgroups = [
-        make_histograms_2d(bc_info)
+        make_histograms_2d(bc_info, base_dir)
     ]
 
     report = Report(spec.id,
@@ -324,19 +327,21 @@ def make_report(read_info, dataset_uuids=()):
     return spec.apply_view(report)
 
 
-def run_to_report(reads, barcodes, dataset_uuids=()):
+def run_to_report(reads, barcodes, dataset_uuids=(), base_dir=None):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
     return make_report(
         read_info=iter_reads_by_barcode(reads, barcodes),
-        dataset_uuids=dataset_uuids)
+        dataset_uuids=dataset_uuids,
+        base_dir=base_dir)
 
 
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    report = run_to_report(args.subreads, args.barcodes)
+    report = run_to_report(args.subreads, args.barcodes,
+                           base_dir=op.dirname(args.report_json))
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
     return 0
@@ -352,7 +357,8 @@ def resolved_tool_contract_runner(rtc):
     report = run_to_report(
         reads=rtc.task.input_files[0],
         barcodes=rtc.task.input_files[1],
-        dataset_uuids=dataset_uuids)
+        dataset_uuids=dataset_uuids,
+        base_dir=op.dirname(rtc.task.output_files[0]))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
     return 0

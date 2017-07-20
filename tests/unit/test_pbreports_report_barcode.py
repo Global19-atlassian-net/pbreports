@@ -26,10 +26,11 @@ class TestBarcodeReport(unittest.TestCase):
         self.barcodes = pbtestdata.get_file("barcodeset")
         self.subreads = pbtestdata.get_file("barcoded-subreadset")
         self._tmp_dir = tempfile.mkdtemp()
+        self._start_dir = os.getcwd()
         os.chdir(self._tmp_dir)
 
     def tearDown(self):
-        pass
+        os.chdir(self._start_dir)
 
     def test_iter_reads_by_barcode(self):
         table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
@@ -72,7 +73,7 @@ class TestBarcodeReport(unittest.TestCase):
             BarcodeBin("bc3", [3,3,4,6,5,1], [40,50,60,70,55,39]),
             BarcodeBin("bc1", [4,4,3,1,2], [25,30,50,75,65])
         ]
-        p = make_readlength_hist2d(bc_groups)
+        p = make_readlength_hist2d(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
     def test_make_bcqual_hist2d(self):
@@ -81,7 +82,7 @@ class TestBarcodeReport(unittest.TestCase):
             BarcodeBin("bc3", [3,3,4,6,5,1], [40,50,60,70,55,39]),
             BarcodeBin("bc1", [4,4,3,1,2], [25,30,50,75,65])
         ]
-        p = make_bcqual_hist2d(bc_groups)
+        p = make_bcqual_hist2d(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
     def test_make_histograms_2d(self):
@@ -89,7 +90,7 @@ class TestBarcodeReport(unittest.TestCase):
         bc_info = defaultdict(list)
         for ri in read_info:
             bc_info[ri.label].append(ri)
-        pg = make_histograms_2d(bc_info)
+        pg = make_histograms_2d(bc_info, self._tmp_dir)
         self.assertEqual(len(pg.plots), 2)
 
     def test_make_report_no_reads(self):
