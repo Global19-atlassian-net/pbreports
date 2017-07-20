@@ -57,6 +57,21 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertEqual(attr["n_barcodes"], 3)
         self.assertEqual(attr["mean_reads"], 1)
 
+    def test_make_report_no_reads(self):
+        report = make_report([])
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr["n_barcodes"], 0)
+        self.assertEqual(len(report.tables[0].columns[0].values), 0)
+
+    def test_make_report_no_barcoded_reads(self):
+        read_info = [
+            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90)
+        ]
+        report = make_report(read_info)
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr["n_barcodes"], 0)
+        self.assertEqual(len(report.tables[0].columns[0].values), 1)
+
     def test_run_to_report(self):
         report = run_to_report(self.subreads, self.barcodes)
         validate_report_complete(self, report)
