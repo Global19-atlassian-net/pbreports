@@ -6,11 +6,14 @@ Generate a report on SubreadSet barcoding.
 from __future__ import division
 from collections import defaultdict
 from pprint import pformat
+import itertools
 import logging
 import sys
 
+from matplotlib import pyplot as plt
+
 from pbcommand.cli import pbparser_runner
-from pbcommand.models.report import Report, Table, Column, Attribute
+from pbcommand.models.report import Report, Table, Column, Attribute, Plot, PlotGroup
 from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
@@ -18,7 +21,7 @@ from pbcore.io import openDataSet, BarcodeSet
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '0.7'
+__version__ = '1.0'
 
 spec = load_spec("barcode")
 
@@ -41,14 +44,149 @@ class Constants(object):
     C_NBASES = 'number_of_bases'
     LABEL_NONE = "Not Barcoded"
 
+    PG_HIST2D = "hist2d"
+    P_HIST2D_RL = "binned_readlength"
+    P_HIST2D_BQ = "binned_bcqual"
+    BQ_BINS = 50
+    RL_BINS = 50
+
+
+# XXX This might eventually need to be moved to pbreports.plot, but it's very
+# specialized right now
+def make_2d_histogram(x, y, n_bins, ylabel):
+    """
+    Generate a rainbow-colored 2D histogram where the X axis represents
+    individual barcode groups (sorted by descending read count) and the Y axis
+    represents a metric within each group (bq, read length, etc.).
+
+    :param x: X-axis values, i.e. barcode group indices
+    :param y: Y-axis values corresponding to x
+    :param n_bins: (x,y) bin sizes; x should usually be 1
+    :param ylabl: Y-axis label
+    :returns: matplotlib figure
+    """
+    cmap = plt.cm.Spectral_r
+    cmap.set_under(color=(0.875, 0.875, 0.875))
+    fig = plt.figure(figsize=(12, 4))
+    ax = fig.add_subplot(111)
+    ax.axesPatch.set_facecolor((0.875, 0.875, 0.875))
+    ax.grid(color="white", linewidth=0.5, linestyle='-')
+    counts, xedges, yedges, im = ax.hist2d(x, y, cmap=cmap, vmin=1,
+                                           bins=n_bins)
+    x_margin = 5
+    if n_bins[0] < 20:
+        x_margin = 1
+    elif n_bins[0] < 50:
+        x_margin = 2
+    ymax = max(y) if len(y) > 0 else 1
+    ax.set_xlim(-x_margin, n_bins[0] + x_margin)
+    ax.set_ylim(-(int(ymax*0.05)), ymax+int(ymax*(0.05)))
+    ax.set_ylabel(ylabel)
+    ax.set_xlabel("Barcode Rank Order By Read Count")
+    for spine in ["left", "right", "top", "bottom"]:
+        ax.spines[spine].set_visible(False)
+    fig.colorbar(im, ax=ax, fraction=0.05, pad=0.01)
+    fig.tight_layout()
+    return fig
+
+
+def make_readlength_hist2d(bc_groups):
+    """
+    Create 2D histogram of read lengths per barcoded sample.
+    """
+    log.info("Creating 2D histogram of read lengths")
+    x = []
+    y = []
+    for i, group in enumerate(bc_groups, start=1):
+        x.extend([i] * group.n_reads)
+        y.extend(group.readlengths)
+    x_bins = max(len(bc_groups), 1)
+    fig = make_2d_histogram(x, y,
+                            n_bins=[x_bins, Constants.RL_BINS],
+                            ylabel="Read Length")
+    img_name = "hist2d_readlength.png"
+    thumb_name = "hist2d_readlength_thumb.png"
+    fig.savefig(img_name, dpi=72)
+    fig.savefig(thumb_name, dpi=20)
+    return Plot(Constants.P_HIST2D_RL, img_name, thumbnail=thumb_name)
+
+
+def make_bcqual_hist2d(bc_groups):
+    """
+    Create 2D histogram of barcode quality scores per barcoded sample.
+    """
+    log.info("Creating 2D histogram of barcode quality scores")
+    x = []
+    y = []
+    for i, group in enumerate(bc_groups, start=1):
+        x.extend([i] * group.n_subreads)
+        y.extend(group.bcquals)
+    x_bins = max(1, len(bc_groups))
+    fig = make_2d_histogram(x, y,
+                            n_bins=[x_bins, Constants.BQ_BINS],
+                            ylabel="Read Barcode Quality Score")
+    img_name = "hist2d_bcqual.png"
+    thumb_name = "hist2d_bcqual_thumb.png"
+    fig.savefig(img_name, dpi=72)
+    fig.savefig(thumb_name, dpi=20)
+    return Plot(Constants.P_HIST2D_BQ, img_name, thumbnail=thumb_name)
+
+
+class BarcodeBin(object):
+    """
+    Utility class for storing per-barcode metrics plotted as 2D histograms
+    """
+    __slots__ = ["bc_label", "readlengths", "bcquals"]
+
+    def __init__(self, bc_label, readlengths, bcquals):
+        self.bc_label = bc_label
+        self.readlengths = readlengths
+        self.bcquals = bcquals
+
+    @property
+    def n_subreads(self):
+        return len(self.bcquals)
+
+    @property
+    def n_reads(self):
+        return len(self.readlengths)
+
+
+def make_histograms_2d(bc_info):
+    log.info("Generating 2D histograms...")
+    groups = []
+    for bc_label, reads in bc_info.iteritems():
+        if bc_label == Constants.LABEL_NONE:
+            continue
+        groups.append(BarcodeBin(
+            bc_label=bc_label,
+            readlengths=[r.readlength for r in reads],
+            bcquals=list(itertools.chain(*(r.bq for r in reads)))))
+    groups.sort(lambda a, b: cmp(b.n_reads, a.n_reads))
+    x = []
+    y = []
+    plot_rl = make_readlength_hist2d(groups)
+    plot_bq = make_bcqual_hist2d(groups)
+    return PlotGroup(Constants.PG_HIST2D, plots=[plot_rl, plot_bq])
+
 
 class ReadInfo(object):
-    def __init__ (self, label, nbases, qmax, srl_max, bq):
+    """
+    Container class for storing information about a single barcoded ZMW read
+    and associated subreads.
+    """
+    __slots__ = ["label", "nbases", "readlength", "bq", "srl_max", "bc_idx"]
+
+    def __init__(self, label, nbases, qmax, srl_max, bq, bc_idx):
         self.label = label
         self.nbases = nbases
-        self.qmax = qmax
+        self.readlength = qmax
         self.bq = bq
         self.srl_max = srl_max
+        self.bc_idx = bc_idx
+
+    def is_barcoded(self):
+        return self.bc_idx != (-1, -1)
 
     @property
     def n_subreads(self):
@@ -56,6 +194,10 @@ class ReadInfo(object):
 
 
 def iter_reads_by_barcode(reads, barcodes):
+    """
+    Open a SubreadSet and BarcodeSet and return an iterable of ReadInfo objects
+    """
+    log.info("Extracting barcoded read info from input datasets...")
     with openDataSet(reads) as ds:
         for er in ds.externalResources:
             if er.barcodes is not None and er.barcodes != barcodes:
@@ -72,7 +214,7 @@ def iter_reads_by_barcode(reads, barcodes):
                                                  rr.pbi.holeNumber,
                                                  rr.pbi.qId)):
                 movie = rr.readGroupInfo(q).MovieName
-                zmws_by_barcode[(f,r)].add((movie, z))
+                zmws_by_barcode[(f, r)].add((movie, z))
                 subreads_by_zmw[(movie, z)].append((rr, i))
         with BarcodeSet(barcodes) as ds_bc:
             bc_ids = sorted(zmws_by_barcode.keys())
@@ -83,7 +225,7 @@ def iter_reads_by_barcode(reads, barcodes):
                 else:
                     barcode_id = "{f}--{r}".format(f=bcs[barcode_fw].id,
                                                    r=bcs[barcode_rev].id)
-                zmws = sorted(list(zmws_by_barcode[(barcode_fw,barcode_rev)]))
+                zmws = sorted(list(zmws_by_barcode[(barcode_fw, barcode_rev)]))
                 for (movie, zmw) in zmws:
                     qlen = 0
                     qmax = srl_max = 0
@@ -94,7 +236,8 @@ def iter_reads_by_barcode(reads, barcodes):
                         qmax = max(qmax, rr.pbi.qEnd[i_subread])
                         srl_max = max(srl_max, srl)
                         bq.append(rr.pbi.bcQual[i_subread])
-                    yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq)
+                    bc_idx = (barcode_fw, barcode_rev)
+                    yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
 
 
 def make_report(read_info, dataset_uuids=()):
@@ -103,6 +246,7 @@ def make_report(read_info, dataset_uuids=()):
     """
 
     class MyRow(object):
+        __slots__ = ["label", "bases", "reads", "subreads"]
 
         def __init__(self, label):
             self.label = label
@@ -128,7 +272,7 @@ def make_report(read_info, dataset_uuids=()):
 
     table = Table('barcode_table', columns=columns)
     labels = sorted(label2row.keys())
-    labels_bc = list(labels) # this will only contain actual barcodes
+    labels_bc = list(labels)  # this will only contain actual barcodes
     if Constants.LABEL_NONE in labels:
         labels.remove(Constants.LABEL_NONE)
         labels_bc = list(labels)
@@ -150,15 +294,17 @@ def make_report(read_info, dataset_uuids=()):
         #rl_sum = sum([label2row[k].bases for k in labels_bc])
         srl_max_sum = rl_sum = 0
         for k in labels_bc:
-            rl_sum += sum([b.qmax for b in bc_info[k]])
+            rl_sum += sum([b.readlength for b in bc_info[k]])
             srl_max_sum += max([b.srl_max for b in bc_info[k]])
         attributes.extend([
-            Attribute(Constants.A_MEAN_READS, value=int(n_reads_sum/n_barcodes)),
+            Attribute(Constants.A_MEAN_READS, value=int(
+                n_reads_sum / n_barcodes)),
             Attribute(Constants.A_MAX_READS, value=max(n_reads_all)),
             Attribute(Constants.A_MIN_READS, value=min(n_reads_all)),
             # XXX these need to be clarified
-            Attribute(Constants.A_MEAN_RL, value=int(rl_sum/n_reads_sum)),
-            Attribute(Constants.A_MEAN_MAX_SRL, value=int(srl_max_sum/n_barcodes))
+            Attribute(Constants.A_MEAN_RL, value=int(rl_sum / n_reads_sum)),
+            Attribute(Constants.A_MEAN_MAX_SRL,
+                      value=int(srl_max_sum / n_barcodes))
         ])
     else:
         ids = [Constants.A_MEAN_READS, Constants.A_MAX_READS,
@@ -166,10 +312,15 @@ def make_report(read_info, dataset_uuids=()):
                Constants.A_MEAN_MAX_SRL]
         attributes.extend([Attribute(ID, value=0) for ID in ids])
 
+    plotgroups = [
+        make_histograms_2d(bc_info)
+    ]
+
     report = Report(spec.id,
                     attributes=attributes,
                     tables=[table],
-                    dataset_uuids=dataset_uuids)
+                    dataset_uuids=dataset_uuids,
+                    plotgroups=plotgroups)
     return spec.apply_view(report)
 
 
@@ -202,7 +353,7 @@ def resolved_tool_contract_runner(rtc):
         reads=rtc.task.input_files[0],
         barcodes=rtc.task.input_files[1],
         dataset_uuids=dataset_uuids)
-    log.info(pformat(report.to_dict()))
+    log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
     return 0
 

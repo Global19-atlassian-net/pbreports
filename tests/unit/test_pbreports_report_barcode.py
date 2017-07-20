@@ -4,6 +4,7 @@ import tempfile
 import unittest
 import logging
 import json
+import os.path as op
 import os
 
 from pbcore.util.Process import backticks
@@ -11,7 +12,7 @@ import pbcommand.testkit
 
 import pbtestdata
 
-from pbreports.report.barcode import ReadInfo, make_report, run_to_report, iter_reads_by_barcode
+from pbreports.report.barcode import *
 
 from base_test_case import (validate_report_complete,
                             skip_if_data_dir_not_present)
@@ -19,17 +20,16 @@ from base_test_case import (validate_report_complete,
 log = logging.getLogger(__name__)
 
 
-class TestToolContract(pbcommand.testkit.PbTestApp):
-    DRIVER_BASE = "python -m pbreports.report.barcode"
-    INPUT_FILES = [pbtestdata.get_file("barcoded-subreadset"),
-                   pbtestdata.get_file("barcodeset")]
-
-
-class TestBarcodeReportBasic(unittest.TestCase):
+class TestBarcodeReport(unittest.TestCase):
 
     def setUp(self):
         self.barcodes = pbtestdata.get_file("barcodeset")
         self.subreads = pbtestdata.get_file("barcoded-subreadset")
+        self._tmp_dir = tempfile.mkdtemp()
+        os.chdir(self._tmp_dir)
+
+    def tearDown(self):
+        pass
 
     def test_iter_reads_by_barcode(self):
         table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
@@ -38,16 +38,19 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
         self.assertEqual([r.n_subreads for r in table], [1,1,1])
 
-    def test_make_report(self):
-        read_info = [ # totally synthetic data
+    def _get_synthetic_read_info(self):
+        return [ # totally synthetic data
             # label nbases qmax srl_max bq
-            ReadInfo("bc1", 1140, 1000, 400, [0.5]*7),
-            ReadInfo("bc1", 2400, 2000, 100, [0.8]*20),
-            ReadInfo("bc2", 2380, 2000, 200, [0.9]*19),
-            ReadInfo("bc2", 3560, 3000, 300, [0.6]*28),
-            ReadInfo("bc3", 2720, 2500, 300, [0.7]*22),
-            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90)
+            ReadInfo("bc1", 1140, 1000, 400, [0.5]*7, (0,0)),
+            ReadInfo("bc1", 2400, 2000, 100, [0.8]*20, (0,0)),
+            ReadInfo("bc2", 2380, 2000, 200, [0.9]*19, (1,1)),
+            ReadInfo("bc2", 3560, 3000, 300, [0.6]*28, (1,1)),
+            ReadInfo("bc3", 2720, 2500, 300, [0.7]*22, (2,2)),
+            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90, (-1,-1))
         ]
+
+    def test_make_report(self):
+        read_info = self._get_synthetic_read_info()
         report = make_report(read_info)
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr["mean_read_length"], 2100)
@@ -57,6 +60,38 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertEqual(attr["n_barcodes"], 3)
         self.assertEqual(attr["mean_reads"], 1)
 
+    def test_make_2d_histogram(self):
+        x = [1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3]
+        y = [4,4,3,1,2,5,6,3,3,2,4,5,6,1,3,3,4,6,5,1]
+        fig = make_2d_histogram(x, y, [3,6], "Imaginary read metric")
+        fig.savefig("fake_hist2d.png", dpi=72)
+
+    def test_make_readlength_hist2d(self):
+        bc_groups = [
+            BarcodeBin("bc2", [5,6,3,3,2,4,5,6,1], [40,50,50,80,76,90,84,20,43]),
+            BarcodeBin("bc3", [3,3,4,6,5,1], [40,50,60,70,55,39]),
+            BarcodeBin("bc1", [4,4,3,1,2], [25,30,50,75,65])
+        ]
+        p = make_readlength_hist2d(bc_groups)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_bcqual_hist2d(self):
+        bc_groups = [
+            BarcodeBin("bc2", [5,6,3,3,2,4,5,6,1], [40,50,50,80,76,90,84,20,43]),
+            BarcodeBin("bc3", [3,3,4,6,5,1], [40,50,60,70,55,39]),
+            BarcodeBin("bc1", [4,4,3,1,2], [25,30,50,75,65])
+        ]
+        p = make_bcqual_hist2d(bc_groups)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_histograms_2d(self):
+        read_info = self._get_synthetic_read_info()
+        bc_info = defaultdict(list)
+        for ri in read_info:
+            bc_info[ri.label].append(ri)
+        pg = make_histograms_2d(bc_info)
+        self.assertEqual(len(pg.plots), 2)
+
     def test_make_report_no_reads(self):
         report = make_report([])
         attr = {a.id:a.value for a in report.attributes}
@@ -65,7 +100,7 @@ class TestBarcodeReportBasic(unittest.TestCase):
 
     def test_make_report_no_barcoded_reads(self):
         read_info = [
-            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90)
+            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90, (-1,-1))
         ]
         report = make_report(read_info)
         attr = {a.id:a.value for a in report.attributes}
@@ -115,14 +150,6 @@ class TestBarcodeReportBasic(unittest.TestCase):
         self.assertEqual(report.tables[0].columns[2].values, [5370, 5053, 4710])
         self.assertEqual(report.tables[0].columns[3].values, [10306688, 10034254, 9452616])
 
-
-class TestBarcodeIntegration(unittest.TestCase):
-
-    def setUp(self):
-        self.barcodes = pbtestdata.get_file("barcodeset")
-        self.subreads = pbtestdata.get_file("barcoded-subreadset")
-        self.ccs = False
-
     def test_integration(self):
         exe = "barcode_report"
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
@@ -142,5 +169,9 @@ class TestBarcodeIntegration(unittest.TestCase):
             s = json.load(f)
         self.assertIsNotNone(s)
         log.info(pformat(s))
-        # cleanup
-        os.remove(json_report_file_name)
+
+
+class TestToolContract(pbcommand.testkit.PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.barcode"
+    INPUT_FILES = [pbtestdata.get_file("barcoded-subreadset"),
+                   pbtestdata.get_file("barcodeset")]
