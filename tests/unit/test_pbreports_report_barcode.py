@@ -42,19 +42,25 @@ class TestBarcodeReport(unittest.TestCase):
     def _get_synthetic_read_info(self):
         return [ # totally synthetic data
             # label nbases qmax srl_max bq
-            ReadInfo("bc1", 1140, 1000, 400, [0.5]*7, (0,0)),
-            ReadInfo("bc1", 2400, 2000, 100, [0.8]*20, (0,0)),
-            ReadInfo("bc2", 2380, 2000, 200, [0.9]*19, (1,1)),
-            ReadInfo("bc2", 3560, 3000, 300, [0.6]*28, (1,1)),
-            ReadInfo("bc3", 2720, 2500, 300, [0.7]*22, (2,2)),
+            ReadInfo("bc1", 1000, 1140, 400, [0.5]*7, (0,0)),
+            ReadInfo("bc1", 2000, 2400, 100, [0.8]*20, (0,0)),
+            ReadInfo("bc2", 2000, 2380, 200, [0.9]*19, (1,1)),
+            ReadInfo("bc2", 3000, 3560, 300, [0.6]*28, (1,1)),
+            ReadInfo("bc3", 2500, 2720, 300, [0.7]*22, (2,2)),
             ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90, (-1,-1))
         ]
+
+    def test_read_info(self):
+        read_info = self._get_synthetic_read_info()
+        self.assertTrue(read_info[0].is_barcoded())
+        self.assertFalse(read_info[-1].is_barcoded())
+        self.assertEqual(read_info[0].n_subreads, 7)
 
     def test_make_report(self):
         read_info = self._get_synthetic_read_info()
         report = make_report(read_info)
         attr = {a.id:a.value for a in report.attributes}
-        self.assertEqual(attr["mean_read_length"], 2100)
+        self.assertEqual(attr["mean_read_length"], 2440)
         self.assertEqual(attr["mean_longest_subread_length"], 333)
         self.assertEqual(attr["min_reads"], 1)
         self.assertEqual(attr["max_reads"], 2)
@@ -67,31 +73,75 @@ class TestBarcodeReport(unittest.TestCase):
         fig = make_2d_histogram(x, y, [3,6], "Imaginary read metric")
         fig.savefig("fake_hist2d.png", dpi=72)
 
-    def test_make_readlength_hist2d(self):
-        bc_groups = [
-            BarcodeBin("bc2", [5,6,3,3,2,4,5,6,1], [40,50,50,80,76,90,84,20,43]),
-            BarcodeBin("bc3", [3,3,4,6,5,1], [40,50,60,70,55,39]),
-            BarcodeBin("bc1", [4,4,3,1,2], [25,30,50,75,65])
+    def _get_synthetic_bc_info(self):
+        return [
+            BarcodeGroup("bc2", 20, [5,6,3,3,2,4,5,6,1], [40,50,50,80,76,90,84,20,43]),
+            BarcodeGroup("bc3", 10, [3,3,4,6,5,1], [40,50,60,70,55,39]),
+            BarcodeGroup("bc1", 8, [4,4,3,1,2], [25,30,50,75,65]),
+            BarcodeGroup("Not Barcoded", 30, [10,10,10], [0,0,0])
         ]
+
+    def test_barcode_info(self):
+        bc_groups = self._get_synthetic_bc_info()
+        self.assertEqual(bc_groups[0].n_subreads, 9)
+        self.assertEqual(bc_groups[0].n_reads, 9)
+        self.assertEqual(bc_groups[0].mean_read_length(), 3)
+        bc_group = BarcodeGroup("bc1")
+        read_info = self._get_synthetic_read_info()
+        bc_group.add_read(read_info[0])
+        bc_group.add_read(read_info[1])
+        self.assertEqual(bc_group.n_reads, 2)
+        self.assertEqual(bc_group.n_subreads, 27)
+        self.assertRaises(AssertionError,
+                          lambda: bc_group.add_read(read_info[3]))
+
+    def test_make_nreads_histogram(self):
+        bc_groups = self._get_synthetic_bc_info()
+        p = make_nreads_histogram(bc_groups, self._tmp_dir)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_readlength_histogram(self):
+        bc_groups = self._get_synthetic_bc_info()
+        p = make_readlength_histogram(bc_groups, self._tmp_dir)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_bcqual_histogram(self):
+        bc_groups = self._get_synthetic_bc_info()
+        p = make_bcqual_histogram(bc_groups, self._tmp_dir)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_bq_qq_plot(self):
+        try:
+            import scipy.stats
+        except ImportError:
+            raise unittest.SkipTest("Can't import scipy")
+        else:
+            bc_groups = self._get_synthetic_bc_info()
+            p = make_bq_qq_plot(bc_groups, self._tmp_dir)
+            self.assertTrue(op.isfile(p.image))
+
+    def test_make_nreads_line_plot(self):
+        bc_groups = self._get_synthetic_bc_info()
+        p = make_nreads_line_plot(bc_groups, self._tmp_dir)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_readlength_hist2d(self):
+        bc_groups = self._get_synthetic_bc_info()
         p = make_readlength_hist2d(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
     def test_make_bcqual_hist2d(self):
-        bc_groups = [
-            BarcodeBin("bc2", [5,6,3,3,2,4,5,6,1], [40,50,50,80,76,90,84,20,43]),
-            BarcodeBin("bc3", [3,3,4,6,5,1], [40,50,60,70,55,39]),
-            BarcodeBin("bc1", [4,4,3,1,2], [25,30,50,75,65])
-        ]
+        bc_groups = self._get_synthetic_bc_info()
         p = make_bcqual_hist2d(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
-    def test_make_histograms_2d(self):
-        read_info = self._get_synthetic_read_info()
-        bc_info = defaultdict(list)
-        for ri in read_info:
-            bc_info[ri.label].append(ri)
-        pg = make_histograms_2d(bc_info, self._tmp_dir)
-        self.assertEqual(len(pg.plots), 2)
+    def test_make_plots(self):
+        bc_groups = self._get_synthetic_bc_info()
+        pgs = make_plots(bc_groups, self._tmp_dir)
+        self.assertEqual(len(pgs), 3)
+        for pg in pgs:
+            for p in pg.plots:
+                self.assertTrue(op.isfile(p.image))
 
     def test_make_report_no_reads(self):
         report = make_report([])
@@ -127,6 +177,7 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(report.tables[0].columns[1].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[2].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[3].values, [1436, 204, 9791])
+        self.assertEqual(report.tables[0].columns[-1].values, [1, 2, None])
 
     @skip_if_data_dir_not_present
     def test_large_dataset(self):

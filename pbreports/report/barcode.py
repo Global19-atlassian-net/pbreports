@@ -19,10 +19,11 @@ from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
 
+from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '1.0'
+__version__ = '1.1'
 
 spec = load_spec("barcode")
 
@@ -43,7 +44,20 @@ class Constants(object):
     C_NREADS = 'number_of_reads'
     C_NSUBREADS = 'number_of_subreads'
     C_NBASES = 'number_of_bases'
+    C_READLENGTH = "mean_read_length"
+    C_SRL = "longest_subread_length"
+    C_BCQUAL = "mean_bcqual"
+    C_RANK = "rank_order"
     LABEL_NONE = "Not Barcoded"
+
+    PG_STATS = "read_stats"
+    P_NREADS = "nreads"
+    P_HIST_NREADS = "nreads_histogram"
+    P_HIST_RL = "readlength_histogram"
+
+    PG_BQ = "bq_plots"
+    P_HIST_BQ = "bq_histogram"
+    P_BQ_QQ = "bq_qq"
 
     PG_HIST2D = "hist2d"
     P_HIST2D_RL = "binned_readlength"
@@ -96,8 +110,7 @@ def make_readlength_hist2d(bc_groups, base_dir):
     Create 2D histogram of read lengths per barcoded sample.
     """
     log.info("Creating 2D histogram of read lengths")
-    x = []
-    y = []
+    x, y = [], []
     for i, group in enumerate(bc_groups, start=1):
         x.extend([i] * group.n_reads)
         y.extend(group.readlengths)
@@ -109,6 +122,7 @@ def make_readlength_hist2d(bc_groups, base_dir):
     thumb_name = "hist2d_readlength_thumb.png"
     fig.savefig(op.join(base_dir, img_name), dpi=72)
     fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
     return Plot(Constants.P_HIST2D_RL, img_name, thumbnail=thumb_name)
 
 
@@ -117,11 +131,10 @@ def make_bcqual_hist2d(bc_groups, base_dir):
     Create 2D histogram of barcode quality scores per barcoded sample.
     """
     log.info("Creating 2D histogram of barcode quality scores")
-    x = []
-    y = []
+    x, y = [], []
     for i, group in enumerate(bc_groups, start=1):
         x.extend([i] * group.n_subreads)
-        y.extend(group.bcquals)
+        y.extend(group.bqs)
     x_bins = max(1, len(bc_groups))
     fig = make_2d_histogram(x, y,
                             n_bins=[x_bins, Constants.BQ_BINS],
@@ -130,45 +143,173 @@ def make_bcqual_hist2d(bc_groups, base_dir):
     thumb_name = "hist2d_bcqual_thumb.png"
     fig.savefig(op.join(base_dir, img_name), dpi=72)
     fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
     return Plot(Constants.P_HIST2D_BQ, img_name, thumbnail=thumb_name)
 
 
-class BarcodeBin(object):
-    """
-    Utility class for storing per-barcode metrics plotted as 2D histograms
-    """
-    __slots__ = ["bc_label", "readlengths", "bcquals"]
+def make_nreads_line_plot(bc_groups, base_dir):
+    x = list(range(1, len(bc_groups)+1))
+    y = [g.n_reads for g in bc_groups]
+    mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
+    fig, ax = get_fig_axes()
+    ax.plot(x, y, color='blue')
+    ax.axhline(mean_nreads, color='red')
+    ax.set_xlabel("Barcode Rank Order")
+    ax.set_ylabel("Count of Reads")
+    img_name = "nreads.png"
+    thumb_name = "nreads_thumb.png"
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
+    return Plot(Constants.P_NREADS, img_name, thumbnail=thumb_name)
 
-    def __init__(self, bc_label, readlengths, bcquals):
-        self.bc_label = bc_label
-        self.readlengths = readlengths
-        self.bcquals = bcquals
+
+def make_nreads_histogram(bc_groups, base_dir):
+    """
+    Create simple histogram of read count frequency.
+    """
+    fig, ax = make_histogram(
+        datum=[g.n_reads for g in bc_groups],
+        axis_labels=["Number of Reads", "Number of Barcoded Samples"],
+        nbins=min(len(bc_groups), 50),
+        barcolor=get_blue(3))
+    img_name = "nreads_histogram.png"
+    thumb_name = "nreads_histogram_thumb.png"
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
+    return Plot(Constants.P_HIST_NREADS, img_name, thumbnail=thumb_name)
+
+
+def make_readlength_histogram(bc_groups, base_dir):
+    """
+    Create simple histogram of read length frequency.
+    """
+    fig, ax = make_histogram(
+        datum=[g.mean_read_length() for g in bc_groups],
+        axis_labels=["Mean Read Length", "Number of Barcoded Samples"],
+        nbins=min(len(bc_groups), 50),
+        barcolor=get_blue(3))
+    img_name = "readlength_histogram.png"
+    thumb_name = "readlength_histogram_thumb.png"
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
+    return Plot(Constants.P_HIST_RL, img_name, thumbnail=thumb_name)
+
+
+def make_bcqual_histogram(bc_groups, base_dir):
+    """
+    Create simple histogram of barcode quality score frequency.
+    """
+    data = []
+    for g in bc_groups:
+        data.extend(g.bqs)
+    fig, ax = make_histogram(
+        datum=data,
+        axis_labels=["Barcode Quality Score", "Number of Barcoded Subreads"],
+        nbins=50,
+        barcolor=get_blue(3))
+    img_name = "bcqual_histogram.png"
+    thumb_name = "bcqual_histogram_thumb.png"
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
+    return Plot(Constants.P_HIST_BQ, img_name, thumbnail=thumb_name)
+
+
+def make_bq_qq_plot(bc_groups, base_dir):
+    """
+    Create Q-Q plot for barcode quality scores.
+    """
+    try:
+        import scipy.stats
+    except ImportError:
+        warnings.warn("Can't import scipy.stats")
+        return None
+    else:
+        data = []
+        for g in bc_groups:
+            data.append(g.mean_bcqual())
+        fig, ax = get_fig_axes()
+        scipy.stats.probplot(data, dist="norm", plot=ax)
+        ax.set_title("Q-Q Plot of Barcode Quality Scores")
+        img_name = "bcqual_qq.png"
+        thumb_name = "bcqual_qq_thumb.png"
+        fig.savefig(op.join(base_dir, img_name), dpi=72)
+        fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+        plt.close()
+        return Plot(Constants.P_BQ_QQ, img_name, thumbnail=thumb_name)
+
+
+def make_plots(bc_groups, base_dir):
+    """
+    Generate all plots, both 1D and 2D, and return a list of PlotGroups.
+    """
+    groups = [g for g in bc_groups if g.label != Constants.LABEL_NONE]
+    groups.sort(lambda a, b: cmp(b.n_reads, a.n_reads))
+    plot_nreads = make_nreads_line_plot(groups, base_dir)
+    log.info("Generating 1D histograms...")
+    plot_nreads_hist = make_nreads_histogram(groups, base_dir)
+    plot_rl = make_readlength_histogram(groups, base_dir)
+    log.info("Generating barcode quality score plots...")
+    plot_bq = make_bcqual_histogram(groups, base_dir)
+    plot_qq = make_bq_qq_plot(groups, base_dir)
+    bq_plots = [plot_bq]
+    if plot_qq is not None:
+        bq_plots.append(plot_qq)
+    log.info("Generating 2D histograms...")
+    plot_rl2d = make_readlength_hist2d(groups, base_dir)
+    plot_bq = make_bcqual_hist2d(groups, base_dir)
+    return [
+        PlotGroup(Constants.PG_STATS, plots=[plot_nreads, plot_nreads_hist, plot_rl]),
+        PlotGroup(Constants.PG_BQ, plots=bq_plots),
+        PlotGroup(Constants.PG_HIST2D, plots=[plot_rl2d, plot_bq])
+    ]
+
+
+class BarcodeGroup(object):
+    """
+    Utility class for storing per-barcode metrics from multiple reads
+    """
+    __slots__ = ["label", "n_bases", "readlengths", "bqs", "srl_max"]
+
+    def __init__(self,
+                 label,
+                 n_bases=0,
+                 readlengths=(),
+                 bqs=(),
+                 srl_max=0):
+        self.label = label
+        self.n_bases = n_bases
+        self.readlengths = list(readlengths)
+        self.bqs = list(bqs)
+        self.srl_max = srl_max
+
+    def add_read(self, read_info):
+        assert read_info.label == self.label
+        self.n_bases += read_info.nbases
+        self.readlengths.append(read_info.readlength)
+        self.bqs.extend(list(read_info.bq))
+        self.srl_max = max(read_info.srl_max, self.srl_max)
 
     @property
     def n_subreads(self):
-        return len(self.bcquals)
+        return len(self.bqs)
 
     @property
     def n_reads(self):
         return len(self.readlengths)
 
+    def mean_read_length(self):
+        if self.n_reads == 0:
+            return 0
+        return int(sum(self.readlengths) / self.n_reads)
 
-def make_histograms_2d(bc_info, base_dir):
-    log.info("Generating 2D histograms...")
-    groups = []
-    for bc_label, reads in bc_info.iteritems():
-        if bc_label == Constants.LABEL_NONE:
-            continue
-        groups.append(BarcodeBin(
-            bc_label=bc_label,
-            readlengths=[r.readlength for r in reads],
-            bcquals=list(itertools.chain(*(r.bq for r in reads)))))
-    groups.sort(lambda a, b: cmp(b.n_reads, a.n_reads))
-    x = []
-    y = []
-    plot_rl = make_readlength_hist2d(groups, base_dir)
-    plot_bq = make_bcqual_hist2d(groups, base_dir)
-    return PlotGroup(Constants.PG_HIST2D, plots=[plot_rl, plot_bq])
+    def mean_bcqual(self):
+        if self.n_subreads == 0:
+            return 0
+        return int(sum(self.bqs) / self.n_subreads)
 
 
 class ReadInfo(object):
@@ -248,53 +389,57 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
     if base_dir == None:
         base_dir = os.getcwd()
 
-    class MyRow(object):
-        __slots__ = ["label", "bases", "reads", "subreads"]
-
-        def __init__(self, label):
-            self.label = label
-            self.bases = 0
-            self.reads = 0
-            self.subreads = 0
-
-    label2row = {}
+    bc_groups = {}
     bc_info = defaultdict(list)
 
     for bc_read in read_info:
         bc_info[bc_read.label].append(bc_read)
-        if not bc_read.label in label2row:
-            label2row[bc_read.label] = MyRow(bc_read.label)
-        label2row[bc_read.label].bases += bc_read.nbases
-        label2row[bc_read.label].reads += 1
-        label2row[bc_read.label].subreads += bc_read.n_subreads
+        if not bc_read.label in bc_groups:
+            bc_groups[bc_read.label] = BarcodeGroup(bc_read.label)
+        bc_groups[bc_read.label].add_read(bc_read)
 
     columns = [Column(Constants.C_BARCODE),
                Column(Constants.C_NREADS),
                Column(Constants.C_NSUBREADS),
-               Column(Constants.C_NBASES)]
+               Column(Constants.C_NBASES),
+               Column(Constants.C_READLENGTH),
+               Column(Constants.C_SRL),
+               Column(Constants.C_BCQUAL),
+               Column(Constants.C_RANK)]
 
     table = Table('barcode_table', columns=columns)
-    labels = sorted(label2row.keys())
+    labels = sorted(bc_groups.keys())
     labels_bc = list(labels)  # this will only contain actual barcodes
     if Constants.LABEL_NONE in labels:
         labels.remove(Constants.LABEL_NONE)
         labels_bc = list(labels)
         labels.append(Constants.LABEL_NONE)
+    rank = {}
+    k = 0
+    groups = sorted(bc_groups.values(), lambda a,b: cmp(b.n_reads, a.n_reads))
+    for bc_group in groups:
+        if bc_group.label != Constants.LABEL_NONE:
+            k += 1
+            rank[bc_group.label] = k
     n_barcodes = len(labels_bc)
     for label in labels:
-        row = label2row[label]
+        row = bc_groups[label]
         table.add_data_by_column_id(Constants.C_BARCODE, label)
-        table.add_data_by_column_id(Constants.C_NREADS, row.reads)
-        table.add_data_by_column_id(Constants.C_NSUBREADS, row.subreads)
-        table.add_data_by_column_id(Constants.C_NBASES, row.bases)
+        table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
+        table.add_data_by_column_id(Constants.C_NSUBREADS, row.n_subreads)
+        table.add_data_by_column_id(Constants.C_NBASES, row.n_bases)
+        table.add_data_by_column_id(Constants.C_READLENGTH, row.mean_read_length())
+        table.add_data_by_column_id(Constants.C_SRL, row.srl_max)
+        table.add_data_by_column_id(Constants.C_BCQUAL, row.mean_bcqual())
+        table.add_data_by_column_id(Constants.C_RANK, rank.get(label, None))
 
     attributes = [
         Attribute(Constants.A_NBARCODES, value=n_barcodes)
     ]
     if n_barcodes > 0:
-        n_reads_all = [label2row[k].reads for k in labels_bc]
+        n_reads_all = [bc_groups[k].n_reads for k in labels_bc]
         n_reads_sum = sum(n_reads_all)
-        #rl_sum = sum([label2row[k].bases for k in labels_bc])
+        #rl_sum = sum([bc_groups[k].bases for k in labels_bc])
         srl_max_sum = rl_sum = 0
         for k in labels_bc:
             rl_sum += sum([b.readlength for b in bc_info[k]])
@@ -315,9 +460,7 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
                Constants.A_MEAN_MAX_SRL]
         attributes.extend([Attribute(ID, value=0) for ID in ids])
 
-    plotgroups = [
-        make_histograms_2d(bc_info, base_dir)
-    ]
+    plotgroups = make_plots(bc_groups.values(), base_dir)
 
     report = Report(spec.id,
                     attributes=attributes,
