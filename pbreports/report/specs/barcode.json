@@ -86,6 +86,30 @@
     ],
     "plotGroups": [
         {
+            "description": "Histograms of metrics for barcoded reads",
+            "legend": null,
+            "id": "histograms",
+            "title": "Barcoded Read Statistics",
+            "plots": [
+                {
+                    "id": "nreads_histogram",
+                    "description": "Barcode Frequency Distribution",
+                    "caption": "Barcode Frequency Distribution",
+                    "title": "Barcode Frequency Distribution",
+                    "xlabel": "Number of Barcoded Reads",
+                    "ylabel": "Number of Barcoded Samples"
+                },
+                {
+                    "id": "readlength_histogram",
+                    "description": "Mean Read Length Distribution",
+                    "caption": "Mean Read Length Distribution",
+                    "title": "Mean Read Length Distribution",
+                    "xlabel": "Mean Read Length",
+                    "ylabel": "Number of Barcoded Samples"
+                }
+            ]
+        },
+        {
             "description": "2D histograms of barcoded read metrics by barcode",
             "legend": null,
             "id": "hist2d",
