@@ -79,6 +79,34 @@
                     "format": "{:,d}",
                     "id": "number_of_bases",
                     "description": "The number of bases associated with the barcode."
+                },
+                {
+                    "header": "Mean Read Length",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "mean_read_length",
+                    "description": "Mean ZMW read length for this barcode"
+                },
+                {
+                    "header": "Longest Subread Length",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "longest_subread_length",
+                    "description": "Length of the longest subread with this barcode"
+                },
+                {
+                    "header": "Mean Barcode Quality",
+                    "type": "float",
+                    "format": "{:.1f}",
+                    "id": "mean_bcqual",
+                    "description": "Mean barcode quality score"
+                },
+                {
+                    "header": "Rank Order (Num. Reads)",
+                    "type": "int",
+                    "format": "{:d}",
+                    "id": "rank_order",
+                    "description": "Rank in descending order of number of reads"
                 }
             ],
             "title": "Barcodes"
@@ -88,9 +116,17 @@
         {
             "description": "Histograms of metrics for barcoded reads",
             "legend": null,
-            "id": "histograms",
+            "id": "read_stats",
             "title": "Barcoded Read Statistics",
             "plots": [
+                {
+                    "id": "nreads",
+                    "description": "Number Of Reads Per Barcode",
+                    "caption": "Number Of Reads Per Barcode",
+                    "title": "Number Of Reads Per Barcode",
+                    "xlabel": "Barcode Rank Order",
+                    "ylabel": "Count of Reads"
+                },
                 {
                     "id": "nreads_histogram",
                     "description": "Barcode Frequency Distribution",
@@ -106,6 +142,30 @@
                     "title": "Mean Read Length Distribution",
                     "xlabel": "Mean Read Length",
                     "ylabel": "Number of Barcoded Samples"
+                }
+            ]
+        },
+        {
+            "description": "Barcode Quality Score Plots",
+            "legend": null,
+            "id": "bq_plots",
+            "title": "Barcode Quality Scores",
+            "plots": [
+                {
+                    "id": "bq_histogram",
+                    "description": "Barcode Quality Score Distribution",
+                    "caption": "Barcode Quality Score Distribution",
+                    "title": "Barcode Quality Score Distribution",
+                    "xlabel": "Barcode Quality Score",
+                    "ylabel": "Number of Barcoded Subreads"
+                },
+                {
+                    "id": "bq_qq",
+                    "description": "Barcode Quality Score Q-Q Plot",
+                    "caption": "Barcode Quality Score Q-Q Plot",
+                    "title": "Q-Q Plot of Barcode Quality Scores",
+                    "xlabel": null,
+                    "ylabel": null
                 }
             ]
         },

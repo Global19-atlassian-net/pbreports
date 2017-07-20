@@ -105,6 +105,26 @@ class TestBarcodeReport(unittest.TestCase):
         p = make_readlength_histogram(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
+    def test_make_bcqual_histogram(self):
+        bc_groups = self._get_synthetic_bc_info()
+        p = make_bcqual_histogram(bc_groups, self._tmp_dir)
+        self.assertTrue(op.isfile(p.image))
+
+    def test_make_bq_qq_plot(self):
+        try:
+            import scipy.stats
+        except ImportError:
+            raise unittest.SkipTest("Can't import scipy")
+        else:
+            bc_groups = self._get_synthetic_bc_info()
+            p = make_bq_qq_plot(bc_groups, self._tmp_dir)
+            self.assertTrue(op.isfile(p.image))
+
+    def test_make_nreads_line_plot(self):
+        bc_groups = self._get_synthetic_bc_info()
+        p = make_nreads_line_plot(bc_groups, self._tmp_dir)
+        self.assertTrue(op.isfile(p.image))
+
     def test_make_readlength_hist2d(self):
         bc_groups = self._get_synthetic_bc_info()
         p = make_readlength_hist2d(bc_groups, self._tmp_dir)
@@ -115,12 +135,13 @@ class TestBarcodeReport(unittest.TestCase):
         p = make_bcqual_hist2d(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
-    def test_make_histograms(self):
+    def test_make_plots(self):
         bc_groups = self._get_synthetic_bc_info()
-        pgs = make_histograms(bc_groups, self._tmp_dir)
-        self.assertEqual(len(pgs), 2)
+        pgs = make_plots(bc_groups, self._tmp_dir)
+        self.assertEqual(len(pgs), 3)
         for pg in pgs:
-            self.assertEqual(len(pg.plots), 2)
+            for p in pg.plots:
+                self.assertTrue(op.isfile(p.image))
 
     def test_make_report_no_reads(self):
         report = make_report([])
@@ -156,6 +177,7 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(report.tables[0].columns[1].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[2].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[3].values, [1436, 204, 9791])
+        self.assertEqual(report.tables[0].columns[-1].values, [1, 2, None])
 
     @skip_if_data_dir_not_present
     def test_large_dataset(self):

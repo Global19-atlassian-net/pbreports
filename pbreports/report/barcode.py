@@ -19,7 +19,7 @@ from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
 
-from pbreports.plot.helper import make_histogram, get_blue
+from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -44,11 +44,20 @@ class Constants(object):
     C_NREADS = 'number_of_reads'
     C_NSUBREADS = 'number_of_subreads'
     C_NBASES = 'number_of_bases'
+    C_READLENGTH = "mean_read_length"
+    C_SRL = "longest_subread_length"
+    C_BCQUAL = "mean_bcqual"
+    C_RANK = "rank_order"
     LABEL_NONE = "Not Barcoded"
 
-    PG_HIST = "histograms"
+    PG_STATS = "read_stats"
+    P_NREADS = "nreads"
     P_HIST_NREADS = "nreads_histogram"
     P_HIST_RL = "readlength_histogram"
+
+    PG_BQ = "bq_plots"
+    P_HIST_BQ = "bq_histogram"
+    P_BQ_QQ = "bq_qq"
 
     PG_HIST2D = "hist2d"
     P_HIST2D_RL = "binned_readlength"
@@ -138,7 +147,27 @@ def make_bcqual_hist2d(bc_groups, base_dir):
     return Plot(Constants.P_HIST2D_BQ, img_name, thumbnail=thumb_name)
 
 
+def make_nreads_line_plot(bc_groups, base_dir):
+    x = list(range(1, len(bc_groups)+1))
+    y = [g.n_reads for g in bc_groups]
+    mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
+    fig, ax = get_fig_axes()
+    ax.plot(x, y, color='blue')
+    ax.axhline(mean_nreads, color='red')
+    ax.set_xlabel("Barcode Rank Order")
+    ax.set_ylabel("Count of Reads")
+    img_name = "nreads.png"
+    thumb_name = "nreads_thumb.png"
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
+    return Plot(Constants.P_NREADS, img_name, thumbnail=thumb_name)
+
+
 def make_nreads_histogram(bc_groups, base_dir):
+    """
+    Create simple histogram of read count frequency.
+    """
     fig, ax = make_histogram(
         datum=[g.n_reads for g in bc_groups],
         axis_labels=["Number of Reads", "Number of Barcoded Samples"],
@@ -153,6 +182,9 @@ def make_nreads_histogram(bc_groups, base_dir):
 
 
 def make_readlength_histogram(bc_groups, base_dir):
+    """
+    Create simple histogram of read length frequency.
+    """
     fig, ax = make_histogram(
         datum=[g.mean_read_length() for g in bc_groups],
         axis_labels=["Mean Read Length", "Number of Barcoded Samples"],
@@ -166,17 +198,72 @@ def make_readlength_histogram(bc_groups, base_dir):
     return Plot(Constants.P_HIST_RL, img_name, thumbnail=thumb_name)
 
 
-def make_histograms(bc_groups, base_dir):
+def make_bcqual_histogram(bc_groups, base_dir):
+    """
+    Create simple histogram of barcode quality score frequency.
+    """
+    data = []
+    for g in bc_groups:
+        data.extend(g.bqs)
+    fig, ax = make_histogram(
+        datum=data,
+        axis_labels=["Barcode Quality Score", "Number of Barcoded Subreads"],
+        nbins=50,
+        barcolor=get_blue(3))
+    img_name = "bcqual_histogram.png"
+    thumb_name = "bcqual_histogram_thumb.png"
+    fig.savefig(op.join(base_dir, img_name), dpi=72)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    plt.close()
+    return Plot(Constants.P_HIST_BQ, img_name, thumbnail=thumb_name)
+
+
+def make_bq_qq_plot(bc_groups, base_dir):
+    """
+    Create Q-Q plot for barcode quality scores.
+    """
+    try:
+        import scipy.stats
+    except ImportError:
+        warnings.warn("Can't import scipy.stats")
+        return None
+    else:
+        data = []
+        for g in bc_groups:
+            data.append(g.mean_bcqual())
+        fig, ax = get_fig_axes()
+        scipy.stats.probplot(data, dist="norm", plot=ax)
+        ax.set_title("Q-Q Plot of Barcode Quality Scores")
+        img_name = "bcqual_qq.png"
+        thumb_name = "bcqual_qq_thumb.png"
+        fig.savefig(op.join(base_dir, img_name), dpi=72)
+        fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+        plt.close()
+        return Plot(Constants.P_BQ_QQ, img_name, thumbnail=thumb_name)
+
+
+def make_plots(bc_groups, base_dir):
+    """
+    Generate all plots, both 1D and 2D, and return a list of PlotGroups.
+    """
     groups = [g for g in bc_groups if g.label != Constants.LABEL_NONE]
     groups.sort(lambda a, b: cmp(b.n_reads, a.n_reads))
+    plot_nreads = make_nreads_line_plot(groups, base_dir)
     log.info("Generating 1D histograms...")
-    plot_nreads = make_nreads_histogram(groups, base_dir)
+    plot_nreads_hist = make_nreads_histogram(groups, base_dir)
     plot_rl = make_readlength_histogram(groups, base_dir)
+    log.info("Generating barcode quality score plots...")
+    plot_bq = make_bcqual_histogram(groups, base_dir)
+    plot_qq = make_bq_qq_plot(groups, base_dir)
+    bq_plots = [plot_bq]
+    if plot_qq is not None:
+        bq_plots.append(plot_qq)
     log.info("Generating 2D histograms...")
     plot_rl2d = make_readlength_hist2d(groups, base_dir)
     plot_bq = make_bcqual_hist2d(groups, base_dir)
     return [
-        PlotGroup(Constants.PG_HIST, plots=[plot_nreads, plot_rl]),
+        PlotGroup(Constants.PG_STATS, plots=[plot_nreads, plot_nreads_hist, plot_rl]),
+        PlotGroup(Constants.PG_BQ, plots=bq_plots),
         PlotGroup(Constants.PG_HIST2D, plots=[plot_rl2d, plot_bq])
     ]
 
@@ -218,6 +305,11 @@ class BarcodeGroup(object):
         if self.n_reads == 0:
             return 0
         return int(sum(self.readlengths) / self.n_reads)
+
+    def mean_bcqual(self):
+        if self.n_subreads == 0:
+            return 0
+        return int(sum(self.bqs) / self.n_subreads)
 
 
 class ReadInfo(object):
@@ -309,7 +401,11 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
     columns = [Column(Constants.C_BARCODE),
                Column(Constants.C_NREADS),
                Column(Constants.C_NSUBREADS),
-               Column(Constants.C_NBASES)]
+               Column(Constants.C_NBASES),
+               Column(Constants.C_READLENGTH),
+               Column(Constants.C_SRL),
+               Column(Constants.C_BCQUAL),
+               Column(Constants.C_RANK)]
 
     table = Table('barcode_table', columns=columns)
     labels = sorted(bc_groups.keys())
@@ -318,6 +414,13 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
         labels.remove(Constants.LABEL_NONE)
         labels_bc = list(labels)
         labels.append(Constants.LABEL_NONE)
+    rank = {}
+    k = 0
+    groups = sorted(bc_groups.values(), lambda a,b: cmp(b.n_reads, a.n_reads))
+    for bc_group in groups:
+        if bc_group.label != Constants.LABEL_NONE:
+            k += 1
+            rank[bc_group.label] = k
     n_barcodes = len(labels_bc)
     for label in labels:
         row = bc_groups[label]
@@ -325,6 +428,10 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
         table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
         table.add_data_by_column_id(Constants.C_NSUBREADS, row.n_subreads)
         table.add_data_by_column_id(Constants.C_NBASES, row.n_bases)
+        table.add_data_by_column_id(Constants.C_READLENGTH, row.mean_read_length())
+        table.add_data_by_column_id(Constants.C_SRL, row.srl_max)
+        table.add_data_by_column_id(Constants.C_BCQUAL, row.mean_bcqual())
+        table.add_data_by_column_id(Constants.C_RANK, rank.get(label, None))
 
     attributes = [
         Attribute(Constants.A_NBARCODES, value=n_barcodes)
@@ -353,7 +460,7 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
                Constants.A_MEAN_MAX_SRL]
         attributes.extend([Attribute(ID, value=0) for ID in ids])
 
-    plotgroups = make_histograms(bc_groups.values(), base_dir)
+    plotgroups = make_plots(bc_groups.values(), base_dir)
 
     report = Report(spec.id,
                     attributes=attributes,
