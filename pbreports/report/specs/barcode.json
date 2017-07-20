@@ -3,7 +3,50 @@
     "version": "3.2",
     "title": "Barcodes",
     "description": "Displays statistics on reads and bases associated with individual barcodes.",
-    "attributes": [],
+    "attributes": [
+        {
+            "description": "Number of unique barcodes",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "n_barcodes",
+            "name": "Unique Barcodes"
+        },
+        {
+            "description": "Mean reads per barcode",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "mean_reads",
+            "name": "Mean Reads"
+        },
+        {
+            "description": "Maximum reads per barcode",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "max_reads",
+            "name": "Max. Reads"
+        },
+        {
+            "description": "Minimum reads per barcode",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "min_reads",
+            "name": "Min. Reads"
+        },
+        {
+            "description": "Mean ZMW read length",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "mean_read_length",
+            "name": "Mean Read Length"
+        },
+        {
+            "description": "Mean Longest Subread Length",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "mean_longest_subread_length",
+            "name": "Mean Longest Subread Length"
+        }
+    ],
     "tables": [
         {
             "id": "barcode_table",
