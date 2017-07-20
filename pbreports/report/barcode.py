@@ -160,6 +160,11 @@ def make_report(read_info, dataset_uuids=()):
             Attribute(Constants.A_MEAN_RL, value=int(rl_sum/n_reads_sum)),
             Attribute(Constants.A_MEAN_MAX_SRL, value=int(srl_max_sum/n_barcodes))
         ])
+    else:
+        ids = [Constants.A_MEAN_READS, Constants.A_MAX_READS,
+               Constants.A_MIN_READS, Constants.A_MEAN_RL,
+               Constants.A_MEAN_MAX_SRL]
+        attributes.extend([Attribute(ID, value=0) for ID in ids])
 
     report = Report(spec.id,
                     attributes=attributes,
