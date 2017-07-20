@@ -84,5 +84,30 @@
             "title": "Barcodes"
         }
     ],
-    "plotGroups": []
+    "plotGroups": [
+        {
+            "description": "2D histograms of barcoded read metrics by barcode",
+            "legend": null,
+            "id": "hist2d",
+            "title": "Barcoded Read Binned Histograms",
+            "plots": [
+                {
+                    "id": "binned_readlength",
+                    "description": "Read Length Distribution By Barcode",
+                    "title": "Read Length Distribution By Barcode",
+                    "caption": "Read Length Distribution By Barcode",
+                    "ylabel": "Read Length",
+                    "xlabel": "Barcode Rank Order By Read Count"
+                },
+                {
+                    "id": "binned_bcqual",
+                    "description": "Barcode Quality Distribution By Barcode",
+                    "title": "Barcode Quality Distribution By Barcode",
+                    "caption": "Barcode Quality Distribution By Barcode",
+                    "ylabel": "Read Barcode Quality Score",
+                    "xlabel": "Barcode Rank Order By Read Count"
+                }
+            ]
+        }
+    ]
 }
