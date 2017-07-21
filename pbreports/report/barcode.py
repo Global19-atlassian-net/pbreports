@@ -7,6 +7,7 @@ from __future__ import division
 from collections import defaultdict
 from pprint import pformat
 import itertools
+import warnings
 import logging
 import os.path as op
 import sys
