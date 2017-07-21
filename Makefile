@@ -23,6 +23,7 @@ clean:
 	rm -rf dist/
 
 test:
+	pylint --errors-only pbreports
 	nosetests --with-coverage --cover-xml-file=coverage.xml --cover-package=pbreports --cover-xml --with-xunit --nocapture --nologcapture --verbose tests/unit/test*.py
 	sed -i -e 's@filename="@filename="./@g' coverage.xml
 
