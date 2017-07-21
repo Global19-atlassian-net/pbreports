@@ -167,12 +167,12 @@ def make_nreads_line_plot(bc_groups, base_dir):
 
 def make_nreads_histogram(bc_groups, base_dir):
     """
-    Create simple histogram of read count frequency.
+    Create simple histogram of read count frequency per barcode.
     """
     fig, ax = make_histogram(
-        datum=[g.n_reads for g in bc_groups],
+        datum=[float(g.n_reads) for g in bc_groups], # FIXME workaround
         axis_labels=["Number of Reads", "Number of Barcoded Samples"],
-        nbins=min(len(bc_groups), 50),
+        nbins=min(len(bc_groups), 20),
         barcolor=get_blue(3))
     img_name = "nreads_histogram.png"
     thumb_name = "nreads_histogram_thumb.png"
@@ -184,12 +184,12 @@ def make_nreads_histogram(bc_groups, base_dir):
 
 def make_readlength_histogram(bc_groups, base_dir):
     """
-    Create simple histogram of read length frequency.
+    Create simple histogram of read length frequency per barcode.
     """
     fig, ax = make_histogram(
-        datum=[g.mean_read_length() for g in bc_groups],
+        datum=[float(g.mean_read_length()) for g in bc_groups], # FIXME
         axis_labels=["Mean Read Length", "Number of Barcoded Samples"],
-        nbins=min(len(bc_groups), 50),
+        nbins=min(len(bc_groups), 20),
         barcolor=get_blue(3))
     img_name = "readlength_histogram.png"
     thumb_name = "readlength_histogram_thumb.png"
@@ -201,7 +201,8 @@ def make_readlength_histogram(bc_groups, base_dir):
 
 def make_bcqual_histogram(bc_groups, base_dir):
     """
-    Create simple histogram of barcode quality score frequency.
+    Create simple histogram of barcode quality score frequency over all
+    barcoded subreads.
     """
     data = []
     for g in bc_groups:

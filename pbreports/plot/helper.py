@@ -240,6 +240,8 @@ def apply_histogram_data(ax, data, bins, axis_labels=('', ''),
             data = np.array(data)
         dtype = np.result_type(data)
         if "int" in dtype.type.__name__ and len(np.unique(data)) > 1:
+            # FIXME still not working properly (see for example the function
+            # make_readlength_histogram in reports/barcode.py)
             d = min(np.diff(np.unique(data)))
             left_of_first_bin = min(data) - float(d) / 2
             right_of_last_bin = max(data) + float(d) / 2
