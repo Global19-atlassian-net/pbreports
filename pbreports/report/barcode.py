@@ -254,7 +254,12 @@ def make_plots(bc_groups, base_dir):
     plot_rl = make_readlength_histogram(groups, base_dir)
     log.info("Generating barcode quality score plots...")
     plot_bq = make_bcqual_histogram(groups, base_dir)
-    plot_qq = make_bq_qq_plot(groups, base_dir)
+    plot_qq = None
+    try: # FIXME workaround until DEP-414 is fixed
+        plot_qq = make_bq_qq_plot(groups, base_dir)
+    except Exception as e:
+        log.error(str(e))
+        warnings.warn("Q-Q plot broken: {e}".format(e=str(e)))
     bq_plots = [plot_bq]
     if plot_qq is not None:
         bq_plots.append(plot_qq)
