@@ -109,7 +109,7 @@
                     "description": "Rank in descending order of number of reads"
                 }
             ],
-            "title": "Barcodes"
+            "title": "Barcode Metrics"
         }
     ],
     "plotGroups": [
