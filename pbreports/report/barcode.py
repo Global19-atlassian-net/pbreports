@@ -154,9 +154,10 @@ def make_nreads_line_plot(bc_groups, base_dir):
     mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
     fig, ax = get_fig_axes()
     ax.plot(x, y, color='blue')
-    ax.axhline(mean_nreads, color='red')
+    ax.axhline(mean_nreads, color='red', label="Mean Number of Reads")
     ax.set_xlabel("Barcode Rank Order")
     ax.set_ylabel("Count of Reads")
+    plt.legend()
     img_name = "nreads.png"
     thumb_name = "nreads_thumb.png"
     fig.savefig(op.join(base_dir, img_name), dpi=72)
