@@ -186,7 +186,7 @@ def get_esize(read_lengths):
         return 0.0
     else:
         sum1 = sum(read_lengths)
-        sum2 = sum(r*r for r in read_lengths)
+        sum2 = sum(r * r for r in read_lengths)
         return float(sum2) / float(sum1)
 
 

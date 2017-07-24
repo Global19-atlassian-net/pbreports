@@ -24,7 +24,7 @@ from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '1.1'
+__version__ = '1.2'
 
 spec = load_spec("barcode")
 
@@ -96,7 +96,7 @@ def make_2d_histogram(x, y, n_bins, ylabel):
         x_margin = 2
     ymax = max(y) if len(y) > 0 else 1
     ax.set_xlim(-x_margin, n_bins[0] + x_margin)
-    ax.set_ylim(-(int(ymax*0.05)), ymax+int(ymax*(0.05)))
+    ax.set_ylim(-(int(ymax * 0.05)), ymax + int(ymax * (0.05)))
     ax.set_ylabel(ylabel)
     ax.set_xlabel("Barcode Rank Order By Read Count")
     for spine in ["left", "right", "top", "bottom"]:
@@ -149,7 +149,7 @@ def make_bcqual_hist2d(bc_groups, base_dir):
 
 
 def make_nreads_line_plot(bc_groups, base_dir):
-    x = list(range(1, len(bc_groups)+1))
+    x = [i for (i,g) in enumerate(bc_groups, start=1)]
     y = [g.n_reads for g in bc_groups]
     mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
     fig, ax = get_fig_axes()
@@ -171,7 +171,7 @@ def make_nreads_histogram(bc_groups, base_dir):
     Create simple histogram of read count frequency per barcode.
     """
     fig, ax = make_histogram(
-        datum=[float(g.n_reads) for g in bc_groups], # FIXME workaround
+        datum=[float(g.n_reads) for g in bc_groups],  # FIXME workaround
         axis_labels=["Number of Reads", "Number of Barcoded Samples"],
         nbins=min(len(bc_groups), 20),
         barcolor=get_blue(3))
@@ -188,7 +188,7 @@ def make_readlength_histogram(bc_groups, base_dir):
     Create simple histogram of read length frequency per barcode.
     """
     fig, ax = make_histogram(
-        datum=[float(g.mean_read_length()) for g in bc_groups], # FIXME
+        datum=[float(g.mean_read_length()) for g in bc_groups],  # FIXME
         axis_labels=["Mean Read Length", "Number of Barcoded Samples"],
         nbins=min(len(bc_groups), 20),
         barcolor=get_blue(3))
@@ -258,7 +258,7 @@ def make_plots(bc_groups, base_dir):
     log.info("Generating barcode quality score plots...")
     plot_bq = make_bcqual_histogram(groups, base_dir)
     plot_qq = None
-    try: # FIXME workaround until DEP-414 is fixed
+    try:  # FIXME workaround until DEP-414 is fixed
         plot_qq = make_bq_qq_plot(groups, base_dir)
     except Exception as e:
         log.error(str(e))
@@ -270,7 +270,8 @@ def make_plots(bc_groups, base_dir):
     plot_rl2d = make_readlength_hist2d(groups, base_dir)
     plot_bq = make_bcqual_hist2d(groups, base_dir)
     return [
-        PlotGroup(Constants.PG_STATS, plots=[plot_nreads, plot_nreads_hist, plot_rl]),
+        PlotGroup(Constants.PG_STATS, plots=[
+                  plot_nreads, plot_nreads_hist, plot_rl]),
         PlotGroup(Constants.PG_BQ, plots=bq_plots),
         PlotGroup(Constants.PG_HIST2D, plots=[plot_rl2d, plot_bq])
     ]
@@ -424,7 +425,7 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
         labels.append(Constants.LABEL_NONE)
     rank = {}
     k = 0
-    groups = sorted(bc_groups.values(), lambda a,b: cmp(b.n_reads, a.n_reads))
+    groups = sorted(bc_groups.values(), lambda a, b: cmp(b.n_reads, a.n_reads))
     for bc_group in groups:
         if bc_group.label != Constants.LABEL_NONE:
             k += 1
@@ -436,7 +437,8 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
         table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
         table.add_data_by_column_id(Constants.C_NSUBREADS, row.n_subreads)
         table.add_data_by_column_id(Constants.C_NBASES, row.n_bases)
-        table.add_data_by_column_id(Constants.C_READLENGTH, row.mean_read_length())
+        table.add_data_by_column_id(
+            Constants.C_READLENGTH, row.mean_read_length())
         table.add_data_by_column_id(Constants.C_SRL, row.srl_max)
         table.add_data_by_column_id(Constants.C_BCQUAL, row.mean_bcqual())
         table.add_data_by_column_id(Constants.C_RANK, rank.get(label, None))
@@ -512,6 +514,7 @@ def resolved_tool_contract_runner(rtc):
         base_dir=op.dirname(rtc.task.output_files[0]))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
+    report.tables[0].to_csv(rtc.task.output_files[1])
     return 0
 
 
@@ -532,6 +535,11 @@ def get_parser():
                            name="Barcode Report",
                            description="Summary of barcoding results",
                            default_name="barcode_report")
+    p.tool_contract_parser.add_output_file_type(
+        FileTypes.CSV, "report_csv",
+        name="Barcode Report Details",
+        description="Barcode Details Table as CSV",
+        default_name="barcodes_report")
     return p
 
 

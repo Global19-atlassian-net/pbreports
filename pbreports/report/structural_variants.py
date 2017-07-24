@@ -88,6 +88,7 @@ def to_sv_table(table_json):
 def comma_formatter(x, pos=0):
     return ("{0:,d}".format(int(x)))
 
+
 def to_plotgroup(data, pg, p, bin_n, x_ticks, x_lims, x_labels, output_dir):
     """
     This plots a stacked histogram given a length 2 array of arrays
@@ -115,7 +116,7 @@ def to_plotgroup(data, pg, p, bin_n, x_ticks, x_lims, x_labels, output_dir):
     if insertions or deletions:
         ax.hist([deletions, insertions], label=["Deletions", "Insertions"], histtype='barstacked',
                 color=["#FF7E79", "#A9D18E"], edgecolor="none", bins=bin_n,
-                width=0.85*(x_lims[1] - x_lims[0])/bin_n, range=[x_lims[0], x_lims[1]])
+                width=0.85 * (x_lims[1] - x_lims[0]) / bin_n, range=[x_lims[0], x_lims[1]])
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.legend()
@@ -133,34 +134,40 @@ def to_plotgroup(data, pg, p, bin_n, x_ticks, x_lims, x_labels, output_dir):
     png_fn = os.path.join(output_dir, "{p}.png".format(p=p))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
     plot = Plot(p, os.path.relpath(png_base, output_dir),
-                    title=plot_name, caption=plot_name,
-                    thumbnail=os.path.relpath(thumbnail_base, output_dir))
+                title=plot_name, caption=plot_name,
+                thumbnail=os.path.relpath(thumbnail_base, output_dir))
     plot_group = PlotGroup(pg, plots=[plot])
     return plot_group
 
 
 def to_plotgroups(plot_json, output_dir):
-    short_ins = [x for x in plot_json.get("Insertion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
-    short_del = [x for x in plot_json.get("Deletion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
-    x_ticks = range(0,Constants.SV_LEN_CUTOFF_SHORT + 100, 100)
+    short_ins = [x for x in plot_json.get(
+        "Insertion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
+    short_del = [x for x in plot_json.get(
+        "Deletion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
+    x_ticks = range(0, Constants.SV_LEN_CUTOFF_SHORT + 100, 100)
     x_lims = [x_ticks[0], x_ticks[-1]]
-    x_labels = ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1,000"]
-    n_bins = x_lims[1]/Constants.BIN_WIDTH_SHORT
+    x_labels = ["0", "100", "200", "300", "400",
+                "500", "600", "700", "800", "900", "1,000"]
+    n_bins = x_lims[1] / Constants.BIN_WIDTH_SHORT
     plotgroups = [to_plotgroup([short_ins, short_del], Constants.PG_SHORT_SV,
                                Constants.P_SHORT_SV, n_bins, x_ticks, x_lims, x_labels, output_dir)]
-    long_ins = [x for x in plot_json.get("Insertion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
-    long_del = [x for x in plot_json.get("Deletion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
-    #mapping all lengths above 10k to a constant
+    long_ins = [x for x in plot_json.get(
+        "Insertion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
+    long_del = [x for x in plot_json.get(
+        "Deletion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
+    # mapping all lengths above 10k to a constant
     long_ins_clipped = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_LONG
-                            else x for x in long_ins]
+                        else x for x in long_ins]
     long_del_clipped = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_LONG
-                            else x for x in long_del]
-    x_ticks = range(0,Constants.SV_LEN_CUTOFF_LONG + 1000,1000) + [Constants.OVERFLOW_BIN_X]
+                        else x for x in long_del]
+    x_ticks = range(0, Constants.SV_LEN_CUTOFF_LONG + 1000,
+                    1000) + [Constants.OVERFLOW_BIN_X]
     x_lims = [0, 12000]
     x_labels = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", ">10"]
-    n_bins = x_lims[1]/Constants.BIN_WIDTH_LONG
+    n_bins = x_lims[1] / Constants.BIN_WIDTH_LONG
     plotgroups.append(to_plotgroup([long_ins_clipped, long_del_clipped], Constants.PG_LONG_SV,
-                               Constants.P_LONG_SV, n_bins, x_ticks, x_lims, x_labels, output_dir))
+                                   Constants.P_LONG_SV, n_bins, x_ticks, x_lims, x_labels, output_dir))
     return plotgroups
 
 
@@ -190,7 +197,9 @@ def _args_runner(args):
 
 def _resolved_tool_contract_runner(rtc):
     output_dir = os.path.dirname(rtc.task.output_files[0])
-    report = to_report(rtc.task.input_files[0], rtc.task.input_files[1], output_dir)
+    report = to_report(rtc.task.input_files[0],
+                       rtc.task.input_files[1],
+                       output_dir)
     report.write_json(rtc.task.output_files[0])
     return 0
 
@@ -235,4 +244,3 @@ def main(argv=sys.argv):
 
 if __name__ == "__main__":
     sys.exit(main())
-
