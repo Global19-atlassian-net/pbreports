@@ -193,7 +193,7 @@ def to_report_impl(dset, output_dir):
 
     plot_groups = []
     # XXX see SL-1408
-    #plot_groups.extend(to_hq_hist_plot(
+    # plot_groups.extend(to_hq_hist_plot(
     #    hqbasefraction_dist=hqbasefraction_dist,
     #    output_dir=output_dir))
     plot_groups.extend(to_rl_overlay_plot(
