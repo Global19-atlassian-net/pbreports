@@ -514,8 +514,7 @@ def resolved_tool_contract_runner(rtc):
         base_dir=op.dirname(rtc.task.output_files[0]))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
-    with open(rtc.task.output_files[1], "w") as csv_out:
-        csv_out.write(report.tables[0].as_csv())
+    report.tables[0].to_csv(rtc.task.output_files[1])
     return 0
 
 
