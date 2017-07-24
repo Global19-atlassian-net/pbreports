@@ -24,7 +24,7 @@ from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '1.1'
+__version__ = '1.2'
 
 spec = load_spec("barcode")
 
@@ -512,6 +512,8 @@ def resolved_tool_contract_runner(rtc):
         base_dir=op.dirname(rtc.task.output_files[0]))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
+    with open(rtc.task.output_files[1], "w") as csv_out:
+        csv_out.write(report.tables[0].as_csv())
     return 0
 
 
@@ -532,6 +534,11 @@ def get_parser():
                            name="Barcode Report",
                            description="Summary of barcoding results",
                            default_name="barcode_report")
+    p.tool_contract_parser.add_output_file_type(
+        FileTypes.CSV, "report_csv",
+        name="Barcode Report Details",
+        description="Barcode Details Table as CSV",
+        default_name="barcodes_report")
     return p
 
 
