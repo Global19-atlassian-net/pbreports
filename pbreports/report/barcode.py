@@ -149,7 +149,7 @@ def make_bcqual_hist2d(bc_groups, base_dir):
 
 
 def make_nreads_line_plot(bc_groups, base_dir):
-    x = list(range(1, len(bc_groups) + 1))
+    x = [i for (i,g) in enumerate(bc_groups, start=1)]
     y = [g.n_reads for g in bc_groups]
     mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
     fig, ax = get_fig_axes()
