@@ -20,7 +20,7 @@ from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet
 
-from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes
+from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -152,7 +152,7 @@ def make_nreads_line_plot(bc_groups, base_dir):
     x = [i for (i,g) in enumerate(bc_groups, start=1)]
     y = [g.n_reads for g in bc_groups]
     mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
-    fig, ax = get_fig_axes()
+    fig, ax = get_fig_axes_lpr()
     ax.plot(x, y, color='blue')
     ax.axhline(mean_nreads, color='red', label="Mean Number of Reads")
     ax.set_xlabel("Barcode Rank Order")
@@ -234,7 +234,7 @@ def make_bq_qq_plot(bc_groups, base_dir):
         data = []
         for g in bc_groups:
             data.append(g.mean_bcqual())
-        fig, ax = get_fig_axes()
+        fig, ax = get_fig_axes_lpr()
         scipy.stats.probplot(data, dist="norm", plot=ax)
         ax.set_title("Q-Q Plot of Barcode Quality Scores")
         img_name = "bcqual_qq.png"
