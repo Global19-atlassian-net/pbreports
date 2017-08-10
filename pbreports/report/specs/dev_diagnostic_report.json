@@ -35,6 +35,21 @@
         "description": "A path"
     }
   ],
-  "plotGroups": [],
+  "plotGroups": [
+      {
+          "id": "reference_hist",
+          "legend": null,
+          "plots": [
+              {
+                  "caption": "Sequence lengths",
+                  "id": "sequence_lengths",
+                  "title": "Sequence lengths",
+                  "description": "Histogram of sequence lengths"
+              }
+          ],
+          "title": "Sequence lengths",
+          "description": "Histogram of sequence lengths"
+      }
+  ],
   "tables": []
 }
