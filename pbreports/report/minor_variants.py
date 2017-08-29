@@ -19,7 +19,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 class Constants(object):
@@ -52,8 +52,6 @@ class Constants(object):
     C_HAP_FREQ_V = "haplotype_frequencies"
     VARIANTS_COL_IDS = [C_SAMPLES_V, C_POSITION_V, C_REF_CODON_V, C_VAR_CODON_V, C_VAR_FREQ_V,
                         C_COVERAGE_V, C_ORF_V, C_DRMS_V, C_HAPLOTYPES_V, C_HAP_FREQ_V]
-
-    VARIANT_FILE = "variant_summary.csv"
 
 
 log = logging.getLogger(__name__)
@@ -128,7 +126,7 @@ def join_col(col):
     return joined_col
 
 
-def write_variant_table(variant_table, output_dir):
+def write_variant_table(variant_table, file_name):
     header_row = []
     for c_id in Constants.VARIANTS_COL_IDS:
         header_row.append(spec.get_table_spec(
@@ -137,7 +135,7 @@ def write_variant_table(variant_table, output_dir):
     for i in [7, 8, 9]:
         variant_table_csv[i] = join_col(variant_table_csv[i])
     variant_table_csv_tr = zip(*variant_table_csv)
-    with open(op.join(output_dir, Constants.VARIANT_FILE), 'w') as csvfile:
+    with open(file_name, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(header_row)
         [writer.writerow(r) for r in variant_table_csv_tr]
@@ -227,7 +225,7 @@ def to_sample_table(variant_table):
     return sample_table_r
 
 
-def to_report(juliet_summary_file, output_dir):
+def to_report(juliet_summary_file, csv_file, output_dir):
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
 
@@ -235,7 +233,7 @@ def to_report(juliet_summary_file, output_dir):
         juliet_summary = json.load(f)
 
     variant_table = to_variant_table(juliet_summary)
-    write_variant_table(variant_table, output_dir)
+    write_variant_table(variant_table, csv_file)
 
     rpt_variant_table = to_rpt_variant_table(variant_table)
     sample_table = to_sample_table(variant_table)
@@ -248,14 +246,16 @@ def to_report(juliet_summary_file, output_dir):
 
 def _args_runner(args):
     output_dir = os.path.dirname(args.report)
-    report = to_report(args.subread_set, output_dir)
+    report = to_report(args.json, args.csv, output_dir)
     report.write_json(args.report)
     return 0
 
 
 def _resolved_tool_contract_runner(rtc):
     output_dir = os.path.dirname(rtc.task.output_files[0])
-    report = to_report(rtc.task.input_files[0], output_dir)
+    report = to_report(rtc.task.input_files[0],
+                       rtc.task.output_files[1],
+                       output_dir)
     report.write_json(rtc.task.output_files[0])
     return 0
 
