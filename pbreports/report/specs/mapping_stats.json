@@ -7,7 +7,7 @@
         {
             "id": "mapped_subread_concordance_mean",
             "type": "float",
-            "format": "{p:.2f} %",
+            "format": "{p:.4f} %",
             "description": "The mean concordance of subreads that mapped to the reference sequence",
             "name": "Mean Concordance (mapped)"
         },
