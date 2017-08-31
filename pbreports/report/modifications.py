@@ -124,7 +124,7 @@ def plot_kinetics_hist(basemods_h5, ax):
         if len(scores) > 0:
             ax.legend(loc='upper right')
     else:
-        ax.text(0.5, 0.5, "Insufficient data to plot",
+        ax.text(0.5, 0.5, "Insufficient High-Scoring Results",
                 color='red', fontsize=24, horizontalalignment='center')
 
 
