@@ -1,4 +1,3 @@
-
 import warnings
 import tempfile
 import unittest
@@ -8,13 +7,17 @@ import json
 import sys
 import os
 
+import numpy as np
 import h5py
 
 from pbcommand.pb_io.report import dict_to_report
 import pbcommand.testkit
 from pbcore.util.Process import backticks
 
-from pbreports.report.modifications import (make_modifications_report)
+from pbreports.report.modifications import (make_modifications_report,
+                                            _create_fig_template,
+                                            plot_kinetics_scatter,
+                                            plot_kinetics_hist)
 
 from base_test_case import LOCAL_DATA, validate_report_complete
 
@@ -44,6 +47,27 @@ def make_h5(big_h5, ofn, n=None):
     o.close()
 
 
+def make_h5_low_scores():
+    """
+    Create an HDF5 input with mostly-zero scores (SE-763).
+    """
+    ofn = tempfile.NamedTemporaryFile(suffix="h5").name
+    h = h5py.File(ofn, "w")
+    og = h.create_group("chr1")
+    score = og.create_dataset("score", (10001,), dtype=np.dtype("uint32"),
+                            compression="gzip", chunks=(1,))
+    score[0:10000] = 0
+    score[10000] = 100
+    cov = og.create_dataset("coverage", (10001,), dtype=np.dtype("uint32"),
+                            compression="gzip", chunks=(1,))
+    cov[0:10001] = 50
+    base = og.create_dataset("base", (10001,), dtype=np.dtype("S1"),
+                            compression="gzip", chunks=(1,))
+    base[0:10001] = "A"
+    h.close()
+    return ofn
+
+
 class TestModificationsRpt(unittest.TestCase):
 
     def setUp(self):
@@ -65,8 +89,6 @@ class TestModificationsRpt(unittest.TestCase):
             shutil.rmtree(self._output_dir)
 
     def test_plot_kinetics_scatter(self):
-        from pbreports.report.modifications import (_create_fig_template,
-                                                    plot_kinetics_scatter)
         f = h5py.File(self._h5)
         fig, ax = _create_fig_template()
         with warnings.catch_warnings(record=True) as w:
@@ -75,14 +97,17 @@ class TestModificationsRpt(unittest.TestCase):
                              "\n".join([str(w_.message) for w_ in w]))
 
     def test_plot_kinetics_hist(self):
-        from pbreports.report.modifications import (_create_fig_template,
-                                                    plot_kinetics_hist)
         f = h5py.File(self._h5)
         fig, ax = _create_fig_template()
         with warnings.catch_warnings(record=True) as w:
             plot_kinetics_hist(f, ax)
             self.assertEqual(len(w), 0,
                              "\n".join([str(w_.message) for w_ in w]))
+
+    def test_plot_kinetics_hist_low_scores(self):
+        h5 = h5py.File(make_h5_low_scores())
+        fig, ax = _create_fig_template()
+        plot_kinetics_hist(h5, ax)
 
     def test_make_modifications_report(self):
         """
