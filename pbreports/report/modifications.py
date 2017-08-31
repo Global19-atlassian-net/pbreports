@@ -106,23 +106,26 @@ def plot_kinetics_hist(basemods_h5, ax):
         binLim = np.nanmax(scores)
     else:
         binLim = np.percentile(scores, 99.9) * 1.2
-    log.debug("binLim = {l}".format(l=binLim))
-    ax.set_xlim(0, binLim)
-    bins = np.arange(0, binLim, step=binLim / 75)
-
-    for base, color in zip(base_ids, colors):
-        baseHits = bases == base
-        if np.count_nonzero(baseHits) > 0:
-            pl = ax.hist(scores[baseHits], color=color, label=base,
-                         bins=bins, histtype="step", log=True)
-        else:
-            log.warn("Base {b} not found".format(b=base))
-
     ax.set_xlabel(get_plot_xlabel(spec, Constants.PG_KIN, Constants.P_HIST))
     ax.set_ylabel(get_plot_ylabel(spec, Constants.PG_KIN, Constants.P_HIST))
+    if binLim > 0:
+        log.debug("binLim = {l}".format(l=binLim))
+        ax.set_xlim(0, binLim)
+        bins = np.arange(0, binLim, step=binLim / 75)
+        for base, color in zip(base_ids, colors):
+            baseHits = bases == base
+            if np.count_nonzero(baseHits) > 0:
+                pl = ax.hist(scores[baseHits], color=color, label=base,
+                             bins=bins, histtype="step", log=True)
+            else:
+                log.warn("Base {b} not found".format(b=base))
 
-    if len(scores) > 0:
-        ax.legend(loc='upper right')
+
+        if len(scores) > 0:
+            ax.legend(loc='upper right')
+    else:
+        ax.text(0.5, 0.5, "Insufficient data to plot",
+                color='red', fontsize=24, horizontalalignment='center')
 
 
 def get_qmod_plot(basemods_h5, output_dir, dpi):

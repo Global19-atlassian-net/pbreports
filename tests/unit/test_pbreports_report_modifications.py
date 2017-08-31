@@ -108,6 +108,7 @@ class TestModificationsRpt(unittest.TestCase):
         h5 = h5py.File(make_h5_low_scores())
         fig, ax = _create_fig_template()
         plot_kinetics_hist(h5, ax)
+        fig.savefig("/home/nechols/tmp1.png")
 
     def test_make_modifications_report(self):
         """
