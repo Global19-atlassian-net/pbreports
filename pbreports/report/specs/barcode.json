@@ -53,6 +53,13 @@
             "description": null,
             "columns": [
                 {
+                    "header": "Barcode Index",
+                    "type": "string",
+                    "format": null,
+                    "id": "barcode_index",
+                    "description": "Indices of the forward and reverse barcodes, if present"
+                },
+                {
                     "header": "Barcode Name",
                     "type": "string",
                     "format": null,

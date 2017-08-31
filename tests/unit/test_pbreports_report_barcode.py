@@ -36,6 +36,7 @@ class TestBarcodeReport(unittest.TestCase):
         table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
         self.assertEqual([r.label for r in table],
                          ["Not Barcoded", "lbc1--lbc1", "lbc3--lbc3"])
+        self.assertEqual([r.idx for r in table], ["None", "0--0", "2--2"])
         self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
         self.assertEqual([r.n_subreads for r in table], [1,1,1])
 
@@ -172,11 +173,11 @@ class TestBarcodeReport(unittest.TestCase):
             'n_barcodes': 2,
             'max_reads': 1
         })
-        self.assertEqual(report.tables[0].columns[0].values, [
+        self.assertEqual(report.tables[0].columns[1].values, [
                          'lbc1--lbc1', 'lbc3--lbc3', 'Not Barcoded'])
-        self.assertEqual(report.tables[0].columns[1].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[2].values, [1, 1, 1])
-        self.assertEqual(report.tables[0].columns[3].values, [1436, 204, 9791])
+        self.assertEqual(report.tables[0].columns[3].values, [1, 1, 1])
+        self.assertEqual(report.tables[0].columns[4].values, [1436, 204, 9791])
         self.assertEqual(report.tables[0].columns[-1].values, [1, 2, None])
 
     @skip_if_data_dir_not_present
@@ -197,10 +198,12 @@ class TestBarcodeReport(unittest.TestCase):
             'max_reads': 1116
         })
         self.assertEqual(report.tables[0].columns[0].values,
+                         ["0--0", "1--1", "2--2"])
+        self.assertEqual(report.tables[0].columns[1].values,
                          ['bc1001--bc1001', 'bc1002--bc1002', 'bc1003--bc1003'])
-        self.assertEqual(report.tables[0].columns[1].values, [1091, 1116, 989])
-        self.assertEqual(report.tables[0].columns[2].values, [5370, 5053, 4710])
-        self.assertEqual(report.tables[0].columns[3].values, [10306688, 10034254, 9452616])
+        self.assertEqual(report.tables[0].columns[2].values, [1091, 1116, 989])
+        self.assertEqual(report.tables[0].columns[3].values, [5370, 5053, 4710])
+        self.assertEqual(report.tables[0].columns[4].values, [10306688, 10034254, 9452616])
 
     def test_integration(self):
         exe = "barcode_report"

@@ -24,7 +24,7 @@ from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '1.2'
+__version__ = '1.3'
 
 spec = load_spec("barcode")
 
@@ -41,6 +41,7 @@ class Constants(object):
     A_MEAN_RL = "mean_read_length"
     A_MEAN_MAX_SRL = "mean_longest_subread_length"
 
+    C_IDX = "barcode_index"
     C_BARCODE = 'barcode'
     C_NREADS = 'number_of_reads'
     C_NSUBREADS = 'number_of_subreads'
@@ -281,19 +282,21 @@ class BarcodeGroup(object):
     """
     Utility class for storing per-barcode metrics from multiple reads
     """
-    __slots__ = ["label", "n_bases", "readlengths", "bqs", "srl_max"]
+    __slots__ = ["label", "n_bases", "readlengths", "bqs", "srl_max", "idx"]
 
     def __init__(self,
                  label,
                  n_bases=0,
                  readlengths=(),
                  bqs=(),
-                 srl_max=0):
+                 srl_max=0,
+                 idx=None):
         self.label = label
         self.n_bases = n_bases
         self.readlengths = list(readlengths)
         self.bqs = list(bqs)
         self.srl_max = srl_max
+        self.idx = idx
 
     def add_read(self, read_info):
         assert read_info.label == self.label
@@ -335,6 +338,13 @@ class ReadInfo(object):
         self.bq = bq
         self.srl_max = srl_max
         self.bc_idx = bc_idx
+
+    @property
+    def idx(self):
+        if self.is_barcoded():
+            return "{f}--{r}".format(f=self.bc_idx[0], r=self.bc_idx[1])
+        else:
+            return "None"
 
     def is_barcoded(self):
         return self.bc_idx != (-1, -1)
@@ -404,10 +414,11 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
     for bc_read in read_info:
         bc_info[bc_read.label].append(bc_read)
         if not bc_read.label in bc_groups:
-            bc_groups[bc_read.label] = BarcodeGroup(bc_read.label)
+            bc_groups[bc_read.label] = BarcodeGroup(bc_read.label, idx=bc_read.idx)
         bc_groups[bc_read.label].add_read(bc_read)
 
-    columns = [Column(Constants.C_BARCODE),
+    columns = [Column(Constants.C_IDX),
+               Column(Constants.C_BARCODE),
                Column(Constants.C_NREADS),
                Column(Constants.C_NSUBREADS),
                Column(Constants.C_NBASES),
@@ -433,6 +444,7 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
     n_barcodes = len(labels_bc)
     for label in labels:
         row = bc_groups[label]
+        table.add_data_by_column_id(Constants.C_IDX, row.idx)
         table.add_data_by_column_id(Constants.C_BARCODE, label)
         table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
         table.add_data_by_column_id(Constants.C_NSUBREADS, row.n_subreads)
