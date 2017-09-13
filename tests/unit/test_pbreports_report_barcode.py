@@ -3,12 +3,14 @@ from pprint import pformat
 import tempfile
 import unittest
 import logging
+import uuid
 import json
 import os.path as op
 import os
 
 from pbcore.util.Process import backticks
 import pbcommand.testkit
+from pbcommand.models import DataStore, DataStoreFile, FileTypes
 
 import pbtestdata
 
@@ -18,6 +20,17 @@ from base_test_case import (validate_report_complete,
                             skip_if_data_dir_not_present)
 
 log = logging.getLogger(__name__)
+
+
+def _make_datastore(subreads):
+    files = [
+        DataStoreFile(uuid.uuid4(), "barcoding.tasks.lima-out-0",
+                      FileTypes.DS_SUBREADS.file_type_id, subreads)
+    ]
+    ds = DataStore(files)
+    ds_path = tempfile.NamedTemporaryFile(suffix=".datastore.json").name
+    ds.write_json(ds_path)
+    return ds_path
 
 
 class TestBarcodeReport(unittest.TestCase):
@@ -33,12 +46,13 @@ class TestBarcodeReport(unittest.TestCase):
         os.chdir(self._start_dir)
 
     def test_iter_reads_by_barcode(self):
-        table = sorted(list(iter_reads_by_barcode(self.subreads, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
-        self.assertEqual([r.label for r in table],
-                         ["Not Barcoded", "lbc1--lbc1", "lbc3--lbc3"])
-        self.assertEqual([r.idx for r in table], ["None", "0--0", "2--2"])
-        self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
-        self.assertEqual([r.n_subreads for r in table], [1,1,1])
+        for input_file in [self.subreads, _make_datastore(self.subreads)]:
+            table = sorted(list(iter_reads_by_barcode(input_file, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
+            self.assertEqual([r.label for r in table],
+                             ["Not Barcoded", "lbc1--lbc1", "lbc3--lbc3"])
+            self.assertEqual([r.idx for r in table], ["None", "0--0", "2--2"])
+            self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
+            self.assertEqual([r.n_subreads for r in table], [1,1,1])
 
     def _get_synthetic_read_info(self):
         return [ # totally synthetic data
@@ -228,5 +242,5 @@ class TestBarcodeReport(unittest.TestCase):
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.barcode"
-    INPUT_FILES = [pbtestdata.get_file("barcoded-subreadset"),
+    INPUT_FILES = [_make_datastore(pbtestdata.get_file("barcoded-subreadset")),
                    pbtestdata.get_file("barcodeset")]
