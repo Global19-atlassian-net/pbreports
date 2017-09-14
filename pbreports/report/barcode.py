@@ -16,15 +16,15 @@ from matplotlib import pyplot as plt
 
 from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column, Attribute, Plot, PlotGroup
-from pbcommand.models import FileTypes, get_pbparser
+from pbcommand.models import DataStore, FileTypes, get_pbparser
 from pbcommand.utils import setup_log
-from pbcore.io import openDataSet, BarcodeSet
+from pbcore.io import openDataSet, BarcodeSet, SubreadSet
 
 from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '1.3'
+__version__ = '2.0'
 
 spec = load_spec("barcode")
 
@@ -354,12 +354,26 @@ class ReadInfo(object):
         return len(self.bq)
 
 
+def get_subread_sets(reads_file):
+    if reads_file.endswith(".datastore.json"):
+        datastore = DataStore.load_from_json(reads_file)
+        subreads = [f.path for u,f in datastore.files.iteritems()
+                    if f.file_type_id == FileTypes.DS_SUBREADS.file_type_id]
+        return subreads
+    else:
+        return [reads_file]
+
+
+def get_subread_set(reads_file):
+    return SubreadSet(*get_subread_sets(reads_file), strict=True)
+
+
 def iter_reads_by_barcode(reads, barcodes):
     """
     Open a SubreadSet and BarcodeSet and return an iterable of ReadInfo objects
     """
     log.info("Extracting barcoded read info from input datasets...")
-    with openDataSet(reads) as ds:
+    with get_subread_set(reads) as ds:
         for er in ds.externalResources:
             if er.barcodes is not None and er.barcodes != barcodes:
                 raise ValueError("Mismatch between external resource " +
@@ -516,9 +530,8 @@ def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     dataset_uuids = [
-        openDataSet(rtc.task.input_files[0]).uuid,
         BarcodeSet(rtc.task.input_files[1]).uuid
-    ]
+    ] + [SubreadSet(f).uuid for f in get_subread_sets(rtc.task.input_files[0])]
     report = run_to_report(
         reads=rtc.task.input_files[0],
         barcodes=rtc.task.input_files[1],
@@ -537,9 +550,9 @@ def get_parser():
         name=Constants.TOOL_NAME,
         description=__doc__,
         driver_exe=Constants.DRIVER_EXE)
-    p.add_input_file_type(FileTypes.DS_SUBREADS, "subreads",
-                          name="BarcodedSubreadSet",
-                          description="Barcoded Subread DataSet XML")
+    p.add_input_file_type(FileTypes.DATASTORE, "subreads",
+                          name="JSON Datastore or SubreadSet",
+                          description="Datastore of SubreadSet files")
     p.add_input_file_type(FileTypes.DS_BARCODE, "barcodes",
                           name="BarcodeSet",
                           description="Barcode DataSet XML")
