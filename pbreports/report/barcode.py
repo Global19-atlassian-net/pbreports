@@ -354,10 +354,20 @@ class ReadInfo(object):
         return len(self.bq)
 
 
+
+def _to_abs_path(dir_name, path):
+    if os.path.isabs(path):
+        return path
+    else:
+        return os.path.join(dir_name, path)
+
+
 def get_subread_sets(reads_file):
+    dir_name = os.path.dirname(os.path.abspath(reads_file))
     if reads_file.endswith(".datastore.json"):
         datastore = DataStore.load_from_json(reads_file)
-        subreads = [f.path for u,f in datastore.files.iteritems()
+        subreads = [_to_abs_path(dir_name, f.path)
+                    for u,f in datastore.files.iteritems()
                     if f.file_type_id == FileTypes.DS_SUBREADS.file_type_id]
         return subreads
     else:
