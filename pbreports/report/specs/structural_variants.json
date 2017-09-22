@@ -6,6 +6,55 @@
     "attributes": [],
     "tables": [
         {
+            "id": "sample_table",
+            "description": null,
+            "columns": [
+                {
+                    "header": "",
+                    "type": "string",
+                    "format": null,
+                    "id": "sample",
+                    "description": null
+                },
+                {
+                    "header": "Insertions (total bp)",
+                    "type": "string",
+                    "format": null,
+                    "id": "insertions",
+                    "description": null
+                },
+                {
+                    "header": "Deletions (total bp)",
+                    "type": "string",
+                    "format": null,
+                    "id": "deletions",
+                    "description": null
+                },
+                {
+                    "header": "Homozygous Variants",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "homozygous",
+                    "description": null
+                },
+                {
+                    "header": "Heterozygous Variants",
+                    "type": "int",
+                    "format": "{:,d}",
+                    "id": "heterozygous",
+                    "description": null
+                },
+                {
+                    "header": "Total Variants (total bp)",
+                    "type": "string",
+                    "format": null,
+                    "id": "total",
+                    "description": null
+                }
+            ],
+            "title": "Count by Sample"
+        },
+        {
             "id": "anno_table",
             "description": null,
             "columns": [
@@ -17,45 +66,24 @@
                     "description": null
                 },
                 {
-                    "header": "Insertions (count)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "insertions_n",
-                    "description": null
-                },
-                {
                     "header": "Insertions (total bp)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "insertions_sum",
-                    "description": null
-                },
-                {
-                    "header": "Deletions (count)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "deletions_n",
+                    "type": "string",
+                    "format": null,
+                    "id": "insertions",
                     "description": null
                 },
                 {
                     "header": "Deletions (total bp)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "deletions_sum",
+                    "type": "string",
+                    "format": null,
+                    "id": "deletions",
                     "description": null
                 },
                 {
-                    "header": "All Variants (count)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "indel_n",
-                    "description": null
-                },
-                {
-                    "header": "All Variants (total bp)",
-                    "type": "int",
-                    "format": "{:,d}",
-                    "id": "indel_sum",
+                    "header": "Total Variants (total bp)",
+                    "type": "string",
+                    "format": null,
+                    "id": "total",
                     "description": null
                 }
             ],
@@ -68,32 +96,16 @@
                 {
                     "xlabel": "variant length (bp)",
                     "description": null,
-                    "caption": "Length Histogram (<1 kb)",
+                    "caption": "Length Histogram",
                     "ylabel": "count",
-                    "title": "Length Histogram (<1 kb)",
-                    "id": "short_sv_plot"
+                    "title": "Length Histogram",
+                    "id": "sv_plot"
                 }
             ],
             "description": null,
             "legend": null,
-            "id": "short_sv_plot_group",
-            "title": "Short Structural Variants"
-        },
-        {
-            "plots": [
-                {
-                    "xlabel": "variant length (kb)",
-                    "description": null,
-                    "caption": "Length Histogram (≥1 kb)",
-                    "ylabel": "count",
-                    "title": "Length Histogram (≥1 kb)",
-                    "id": "long_sv_plot"
-                }
-            ],
-            "description": null,
-            "legend": null,
-            "id": "long_sv_plot_group",
-            "title": "Long Structural Variants"
+            "id": "sv_plot_group",
+            "title": "Structural Variants"
         }
     ]
 }
