@@ -35,6 +35,39 @@ class TestStructuralVariantsRpt(unittest.TestCase):
 
         self.assertEqual('Report structural_variants', d['title'])
 
+        t = d['tables'][1]
+        c0 = t['columns'][0]
+        c1 = t['columns'][1]
+        c2 = t['columns'][2]
+        c3 = t['columns'][3]
+
+        self.assertEqual('Count by Annotation', t['title'])
+
+        self.assertEqual('', c0['header'])
+        self.assertEqual('structural_variants.anno_table.annotation', c0['id'])
+        self.assertEqual('Alu', c0['values'][0])
+        self.assertEqual('Unannotated', c0['values'][1])
+        self.assertEqual('Total', c0['values'][2])
+
+        self.assertEqual('Insertions (total bp)', c1['header'])
+        self.assertEqual('structural_variants.anno_table.insertions', c1['id'])
+        self.assertEqual('1 (5)', c1['values'][0])
+        self.assertEqual('2 (21)', c1['values'][1])
+        self.assertEqual('3 (26)', c1['values'][2])
+
+        self.assertEqual('Deletions (total bp)', c2['header'])
+        self.assertEqual('structural_variants.anno_table.deletions', c2['id'])
+        self.assertEqual('0 (0)', c2['values'][0])
+        self.assertEqual('5 (9898)', c2['values'][1])   
+        self.assertEqual('5 (9898)', c2['values'][2])
+
+        self.assertEqual('Total Variants (total bp)', c3['header'])
+        self.assertEqual('structural_variants.anno_table.total', c3['id'])
+        self.assertEqual('1 (5)', c3['values'][0])
+        self.assertEqual('7 (9919)', c3['values'][1])
+        self.assertEqual('8 (9924)', c3['values'][2])
+
+
         t = d['tables'][0]
         c0 = t['columns'][0]
         c1 = t['columns'][1]
@@ -42,56 +75,42 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         c3 = t['columns'][3]
         c4 = t['columns'][4]
         c5 = t['columns'][5]
-        c6 = t['columns'][6]
 
-        self.assertEqual('Count by Annotation', t['title'])
+        self.assertEqual('Count by Sample', t['title'])
 
-        self.assertEqual("", c0['header'])
-        self.assertEqual('structural_variants.anno_table.annotation', c0['id'])
-        self.assertEqual('Alu', c0['values'][0])
-        self.assertEqual('Unannotated', c0['values'][1])
-        self.assertEqual('Total', c0['values'][2])
+        self.assertEqual('', c0['header'])
+        self.assertEqual('structural_variants.sample_table.sample', c0['id'])
+        self.assertEqual('SAMPLE_1', c0['values'][0])
+        self.assertEqual('SAMPLE_2', c0['values'][1])
 
-        self.assertEqual('Insertions (count)', c1['header'])
-        self.assertEqual('structural_variants.anno_table.insertions_n', c1['id'])
-        self.assertEqual(1, c1['values'][0])
-        self.assertEqual(2, c1['values'][1])
-        self.assertEqual(3, c1['values'][2])
+        self.assertEqual('Insertions (total bp)', c1['header'])
+        self.assertEqual('structural_variants.sample_table.insertions', c1['id'])
+        self.assertEqual('2 (423)', c1['values'][0])
+        self.assertEqual('2 (425)', c1['values'][1])
 
-        self.assertEqual('Insertions (total bp)', c2['header'])
-        self.assertEqual('structural_variants.anno_table.insertions_sum', c2['id'])
-        self.assertEqual(5, c2['values'][0])
-        self.assertEqual(21, c2['values'][1])
-        self.assertEqual(26, c2['values'][2])
+        self.assertEqual('Deletions (total bp)', c2['header'])
+        self.assertEqual('structural_variants.sample_table.deletions', c2['id'])
+        self.assertEqual('7 (17771)', c2['values'][0])
+        self.assertEqual('7 (7771)', c2['values'][1])
 
-        self.assertEqual('Deletions (count)', c3['header'])
-        self.assertEqual('structural_variants.anno_table.deletions_n', c3['id'])
-        self.assertEqual(0, c3['values'][0])
-        self.assertEqual(5, c3['values'][1])
-        self.assertEqual(5, c3['values'][2])
+        self.assertEqual('Homozygous Variants', c3['header'])
+        self.assertEqual('structural_variants.sample_table.homozygous', c3['id'])
+        self.assertEqual(3, c3['values'][0])
+        self.assertEqual(3, c3['values'][1])
 
-        self.assertEqual('Deletions (total bp)', c4['header'])
-        self.assertEqual('structural_variants.anno_table.deletions_sum', c4['id'])
-        self.assertEqual(0, c4['values'][0])
-        self.assertEqual(9898, c4['values'][1])   
-        self.assertEqual(9898, c4['values'][2])
+        self.assertEqual('Heterozygous Variants', c4['header'])
+        self.assertEqual('structural_variants.sample_table.heterozygous', c4['id'])
+        self.assertEqual(6, c4['values'][0])
+        self.assertEqual(5, c4['values'][1])
 
-        self.assertEqual('All Variants (count)', c5['header'])
-        self.assertEqual('structural_variants.anno_table.indel_n', c5['id'])
-        self.assertEqual(1, c5['values'][0])
-        self.assertEqual(7, c5['values'][1])
-        self.assertEqual(8, c5['values'][2])
+        self.assertEqual('Total Variants (total bp)', c5['header'])
+        self.assertEqual('structural_variants.sample_table.total', c5['id'])
+        self.assertEqual('9 (18194)', c5['values'][0])
+        self.assertEqual('10 (8196)', c5['values'][1])
 
-        self.assertEqual('All Variants (total bp)', c6['header'])
-        self.assertEqual('structural_variants.anno_table.indel_sum', c6['id'])
-        self.assertEqual(5, c6['values'][0])
-        self.assertEqual(9919, c6['values'][1])
-        self.assertEqual(9924, c6['values'][2])
 
-        self.assertTrue(op.exists(op.join(self._output_dir, 'short_sv_plot.png')))
-        self.assertTrue(op.exists(op.join(self._output_dir, 'short_sv_plot_thumb.png')))
-        self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot.png')))
-        self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot_thumb.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'sv_plot.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'sv_plot_thumb.png')))
 
         validate_report_complete(self, rpt)
 
@@ -103,10 +122,8 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         rpt = to_report(table, plot, self._output_dir)
         d = json.loads(rpt.to_json())
 
-        self.assertTrue(op.exists(op.join(self._output_dir, 'short_sv_plot.png')))
-        self.assertTrue(op.exists(op.join(self._output_dir, 'short_sv_plot_thumb.png')))
-        self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot.png')))
-        self.assertTrue(op.exists(op.join(self._output_dir, 'long_sv_plot_thumb.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'sv_plot.png')))
+        self.assertTrue(op.exists(op.join(self._output_dir, 'sv_plot_thumb.png')))
 
         validate_report_complete(self, rpt)
 
