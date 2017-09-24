@@ -317,7 +317,7 @@ def save_figure_with_thumbnail(figure, filename, dpi=60, bbox_inches=None):
     return filename, thumb
 
 
-def _save_figures(figure, file_tuples, bbox_inches):
+def _save_figures(figure, file_tuples, bbox_inches=None):
     """
     Save a single matplotlib figure to one or more image files.
     Arguments:\n
