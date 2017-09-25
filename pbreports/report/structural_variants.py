@@ -34,6 +34,7 @@ class Constants(object):
                   "--resolved-tool-contract ")
     R_ID = "structural_variants"
 
+    SAMPLE_KEY = "CountBySample"
     T_SAMPLE = "sample_table"
     C_SAMPLE = "sample"
     C_INS = "insertions"
@@ -42,9 +43,9 @@ class Constants(object):
     C_HET = "heterozygous"
     C_TOTAL = "total"
 
+    ANNO_KEY = "CountByAnnotation"
     T_ANNO = "anno_table"
     C_ANNO = "annotation"
-
     R_TANDEM = "Tandem Repeat"
     R_ALU = "Alu"
     R_L1 = "L1"
@@ -55,13 +56,23 @@ class Constants(object):
     PG_SV = "sv_plot_group"
     P_SV = "sv_plot"
 
+    SV_LEN_CUTOFF_S = 1000
+    BIN_WIDTH_S = 50
+    X_TICKS_S = range(0, SV_LEN_CUTOFF_S + 100, 50)
+    X_LIMS_S = [X_TICKS_S[0], X_TICKS_S[-1]]
+    X_LABELS_S = list(itertools.chain(*[[str(x), ""] for x in xrange(0,1000,100)])) + ["1,000"]
+    X_LABEL_S = "variant length (bp)"
+    N_BINS_S = X_LIMS_S[1] / BIN_WIDTH_S
+
     OVERFLOW_BIN_X = 11250
-    SV_LEN_CUTOFF_SHORT = 1000
-    SV_LEN_CUTOFF_LONG = 10000
-    BIN_WIDTH_SHORT = 50
-    BIN_WIDTH_LONG = 500
-    ANNO_KEY = "CountByAnnotation"
-    SAMPLE_KEY = "CountBySample"
+    SV_LEN_CUTOFF_L = 10000
+    BIN_WIDTH_L = 500
+    X_TICKS_L = range(0, SV_LEN_CUTOFF_L + 500,
+                    500) + [OVERFLOW_BIN_X]
+    X_LIMS_L = [0, 12000]
+    X_LABELS_L = list(itertools.chain(*[[str(x), ""] for x in xrange(0,11)]))[:-1] + [">10"]
+    X_LABEL_L = "variant length (kb)"
+    N_BINS_L = X_LIMS_L[1] / BIN_WIDTH_L
 
 
 log = logging.getLogger(__name__)
@@ -76,13 +87,14 @@ def my_combine(n,t):
     return c
 
 
+def comma_formatter(x, pos=0):
+    return ("{0:,d}".format(int(x)))
+
+
 def to_sample_table(table_json):
-    
     col_ids = [Constants.C_SAMPLE, Constants.C_INS, Constants.C_DEL, 
                Constants.C_HOM, Constants.C_HET, Constants.C_TOTAL]
-
     sample_table = table_json[Constants.SAMPLE_KEY]
-
     t = []
     for row in sample_table:
         r = [row[0]]
@@ -92,28 +104,21 @@ def to_sample_table(table_json):
         r.append(row[6])
         r.append(my_combine(row[7], row[8]))
         t.append(r)
-
     table = zip(*t)
-
     columns = []
     for i, col_id in enumerate(col_ids):
         columns.append(Column(col_id, values=table[i]))
-
     sample_table = Table(Constants.T_SAMPLE, columns=columns)
 
     return sample_table
 
 
 def to_anno_table(table_json):
-
     col_ids = [Constants.C_ANNO, Constants.C_INS,
                Constants.C_DEL, Constants.C_TOTAL]
-
     row_ids = [Constants.R_TANDEM, Constants.R_ALU, Constants.R_L1,
                Constants.R_SVA, Constants.R_UNANNOTATED, Constants.R_TOTAL]
-
     anno_table = table_json[Constants.ANNO_KEY]
-
     t = []
     for _id in row_ids:
         for row in anno_table:
@@ -122,77 +127,55 @@ def to_anno_table(table_json):
                 for i in xrange(1,6,2):
                     r.append(my_combine(row[i], row[i+1]))
                 t.append(r)
-
     table = zip(*t)
-
     columns = []
     for i, col_id in enumerate(col_ids):
         columns.append(Column(col_id, values=table[i]))
-
     anno_table = Table(Constants.T_ANNO, columns=columns)
 
     return anno_table
 
 
-def comma_formatter(x, pos=0):
-    return ("{0:,d}".format(int(x)))
-
-
-def define_short_plot():
-    x_ticks = range(0, Constants.SV_LEN_CUTOFF_SHORT + 100, 100)
-    x_lims = [x_ticks[0], x_ticks[-1]]
-    x_labels = ["0", "100", "200", "300", "400",
-                "500", "600", "700", "800", "900", "1,000"]
-    n_bins = x_lims[1] / Constants.BIN_WIDTH_SHORT
-
-    return x_ticks, x_lims, x_labels, n_bins
-
-
-def define_long_plot():
-    x_ticks = range(0, Constants.SV_LEN_CUTOFF_LONG + 1000,
-                    1000) + [Constants.OVERFLOW_BIN_X]
-    x_lims = [0, 12000]
-    x_labels = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", ">10"]
-    n_bins = x_lims[1] / Constants.BIN_WIDTH_LONG
-
-    return x_ticks, x_lims, x_labels, n_bins
-
-
-def process_short_data(sample, data):
+def process_short_data(data):
     short_ins = [x for x in data.get(
-        "Insertion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
+        "Insertion", []) if x < Constants.SV_LEN_CUTOFF_S]
     short_del = [x for x in data.get(
-        "Deletion", []) if x < Constants.SV_LEN_CUTOFF_SHORT]
+        "Deletion", []) if x < Constants.SV_LEN_CUTOFF_S]
 
     return short_ins, short_del
 
 
-def process_long_data(sample, data):
+def process_long_data(data):
     long_ins_raw = [x for x in data.get(
-        "Insertion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
+        "Insertion", []) if x >= Constants.SV_LEN_CUTOFF_S]
     long_del_raw = [x for x in data.get(
-        "Deletion", []) if x >= Constants.SV_LEN_CUTOFF_SHORT]
+        "Deletion", []) if x >= Constants.SV_LEN_CUTOFF_S]
     # mapping all lengths above 10k to a constant
-    long_ins = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_LONG
+    long_ins = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_L
                         else x for x in long_ins_raw]
-    long_del = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_LONG
+    long_del = [Constants.OVERFLOW_BIN_X if x > Constants.SV_LEN_CUTOFF_L
                         else x for x in long_del_raw]
 
     return long_ins, long_del
     
 
-def add_subplot(fig, ax, sample, data, counter, y_max, position):
+def add_subplot(fig, ax, sample, data, counter, y_max, n_samples, position):
     insertions = data[0]
     deletions = data[1]
     y_label = get_plot_ylabel(spec, Constants.PG_SV, Constants.P_SV)
     if position == 0:
-        x_ticks, x_lims, x_labels, n_bins = define_short_plot()
-        x_label = "variant length (bp)"
+        x_ticks = Constants.X_TICKS_S 
+        x_lims = Constants.X_LIMS_S
+        x_labels = Constants.X_LABELS_S
+        n_bins = Constants.N_BINS_S
+        x_label = Constants.X_LABEL_S
     if position == 1:
-        x_ticks, x_lims, x_labels, n_bins = define_long_plot()
-        x_label = "variant length (kb)"
+        x_ticks = Constants.X_TICKS_L
+        x_lims = Constants.X_LIMS_L
+        x_labels = Constants.X_LABELS_L
+        n_bins = Constants.N_BINS_L
+        x_label = Constants.X_LABEL_L
     ax = ax[counter, position]
-    ax.grid(color='#e0e0e0', linewidth=0.9, linestyle='-')
     if insertions or deletions:
         ax.hist([deletions, insertions], label=["Deletions", "Insertions"], histtype='barstacked',
                 color=["#FF7E79", "#A9D18E"], edgecolor="none", bins=n_bins,
@@ -203,9 +186,9 @@ def add_subplot(fig, ax, sample, data, counter, y_max, position):
     ax.set_xlim(left=x_lims[0], right=x_lims[1])
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(comma_formatter))
-#    ax.axesPatch.set_facecolor('#e0e0e0')
-#    ax.grid(color='#ffffff', linewidth=0.5, linestyle='-')
+    ax.grid(color='#e0e0e0', linewidth=0.9, linestyle='-')
     ax.xaxis.grid(False)
+    ax.set_axisbelow(True)
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_labels)
     rcParams['xtick.direction'] = 'out'
@@ -217,12 +200,11 @@ def add_subplot(fig, ax, sample, data, counter, y_max, position):
         y_max[position] = y_top
 
 
-def add_subplots(fig, ax, sample, data, counter, y_max):
-    short_ins, short_del = process_short_data(sample, data)
-    add_subplot(fig, ax, sample, [short_ins, short_del], counter, y_max, 0)
-
-    long_ins, long_del = process_long_data(sample, data)
-    add_subplot(fig, ax, sample, [long_ins, long_del], counter, y_max, 1)
+def add_subplots(fig, ax, sample, data, counter, y_max, n_samples):
+    short_ins, short_del = process_short_data(data)
+    add_subplot(fig, ax, sample, [short_ins, short_del], counter, y_max, n_samples, 0)
+    long_ins, long_del = process_long_data(data)
+    add_subplot(fig, ax, sample, [long_ins, long_del], counter, y_max, n_samples, 1)
 
 
 def label_rows(fig, axes, rows):
@@ -230,7 +212,7 @@ def label_rows(fig, axes, rows):
     for ax, row in zip(axes[:,0], rows):
         ax.annotate(row, xy=(0, 0.5), xytext=(-ax.yaxis.labelpad - pad, 0),
         xycoords=ax.yaxis.label, textcoords='offset points',
-        size='large', ha='right', va='center')
+        size=20, ha='right', va='center')
     fig.tight_layout()
     fig.subplots_adjust(left=0.15, top=0.95)
 
@@ -241,21 +223,19 @@ def label_columns(fig, axes):
     for ax, col in zip(axes[0], columns):
         ax.annotate(col, xy=(0.5, 1), xytext=(0, pad),
                     xycoords='axes fraction', textcoords='offset points',
-                    size='large', ha='center', va='baseline')
+                    size=20, ha='center', va='baseline')
 
 
 def to_plotgroup(plot_json, output_dir):
-
     n_samples = len(plot_json)
     if n_samples > 0:
-        fig, ax = plt.subplots(n_samples, 2, figsize=(15, n_samples*5))
+        fig, ax = plt.subplots(n_samples, 2, figsize=(15, n_samples*5), squeeze=False)
         od = collections.OrderedDict(sorted(plot_json.items()))
         counter = 0
         y_max = [0, 0]
         for sample, data in od.iteritems():
-            add_subplots(fig, ax, sample, data, counter, y_max)
+            add_subplots(fig, ax, sample, data, counter, y_max, n_samples)
             counter+=1
-
         label_rows(fig, ax, od.keys())
         label_columns(fig, ax)
         for row in xrange(0, n_samples):
@@ -263,29 +243,28 @@ def to_plotgroup(plot_json, output_dir):
             ax[row, 1].set_ylim(top=y_max[1]*1.1)
         p1 = mpatches.Patch(color='#FF7E79', linewidth=0)
         p2 = mpatches.Patch(color='#A9D18E', linewidth=0)
-        fig.legend((p1,p2), ("Deletions", "Insertions"), "upper center", ncol=2)
+        fig.legend((p1,p2), ("Deletions", "Insertions"), "upper left", fontsize=15)
     else:
         fig = plt.figure()
-
     plot_name = get_plot_title(spec, Constants.PG_SV, Constants.P_SV)
     png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_SV))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72, bbox_inches='tight')
     plot = Plot(Constants.P_SV, os.path.relpath(png_base, output_dir),
                 title=plot_name, caption=plot_name,
                 thumbnail=os.path.relpath(thumbnail_base, output_dir))
     plot_group = PlotGroup(Constants.PG_SV, plots=[plot])
+
     return plot_group
 
+
 def to_report(table_json_file, plot_json_file, output_dir):
+
     log.info("Starting {f} v{v}".format(f=os.path.basename(__file__),
                                         v=__version__))
-
     with open(table_json_file) as f:
         table_json = json.load(f)
-
     with open(plot_json_file) as f:
         plot_json = json.load(f)
-
     tables = [to_sample_table(table_json), to_anno_table(table_json)]
     plotgroups = [to_plotgroup(plot_json, output_dir)]
     report = Report(Constants.R_ID, tables=tables, plotgroups=plotgroups)

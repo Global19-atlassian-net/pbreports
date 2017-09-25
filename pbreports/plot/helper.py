@@ -291,7 +291,7 @@ def set_axis_label_font_size(ax, size):
     t.set_fontsize(size)
 
 
-def save_figure_with_thumbnail(figure, filename, dpi=60):
+def save_figure_with_thumbnail(figure, filename, dpi=60, bbox_inches=None):
     """
     Convenience function to save a matplotlib figure object to 2 image files:
     A standard image and a thumbnail.
@@ -312,12 +312,12 @@ def save_figure_with_thumbnail(figure, filename, dpi=60):
     """
     parts = os.path.splitext(filename)
     thumb = '{b}_thumb{e}'.format(b=parts[0], e=parts[1])
-    _save_figures(figure, [(filename, dpi), (thumb, 20)])
+    _save_figures(figure, [(filename, dpi), (thumb, 20)], bbox_inches=bbox_inches)
     plt.close(figure)
     return filename, thumb
 
 
-def _save_figures(figure, file_tuples):
+def _save_figures(figure, file_tuples, bbox_inches=None):
     """
     Save a single matplotlib figure to one or more image files.
     Arguments:\n
@@ -326,7 +326,7 @@ def _save_figures(figure, file_tuples):
     """
     for fname, dpi in file_tuples:
         log.info('Saving figure {f} with dpi {d}'.format(f=fname, d=str(dpi)))
-        figure.savefig(fname, dpi=dpi)
+        figure.savefig(fname, bbox_inches=bbox_inches, dpi=dpi)
 
 
 class ChartDataDump(object):
