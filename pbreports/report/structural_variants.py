@@ -55,8 +55,8 @@ class Constants(object):
 
     PG_SV = "sv_plot_group"
     P_SV = "sv_plot"
-    C_SHORT = 'Variants < 1kb'
-    C_LONG = 'Variants ' + r'$\geq$' + ' 1kb'
+    C_SHORT = 'Variants <1 kb'
+    C_LONG = 'Variants ' + r'$\geq$' + '1 kb'
 
     SV_LEN_CUTOFF_S = 1000
     BIN_WIDTH_S = 50
@@ -192,6 +192,7 @@ def add_subplot(fig, ax, sample, data, counter, y_max, position):
     ax.set_axisbelow(True)
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_labels, size = 15)
+    ax.tick_params(axis='y', labelsize=15)
     rcParams['xtick.direction'] = 'out'
     rcParams['ytick.direction'] = 'out'
     ax.yaxis.set_ticks_position('left')
