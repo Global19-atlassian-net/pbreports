@@ -58,14 +58,14 @@ class TestStructuralVariantsRpt(unittest.TestCase):
         self.assertEqual('Deletions (total bp)', c2['header'])
         self.assertEqual('structural_variants.anno_table.deletions', c2['id'])
         self.assertEqual('0 (0)', c2['values'][0])
-        self.assertEqual('5 (9898)', c2['values'][1])   
-        self.assertEqual('5 (9898)', c2['values'][2])
+        self.assertEqual('5 (9,898)', c2['values'][1])
+        self.assertEqual('5 (9,898)', c2['values'][2])
 
         self.assertEqual('Total Variants (total bp)', c3['header'])
         self.assertEqual('structural_variants.anno_table.total', c3['id'])
         self.assertEqual('1 (5)', c3['values'][0])
-        self.assertEqual('7 (9919)', c3['values'][1])
-        self.assertEqual('8 (9924)', c3['values'][2])
+        self.assertEqual('7 (9,919)', c3['values'][1])
+        self.assertEqual('8 (9,924)', c3['values'][2])
 
 
         t = d['tables'][0]
@@ -90,8 +90,8 @@ class TestStructuralVariantsRpt(unittest.TestCase):
 
         self.assertEqual('Deletions (total bp)', c2['header'])
         self.assertEqual('structural_variants.sample_table.deletions', c2['id'])
-        self.assertEqual('7 (17771)', c2['values'][0])
-        self.assertEqual('7 (7771)', c2['values'][1])
+        self.assertEqual('7 (17,771)', c2['values'][0])
+        self.assertEqual('7 (7,771)', c2['values'][1])
 
         self.assertEqual('Homozygous Variants', c3['header'])
         self.assertEqual('structural_variants.sample_table.homozygous', c3['id'])
@@ -105,8 +105,8 @@ class TestStructuralVariantsRpt(unittest.TestCase):
 
         self.assertEqual('Total Variants (total bp)', c5['header'])
         self.assertEqual('structural_variants.sample_table.total', c5['id'])
-        self.assertEqual('9 (18194)', c5['values'][0])
-        self.assertEqual('10 (8196)', c5['values'][1])
+        self.assertEqual('9 (18,194)', c5['values'][0])
+        self.assertEqual('10 (8,196)', c5['values'][1])
 
 
         self.assertTrue(op.exists(op.join(self._output_dir, 'sv_plot.png')))

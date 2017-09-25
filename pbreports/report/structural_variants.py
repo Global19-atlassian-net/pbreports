@@ -55,10 +55,12 @@ class Constants(object):
 
     PG_SV = "sv_plot_group"
     P_SV = "sv_plot"
+    C_SHORT = 'Variants < 1kb'
+    C_LONG = 'Variants ' + r'$\geq$' + ' 1kb'
 
     SV_LEN_CUTOFF_S = 1000
     BIN_WIDTH_S = 50
-    X_TICKS_S = range(0, SV_LEN_CUTOFF_S + 100, 50)
+    X_TICKS_S = range(0, SV_LEN_CUTOFF_S + 100, 50)[:-1]
     X_LIMS_S = [X_TICKS_S[0], X_TICKS_S[-1]]
     X_LABELS_S = list(itertools.chain(*[[str(x), ""] for x in xrange(0,1000,100)])) + ["1,000"]
     X_LABEL_S = "variant length (bp)"
@@ -79,16 +81,15 @@ log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
+def comma_formatter(x, pos=0):
+    return ("{0:,d}".format(int(x)))
+
 def my_combine(n,t):
     """
     Takes two integers, n and t, and returns "n (t)"
     """
-    c = str(n) + " (" + str(t) + ")"
+    c = comma_formatter(str(n)) + " (" + comma_formatter(str(t)) + ")"
     return c
-
-
-def comma_formatter(x, pos=0):
-    return ("{0:,d}".format(int(x)))
 
 
 def to_sample_table(table_json):
@@ -159,7 +160,7 @@ def process_long_data(data):
     return long_ins, long_del
     
 
-def add_subplot(fig, ax, sample, data, counter, y_max, n_samples, position):
+def add_subplot(fig, ax, sample, data, counter, y_max, position):
     insertions = data[0]
     deletions = data[1]
     y_label = get_plot_ylabel(spec, Constants.PG_SV, Constants.P_SV)
@@ -180,8 +181,8 @@ def add_subplot(fig, ax, sample, data, counter, y_max, n_samples, position):
         ax.hist([deletions, insertions], label=["Deletions", "Insertions"], histtype='barstacked',
                 color=["#FF7E79", "#A9D18E"], edgecolor="none", bins=n_bins,
                 width=0.85 * (x_lims[1] - x_lims[0]) / n_bins, range=[x_lims[0], x_lims[1]])
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label, size = 20)
+    ax.set_ylabel(y_label, size = 20)
     ax.set_ylim(bottom=0)
     ax.set_xlim(left=x_lims[0], right=x_lims[1])
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
@@ -190,7 +191,7 @@ def add_subplot(fig, ax, sample, data, counter, y_max, n_samples, position):
     ax.xaxis.grid(False)
     ax.set_axisbelow(True)
     ax.set_xticks(x_ticks)
-    ax.set_xticklabels(x_labels)
+    ax.set_xticklabels(x_labels, size = 15)
     rcParams['xtick.direction'] = 'out'
     rcParams['ytick.direction'] = 'out'
     ax.yaxis.set_ticks_position('left')
@@ -200,11 +201,11 @@ def add_subplot(fig, ax, sample, data, counter, y_max, n_samples, position):
         y_max[position] = y_top
 
 
-def add_subplots(fig, ax, sample, data, counter, y_max, n_samples):
+def add_subplots(fig, ax, sample, data, counter, y_max):
     short_ins, short_del = process_short_data(data)
-    add_subplot(fig, ax, sample, [short_ins, short_del], counter, y_max, n_samples, 0)
+    add_subplot(fig, ax, sample, [short_ins, short_del], counter, y_max, 0)
     long_ins, long_del = process_long_data(data)
-    add_subplot(fig, ax, sample, [long_ins, long_del], counter, y_max, n_samples, 1)
+    add_subplot(fig, ax, sample, [long_ins, long_del], counter, y_max, 1)
 
 
 def label_rows(fig, axes, rows):
@@ -212,18 +213,18 @@ def label_rows(fig, axes, rows):
     for ax, row in zip(axes[:,0], rows):
         ax.annotate(row, xy=(0, 0.5), xytext=(-ax.yaxis.labelpad - pad, 0),
         xycoords=ax.yaxis.label, textcoords='offset points',
-        size=20, ha='right', va='center')
+        size=25, ha='right', va='center')
     fig.tight_layout()
     fig.subplots_adjust(left=0.15, top=0.95)
 
 
 def label_columns(fig, axes):
     pad = 5 # in points
-    columns = ['Short Variants < 1kb', 'Long Variants ' + r'$\geq$' + ' 1kb']
+    columns = [Constants.C_SHORT, Constants.C_LONG]
     for ax, col in zip(axes[0], columns):
         ax.annotate(col, xy=(0.5, 1), xytext=(0, pad),
                     xycoords='axes fraction', textcoords='offset points',
-                    size=20, ha='center', va='baseline')
+                    size=25, ha='center', va='baseline')
 
 
 def to_plotgroup(plot_json, output_dir):
@@ -234,7 +235,7 @@ def to_plotgroup(plot_json, output_dir):
         counter = 0
         y_max = [0, 0]
         for sample, data in od.iteritems():
-            add_subplots(fig, ax, sample, data, counter, y_max, n_samples)
+            add_subplots(fig, ax, sample, data, counter, y_max)
             counter+=1
         label_rows(fig, ax, od.keys())
         label_columns(fig, ax)
