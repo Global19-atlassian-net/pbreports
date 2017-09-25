@@ -81,14 +81,14 @@ log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
-def comma_formatter(x, pos=0):
+def _comma_formatter(x, pos=0):
     return ("{0:,d}".format(int(x)))
 
-def my_combine(n,t):
+def _my_combine(n,t):
     """
     Takes two integers, n and t, and returns "n (t)"
     """
-    c = comma_formatter(str(n)) + " (" + comma_formatter(str(t)) + ")"
+    c = _comma_formatter(str(n)) + " (" + _comma_formatter(str(t)) + ")"
     return c
 
 
@@ -99,11 +99,11 @@ def to_sample_table(table_json):
     t = []
     for row in sample_table:
         r = [row[0]]
-        r.append(my_combine(row[1], row[2]))
-        r.append(my_combine(row[3], row[4]))
+        r.append(_my_combine(row[1], row[2]))
+        r.append(_my_combine(row[3], row[4]))
         r.append(row[5])
         r.append(row[6])
-        r.append(my_combine(row[7], row[8]))
+        r.append(_my_combine(row[7], row[8]))
         t.append(r)
     table = zip(*t)
     columns = []
@@ -126,7 +126,7 @@ def to_anno_table(table_json):
             if _id == row[0]:
                 r = [row[0]]
                 for i in xrange(1,6,2):
-                    r.append(my_combine(row[i], row[i+1]))
+                    r.append(_my_combine(row[i], row[i+1]))
                 t.append(r)
     table = zip(*t)
     columns = []
@@ -186,7 +186,7 @@ def add_subplot(fig, ax, sample, data, counter, y_max, position):
     ax.set_ylim(bottom=0)
     ax.set_xlim(left=x_lims[0], right=x_lims[1])
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-    ax.yaxis.set_major_formatter(ticker.FuncFormatter(comma_formatter))
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(_comma_formatter))
     ax.grid(color='#e0e0e0', linewidth=0.9, linestyle='-')
     ax.xaxis.grid(False)
     ax.set_axisbelow(True)
