@@ -41,6 +41,7 @@ class Constants(object):
     A_MEAN_RL = "mean_read_length"
     A_MEAN_MAX_SRL = "mean_longest_subread_length"
 
+    C_BIOSAMPLE = "biosample"
     C_IDX = "barcode_index"
     C_BARCODE = 'barcode'
     C_NREADS = 'number_of_reads'
@@ -51,6 +52,7 @@ class Constants(object):
     C_BCQUAL = "mean_bcqual"
     C_RANK = "rank_order"
     LABEL_NONE = "Not Barcoded"
+    BIOSAMPLE_NONE = "No Name"
 
     PG_STATS = "read_stats"
     P_NREADS = "nreads"
@@ -378,6 +380,23 @@ def get_subread_set(reads_file):
     return SubreadSet(*get_subread_sets(reads_file), strict=True)
 
 
+def get_biosample_dict(reads):
+    biosamples = {}
+    subreadsets = get_subread_sets(reads)
+    for subreadset in subreadsets:
+        ss = get_subread_set(subreadset)
+        try:
+            biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
+        except Exception as e:
+            log.error(e)
+            biosample = Constants.BIOSAMPLE_NONE
+        try:
+            barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
+            biosamples[barcode] = biosample
+        except Exception as e:
+           log.error(e)
+    return biosamples
+
 def iter_reads_by_barcode(reads, barcodes):
     """
     Open a SubreadSet and BarcodeSet and return an iterable of ReadInfo objects
@@ -425,7 +444,7 @@ def iter_reads_by_barcode(reads, barcodes):
                     yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
 
 
-def make_report(read_info, dataset_uuids=(), base_dir=None):
+def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
     """
@@ -441,7 +460,8 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
             bc_groups[bc_read.label] = BarcodeGroup(bc_read.label, idx=bc_read.idx)
         bc_groups[bc_read.label].add_read(bc_read)
 
-    columns = [Column(Constants.C_IDX),
+    columns = [Column(Constants.C_BIOSAMPLE),
+               Column(Constants.C_IDX),
                Column(Constants.C_BARCODE),
                Column(Constants.C_NREADS),
                Column(Constants.C_NSUBREADS),
@@ -468,6 +488,7 @@ def make_report(read_info, dataset_uuids=(), base_dir=None):
     n_barcodes = len(labels_bc)
     for label in labels:
         row = bc_groups[label]
+        table.add_data_by_column_id(Constants.C_BIOSAMPLE, biosamples.get(label, Constants.BIOSAMPLE_NONE))
         table.add_data_by_column_id(Constants.C_IDX, row.idx)
         table.add_data_by_column_id(Constants.C_BARCODE, label)
         table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
@@ -520,7 +541,8 @@ def run_to_report(reads, barcodes, dataset_uuids=(), base_dir=None):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
-    return make_report(
+    biosamples = get_biosample_dict(reads)
+    return make_report(biosamples=biosamples,
         read_info=iter_reads_by_barcode(reads, barcodes),
         dataset_uuids=dataset_uuids,
         base_dir=base_dir)

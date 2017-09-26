@@ -53,6 +53,13 @@
             "description": null,
             "columns": [
                 {
+                    "header": "Bio Sample Name",
+                    "type": "string",
+                    "format": null,
+                    "id": "biosample",
+                    "description": "The name of the sample."
+                },
+                {
                     "header": "Barcode Index",
                     "type": "string",
                     "format": null,

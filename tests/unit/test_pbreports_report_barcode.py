@@ -73,7 +73,8 @@ class TestBarcodeReport(unittest.TestCase):
 
     def test_make_report(self):
         read_info = self._get_synthetic_read_info()
-        report = make_report(read_info)
+        biosamples = {"bc1": "A", "bc2": "B", "bc3": "C", "Not Barcoded": "D"}
+        report = make_report(biosamples, read_info)
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr["mean_read_length"], 2440)
         self.assertEqual(attr["mean_longest_subread_length"], 333)
@@ -159,7 +160,7 @@ class TestBarcodeReport(unittest.TestCase):
                 self.assertTrue(op.isfile(p.image))
 
     def test_make_report_no_reads(self):
-        report = make_report([])
+        report = make_report({}, [])
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr["n_barcodes"], 0)
         self.assertEqual(len(report.tables[0].columns[0].values), 0)
@@ -168,7 +169,8 @@ class TestBarcodeReport(unittest.TestCase):
         read_info = [
             ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90, (-1,-1))
         ]
-        report = make_report(read_info)
+        biosamples = {"Not Barcoded": "A"}
+        report = make_report(biosamples, read_info)
         attr = {a.id:a.value for a in report.attributes}
         self.assertEqual(attr["n_barcodes"], 0)
         self.assertEqual(len(report.tables[0].columns[0].values), 1)
@@ -187,11 +189,11 @@ class TestBarcodeReport(unittest.TestCase):
             'n_barcodes': 2,
             'max_reads': 1
         })
-        self.assertEqual(report.tables[0].columns[1].values, [
+        self.assertEqual(report.tables[0].columns[2].values, [
                          'lbc1--lbc1', 'lbc3--lbc3', 'Not Barcoded'])
-        self.assertEqual(report.tables[0].columns[2].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[3].values, [1, 1, 1])
-        self.assertEqual(report.tables[0].columns[4].values, [1436, 204, 9791])
+        self.assertEqual(report.tables[0].columns[4].values, [1, 1, 1])
+        self.assertEqual(report.tables[0].columns[5].values, [1436, 204, 9791])
         self.assertEqual(report.tables[0].columns[-1].values, [1, 2, None])
 
     @skip_if_data_dir_not_present
@@ -211,13 +213,13 @@ class TestBarcodeReport(unittest.TestCase):
             'n_barcodes': 3,
             'max_reads': 1116
         })
-        self.assertEqual(report.tables[0].columns[0].values,
-                         ["0--0", "1--1", "2--2"])
         self.assertEqual(report.tables[0].columns[1].values,
+                         ["0--0", "1--1", "2--2"])
+        self.assertEqual(report.tables[0].columns[2].values,
                          ['bc1001--bc1001', 'bc1002--bc1002', 'bc1003--bc1003'])
-        self.assertEqual(report.tables[0].columns[2].values, [1091, 1116, 989])
-        self.assertEqual(report.tables[0].columns[3].values, [5370, 5053, 4710])
-        self.assertEqual(report.tables[0].columns[4].values, [10306688, 10034254, 9452616])
+        self.assertEqual(report.tables[0].columns[3].values, [1091, 1116, 989])
+        self.assertEqual(report.tables[0].columns[4].values, [5370, 5053, 4710])
+        self.assertEqual(report.tables[0].columns[5].values, [10306688, 10034254, 9452616])
 
     def test_integration(self):
         exe = "barcode_report"
