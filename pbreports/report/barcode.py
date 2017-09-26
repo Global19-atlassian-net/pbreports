@@ -52,6 +52,7 @@ class Constants(object):
     C_BCQUAL = "mean_bcqual"
     C_RANK = "rank_order"
     LABEL_NONE = "Not Barcoded"
+    BIOSAMPLE_NONE = "No Name"
 
     PG_STATS = "read_stats"
     P_NREADS = "nreads"
@@ -384,9 +385,15 @@ def get_biosample_dict(reads):
     subreadsets = get_subread_sets(reads)
     for subreadset in subreadsets:
         ss = get_subread_set(subreadset)
-        biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
-        barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
-        biosamples[barcode] = biosample
+        try:
+            biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
+        except:
+            biosample = Constants.BIOSAMPLE_NONE
+        try:
+            barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
+            biosamples[barcode] = biosample
+        except:
+            pass
     return biosamples
 
 def iter_reads_by_barcode(reads, barcodes):
@@ -480,7 +487,7 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     n_barcodes = len(labels_bc)
     for label in labels:
         row = bc_groups[label]
-        table.add_data_by_column_id(Constants.C_BIOSAMPLE, biosamples[label])
+        table.add_data_by_column_id(Constants.C_BIOSAMPLE, biosamples.get(label, Constants.BIOSAMPLE_NONE))
         table.add_data_by_column_id(Constants.C_IDX, row.idx)
         table.add_data_by_column_id(Constants.C_BARCODE, label)
         table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
