@@ -387,13 +387,14 @@ def get_biosample_dict(reads):
         ss = get_subread_set(subreadset)
         try:
             biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
-        except:
+        except Exception as e:
+            log.error(e)
             biosample = Constants.BIOSAMPLE_NONE
         try:
             barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
             biosamples[barcode] = biosample
-        except:
-            pass
+        except Exception as e:
+           log.error(e)
     return biosamples
 
 def iter_reads_by_barcode(reads, barcodes):
