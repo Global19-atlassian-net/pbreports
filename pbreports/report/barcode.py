@@ -384,8 +384,8 @@ def get_biosample_dict(reads):
     subreadsets = get_subread_sets(reads)
     for subreadset in subreadsets:
         ss = get_subread_set(subreadset)
-        biosample = ss.metadata.collections[0]['WellSample']['BioSamples']['BioSample'].name
-        barcode = ss.metadata.collections[0]['WellSample']['BioSamples']['BioSample']['DNABarcodes']['DNABarcode'].name
+        biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
+        barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
         biosamples[barcode] = biosample
     return biosamples
 
