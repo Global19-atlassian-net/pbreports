@@ -194,7 +194,7 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(report.tables[0].columns[3].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[4].values, [1, 1, 1])
         self.assertEqual(report.tables[0].columns[5].values, [1436, 204, 9791])
-        self.assertEqual(report.tables[0].columns[-2].values, [1, 2, None])
+        self.assertEqual(report.tables[0].columns[-1].values, [1, 2, None])
 
     @skip_if_data_dir_not_present
     def test_large_dataset(self):
