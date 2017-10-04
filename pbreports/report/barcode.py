@@ -371,6 +371,11 @@ def get_subread_sets(reads_file):
         subreads = [_to_abs_path(dir_name, f.path)
                     for u,f in datastore.files.iteritems()
                     if f.file_type_id == FileTypes.DS_SUBREADS.file_type_id]
+        if len(subreads) == 0:
+            raise ValueError("No SubreadSets containing barcoded reads were "+
+                             "present in the input.  This could mean that "+
+                             "demultiplexing was run with incorrect inputs "+
+                             "or an overly restrictive minimum barcode score.")
         return subreads
     else:
         return [reads_file]

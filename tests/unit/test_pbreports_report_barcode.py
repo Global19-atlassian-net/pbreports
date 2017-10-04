@@ -241,6 +241,13 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertIsNotNone(s)
         log.info(pformat(s))
 
+    def test_failure_no_inputs(self):
+        ds = DataStore([])
+        ds_path = tempfile.NamedTemporaryFile(suffix=".datastore.json").name
+        ds.write_json(ds_path)
+        with self.assertRaises(ValueError) as err:
+            report = run_to_report(ds_path, self.barcodes)
+
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.barcode"
