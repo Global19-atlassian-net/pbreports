@@ -24,8 +24,7 @@ log = logging.getLogger(__name__)
 
 __version__ = '0.4'
 
-__all__ = ['make_polished_assembly_report', 'ContigInfo',
-           'get_parser']
+__all__ = ['make_polished_assembly_report', 'ContigInfo']
 
 
 class Constants(object):
@@ -187,7 +186,7 @@ def get_esize(read_lengths):
         return 0.0
     else:
         sum1 = sum(read_lengths)
-        sum2 = sum(r*r for r in read_lengths)
+        sum2 = sum(r * r for r in read_lengths)
         return float(sum2) / float(sum1)
 
 

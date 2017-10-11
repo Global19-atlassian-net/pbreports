@@ -239,7 +239,7 @@ class ReadStats(object):
             if not self.reportAccuracy:
                 if self.n == 0:
                     return '0,0.0,0.0,0'
-                return '%d,%.2f,%.2f,%.0f' % (self.n, self.zscore, self.accuray, self.length)
+                return '%d,%.2f,%.2f,%.0f' % (self.n, self.zscore, self.accuracy, self.length)
 
             if self.n == 0:
                 return '0,0.0,0.0,0.0,0.0,0.0,0'

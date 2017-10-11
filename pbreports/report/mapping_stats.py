@@ -148,7 +148,7 @@ class AttributeAble(object):
     """
     @property
     def attribute(self):
-        raise NotImplemented
+        raise NotImplementedError("Must be implemented in subclasses")
 
 
 class _BaseTotalAggregator(BaseAggregator, AttributeAble):
@@ -173,7 +173,7 @@ class _BaseTotalAggregator(BaseAggregator, AttributeAble):
     def __add__(self, other):
         if isinstance(other, self.__class__):
             total = self.value + other.value
-            return self.__class__(total=total)
+            return self.__class__(value=total)
         else:
             _d = dict(s=type(self), o=type(other))
             raise TypeError("Incompatible types. {s} {o}".format(**_d))
@@ -250,7 +250,7 @@ class _BaseHistogram(BaseAggregator):
 
     def apply(self, npa):
         """This will be readlengths"""
-        raise NotImplemented
+        raise NotImplementedError("Must be implemented in subclasses")
 
     def __repr__(self):
         x = self.dx * self.nbins
@@ -262,7 +262,7 @@ class _BaseHistogram(BaseAggregator):
         return "<{k} dx:{d} nbins:{n} min:{i} max:{x} >".format(**_d)
 
     def __add__(self, other):
-        raise NotImplemented
+        raise NotImplementedError("Must be implemented in subclasses")
 
 
 # Read Aggregator Classes

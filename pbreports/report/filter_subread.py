@@ -133,7 +133,7 @@ class _BaseHistogram(BaseAggregator):
 
     def apply(self, record):
         """This will be readlengths"""
-        raise NotImplemented
+        raise NotImplementedError("Not implemented")
 
     def __repr__(self):
         x = self.dx * self.nbins
