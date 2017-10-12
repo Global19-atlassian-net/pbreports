@@ -282,5 +282,7 @@ class TestBarcodeReport(unittest.TestCase):
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.barcode"
-    INPUT_FILES = [_make_datastore(pbtestdata.get_file("barcoded-subreadset")),
-                   pbtestdata.get_file("barcodeset")]
+    INPUT_FILES = [
+        _make_datastore(pbtestdata.get_file("barcoded-subreadset")),
+        pbtestdata.get_file("barcoded-subreadset"),
+        pbtestdata.get_file("barcodeset")]
