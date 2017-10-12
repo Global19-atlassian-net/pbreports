@@ -54,6 +54,16 @@ class TestBarcodeReport(unittest.TestCase):
             self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
             self.assertEqual([r.n_subreads for r in table], [1,1,1])
 
+    @skip_if_data_dir_not_present
+    def test_get_unbarcoded_reads_info(self):
+        SUBREADS = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/barcode/lima/file.datastore.json"
+        SUBREADS_IN = "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_micro/m54008_160219_003234_micro_split.subreadset.xml"
+        ri = list(get_unbarcoded_reads_info(SUBREADS_IN, SUBREADS))
+        self.assertEqual(len(ri), 1)
+        self.assertEqual(ri[0].n_subreads, 2)
+        self.assertEqual(ri[0].idx, "None")
+        self.assertEqual(ri[0].label, "Not Barcoded")
+
     def _get_synthetic_read_info(self):
         return [ # totally synthetic data
             # label nbases qmax srl_max bq
@@ -176,7 +186,7 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(len(report.tables[0].columns[0].values), 1)
 
     def test_run_to_report(self):
-        report = run_to_report(self.subreads, self.barcodes)
+        report = run_to_report(self.subreads, self.barcodes, self.subreads)
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
@@ -187,7 +197,9 @@ class TestBarcodeReport(unittest.TestCase):
             'min_reads': 1,
             'mean_reads': 1,
             'n_barcodes': 2,
-            'max_reads': 1
+            'max_reads': 1,
+            'n_barcoded_reads': 2,
+            'n_unbarcoded_reads': 1
         })
         self.assertEqual(report.tables[0].columns[2].values, [
                          'lbc1--lbc1', 'lbc3--lbc3', 'Not Barcoded'])
@@ -200,7 +212,8 @@ class TestBarcodeReport(unittest.TestCase):
     def test_large_dataset(self):
         SUBREADS = "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_tiny_barcoded/m54008_160219_003234.tiny.subreadset.xml"
         BARCODES = "/pbi/dept/secondary/siv/barcodes/Sequel_RSII_384_barcodes_v1/Sequel_RSII_384_barcodes_v1.barcodeset.xml"
-        report = run_to_report(SUBREADS, BARCODES)
+        SUBREADS_IN = "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_tiny/m54008_160219_003234_tiny.subreadset.xml"
+        report = run_to_report(SUBREADS, BARCODES, SUBREADS_IN)
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
@@ -211,7 +224,9 @@ class TestBarcodeReport(unittest.TestCase):
             'min_reads': 989,
             'mean_reads': 1065,
             'n_barcodes': 3,
-            'max_reads': 1116
+            'max_reads': 1116,
+            'n_barcoded_reads': 3196,
+            'n_unbarcoded_reads': 0
         })
         self.assertEqual(report.tables[0].columns[1].values,
                          ["0--0", "1--1", "2--2"])
@@ -226,8 +241,9 @@ class TestBarcodeReport(unittest.TestCase):
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
         json_report_file_name = temp_file.name
         temp_file.close()
-        cmd = "{e} --debug {b} {ba} {r}".format(e=exe,
+        cmd = "{e} --debug {b} {i} {ba} {r}".format(e=exe,
                                                 b=self.subreads,
+                                                i=self.subreads,
                                                 ba=self.barcodes,
                                                 r=json_report_file_name)
         log.info("Running cmd {c}".format(c=cmd))
@@ -246,7 +262,22 @@ class TestBarcodeReport(unittest.TestCase):
         ds_path = tempfile.NamedTemporaryFile(suffix=".datastore.json").name
         ds.write_json(ds_path)
         with self.assertRaises(ValueError) as err:
-            report = run_to_report(ds_path, self.barcodes)
+            report = run_to_report(ds_path, self.barcodes, self.subreads)
+
+    @skip_if_data_dir_not_present
+    def test_lima_output(self):
+        SUBREADS = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/barcode/lima/file.datastore.json"
+        BARCODES = "/pbi/dept/secondary/siv/barcodes/RSII_3_barcodes/RSII_3_barcodes.barcodeset.xml"
+        SUBREADS_IN = "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_micro/m54008_160219_003234_micro_split.subreadset.xml"
+        report = run_to_report(SUBREADS, BARCODES, SUBREADS_IN)
+        validate_report_complete(self, report)
+        d = report.to_dict()
+        self.assertIsNotNone(d)
+        attr = {a.id:a.value for a in report.attributes}
+        self.assertEqual(attr['n_barcodes'], 3)
+        self.assertEqual(report.tables[0].columns[2].values,
+                         ['lbc1--lbc1', 'lbc2--lbc2', 'lbc3--lbc3', 'Not Barcoded'])
+        self.assertEqual(report.tables[0].columns[3].values, [2, 2, 1, 1])
 
 
 class TestToolContract(pbcommand.testkit.PbTestApp):
