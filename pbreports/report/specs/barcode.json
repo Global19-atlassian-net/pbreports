@@ -12,6 +12,20 @@
             "name": "Unique Barcodes"
         },
         {
+            "description": "Number of barcoded reads",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "n_barcoded_reads",
+            "name": "Barcoded Reads"
+        },
+        {
+            "description": "Number of un-barcoded reads",
+            "type": "int",
+            "format": "{:,d}",
+            "id": "n_unbarcoded_reads",
+            "name": "Unbarcoded Reads"
+        },
+        {
             "description": "Mean reads per barcode",
             "type": "int",
             "format": "{:,d}",

@@ -24,7 +24,7 @@ from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '2.0'
+__version__ = '2.1'
 
 spec = load_spec("barcode")
 
@@ -40,6 +40,8 @@ class Constants(object):
     A_MIN_READS = "min_reads"
     A_MEAN_RL = "mean_read_length"
     A_MEAN_MAX_SRL = "mean_longest_subread_length"
+    A_NREADS_BARCODED = "n_barcoded_reads"
+    A_NREADS_UNBARCODED = "n_unbarcoded_reads"
 
     C_BIOSAMPLE = "biosample"
     C_IDX = "barcode_index"
@@ -392,15 +394,22 @@ def get_biosample_dict(reads):
         ss = get_subread_set(subreadset)
         try:
             biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
+        except IndexError:
+            biosample = Constants.BIOSAMPLE_NONE
+            log.warn("No biosample info found, using %s", biosample)
         except Exception as e:
             log.error(e)
             biosample = Constants.BIOSAMPLE_NONE
         try:
             barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
-            biosamples[barcode] = biosample
+        except IndexError:
+            pass
         except Exception as e:
-           log.error(e)
+            log.error(e)
+        else:
+            biosamples[barcode] = biosample
     return biosamples
+
 
 def iter_reads_by_barcode(reads, barcodes):
     """
@@ -449,6 +458,34 @@ def iter_reads_by_barcode(reads, barcodes):
                     yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
 
 
+def get_unbarcoded_reads_info(subreads_in, subreads_bc):
+    ds_in = SubreadSet(subreads_in)
+    ds_bc = get_subread_set(subreads_bc)
+    barcoded_zmws = set()
+    for rr in ds_bc.resourceReaders():
+        for zmw, qId in zip(rr.pbi.holeNumber, rr.pbi.qId):
+            movie = rr.readGroupInfo(qId).MovieName
+            barcoded_zmws.add((movie, zmw))
+    nonbarcoded_subreads_by_zmw = defaultdict(list)
+    for rr in ds_in.resourceReaders():
+        for i, (zmw, qId) in enumerate(zip(rr.pbi.holeNumber, rr.pbi.qId)):
+            movie = rr.readGroupInfo(qId).MovieName
+            if (movie, zmw) in barcoded_zmws:
+                continue
+            else:
+                nonbarcoded_subreads_by_zmw[(movie, zmw)].append((rr, i))
+    for (movie, zmw) in sorted(nonbarcoded_subreads_by_zmw.keys()):
+        qlen = 0
+        qmax = srl_max = 0
+        for rr, i_subread in nonbarcoded_subreads_by_zmw[(movie, zmw)]:
+            srl = rr.pbi.qEnd[i_subread] - rr.pbi.qStart[i_subread]
+            qlen += srl
+            qmax = max(qmax, rr.pbi.qEnd[i_subread])
+            srl_max = max(srl_max, srl)
+        bq = [0] * len(nonbarcoded_subreads_by_zmw[(movie, zmw)])
+        yield ReadInfo(Constants.LABEL_NONE, qlen, qmax, srl_max, bq, (-1,-1))
+
+
 def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
@@ -491,6 +528,7 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
             k += 1
             rank[bc_group.label] = k
     n_barcodes = len(labels_bc)
+    n_barcoded_reads = n_unbarcoded_reads = 0
     for label in labels:
         row = bc_groups[label]
         table.add_data_by_column_id(Constants.C_BIOSAMPLE, biosamples.get(label, Constants.BIOSAMPLE_NONE))
@@ -504,9 +542,15 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
         table.add_data_by_column_id(Constants.C_SRL, row.srl_max)
         table.add_data_by_column_id(Constants.C_BCQUAL, row.mean_bcqual())
         table.add_data_by_column_id(Constants.C_RANK, rank.get(label, None))
+        if label == Constants.LABEL_NONE:
+            n_unbarcoded_reads += row.n_reads
+        else:
+            n_barcoded_reads += row.n_reads
 
     attributes = [
-        Attribute(Constants.A_NBARCODES, value=n_barcodes)
+        Attribute(Constants.A_NBARCODES, value=n_barcodes),
+        Attribute(Constants.A_NREADS_BARCODED, value=n_barcoded_reads),
+        Attribute(Constants.A_NREADS_UNBARCODED, value=n_unbarcoded_reads)
     ]
     if n_barcodes > 0:
         n_reads_all = [bc_groups[k].n_reads for k in labels_bc]
@@ -542,13 +586,16 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     return spec.apply_view(report)
 
 
-def run_to_report(reads, barcodes, dataset_uuids=(), base_dir=None):
+def run_to_report(reads, barcodes, subreads_in,
+                  dataset_uuids=(), base_dir=None):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
     biosamples = get_biosample_dict(reads)
+    read_info = list(iter_reads_by_barcode(reads, barcodes)) + \
+                list(get_unbarcoded_reads_info(subreads_in, reads))
     return make_report(biosamples=biosamples,
-        read_info=iter_reads_by_barcode(reads, barcodes),
+        read_info=read_info,
         dataset_uuids=dataset_uuids,
         base_dir=base_dir)
 
@@ -556,7 +603,7 @@ def run_to_report(reads, barcodes, dataset_uuids=(), base_dir=None):
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    report = run_to_report(args.subreads, args.barcodes,
+    report = run_to_report(args.subreads_bc, args.barcodes, args.subreads_in,
                            base_dir=op.dirname(args.report_json))
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
@@ -567,11 +614,12 @@ def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     dataset_uuids = [
-        BarcodeSet(rtc.task.input_files[1]).uuid
+        BarcodeSet(rtc.task.input_files[2]).uuid
     ] + [SubreadSet(f).uuid for f in get_subread_sets(rtc.task.input_files[0])]
     report = run_to_report(
         reads=rtc.task.input_files[0],
-        barcodes=rtc.task.input_files[1],
+        barcodes=rtc.task.input_files[2],
+        subreads_in=rtc.task.input_files[1],
         dataset_uuids=dataset_uuids,
         base_dir=op.dirname(rtc.task.output_files[0]))
     log.debug(pformat(report.to_dict()))
@@ -587,9 +635,12 @@ def get_parser():
         name=Constants.TOOL_NAME,
         description=__doc__,
         driver_exe=Constants.DRIVER_EXE)
-    p.add_input_file_type(FileTypes.DATASTORE, "subreads",
+    p.add_input_file_type(FileTypes.DATASTORE, "subreads_bc",
                           name="JSON Datastore or SubreadSet",
-                          description="Datastore of SubreadSet files")
+                          description="Datastore of barcoded SubreadSet files")
+    p.add_input_file_type(FileTypes.DS_SUBREADS, "subreads_in",
+                          name="Input SubreadSet",
+                          description="Input SubreadSet (without barcodes)")
     p.add_input_file_type(FileTypes.DS_BARCODE, "barcodes",
                           name="BarcodeSet",
                           description="Barcode DataSet XML")
