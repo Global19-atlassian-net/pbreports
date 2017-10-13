@@ -614,8 +614,11 @@ def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     dataset_uuids = [
-        BarcodeSet(rtc.task.input_files[2]).uuid
-    ] + [SubreadSet(f).uuid for f in get_subread_sets(rtc.task.input_files[0])]
+        BarcodeSet(rtc.task.input_files[2]).uuid,
+        SubreadSet(rtc.task.input_files[1]).uuid
+    ] + [
+        SubreadSet(f).uuid for f in get_subread_sets(rtc.task.input_files[0])
+    ]
     report = run_to_report(
         reads=rtc.task.input_files[0],
         barcodes=rtc.task.input_files[2],
