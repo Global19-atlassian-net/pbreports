@@ -114,9 +114,9 @@ class TestStructuralVariantsRpt(unittest.TestCase):
 
         validate_report_complete(self, rpt)
 
-    def test_make_sv_report_table_empty_plots(self):
+    def test_make_sv_report_table_empty_data(self):
 
-        table = op.join(_DATA_DIR, 'svann.json')
+        table = op.join(_DATA_DIR, 'svann_empty.json')
         plot = op.join(_DATA_DIR, 'svlengths_empty.json')
 
         rpt = to_report(table, plot, self._output_dir)
