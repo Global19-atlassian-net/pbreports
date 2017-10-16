@@ -24,7 +24,7 @@ from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '2.1'
+__version__ = '2.1.1'
 
 spec = load_spec("barcode")
 
@@ -108,7 +108,7 @@ def make_2d_histogram(x, y, n_bins, ylabel):
         ax.spines[spine].set_visible(False)
     fig.colorbar(im, ax=ax, fraction=0.05, pad=0.01)
     fig.tight_layout()
-    return fig
+    return fig, ax
 
 
 def make_readlength_hist2d(bc_groups, base_dir):
@@ -121,9 +121,9 @@ def make_readlength_hist2d(bc_groups, base_dir):
         x.extend([i] * group.n_reads)
         y.extend(group.readlengths)
     x_bins = max(len(bc_groups), 1)
-    fig = make_2d_histogram(x, y,
-                            n_bins=[x_bins, Constants.RL_BINS],
-                            ylabel="Read Length")
+    fig, ax = make_2d_histogram(x, y,
+                                n_bins=[x_bins, Constants.RL_BINS],
+                                ylabel="Read Length")
     img_name = "hist2d_readlength.png"
     thumb_name = "hist2d_readlength_thumb.png"
     fig.savefig(op.join(base_dir, img_name), dpi=72)
@@ -142,9 +142,10 @@ def make_bcqual_hist2d(bc_groups, base_dir):
         x.extend([i] * group.n_subreads)
         y.extend(group.bqs)
     x_bins = max(1, len(bc_groups))
-    fig = make_2d_histogram(x, y,
-                            n_bins=[x_bins, Constants.BQ_BINS],
-                            ylabel="Read Barcode Quality Score")
+    fig, ax = make_2d_histogram(x, y,
+                                n_bins=[x_bins, Constants.BQ_BINS],
+                                ylabel="Read Barcode Quality Score")
+    ax.axhline(26, color='black', linestyle='--')
     img_name = "hist2d_bcqual.png"
     thumb_name = "hist2d_bcqual_thumb.png"
     fig.savefig(op.join(base_dir, img_name), dpi=72)
@@ -218,6 +219,7 @@ def make_bcqual_histogram(bc_groups, base_dir):
         axis_labels=["Barcode Quality Score", "Number of Barcoded Subreads"],
         nbins=50,
         barcolor=get_blue(3))
+    ax.axvline(26, color='r')
     img_name = "bcqual_histogram.png"
     thumb_name = "bcqual_histogram_thumb.png"
     fig.savefig(op.join(base_dir, img_name), dpi=72)
