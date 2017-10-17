@@ -106,7 +106,8 @@ def make_2d_histogram(x, y, n_bins, ylabel):
     ax.set_xlabel("Barcode Rank Order By Read Count")
     for spine in ["left", "right", "top", "bottom"]:
         ax.spines[spine].set_visible(False)
-    fig.colorbar(im, ax=ax, fraction=0.05, pad=0.01)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.05, pad=0.01)
+    cbar.ax.set_ylabel("Read Count")
     fig.tight_layout()
     return fig, ax
 
@@ -264,15 +265,7 @@ def make_plots(bc_groups, base_dir):
     plot_rl = make_readlength_histogram(groups, base_dir)
     log.info("Generating barcode quality score plots...")
     plot_bq = make_bcqual_histogram(groups, base_dir)
-    plot_qq = None
-    try:  # FIXME workaround until DEP-414 is fixed
-        plot_qq = make_bq_qq_plot(groups, base_dir)
-    except Exception as e:
-        log.error(str(e))
-        warnings.warn("Q-Q plot broken: {e}".format(e=str(e)))
     bq_plots = [plot_bq]
-    if plot_qq is not None:
-        bq_plots.append(plot_qq)
     log.info("Generating 2D histograms...")
     plot_rl2d = make_readlength_hist2d(groups, base_dir)
     plot_bq = make_bcqual_hist2d(groups, base_dir)

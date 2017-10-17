@@ -136,6 +136,7 @@ class TestBarcodeReport(unittest.TestCase):
         p = make_bcqual_histogram(bc_groups, self._tmp_dir)
         self.assertTrue(op.isfile(p.image))
 
+    @unittest.skip("DISABLED")
     def test_make_bq_qq_plot(self):
         try:
             import scipy.stats
