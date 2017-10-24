@@ -346,7 +346,7 @@ class N50Aggreggator(BaseAggregator, AttributeAble):
 
     def apply(self, npa):
         for value in npa:
-            if int(value) > self.bins.size:
+            if int(value) >= self.bins.size:
                 self.bins.resize(int(value) + 1)
             self.bins[int(value)] += 1
 
@@ -363,7 +363,7 @@ class SubreadN50Aggregator(BaseAggregator, AttributeAble):
 
     def apply(self, crunched_npa):
         for value in crunched_npa['Length']:
-            if int(value) > self.bins.size:
+            if int(value) >= self.bins.size:
                 self.bins.resize(int(value) + 1)
             self.bins[int(value)] += 1
 
