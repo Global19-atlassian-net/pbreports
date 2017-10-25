@@ -15,8 +15,8 @@ log = logging.getLogger(__name__)
 
 def get_control_subreadset():
     ss = ('/pbi/dept/secondary/siv/testdata/SA3-Sequel/lambda/'
-          '314/3140099/r54099_20160830_222805/3_C01_control/'
-          'm54099_160831_134818.subreadset.xml')
+          '328/3280096/r54007_20171019_221349/1_A01/'
+          'm54007_171019_222153.subreadset.xml')
     return ss
 
 
@@ -38,10 +38,11 @@ class TestControlRpt(unittest.TestCase):
         rpt = to_report(ss, self._output_dir)
         d = json.loads(rpt.to_json())
 
-        self.assertEqual(10760, d['attributes'][0]['value'])
-        self.assertEqual(9554, np.floor(d['attributes'][1]['value']))
-        self.assertAlmostEqual(0.819919, d['attributes'][
+        self.assertEqual(8359, d['attributes'][0]['value'])
+        self.assertEqual(26708, np.floor(d['attributes'][1]['value']))
+        self.assertAlmostEqual(0.859876, d['attributes'][
                                2]['value'], delta=.0003)
+        self.assertEqual(0.87, d['attributes'][3]['value'])
 
         self.assertTrue(os.path.exists(os.path.join(self._output_dir,
                                                     'concordance_plot.png')))

@@ -97,15 +97,18 @@ def to_sample_table(table_json):
                Constants.C_HOM, Constants.C_HET, Constants.C_TOTAL]
     sample_table = table_json[Constants.SAMPLE_KEY]
     t = []
-    for row in sample_table:
-        r = [row[0]]
-        r.append(_my_combine(row[1], row[2]))
-        r.append(_my_combine(row[3], row[4]))
-        r.append(row[5])
-        r.append(row[6])
-        r.append(_my_combine(row[7], row[8]))
-        t.append(r)
-    table = zip(*t)
+    if len(sample_table) == 0:
+        table = [[], [], [], [], [], []]
+    else:
+        for row in sample_table:
+            r = [row[0]]
+            r.append(_my_combine(row[1], row[2]))
+            r.append(_my_combine(row[3], row[4]))
+            r.append(row[5])
+            r.append(row[6])
+            r.append(_my_combine(row[7], row[8]))
+            t.append(r)
+        table = zip(*t)
     columns = []
     for i, col_id in enumerate(col_ids):
         columns.append(Column(col_id, values=table[i]))

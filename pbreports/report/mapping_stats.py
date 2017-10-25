@@ -326,7 +326,7 @@ class ReadLengthHistogram(_BaseHistogram):
         for value in npa:
             i = int(math.ceil(value / self.dx))
             # add
-            if i > self.bins.size:
+            if i >= self.bins.size:
                 self.bins.resize(i + 1)
             self.bins[i] += 1
 
@@ -346,7 +346,7 @@ class N50Aggreggator(BaseAggregator, AttributeAble):
 
     def apply(self, npa):
         for value in npa:
-            if int(value) > self.bins.size:
+            if int(value) >= self.bins.size:
                 self.bins.resize(int(value) + 1)
             self.bins[int(value)] += 1
 
@@ -363,7 +363,7 @@ class SubreadN50Aggregator(BaseAggregator, AttributeAble):
 
     def apply(self, crunched_npa):
         for value in crunched_npa['Length']:
-            if int(value) > self.bins.size:
+            if int(value) >= self.bins.size:
                 self.bins.resize(int(value) + 1)
             self.bins[int(value)] += 1
 
@@ -480,7 +480,7 @@ class SubReadlengthHistogram(_BaseHistogram):
         for value in crunched_npa['Length']:
             i = int(math.ceil(value / self.dx))
             # add
-            if i > self.bins.size:
+            if i >= self.bins.size:
                 self.bins.resize(i + 1)
             self.bins[i] += 1
 
@@ -501,7 +501,7 @@ class SubReadConcordanceHistogram(_BaseHistogram):
                 continue
             # add
             try:
-                if i > self.bins.size:
+                if i >= self.bins.size:
                     self.bins.resize(i + 1)
                 self.bins[i] += 1
             except IndexError as e:
