@@ -48,20 +48,29 @@ def to_nreads(readlen_dist):
 
 
 def to_readlength_mean(readlen_dist):
-    readlength_mean = int(readlen_dist.sampleMean)
-    attribute = Attribute(Constants.A_READLENGTH_MEAN, readlength_mean)
+    if sum(readlen_dist.bins) == 0:
+        attribute = Attribute(Constants.A_READLENGTH_MEAN, None)
+    else:
+        readlength_mean = int(readlen_dist.sampleMean)
+        attribute = Attribute(Constants.A_READLENGTH_MEAN, readlength_mean)
     return attribute
 
 
 def to_concordance_mean(readqual_dist):
-    concordance_mean = readqual_dist.sampleMean
-    attribute = Attribute(Constants.A_CONCORDANCE_MEAN, concordance_mean)
+    if sum(readqual_dist.bins) == 0:
+        attribute = Attribute(Constants.A_CONCORDANCE_MEAN, None)
+    else:
+        concordance_mean = readqual_dist.sampleMean
+        attribute = Attribute(Constants.A_CONCORDANCE_MEAN, concordance_mean)
     return attribute
 
 
 def to_concordance_mode(readqual_dist):
-    concordance_mode = readqual_dist.sampleMode
-    attribute = Attribute(Constants.A_CONCORDANCE_MODE, concordance_mode)
+    if sum(readqual_dist.bins) == 0:
+        attribute = Attribute(Constants.A_CONCORDANCE_MODE, None)
+    else:
+        concordance_mode = readqual_dist.sampleMode
+        attribute = Attribute(Constants.A_CONCORDANCE_MODE, concordance_mode)
     return attribute
 
 
