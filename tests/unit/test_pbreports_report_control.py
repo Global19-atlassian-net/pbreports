@@ -20,6 +20,13 @@ def get_control_subreadset():
     return ss
 
 
+def get_empty_control_subreadset():
+    ss = ('/pbi/dept/secondary/siv/testdata/SA3-Sequel/ecoli/'
+          '318/3180211/r54019_20170314_001820/1_A01_empty_control/'
+          'm54019_170314_003016.subreadset.xml')
+    return ss
+
+
 class TestControlRpt(unittest.TestCase):
 
     def setUp(self):
@@ -53,3 +60,25 @@ class TestControlRpt(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self._output_dir,
                                                     'readlength_plot_thumb.png')))
         validate_report_complete(self, rpt)
+
+    @skip_if_data_dir_not_present
+    def test_make_empty_control_report(self):
+
+        ss = get_empty_control_subreadset()
+
+        rpt = to_report(ss, self._output_dir)
+        d = json.loads(rpt.to_json())
+
+        self.assertEqual(0, d['attributes'][0]['value'])
+        self.assertEqual(None, d['attributes'][1]['value'])
+        self.assertEqual(None, d['attributes'][2]['value'])
+        self.assertEqual(None, d['attributes'][3]['value'])
+
+        self.assertTrue(os.path.exists(os.path.join(self._output_dir,
+                                                    'concordance_plot.png')))
+        self.assertTrue(os.path.exists(os.path.join(self._output_dir,
+                                                    'concordance_plot_thumb.png')))
+        self.assertTrue(os.path.exists(os.path.join(self._output_dir,
+                                                    'readlength_plot.png')))
+        self.assertTrue(os.path.exists(os.path.join(self._output_dir,
+                                                    'readlength_plot_thumb.png')))
