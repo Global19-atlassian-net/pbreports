@@ -18,6 +18,8 @@ from pbreports.util import (_cont_dist_shaper, dist_shaper,
                             arg_runner_subreads_report,
                             rtc_runner_subreads_report)
 
+from matplotlib.ticker import MaxNLocator
+
 __version__ = '0.1.0'
 
 
@@ -107,10 +109,12 @@ def to_readlen_plotgroup(readlen_dist, output_dir):
     edges = [float(bn) * bin_width for bn in xrange(nbins)]
     edges, heights, bin_width = reshape(readlen_dist, edges, heights)
     fig, ax = get_fig_axes_lpr()
-    ax.bar(edges, heights, color=get_green(0),
-           edgecolor=get_green(0), width=(bin_width * 0.75))
+    if sum(readlen_dist.bins) > 0:
+        ax.bar(edges, heights, color=get_green(0),
+               edgecolor=get_green(0), width=(bin_width * 0.75))
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     png_fn = os.path.join(
         output_dir, "{p}.png".format(p=Constants.P_READLENGTH))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
@@ -134,10 +138,12 @@ def to_concordance_plotgroup(readqual_dist, output_dir):
     edges = [float(bn) / float(nbins) for bn in xrange(nbins)]
     bin_width = readqual_dist.binWidth
     fig, ax = get_fig_axes_lpr()
-    ax.bar(edges, heights, color=get_green(0),
-           edgecolor=get_green(0), width=(bin_width * 0.75))
+    if sum(readqual_dist.bins) > 0:
+        ax.bar(edges, heights, color=get_green(0),
+               edgecolor=get_green(0), width=(bin_width * 0.75))
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     png_fn = os.path.join(
         output_dir, "{p}.png".format(p=Constants.P_CONCORDANCE))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
