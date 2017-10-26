@@ -18,6 +18,8 @@ from pbreports.util import (_cont_dist_shaper, dist_shaper,
                             arg_runner_subreads_report,
                             rtc_runner_subreads_report)
 
+from matplotlib.ticker import MaxNLocator
+
 __version__ = '0.1.0'
 
 
@@ -48,20 +50,29 @@ def to_nreads(readlen_dist):
 
 
 def to_readlength_mean(readlen_dist):
-    readlength_mean = int(readlen_dist.sampleMean)
-    attribute = Attribute(Constants.A_READLENGTH_MEAN, readlength_mean)
+    if sum(readlen_dist.bins) == 0:
+        attribute = Attribute(Constants.A_READLENGTH_MEAN, None)
+    else:
+        readlength_mean = int(readlen_dist.sampleMean)
+        attribute = Attribute(Constants.A_READLENGTH_MEAN, readlength_mean)
     return attribute
 
 
 def to_concordance_mean(readqual_dist):
-    concordance_mean = readqual_dist.sampleMean
-    attribute = Attribute(Constants.A_CONCORDANCE_MEAN, concordance_mean)
+    if sum(readqual_dist.bins) == 0:
+        attribute = Attribute(Constants.A_CONCORDANCE_MEAN, None)
+    else:
+        concordance_mean = readqual_dist.sampleMean
+        attribute = Attribute(Constants.A_CONCORDANCE_MEAN, concordance_mean)
     return attribute
 
 
 def to_concordance_mode(readqual_dist):
-    concordance_mode = readqual_dist.sampleMode
-    attribute = Attribute(Constants.A_CONCORDANCE_MODE, concordance_mode)
+    if sum(readqual_dist.bins) == 0:
+        attribute = Attribute(Constants.A_CONCORDANCE_MODE, None)
+    else:
+        concordance_mode = readqual_dist.sampleMode
+        attribute = Attribute(Constants.A_CONCORDANCE_MODE, concordance_mode)
     return attribute
 
 
@@ -79,7 +90,6 @@ def reshape(readlen_dist, edges, heights):
         [(heights, edges)], nbins=40, trim_excess=False))
     readlen_dist = lenDistShaper(readlen_dist)
     nbins = readlen_dist.numBins
-    bin_counts = readlen_dist['BinCounts']
     heights = readlen_dist.bins
     bin_width = readlen_dist.binWidth
     edges = [float(bn) * bin_width for bn in xrange(nbins)]
@@ -94,16 +104,17 @@ def to_readlen_plotgroup(readlen_dist, output_dir):
     y_label = get_plot_ylabel(
         spec, Constants.PG_READLENGTH, Constants.P_READLENGTH)
     nbins = readlen_dist.numBins
-    bin_counts = readlen_dist['BinCounts']
     heights = readlen_dist.bins
     bin_width = readlen_dist.binWidth
     edges = [float(bn) * bin_width for bn in xrange(nbins)]
     edges, heights, bin_width = reshape(readlen_dist, edges, heights)
     fig, ax = get_fig_axes_lpr()
-    ax.bar(edges, heights, color=get_green(0),
-           edgecolor=get_green(0), width=(bin_width * 0.75))
+    if sum(readlen_dist.bins) > 0:
+        ax.bar(edges, heights, color=get_green(0),
+               edgecolor=get_green(0), width=(bin_width * 0.75))
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     png_fn = os.path.join(
         output_dir, "{p}.png".format(p=Constants.P_READLENGTH))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
@@ -123,15 +134,16 @@ def to_concordance_plotgroup(readqual_dist, output_dir):
     y_label = get_plot_ylabel(
         spec, Constants.PG_CONCORDANCE, Constants.P_CONCORDANCE)
     nbins = readqual_dist.numBins
-    bin_counts = readqual_dist['BinCounts']
     heights = readqual_dist.bins
     edges = [float(bn) / float(nbins) for bn in xrange(nbins)]
     bin_width = readqual_dist.binWidth
     fig, ax = get_fig_axes_lpr()
-    ax.bar(edges, heights, color=get_green(0),
-           edgecolor=get_green(0), width=(bin_width * 0.75))
+    if sum(readqual_dist.bins) > 0:
+        ax.bar(edges, heights, color=get_green(0),
+               edgecolor=get_green(0), width=(bin_width * 0.75))
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     png_fn = os.path.join(
         output_dir, "{p}.png".format(p=Constants.P_CONCORDANCE))
     png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
