@@ -33,7 +33,7 @@ from pbreports.util import accuracy_as_phred_qv
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '0.44'
+__version__ = '0.5.0'
 
 spec = load_spec("ccs")
 
@@ -359,11 +359,12 @@ def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolo
 
     return plot
 
-# These functions create signatures (data, axis_labels, nbins, barcolor
+# These functions create signatures (data, axis_labels, nbins, barcolor)
 _custom_read_length_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Read Length", 50)
+    _custom_histogram_with_cdf, "Mb > Read Length", 1000000)
+# FIXME the fallback label is incorrect!
 _custom_read_accuracy_histogram = functools.partial(
-    _custom_histogram_with_cdf, "Mb > Read Score", 100)
+    _custom_histogram_with_cdf, "Mb > Read Score", sys.maxint)
 
 
 # These functions need to generate a function with signature (data,
@@ -372,13 +373,13 @@ create_readlength_plot = functools.partial(
     create_plot, _custom_read_length_histogram, Constants.P_READLENGTH,
     (get_plot_xlabel(spec, Constants.PG_READLENGTH, Constants.P_READLENGTH),
      "Reads", "bp > Read Length"),
-    80, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
+    50, Constants.I_CCS_READ_LENGTH_HIST, get_blue(3))
 
 create_accuracy_plot = functools.partial(
     create_plot, _custom_read_accuracy_histogram, Constants.P_ACCURACY,
     (get_plot_xlabel(spec, Constants.PG_ACCURACY, Constants.P_ACCURACY),
-     "Reads", "bp > Read Score"),
-    80, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
+     "Reads", "reads > Read Score"),
+    100, Constants.I_CCS_READ_ACCURACY_HIST, get_green(3))
 
 create_npasses_plot = functools.partial(
     create_plot, make_histogram, Constants.P_NPASSES,
