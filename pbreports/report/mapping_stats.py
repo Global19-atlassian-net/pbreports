@@ -37,7 +37,7 @@ from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
-__version__ = '4.2.0'
+__version__ = '4.2.1'
 
 SUBREAD_TYPE = 'SubreadType'
 READ_TYPE = 'ReadType'
