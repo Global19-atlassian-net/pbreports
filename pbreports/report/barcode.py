@@ -12,6 +12,8 @@ import logging
 import os.path as op
 import sys
 
+import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
 from pbcommand.cli import pbparser_runner
