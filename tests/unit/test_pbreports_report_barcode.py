@@ -9,6 +9,7 @@ import os.path as op
 import os
 
 from pbcore.util.Process import backticks
+from pbcore.io import SubreadSet, BarcodeSet
 import pbcommand.testkit
 from pbcommand.models import DataStore, DataStoreFile, FileTypes
 
@@ -46,8 +47,13 @@ class TestBarcodeReport(unittest.TestCase):
         os.chdir(self._start_dir)
 
     def test_iter_reads_by_barcode(self):
-        for input_file in [self.subreads, _make_datastore(self.subreads)]:
-            table = sorted(list(iter_reads_by_barcode(input_file, self.barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
+        datasets = [
+            SubreadSet(self.subreads),
+            get_subread_set(_make_datastore(self.subreads))
+        ]
+        barcodes = BarcodeSet(self.barcodes)
+        for ds in datasets:
+            table = sorted(list(iter_reads_by_barcode(ds, barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
             self.assertEqual([r.label for r in table],
                              ["Not Barcoded", "lbc1--lbc1", "lbc3--lbc3"])
             self.assertEqual([r.idx for r in table], ["None", "0--0", "2--2"])
@@ -56,8 +62,8 @@ class TestBarcodeReport(unittest.TestCase):
 
     @skip_if_data_dir_not_present
     def test_get_unbarcoded_reads_info(self):
-        SUBREADS = "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/barcode/lima/file.datastore.json"
-        SUBREADS_IN = "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_micro/m54008_160219_003234_micro_split.subreadset.xml"
+        SUBREADS = get_subread_set("/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/barcode/lima/file.datastore.json")
+        SUBREADS_IN = SubreadSet("/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_micro/m54008_160219_003234_micro_split.subreadset.xml")
         ri = list(get_unbarcoded_reads_info(SUBREADS_IN, SUBREADS))
         self.assertEqual(len(ri), 1)
         self.assertEqual(ri[0].n_subreads, 2)
