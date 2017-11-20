@@ -26,7 +26,7 @@ from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 
 spec = load_spec("barcode")
 
@@ -363,7 +363,7 @@ def _to_abs_path(dir_name, path):
         return os.path.join(dir_name, path)
 
 
-def get_subread_sets(reads_file):
+def _get_subread_sets(reads_file):
     dir_name = os.path.dirname(os.path.abspath(reads_file))
     if reads_file.endswith(".datastore.json"):
         datastore = DataStore.load_from_json(reads_file)
@@ -381,14 +381,16 @@ def get_subread_sets(reads_file):
 
 
 def get_subread_set(reads_file):
-    return SubreadSet(*get_subread_sets(reads_file), strict=True)
+    log.info("Opening all barcoded SubreadSets")
+    return SubreadSet(*_get_subread_sets(reads_file), strict=True)
 
 
-def get_biosample_dict(reads):
+def get_biosample_dict(barcoded_subreads):
     biosamples = {}
-    subreadsets = get_subread_sets(reads)
-    for subreadset in subreadsets:
-        ss = get_subread_set(subreadset)
+    sub_datasets = [barcoded_subreads]
+    if len(barcoded_subreads.subdatasets) > 0:
+        sub_datasets = barcoded_subreads.subdatasets
+    for ss in sub_datasets:
         try:
             biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
         except IndexError:
@@ -408,69 +410,69 @@ def get_biosample_dict(reads):
     return biosamples
 
 
-def iter_reads_by_barcode(reads, barcodes):
+def iter_reads_by_barcode(barcoded_subreadset, barcodes):
     """
     Open a SubreadSet and BarcodeSet and return an iterable of ReadInfo objects
     """
     log.info("Extracting barcoded read info from input datasets...")
-    with get_subread_set(reads) as ds:
-        for er in ds.externalResources:
-            if er.barcodes is not None and er.barcodes != barcodes:
-                raise ValueError("Mismatch between external resource " +
-                                 "barcodes and input BarcodeSet: " +
-                                 "{a} != {b}".format(a=er.barcodes,
-                                                     b=barcodes))
-        assert ds.isIndexed
-        zmws_by_barcode = defaultdict(set)
-        subreads_by_zmw = defaultdict(list)
-        for rr in ds.resourceReaders():
-            for i, (f, r, z, q) in enumerate(zip(rr.pbi.bcForward,
-                                                 rr.pbi.bcReverse,
-                                                 rr.pbi.holeNumber,
-                                                 rr.pbi.qId)):
-                movie = rr.readGroupInfo(q).MovieName
-                zmws_by_barcode[(f, r)].add((movie, z))
-                subreads_by_zmw[(movie, z)].append((rr, i))
-        with BarcodeSet(barcodes) as ds_bc:
-            bc_ids = sorted(zmws_by_barcode.keys())
-            bcs = [bc for bc in ds_bc]
-            for i_bc, (barcode_fw, barcode_rev) in enumerate(bc_ids):
-                if barcode_fw == -1:
-                    barcode_id = Constants.LABEL_NONE
-                else:
-                    barcode_id = "{f}--{r}".format(f=bcs[barcode_fw].id,
-                                                   r=bcs[barcode_rev].id)
-                zmws = sorted(list(zmws_by_barcode[(barcode_fw, barcode_rev)]))
-                for (movie, zmw) in zmws:
-                    qlen = 0
-                    qmax = srl_max = 0
-                    bq = []
-                    for rr, i_subread in subreads_by_zmw[(movie, zmw)]:
-                        srl = rr.pbi.qEnd[i_subread] - rr.pbi.qStart[i_subread]
-                        qlen += srl
-                        qmax = max(qmax, rr.pbi.qEnd[i_subread])
-                        srl_max = max(srl_max, srl)
-                        bq.append(rr.pbi.bcQual[i_subread])
-                    bc_idx = (barcode_fw, barcode_rev)
-                    yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
+    ds = barcoded_subreadset
+    for er in ds.externalResources:
+        if er.barcodes is not None and er.barcodes != barcodes.fileNames[0]:
+            raise ValueError("Mismatch between external resource " +
+                             "barcodes and input BarcodeSet: " +
+                             "{a} != {b}".format(a=er.barcodes,
+                                                 b=barcodes))
+    assert ds.isIndexed
+    zmws_by_barcode = defaultdict(set)
+    subreads_by_zmw = defaultdict(list)
+    for rr in ds.resourceReaders():
+        for i, (f, r, z, q) in enumerate(zip(rr.pbi.bcForward,
+                                             rr.pbi.bcReverse,
+                                             rr.pbi.holeNumber,
+                                             rr.pbi.qId)):
+            movie = rr.readGroupInfo(q).MovieName
+            zmws_by_barcode[(f, r)].add((movie, z))
+            subreads_by_zmw[(movie, z)].append((rr, i))
+    log.info("Combining with BarcodeSet labels...")
+    bc_ids = sorted(zmws_by_barcode.keys())
+    bcs = [bc for bc in barcodes]
+    for i_bc, (barcode_fw, barcode_rev) in enumerate(bc_ids):
+        if barcode_fw == -1:
+            barcode_id = Constants.LABEL_NONE
+        else:
+            barcode_id = "{f}--{r}".format(f=bcs[barcode_fw].id,
+                                           r=bcs[barcode_rev].id)
+        zmws = sorted(list(zmws_by_barcode[(barcode_fw, barcode_rev)]))
+        for (movie, zmw) in zmws:
+            qlen = 0
+            qmax = srl_max = 0
+            bq = []
+            for rr, i_subread in subreads_by_zmw[(movie, zmw)]:
+                srl = rr.pbi.qEnd[i_subread] - rr.pbi.qStart[i_subread]
+                qlen += srl
+                qmax = max(qmax, rr.pbi.qEnd[i_subread])
+                srl_max = max(srl_max, srl)
+                bq.append(rr.pbi.bcQual[i_subread])
+            bc_idx = (barcode_fw, barcode_rev)
+            yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
 
 
 def get_unbarcoded_reads_info(subreads_in, subreads_bc):
-    ds_in = SubreadSet(subreads_in)
-    ds_bc = get_subread_set(subreads_bc)
+    log.info("Identifying non-barcoded reads...")
     barcoded_zmws = set()
-    for rr in ds_bc.resourceReaders():
+    for rr in subreads_bc.resourceReaders():
         for zmw, qId in zip(rr.pbi.holeNumber, rr.pbi.qId):
             movie = rr.readGroupInfo(qId).MovieName
             barcoded_zmws.add((movie, zmw))
     nonbarcoded_subreads_by_zmw = defaultdict(list)
-    for rr in ds_in.resourceReaders():
+    for rr in subreads_in.resourceReaders():
         for i, (zmw, qId) in enumerate(zip(rr.pbi.holeNumber, rr.pbi.qId)):
             movie = rr.readGroupInfo(qId).MovieName
             if (movie, zmw) in barcoded_zmws:
                 continue
             else:
                 nonbarcoded_subreads_by_zmw[(movie, zmw)].append((rr, i))
+    log.info("Collecting metrics for non-barcoded reads...")
     for (movie, zmw) in sorted(nonbarcoded_subreads_by_zmw.keys()):
         qlen = 0
         qmax = srl_max = 0
@@ -487,6 +489,7 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
     """
+    log.info("Creating report files...")
     if base_dir == None:
         base_dir = os.getcwd()
 
@@ -583,14 +586,24 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     return spec.apply_view(report)
 
 
-def run_to_report(reads, barcodes, subreads_in,
-                  dataset_uuids=(), base_dir=None):
+def run_to_report(subreads_bc_file, barcodes_file, subreads_in_file,
+                  base_dir=None):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
-    biosamples = get_biosample_dict(reads)
-    read_info = list(iter_reads_by_barcode(reads, barcodes)) + \
-                list(get_unbarcoded_reads_info(subreads_in, reads))
+    barcoded_subreads = get_subread_set(subreads_bc_file)
+    subreads_in = SubreadSet(subreads_in_file, strict=True)
+    barcodes = BarcodeSet(barcodes_file)
+    ds_bc_uuids = [barcoded_subreads.uuid]
+    if len(barcoded_subreads.subdatasets) > 0:
+        ds_bc_uuids = [ds.uuid for ds in barcoded_subreads.subdatasets]
+    dataset_uuids = [
+        barcodes.uuid,
+        subreads_in.uuid
+    ] + ds_bc_uuids
+    biosamples = get_biosample_dict(barcoded_subreads)
+    read_info = list(iter_reads_by_barcode(barcoded_subreads, barcodes)) + \
+                list(get_unbarcoded_reads_info(subreads_in, barcoded_subreads))
     return make_report(biosamples=biosamples,
         read_info=read_info,
         dataset_uuids=dataset_uuids,
@@ -610,17 +623,10 @@ def args_runner(args):
 def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    dataset_uuids = [
-        BarcodeSet(rtc.task.input_files[2]).uuid,
-        SubreadSet(rtc.task.input_files[1]).uuid
-    ] + [
-        SubreadSet(f).uuid for f in get_subread_sets(rtc.task.input_files[0])
-    ]
     report = run_to_report(
-        reads=rtc.task.input_files[0],
-        barcodes=rtc.task.input_files[2],
-        subreads_in=rtc.task.input_files[1],
-        dataset_uuids=dataset_uuids,
+        subreads_bc_file=rtc.task.input_files[0],
+        barcodes_file=rtc.task.input_files[2],
+        subreads_in_file=rtc.task.input_files[1],
         base_dir=op.dirname(rtc.task.output_files[0]))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
