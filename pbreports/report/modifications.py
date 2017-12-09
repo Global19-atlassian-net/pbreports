@@ -19,6 +19,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 
 import pbreports.plot.helper as PH
+from pbreports.plot.helper import DEFAULT_DPI
 from pbreports.util import Constants as BaseConstants
 from pbreports.io.specs import *
 
@@ -158,7 +159,7 @@ def get_qmod_hist(basemods_h5, output_dir, dpi):
                 thumbnail=os.path.basename(thumbpng))
 
 
-def make_modifications_report(modifications_h5, report, output_dir, dpi=72):
+def make_modifications_report(modifications_h5, report, output_dir, dpi=DEFAULT_DPI):
     """
     Entry point to report generation.
     """

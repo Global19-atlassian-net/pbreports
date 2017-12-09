@@ -16,7 +16,7 @@ from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, get_green,
-                                   save_figure_with_thumbnail)
+                                   save_figure_with_thumbnail, DEFAULT_DPI)
 from pbreports.model import InvalidStatsError
 from pbreports.util import (get_subreads_report_parser,
                             arg_runner_subreads_report,
@@ -69,7 +69,7 @@ def to_hq_hist_plot(hqbasefraction_dist, output_dir):
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_HQ))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=DEFAULT_DPI)
     hq_plot = Plot(Constants.P_HQ,
                    os.path.relpath(png_base, output_dir),
                    title=plot_name, caption=plot_name,
@@ -109,7 +109,7 @@ def to_rl_overlay_plot(numunfilteredbasecalls_dist, readlen_dist, output_dir):
     ax.set_ylabel(y_label)
     ax.legend()
     png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_RRL))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=DEFAULT_DPI)
     rrl_plot = Plot(Constants.P_RRL,
                     os.path.relpath(png_base, output_dir),
                     title=plot_name, caption=plot_name,

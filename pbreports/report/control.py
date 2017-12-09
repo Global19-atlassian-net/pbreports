@@ -10,7 +10,7 @@ from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, get_green,
-                                   save_figure_with_thumbnail)
+                                   save_figure_with_thumbnail, DEFAULT_DPI)
 from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
 from pbreports.util import (_cont_dist_shaper, dist_shaper,
@@ -117,7 +117,7 @@ def to_readlen_plotgroup(readlen_dist, output_dir):
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     png_fn = os.path.join(
         output_dir, "{p}.png".format(p=Constants.P_READLENGTH))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=DEFAULT_DPI)
     readlen_plot = Plot(Constants.P_READLENGTH,
                         os.path.relpath(png_base, output_dir),
                         title=plot_name, caption=plot_name,
@@ -146,7 +146,7 @@ def to_concordance_plotgroup(readqual_dist, output_dir):
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     png_fn = os.path.join(
         output_dir, "{p}.png".format(p=Constants.P_CONCORDANCE))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72)
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=DEFAULT_DPI)
     concordance_plot = Plot(Constants.P_CONCORDANCE,
                             os.path.relpath(png_base, output_dir),
                             title=plot_name, caption=plot_name,

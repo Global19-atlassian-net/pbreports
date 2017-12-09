@@ -51,7 +51,7 @@ from pbcommand.cli import (pacbio_args_runner,
 from pbcommand.utils import setup_log
 from pbcommand.validators import validate_dir, validate_file
 
-from pbreports.plot.helper import get_green
+from pbreports.plot.helper import get_green, DEFAULT_DPI, DEFAULT_THUMB_DPI
 from pbreports.util import compute_n50
 from pbreports.report.streaming_utils import (PlotViewProperties,
                                               to_plot_groups,
@@ -304,7 +304,7 @@ def _to_attributes(nreads, nbases, mean_readlength, n50):
     return attributes
 
 
-def to_report(filtered_csv, output_dir, dpi=72, thumb_dpi=20):
+def to_report(filtered_csv, output_dir, dpi=DEFAULT_DPI, thumb_dpi=DEFAULT_THUMB_DPI):
     """
     Run Report
     """
@@ -411,7 +411,7 @@ def get_parser():
     parser.add_argument('-o', '--output', dest='output', default=os.getcwd(),
                         type=validate_dir,
                         help='Output directory to write to Subread Hist plots to.')
-    parser.add_argument('--dpi', type=int, dest='dpi', default=72,
+    parser.add_argument('--dpi', type=int, dest='dpi', default=DEFAULT_DPI,
                         help="dpi (dots/inch) for plots that were generated.")
     parser.add_argument('-r', '--report', dest='report', default=None,
                         help="Write the Json report to disk.")
