@@ -12,6 +12,9 @@ from pbcommand.models.report import Plot
 
 log = logging.getLogger(__name__)
 
+DEFAULT_DPI = 300
+DEFAULT_THUMB_DPI = 20
+
 
 def get_fig_axes_lpr(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
     """
@@ -433,7 +436,7 @@ def make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
 
 
 def create_plot_impl(_make_plot_func, plot_id, axis_labels, nbins,
-                     plot_name, barcolor, datum, output_dir, dpi=72):
+                     plot_name, barcolor, datum, output_dir, dpi=DEFAULT_DPI):
     """Internal function used to create Plot instances.
 
     This should probably have a special container class to capture all the
@@ -453,7 +456,7 @@ def create_plot_impl(_make_plot_func, plot_id, axis_labels, nbins,
     log.debug("Saved plot with id {i} to {p}".format(p=path, i=plot_id))
     thumbnail = plot_name.replace(".png", "_thumb.png")
 
-    fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    fig.savefig(os.path.join(output_dir, thumbnail), dpi=DEFAULT_THUMB_DPI)
     plt.close(fig)
     log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, os.path.basename(plot_name),

@@ -23,7 +23,7 @@ from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbreports.io.specs import *
 from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail)
+                                   save_figure_with_thumbnail, DEFAULT_DPI)
 
 __version__ = '0.1.0'
 
@@ -253,7 +253,7 @@ def to_plotgroup(plot_json, output_dir):
         fig = plt.figure()
     plot_name = get_plot_title(spec, Constants.PG_SV, Constants.P_SV)
     png_fn = os.path.join(output_dir, "{p}.png".format(p=Constants.P_SV))
-    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=72, bbox_inches='tight')
+    png_base, thumbnail_base = save_figure_with_thumbnail(fig, png_fn, dpi=DEFAULT_DPI, bbox_inches='tight')
     plot = Plot(Constants.P_SV, os.path.relpath(png_base, output_dir),
                 title=plot_name, caption=plot_name,
                 thumbnail=os.path.relpath(thumbnail_base, output_dir))

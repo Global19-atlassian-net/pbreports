@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from pbcommand.models.report import Plot, PlotGroup
 
-from pbreports.plot.helper import get_fig_axes_lpr, get_green
+from pbreports.plot.helper import get_fig_axes_lpr, get_green, DEFAULT_DPI, DEFAULT_THUMB_DPI
 
 log = logging.getLogger(__name__)
 
@@ -154,7 +154,7 @@ def plot_aggregator_histogram(a, plot_view, output_dir):
     return fig, ax
 
 
-def plot_aggregator_histogram_with_cdf(a, plot_view, output_dir, dpi=72):
+def plot_aggregator_histogram_with_cdf(a, plot_view, output_dir, dpi=DEFAULT_DPI):
     """
 
     :type a: HistogramAggregator
@@ -339,7 +339,7 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
         # Always write a thumb
         thumb_path = os.path.join(output_dir, plot_view.thumb)
         log.debug("Saving thumb to {t}".format(t=thumb_path))
-        fig.savefig(thumb_path, dpi=20)
+        fig.savefig(thumb_path, dpi=DEFAULT_THUMB_DPI)
         plt.close(fig)
 
         # these are relative paths

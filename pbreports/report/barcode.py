@@ -22,7 +22,7 @@ from pbcommand.models import DataStore, FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet, SubreadSet
 
-from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
+from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr, DEFAULT_DPI, DEFAULT_THUMB_DPI
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -129,8 +129,8 @@ def make_readlength_hist2d(bc_groups, base_dir):
                                 ylabel="Read Length")
     img_name = "hist2d_readlength.png"
     thumb_name = "hist2d_readlength_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
     plt.close()
     return Plot(Constants.P_HIST2D_RL, img_name, thumbnail=thumb_name)
 
@@ -151,8 +151,8 @@ def make_bcqual_hist2d(bc_groups, base_dir):
     ax.axhline(26, color='black', linestyle='--')
     img_name = "hist2d_bcqual.png"
     thumb_name = "hist2d_bcqual_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
     plt.close()
     return Plot(Constants.P_HIST2D_BQ, img_name, thumbnail=thumb_name)
 
@@ -169,8 +169,8 @@ def make_nreads_line_plot(bc_groups, base_dir):
     plt.legend()
     img_name = "nreads.png"
     thumb_name = "nreads_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
     plt.close()
     return Plot(Constants.P_NREADS, img_name, thumbnail=thumb_name)
 
@@ -186,8 +186,8 @@ def make_nreads_histogram(bc_groups, base_dir):
         barcolor=get_blue(3))
     img_name = "nreads_histogram.png"
     thumb_name = "nreads_histogram_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
     plt.close()
     return Plot(Constants.P_HIST_NREADS, img_name, thumbnail=thumb_name)
 
@@ -203,8 +203,8 @@ def make_readlength_histogram(bc_groups, base_dir):
         barcolor=get_blue(3))
     img_name = "readlength_histogram.png"
     thumb_name = "readlength_histogram_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
     plt.close()
     return Plot(Constants.P_HIST_RL, img_name, thumbnail=thumb_name)
 
@@ -225,8 +225,8 @@ def make_bcqual_histogram(bc_groups, base_dir):
     ax.axvline(26, color='r')
     img_name = "bcqual_histogram.png"
     thumb_name = "bcqual_histogram_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+    fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+    fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
     plt.close()
     return Plot(Constants.P_HIST_BQ, img_name, thumbnail=thumb_name)
 
@@ -249,8 +249,8 @@ def make_bq_qq_plot(bc_groups, base_dir):
         ax.set_title("Q-Q Plot of Barcode Quality Scores")
         img_name = "bcqual_qq.png"
         thumb_name = "bcqual_qq_thumb.png"
-        fig.savefig(op.join(base_dir, img_name), dpi=72)
-        fig.savefig(op.join(base_dir, thumb_name), dpi=20)
+        fig.savefig(op.join(base_dir, img_name), dpi=DEFAULT_DPI)
+        fig.savefig(op.join(base_dir, thumb_name), dpi=DEFAULT_THUMB_DPI)
         plt.close()
         return Plot(Constants.P_BQ_QQ, img_name, thumbnail=thumb_name)
 

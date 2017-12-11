@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from pbcore.io import openDataFile, CmpH5Reader
 from pbcommand.models.report import Report, PlotGroup, Plot
 
-from pbreports.plot.helper import save_figure_with_thumbnail, get_fig_axes_lpr
+from pbreports.plot.helper import save_figure_with_thumbnail, get_fig_axes_lpr, DEFAULT_DPI
 
 log = logging.getLogger(__name__)
 
@@ -106,7 +106,7 @@ def _read_in_indexed_alignmentset(in_fn, reference=None):
     return data
 
 
-def _make_plot(data, png_fn, bounds=None, dpi=72, nolegend=False):
+def _make_plot(data, png_fn, bounds=None, dpi=DEFAULT_DPI, nolegend=False):
     """Make a scatterplot of read length and concordance"""
     fig, axes = get_fig_axes_lpr()
 
@@ -155,7 +155,7 @@ def _make_plot(data, png_fn, bounds=None, dpi=72, nolegend=False):
 
 
 def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
-                reference=None, dpi=72, name=None):
+                reference=None, dpi=DEFAULT_DPI, name=None):
     """AlignmentToPng Report
 
     Convert an input bam or DataSet XML file to a figure of Concordance vs.

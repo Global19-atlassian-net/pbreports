@@ -28,7 +28,7 @@ from pbcommand.utils import setup_log
 from pbcore.io import ConsensusReadSet, BarcodeSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr, make_histogram,
-                                   get_blue, get_green, Line, apply_line_data)
+                                   get_blue, get_green, Line, apply_line_data, DEFAULT_DPI, DEFAULT_THUMB_DPI)
 from pbreports.util import accuracy_as_phred_qv
 from pbreports.io.specs import *
 
@@ -331,7 +331,7 @@ def scatter_plot_accuracy_vs_numpasses(
     return fig, ax
 
 
-def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolor, data, output_dir, dpi=72):
+def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolor, data, output_dir, dpi=DEFAULT_DPI):
     """Internal function used to create Plot instances.
 
     This should probably have a special container class to capture all the
@@ -352,7 +352,7 @@ def create_plot(_make_plot_func, plot_id, axis_labels, nbins, plot_name, barcolo
     thumbnail = plot_name.replace(".png", "_thumb.png")
 
     to_b = lambda x: os.path.basename(x)
-    fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    fig.savefig(os.path.join(output_dir, thumbnail), dpi=DEFAULT_THUMB_DPI)
     plt.close(fig)
     log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, to_b(plot_name), thumbnail=to_b(thumbnail))

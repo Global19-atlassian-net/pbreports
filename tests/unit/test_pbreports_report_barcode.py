@@ -12,6 +12,7 @@ from pbcore.util.Process import backticks
 from pbcore.io import SubreadSet, BarcodeSet
 import pbcommand.testkit
 from pbcommand.models import DataStore, DataStoreFile, FileTypes
+from pbreports.plot.helper import DEFAULT_DPI
 
 import pbtestdata
 
@@ -103,7 +104,7 @@ class TestBarcodeReport(unittest.TestCase):
         x = [1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3]
         y = [4,4,3,1,2,5,6,3,3,2,4,5,6,1,3,3,4,6,5,1]
         fig, ax = make_2d_histogram(x, y, [3,6], "Imaginary read metric")
-        fig.savefig("fake_hist2d.png", dpi=72)
+        fig.savefig("fake_hist2d.png", dpi=DEFAULT_DPI)
 
     def _get_synthetic_bc_info(self):
         return [

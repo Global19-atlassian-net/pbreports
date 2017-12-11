@@ -25,6 +25,7 @@ from pbcore.io import GffReader, ReferenceSet
 from pbreports.util import (openReference, average_or_none,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
+from pbreports.plot.helper import DEFAULT_DPI
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -57,7 +58,7 @@ LENGTH, GAPS, ERR, COV = 0, 1, 2, 3
 spec = load_spec(Constants.R_ID)
 
 
-def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_plot, report, output_dir, dpi=72, dumpdata=True):
+def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_plot, report, output_dir, dpi=DEFAULT_DPI, dumpdata=True):
     """
     Entry to report.
     :param aln_summ_gff: (str) path to alignment_summary.gff

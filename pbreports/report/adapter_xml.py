@@ -17,7 +17,7 @@ from pbcommand.utils import setup_log
 from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail, get_green)
+                                   save_figure_with_thumbnail, get_green, DEFAULT_DPI, DEFAULT_THUMB_DPI)
 from pbreports.model import InvalidStatsError
 from pbreports.io.specs import *
 from pbreports.util import (get_subreads_report_parser,
@@ -46,7 +46,7 @@ log = logging.getLogger(__name__)
 spec = load_spec(Constants.R_ID)
 
 
-def to_report(stats_xml, output_dir, dpi=72):
+def to_report(stats_xml, output_dir, dpi=DEFAULT_DPI):
     # TODO: make dpi matter
     """Main point of entry
 
@@ -63,7 +63,7 @@ def to_report(stats_xml, output_dir, dpi=72):
     return to_report_impl(dset, output_dir, dpi)
 
 
-def to_report_impl(dset, output_dir, dpi=72):
+def to_report_impl(dset, output_dir, dpi=DEFAULT_DPI):
     if not dset.metadata.summaryStats.medianInsertDists:
         raise InvalidStatsError("Pipeline Summary Stats (sts.xml) not found "
                                 "or missing key distributions")
