@@ -334,7 +334,7 @@ def to_plot_groups(view_config_d, output_dir, id_to_aggregators):
             log.warn(str(e))
         except ValueError as e:
             log.error(str(e))
-        fig.savefig(os.path.join(output_dir, plot_view.image_name))
+        fig.savefig(os.path.join(output_dir, plot_view.image_name), dpi=DEFAULT_DPI)
 
         # Always write a thumb
         thumb_path = os.path.join(output_dir, plot_view.thumb)

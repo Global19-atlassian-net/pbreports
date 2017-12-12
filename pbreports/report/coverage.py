@@ -25,7 +25,7 @@ from pbcore.io import GffReader, ReferenceSet
 from pbreports.util import get_top_contigs
 from pbreports.plot.helper import (get_fig_axes_lpr, apply_line_data,
                                    apply_line_fill_data, apply_histogram_data,
-                                   LineFill, save_figure_with_thumbnail)
+                                   LineFill, save_figure_with_thumbnail, DEFAULT_DPI)
 from pbreports.io.specs import *
 
 
@@ -171,7 +171,7 @@ class CoverageReport(object):
                 imgfiles = save_figure_with_thumbnail(fig, fname)
                 thumbnail = os.path.basename(imgfiles[1])
             else:
-                fig.savefig(fname)
+                fig.savefig(fname, dpi=DEFAULT_DPI)
             plt.close(fig)
             id_ = "coverage_contig_{i}".format(i=str(idx))
             caption = self.spec.get_plotgroup_spec(Constants.PG_COVERAGE
