@@ -183,7 +183,7 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
             imgfiles = PH.save_figure_with_thumbnail(fig, fname)
             thumbnail = os.path.basename(imgfiles[1])
         else:
-            fig.savefig(fname)
+            fig.savefig(fname, dpi=DEFAULT_DPI)
 
         id_ = 'coverage_variants_{i}'.format(i=str(idx))
         caption = "Observed variants across {c}".format(c=ctg_var.name)
@@ -213,7 +213,7 @@ def _get_legend_file(bars, output_dir):
     """
     fig = PH.get_bar_plot_legend_fig(bars)
     fname = 'variants_plot_legend.png'
-    fig.savefig(os.path.join(output_dir, fname), dpi=60)
+    fig.savefig(os.path.join(output_dir, fname), dpi=DEFAULT_DPI)
     plt.close(fig)
     return fname
 
