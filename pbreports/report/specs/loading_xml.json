@@ -80,7 +80,7 @@
         {
             "plots": [
                 {
-                    "xlabel": "Kilobases",
+                    "xlabel": "Bases",
                     "description": null,
                     "caption": "Loading Evaluation",
                     "ylabel": "Reads",
