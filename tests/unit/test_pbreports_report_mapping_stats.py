@@ -445,7 +445,7 @@ class TestMappingStatsCCSReport(unittest.TestCase):
         self.assertEqual(len(self.report.tables), value)
 
     def test_report_metadata(self):
-        validate_report_metadata(self, self.report, mapping_stats_ccs.spec)
+        validate_report_metadata(self, self.report, mapping_stats_ccs.ccs_spec)
 
     def _compare_metric_values(self, metric_id):
         value = self.EXPECTED_VALUES[metric_id]
@@ -507,7 +507,7 @@ class TestPbreportMappingStatsCCS(pbcommand.testkit.PbTestApp):
         with ConsensusAlignmentSet(self.INPUT_FILES[0]) as ds:
             self.assertEqual(r._dataset_uuids, [ds.uuid])
             self.assertEqual(len(r.plotGroups), 4)
-        validate_report_metadata(self, r, mapping_stats_ccs.spec)
+        validate_report_metadata(self, r, mapping_stats_ccs.ccs_spec)
 
 
 @skip_if_data_dir_not_present

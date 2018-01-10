@@ -44,20 +44,16 @@ class Constants(BaseConstants):
     A_NBASES = "mapped_bases_n"
     A_READ_CONCORDANCE = "mapped_read_concordance_mean"
 
-__version__ = "0.1"
+__version__ = "0.2"
 log = logging.getLogger(__name__)
-spec = load_spec(Constants.R_ID)
+ccs_spec = load_spec(Constants.R_ID)
 
 
 def scatter_plot_accuracy_vs_concordance(
         data,
-        axis_labels=(
-            get_plot_xlabel(spec, Constants.PG_QV_CALIBRATION,
-                            Constants.P_QV_CALIBRATION),
-            get_plot_ylabel(spec, Constants.PG_QV_CALIBRATION,
-                            Constants.P_QV_CALIBRATION)),
-        nbins=None,
-        barcolor=None):
+        axis_labels,
+        nbins,
+        barcolor):
     accuracy, concordance = data
     fig, ax = get_fig_axes_lpr()
     data = [Line(xData=accuracy,
@@ -114,9 +110,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 Constants.PG_READ_CONCORDANCE,
                 generate_plot,
                 'mapped_read_concordance_histogram.png',
-                xlabel=get_plot_xlabel(spec, Constants.PG_READ_CONCORDANCE,
+                xlabel=get_plot_xlabel(ccs_spec, Constants.PG_READ_CONCORDANCE,
                                        Constants.P_READ_CONCORDANCE),
-                ylabel=get_plot_ylabel(spec, Constants.PG_READ_CONCORDANCE,
+                ylabel=get_plot_ylabel(ccs_spec, Constants.PG_READ_CONCORDANCE,
                                        Constants.P_READ_CONCORDANCE),
                 color=get_green(3),
                 edgecolor=get_green(2),
@@ -127,9 +123,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 Constants.PG_READLENGTH,
                 generate_plot,
                 'mapped_readlength_histogram.png',
-                xlabel=get_plot_xlabel(spec, Constants.PG_READLENGTH,
+                xlabel=get_plot_xlabel(ccs_spec, Constants.PG_READLENGTH,
                                        Constants.P_READLENGTH),
-                ylabel=get_plot_ylabel(spec, Constants.PG_READLENGTH,
+                ylabel=get_plot_ylabel(ccs_spec, Constants.PG_READLENGTH,
                                        Constants.P_READLENGTH),
                 color=get_blue(3),
                 edgecolor=get_blue(2),
@@ -137,6 +133,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 plot_group_title="")
         ]
         return {v.plot_id: v for v in _p}
+
+    def _get_rainbow_plot_x_label(self):
+        return get_plot_xlabel(ccs_spec, Constants.PG_RAINBOW, Constants.P_RAINBOW)
 
     def _get_total_aggregators(self):
         return OrderedDict([
@@ -165,9 +164,9 @@ class CCSMappingStatsCollector(MappingStatsCollector):
                 _make_plot_func=scatter_plot_accuracy_vs_concordance,
                 plot_id=Constants.P_QV_CALIBRATION,
                 axis_labels=(
-                    get_plot_xlabel(spec, Constants.PG_QV_CALIBRATION,
+                    get_plot_xlabel(ccs_spec, Constants.PG_QV_CALIBRATION,
                                     Constants.P_QV_CALIBRATION),
-                    get_plot_ylabel(spec, Constants.PG_QV_CALIBRATION,
+                    get_plot_ylabel(ccs_spec, Constants.PG_QV_CALIBRATION,
                                     Constants.P_QV_CALIBRATION)),
                 nbins=None,
                 plot_name="mapped_qv_calibration.png",
@@ -184,7 +183,7 @@ class CCSMappingStatsCollector(MappingStatsCollector):
 
 
 def to_report(alignment_file, output_dir, subreads_file=None):
-    return spec.apply_view(CCSMappingStatsCollector(alignment_file).to_report(output_dir, Constants.R_ID))
+    return ccs_spec.apply_view(CCSMappingStatsCollector(alignment_file).to_report(output_dir, Constants.R_ID))
 
 
 def _args_runner(args):
@@ -214,7 +213,7 @@ def _resolved_tool_contract_runner(resolved_contract):
 
 def _get_parser():
     parser = get_pbparser(Constants.TOOL_ID, __version__,
-                          spec.title, __doc__,
+                          ccs_spec.title, __doc__,
                           Constants.DRIVER_EXE)
     parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
                                "ConsensusAlignment XML DataSet",
