@@ -206,7 +206,7 @@
         {
             "plots": [
                 {
-                    "xlabel": "Subread Length / bp",
+                    "xlabel": "Subread Length",
                     "description": null,
                     "caption": "Mapped Concordance vs. Read Length",
                     "ylabel": "% Concordance",
