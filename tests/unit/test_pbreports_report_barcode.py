@@ -103,13 +103,6 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(attr["n_barcodes"], 3)
         self.assertEqual(attr["mean_reads"], 1)
 
-    def test_make_2d_histogram(self):
-        x = [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3]
-        y = [4, 4, 3, 1, 2, 5, 6, 3, 3, 2, 4, 5, 6, 1, 3, 3, 4, 6, 5, 1]
-        fig, ax = make_2d_histogram(
-            x, y, [3, 6], "Number of Reads", "Imaginary read metric", "Some other metric")
-        fig.savefig("fake_hist2d.png", dpi=DEFAULT_DPI)
-
     def _get_synthetic_bc_info(self):
         return [
             BarcodeGroup("bc2", 20, [5, 6, 3, 3, 2, 4, 5, 6, 1], [
