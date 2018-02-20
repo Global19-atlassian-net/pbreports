@@ -23,7 +23,7 @@ from pbreports.plot.helper import make_histogram, make_2d_histogram, get_blue, g
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '3.0'
+__version__ = '3.1'
 
 spec = load_spec("barcode")
 
@@ -32,6 +32,8 @@ class Constants(object):
     TOOL_ID = "pbreports.tasks.barcode_report"
     TOOL_NAME = "barcode_report"
     DRIVER_EXE = "python -m pbreports.report.barcode --resolved-tool-contract"
+
+    ISOSEQ_MODE = "pbreports.task_options.isoseq_mode"
 
     A_NBARCODES = "n_barcodes"
     A_MEAN_READS = "mean_reads"
@@ -399,7 +401,7 @@ def get_biosample_dict(barcoded_subreads):
     return biosamples
 
 
-def iter_reads_by_barcode(barcoded_dataset, barcodes):
+def iter_reads_by_barcode(barcoded_dataset, barcodes, isoseq_mode=False):
     """
     Given a SubreadSet or ConsensusReadSet and BarcodeSet as input, return an
     iterable of ReadInfo objects
@@ -420,8 +422,11 @@ def iter_reads_by_barcode(barcoded_dataset, barcodes):
                                              rr.pbi.bcReverse,
                                              rr.pbi.holeNumber,
                                              rr.pbi.qId)):
+            bc_key = (f, r)
+            if isoseq_mode:
+                bc_key = tuple(sorted(bc_key))
             movie = rr.readGroupInfo(q).MovieName
-            zmws_by_barcode[(f, r)].add((movie, z))
+            zmws_by_barcode[bc_key].add((movie, z))
             records_by_zmw[(movie, z)].append((rr, i))
     log.info("Combining with BarcodeSet labels...")
     bc_ids = sorted(zmws_by_barcode.keys())
@@ -583,7 +588,8 @@ make_report_ccs = functools.partial(
     _make_report_impl, CCSConstants.SHOW_ATTRIBUTES, CCSConstants.SHOW_COLUMNS)
 
 
-def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None):
+def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None,
+                  isoseq_mode=False):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
@@ -598,7 +604,7 @@ def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None):
         subreads_in.uuid
     ] + ds_bc_uuids
     biosamples = get_biosample_dict(barcoded_reads)
-    read_info = list(iter_reads_by_barcode(barcoded_reads, barcodes)) + \
+    read_info = list(iter_reads_by_barcode(barcoded_reads, barcodes, isoseq_mode)) + \
         list(get_unbarcoded_reads_info(subreads_in, barcoded_reads))
     if isinstance(barcoded_reads, SubreadSet):
         return make_report(biosamples=biosamples,
@@ -616,7 +622,8 @@ def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     report = run_to_report(args.ds_bc, args.barcodes, args.subreads_in,
-                           base_dir=op.dirname(args.report_json))
+                           base_dir=op.dirname(args.report_json),
+                           isoseq_mode=args.isoseq_mode)
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
     return 0
@@ -629,7 +636,8 @@ def resolved_tool_contract_runner(rtc):
         ds_bc_file=rtc.task.input_files[0],
         barcodes_file=rtc.task.input_files[2],
         subreads_in_file=rtc.task.input_files[1],
-        base_dir=op.dirname(rtc.task.output_files[0]))
+        base_dir=op.dirname(rtc.task.output_files[0]),
+        isoseq_mode=rtc.task.options.get(Constants.ISOSEQ_MODE, False))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
     report.tables[0].to_csv(rtc.task.output_files[1])
@@ -663,6 +671,8 @@ def get_parser():
         name="Barcode Report Details",
         description="Barcode Details Table as CSV",
         default_name="barcodes_report")
+    p.add_boolean(Constants.ISOSEQ_MODE, "isoseq_mode", False,
+                  "Iso-Seq mode", "Iso-Seq mode")
     return p
 
 
