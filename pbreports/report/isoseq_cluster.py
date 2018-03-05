@@ -19,7 +19,7 @@ from pbcommand.models import FileTypes, get_pbparser
 from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
-from pbcore.io import ContigSet
+from pbcore.io import ContigSet, FastqReader
 
 from pbreports.plot.helper import (create_plot_impl, get_blue,
                                    make_histogram_with_cdf)
@@ -103,8 +103,8 @@ def make_report(reads_fasta, hq_isoforms_fq, lq_isoforms_fq, summary_txt, output
                                  thumbnail=readlength_plot.thumbnail)
 
     # Collect average qvs
-    hq_qvs = [np.mean(r.quality) for r in ContigSet(hq_isoforms_fq)]
-    lq_qvs = [np.mean(r.quality) for r in ContigSet(lq_isoforms_fq)]
+    hq_qvs = [np.mean(r.quality) for r in FastqReader(hq_isoforms_fq)]
+    lq_qvs = [np.mean(r.quality) for r in FastqReader(lq_isoforms_fq)]
     avgqvs = np.array(hq_qvs + lq_qvs)
 
     # Plot average qv histogram
@@ -181,10 +181,10 @@ def _get_parser():
                           description="Reads in FASTA format, usually are consensus, " +
                           "isoforms produced by Iso-Seq Cluster.")
 
-    p.add_input_file_type(FileTypes.DS_CONTIG, "hq_isoforms_fq", "HQ isoforms in Fastq",
+    p.add_input_file_type(FileTypes.FASTQ, "hq_isoforms_fq", "HQ isoforms in Fastq",
                           description="HQ isoforms in FASTQ format produced by Iso-Seq Cluster.")
 
-    p.add_input_file_type(FileTypes.DS_CONTIG, "lq_isoforms_fq", "LQ isoforms in Fastq",
+    p.add_input_file_type(FileTypes.FASTQ, "lq_isoforms_fq", "LQ isoforms in Fastq",
                           description="LQ isoforms in FASTQ format produced by Iso-Seq Cluster.")
 
     p.add_input_file_type(FileTypes.JSON, "summary_txt", "Summary text",
