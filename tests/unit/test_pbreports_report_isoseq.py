@@ -136,7 +136,7 @@ class TestIsoSeqClusterTCI(PbTestApp):
     DRIVER_BASE = "python -m pbreports.report.isoseq_cluster"
     INPUT_FILES = [
         os.path.join(_DATA_DIR, "consensus_isoforms.contigset.xml"),
-        os.path.join(_DATA_DIR, "isoseq_cluster_summary.json"),
         os.path.join(_DATA_DIR, "hq_isoforms.fastq"),
-        os.path.join(_DATA_DIR, "lq_isoforms.fastq")
+        os.path.join(_DATA_DIR, "lq_isoforms.fastq"),
+        os.path.join(_DATA_DIR, "isoseq_cluster_summary.json")
     ]
