@@ -6,15 +6,12 @@ Generate a report on SubreadSet barcoding.
 from __future__ import division
 from collections import defaultdict
 from pprint import pformat
+import functools
 import itertools
 import warnings
 import logging
 import os.path as op
 import sys
-
-import matplotlib
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
 
 from pbcommand.cli import pbparser_runner
 from pbcommand.models.report import Report, Table, Column, Attribute, Plot, PlotGroup
@@ -22,11 +19,11 @@ from pbcommand.models import DataStore, FileTypes, get_pbparser
 from pbcommand.utils import setup_log
 from pbcore.io import openDataSet, BarcodeSet, SubreadSet
 
-from pbreports.plot.helper import make_histogram, get_blue, get_fig_axes_lpr
+from pbreports.plot.helper import make_histogram, make_2d_histogram, get_blue, get_fig_axes_lpr, save_figure_with_thumbnail, DEFAULT_DPI, DEFAULT_THUMB_DPI
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '2.1.2'
+__version__ = '3.1'
 
 spec = load_spec("barcode")
 
@@ -35,6 +32,8 @@ class Constants(object):
     TOOL_ID = "pbreports.tasks.barcode_report"
     TOOL_NAME = "barcode_report"
     DRIVER_EXE = "python -m pbreports.report.barcode --resolved-tool-contract"
+
+    ISOSEQ_MODE = "pbreports.task_options.isoseq_mode"
 
     A_NBARCODES = "n_barcodes"
     A_MEAN_READS = "mean_reads"
@@ -73,45 +72,67 @@ class Constants(object):
     BQ_BINS = 50
     RL_BINS = 50
 
+    SHOW_COLUMNS = [
+        C_BIOSAMPLE,
+        C_IDX,
+        C_BARCODE,
+        C_NREADS,
+        C_NSUBREADS,
+        C_NBASES,
+        C_READLENGTH,
+        C_SRL,
+        C_BCQUAL,
+        C_RANK
+    ]
 
-# XXX This might eventually need to be moved to pbreports.plot, but it's very
-# specialized right now
-def make_2d_histogram(x, y, n_bins, ylabel):
-    """
-    Generate a rainbow-colored 2D histogram where the X axis represents
-    individual barcode groups (sorted by descending read count) and the Y axis
-    represents a metric within each group (bq, read length, etc.).
+    SHOW_ATTRIBUTES = [
+        A_NBARCODES,
+        A_NREADS_BARCODED,
+        A_NREADS_UNBARCODED,
+        A_MEAN_READS,
+        A_MAX_READS,
+        A_MIN_READS,
+        A_MEAN_RL,
+        A_MEAN_MAX_SRL
+    ]
 
-    :param x: X-axis values, i.e. barcode group indices
-    :param y: Y-axis values corresponding to x
-    :param n_bins: (x,y) bin sizes; x should usually be 1
-    :param ylabl: Y-axis label
-    :returns: matplotlib figure
-    """
-    cmap = plt.cm.Spectral_r
-    cmap.set_under(color=(0.875, 0.875, 0.875))
-    fig = plt.figure(figsize=(12, 4))
-    ax = fig.add_subplot(111)
-    ax.axesPatch.set_facecolor((0.875, 0.875, 0.875))
-    ax.grid(color="white", linewidth=0.5, linestyle='-')
-    counts, xedges, yedges, im = ax.hist2d(x, y, cmap=cmap, vmin=1,
-                                           bins=n_bins)
-    x_margin = 5
-    if n_bins[0] < 20:
-        x_margin = 1
-    elif n_bins[0] < 50:
-        x_margin = 2
-    ymax = max(y) if len(y) > 0 else 1
-    ax.set_xlim(-x_margin, n_bins[0] + x_margin)
-    ax.set_ylim(-(int(ymax * 0.05)), ymax + int(ymax * (0.05)))
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel("Barcode Rank Order By Read Count")
-    for spine in ["left", "right", "top", "bottom"]:
-        ax.spines[spine].set_visible(False)
-    cbar = fig.colorbar(im, ax=ax, fraction=0.05, pad=0.01)
-    cbar.ax.set_ylabel("Read Count")
-    fig.tight_layout()
-    return fig, ax
+    VALID_FT_IDS = {
+        FileTypes.DS_SUBREADS.file_type_id,
+        FileTypes.DS_CCS.file_type_id
+    }
+
+
+class CCSConstants(Constants):
+    SHOW_COLUMNS = [
+        Constants.C_BIOSAMPLE,
+        Constants.C_IDX,
+        Constants.C_BARCODE,
+        Constants.C_NREADS,
+        Constants.C_NBASES,
+        # FIXME not clear if this is relevant here.  we can report mean CCS
+        # read length of course but that's not the same as the polymerase read
+        # length; to get that we'd have to refer back to the input SubreadSet.
+        Constants.C_READLENGTH,
+        Constants.C_BCQUAL,
+        Constants.C_RANK
+    ]
+
+    SHOW_ATTRIBUTES = [
+        Constants.A_NBARCODES,
+        Constants.A_NREADS_BARCODED,
+        Constants.A_NREADS_UNBARCODED,
+        Constants.A_MEAN_READS,
+        Constants.A_MAX_READS,
+        Constants.A_MIN_READS,
+        Constants.A_MEAN_RL,
+    ]
+
+
+def _to_plot(fig, plot_id, base_dir):
+    img_name = plot_id + ".png"
+    _, thumb_name = save_figure_with_thumbnail(
+        fig, op.join(base_dir, img_name))
+    return Plot(plot_id, img_name, thumbnail=op.basename(thumb_name))
 
 
 def make_readlength_hist2d(bc_groups, base_dir):
@@ -126,13 +147,10 @@ def make_readlength_hist2d(bc_groups, base_dir):
     x_bins = max(len(bc_groups), 1)
     fig, ax = make_2d_histogram(x, y,
                                 n_bins=[x_bins, Constants.RL_BINS],
-                                ylabel="Read Length")
-    img_name = "hist2d_readlength.png"
-    thumb_name = "hist2d_readlength_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-    plt.close()
-    return Plot(Constants.P_HIST2D_RL, img_name, thumbnail=thumb_name)
+                                xlabel="Barcode Rank Order By Read Count",
+                                ylabel="Read Length",
+                                cbar_label="Read Count")
+    return _to_plot(fig, Constants.P_HIST2D_RL, base_dir)
 
 
 def make_bcqual_hist2d(bc_groups, base_dir):
@@ -147,32 +165,24 @@ def make_bcqual_hist2d(bc_groups, base_dir):
     x_bins = max(1, len(bc_groups))
     fig, ax = make_2d_histogram(x, y,
                                 n_bins=[x_bins, Constants.BQ_BINS],
-                                ylabel="Read Barcode Quality Score")
+                                xlabel="Barcode Rank Order By Read Count",
+                                ylabel="Read Barcode Quality Score",
+                                cbar_label="Read Count")
     ax.axhline(26, color='black', linestyle='--')
-    img_name = "hist2d_bcqual.png"
-    thumb_name = "hist2d_bcqual_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-    plt.close()
-    return Plot(Constants.P_HIST2D_BQ, img_name, thumbnail=thumb_name)
+    return _to_plot(fig, Constants.P_HIST2D_BQ, base_dir)
 
 
 def make_nreads_line_plot(bc_groups, base_dir):
-    x = [i for (i,g) in enumerate(bc_groups, start=1)]
+    x = [i for (i, g) in enumerate(bc_groups, start=1)]
     y = [g.n_reads for g in bc_groups]
     mean_nreads = 0 if len(y) == 0 else sum(y) / len(y)
     fig, ax = get_fig_axes_lpr()
     ax.plot(x, y, color='blue')
-    ax.axhline(mean_nreads, color='red', label="Mean Number of Reads")
+    line = ax.axhline(mean_nreads, color='red', label="Mean Number of Reads")
     ax.set_xlabel("Barcode Rank Order")
     ax.set_ylabel("Count of Reads")
-    plt.legend()
-    img_name = "nreads.png"
-    thumb_name = "nreads_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-    plt.close()
-    return Plot(Constants.P_NREADS, img_name, thumbnail=thumb_name)
+    fig.legend((line,), ("Mean Number of Reads",), ("upper right"))
+    return _to_plot(fig, Constants.P_NREADS, base_dir)
 
 
 def make_nreads_histogram(bc_groups, base_dir):
@@ -184,12 +194,7 @@ def make_nreads_histogram(bc_groups, base_dir):
         axis_labels=["Number of Reads", "Number of Barcoded Samples"],
         nbins=min(len(bc_groups), 20),
         barcolor=get_blue(3))
-    img_name = "nreads_histogram.png"
-    thumb_name = "nreads_histogram_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-    plt.close()
-    return Plot(Constants.P_HIST_NREADS, img_name, thumbnail=thumb_name)
+    return _to_plot(fig, Constants.P_HIST_NREADS, base_dir)
 
 
 def make_readlength_histogram(bc_groups, base_dir):
@@ -201,12 +206,7 @@ def make_readlength_histogram(bc_groups, base_dir):
         axis_labels=["Mean Read Length", "Number of Barcoded Samples"],
         nbins=min(len(bc_groups), 20),
         barcolor=get_blue(3))
-    img_name = "readlength_histogram.png"
-    thumb_name = "readlength_histogram_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-    plt.close()
-    return Plot(Constants.P_HIST_RL, img_name, thumbnail=thumb_name)
+    return _to_plot(fig, Constants.P_HIST_RL, base_dir)
 
 
 def make_bcqual_histogram(bc_groups, base_dir):
@@ -223,12 +223,7 @@ def make_bcqual_histogram(bc_groups, base_dir):
         nbins=50,
         barcolor=get_blue(3))
     ax.axvline(26, color='r')
-    img_name = "bcqual_histogram.png"
-    thumb_name = "bcqual_histogram_thumb.png"
-    fig.savefig(op.join(base_dir, img_name), dpi=72)
-    fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-    plt.close()
-    return Plot(Constants.P_HIST_BQ, img_name, thumbnail=thumb_name)
+    return _to_plot(fig, Constants.P_HIST_BQ, base_dir)
 
 
 def make_bq_qq_plot(bc_groups, base_dir):
@@ -247,12 +242,7 @@ def make_bq_qq_plot(bc_groups, base_dir):
         fig, ax = get_fig_axes_lpr()
         scipy.stats.probplot(data, dist="norm", plot=ax)
         ax.set_title("Q-Q Plot of Barcode Quality Scores")
-        img_name = "bcqual_qq.png"
-        thumb_name = "bcqual_qq_thumb.png"
-        fig.savefig(op.join(base_dir, img_name), dpi=72)
-        fig.savefig(op.join(base_dir, thumb_name), dpi=20)
-        plt.close()
-        return Plot(Constants.P_BQ_QQ, img_name, thumbnail=thumb_name)
+        return _to_plot(fig, Constants.P_BQ_QQ, base_dir)
 
 
 def make_plots(bc_groups, base_dir):
@@ -355,7 +345,6 @@ class ReadInfo(object):
         return len(self.bq)
 
 
-
 def _to_abs_path(dir_name, path):
     if os.path.isabs(path):
         return path
@@ -363,26 +352,26 @@ def _to_abs_path(dir_name, path):
         return os.path.join(dir_name, path)
 
 
-def _get_subread_sets(reads_file):
+def _get_barcoded_datasets(reads_file):
     dir_name = os.path.dirname(os.path.abspath(reads_file))
     if reads_file.endswith(".datastore.json"):
         datastore = DataStore.load_from_json(reads_file)
-        subreads = [_to_abs_path(dir_name, f.path)
-                    for u,f in datastore.files.iteritems()
-                    if f.file_type_id == FileTypes.DS_SUBREADS.file_type_id]
-        if len(subreads) == 0:
-            raise ValueError("No SubreadSets containing barcoded reads were "+
-                             "present in the input.  This could mean that "+
-                             "demultiplexing was run with incorrect inputs "+
+        datasets = [_to_abs_path(dir_name, f.path)
+                    for u, f in datastore.files.iteritems()
+                    if f.file_type_id in Constants.VALID_FT_IDS]
+        if len(datasets) == 0:
+            raise ValueError("No datasets containing barcoded reads were " +
+                             "present in the input.  This could mean that " +
+                             "demultiplexing was run with incorrect inputs " +
                              "or an overly restrictive minimum barcode score.")
-        return subreads
+        return datasets
     else:
         return [reads_file]
 
 
-def get_subread_set(reads_file):
-    log.info("Opening all barcoded SubreadSets")
-    return SubreadSet(*_get_subread_sets(reads_file), strict=True)
+def get_barcoded_dataset(reads_file):
+    log.info("Opening all barcoded datasets")
+    return openDataSet(*_get_barcoded_datasets(reads_file), strict=True)
 
 
 def get_biosample_dict(barcoded_subreads):
@@ -392,7 +381,8 @@ def get_biosample_dict(barcoded_subreads):
         sub_datasets = barcoded_subreads.subdatasets
     for ss in sub_datasets:
         try:
-            biosample = ss.metadata.collections[0].wellSample.bioSamples[0].name
+            biosample = ss.metadata.collections[
+                0].wellSample.bioSamples[0].name
         except IndexError:
             biosample = Constants.BIOSAMPLE_NONE
             log.warn("No biosample info found, using %s", biosample)
@@ -400,7 +390,8 @@ def get_biosample_dict(barcoded_subreads):
             log.error(e)
             biosample = Constants.BIOSAMPLE_NONE
         try:
-            barcode = ss.metadata.collections[0].wellSample.bioSamples[0].DNABarcodes[0].name
+            barcode = ss.metadata.collections[
+                0].wellSample.bioSamples[0].DNABarcodes[0].name
         except IndexError:
             pass
         except Exception as e:
@@ -410,12 +401,13 @@ def get_biosample_dict(barcoded_subreads):
     return biosamples
 
 
-def iter_reads_by_barcode(barcoded_subreadset, barcodes):
+def iter_reads_by_barcode(barcoded_dataset, barcodes, isoseq_mode=False):
     """
-    Open a SubreadSet and BarcodeSet and return an iterable of ReadInfo objects
+    Given a SubreadSet or ConsensusReadSet and BarcodeSet as input, return an
+    iterable of ReadInfo objects
     """
     log.info("Extracting barcoded read info from input datasets...")
-    ds = barcoded_subreadset
+    ds = barcoded_dataset
     for er in ds.externalResources:
         if er.barcodes is not None and er.barcodes != barcodes.fileNames[0]:
             raise ValueError("Mismatch between external resource " +
@@ -424,15 +416,18 @@ def iter_reads_by_barcode(barcoded_subreadset, barcodes):
                                                  b=barcodes))
     assert ds.isIndexed
     zmws_by_barcode = defaultdict(set)
-    subreads_by_zmw = defaultdict(list)
+    records_by_zmw = defaultdict(list)
     for rr in ds.resourceReaders():
         for i, (f, r, z, q) in enumerate(zip(rr.pbi.bcForward,
                                              rr.pbi.bcReverse,
                                              rr.pbi.holeNumber,
                                              rr.pbi.qId)):
+            bc_key = (f, r)
+            if isoseq_mode:
+                bc_key = tuple(sorted(bc_key))
             movie = rr.readGroupInfo(q).MovieName
-            zmws_by_barcode[(f, r)].add((movie, z))
-            subreads_by_zmw[(movie, z)].append((rr, i))
+            zmws_by_barcode[bc_key].add((movie, z))
+            records_by_zmw[(movie, z)].append((rr, i))
     log.info("Combining with BarcodeSet labels...")
     bc_ids = sorted(zmws_by_barcode.keys())
     bcs = [bc for bc in barcodes]
@@ -447,45 +442,51 @@ def iter_reads_by_barcode(barcoded_subreadset, barcodes):
             qlen = 0
             qmax = srl_max = 0
             bq = []
-            for rr, i_subread in subreads_by_zmw[(movie, zmw)]:
-                srl = rr.pbi.qEnd[i_subread] - rr.pbi.qStart[i_subread]
+            for rr, i_rec in records_by_zmw[(movie, zmw)]:
+                srl = rr.pbi.qEnd[i_rec] - rr.pbi.qStart[i_rec]
                 qlen += srl
-                qmax = max(qmax, rr.pbi.qEnd[i_subread])
-                srl_max = max(srl_max, srl)
-                bq.append(rr.pbi.bcQual[i_subread])
+                qmax = max(qmax, rr.pbi.qEnd[i_rec])
+                srl_max = max(srl_max, srl)  # meaningless for CCS
+                bq.append(rr.pbi.bcQual[i_rec])
             bc_idx = (barcode_fw, barcode_rev)
             yield ReadInfo(barcode_id, qlen, qmax, srl_max, bq, bc_idx)
 
 
-def get_unbarcoded_reads_info(subreads_in, subreads_bc):
+def get_unbarcoded_reads_info(dataset_in, dataset_bc):
     log.info("Identifying non-barcoded reads...")
     barcoded_zmws = set()
-    for rr in subreads_bc.resourceReaders():
+    for rr in dataset_bc.resourceReaders():
         for zmw, qId in zip(rr.pbi.holeNumber, rr.pbi.qId):
             movie = rr.readGroupInfo(qId).MovieName
             barcoded_zmws.add((movie, zmw))
-    nonbarcoded_subreads_by_zmw = defaultdict(list)
-    for rr in subreads_in.resourceReaders():
+    # not necessarily subreads
+    nonbarcoded_records_by_zmw = defaultdict(list)
+    for rr in dataset_in.resourceReaders():
         for i, (zmw, qId) in enumerate(zip(rr.pbi.holeNumber, rr.pbi.qId)):
             movie = rr.readGroupInfo(qId).MovieName
             if (movie, zmw) in barcoded_zmws:
                 continue
             else:
-                nonbarcoded_subreads_by_zmw[(movie, zmw)].append((rr, i))
+                nonbarcoded_records_by_zmw[(movie, zmw)].append((rr, i))
     log.info("Collecting metrics for non-barcoded reads...")
-    for (movie, zmw) in sorted(nonbarcoded_subreads_by_zmw.keys()):
+    for (movie, zmw) in sorted(nonbarcoded_records_by_zmw.keys()):
         qlen = 0
         qmax = srl_max = 0
-        for rr, i_subread in nonbarcoded_subreads_by_zmw[(movie, zmw)]:
-            srl = rr.pbi.qEnd[i_subread] - rr.pbi.qStart[i_subread]
+        for rr, i_rec in nonbarcoded_records_by_zmw[(movie, zmw)]:
+            srl = rr.pbi.qEnd[i_rec] - rr.pbi.qStart[i_rec]
             qlen += srl
-            qmax = max(qmax, rr.pbi.qEnd[i_subread])
+            qmax = max(qmax, rr.pbi.qEnd[i_rec])
             srl_max = max(srl_max, srl)
-        bq = [0] * len(nonbarcoded_subreads_by_zmw[(movie, zmw)])
-        yield ReadInfo(Constants.LABEL_NONE, qlen, qmax, srl_max, bq, (-1,-1))
+        bq = [0] * len(nonbarcoded_records_by_zmw[(movie, zmw)])
+        yield ReadInfo(Constants.LABEL_NONE, qlen, qmax, srl_max, bq, (-1, -1))
 
 
-def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
+def _make_report_impl(attribute_ids,
+                      column_ids,
+                      biosamples,
+                      read_info,
+                      dataset_uuids=(),
+                      base_dir=None):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
     """
@@ -499,21 +500,17 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     for bc_read in read_info:
         bc_info[bc_read.label].append(bc_read)
         if not bc_read.label in bc_groups:
-            bc_groups[bc_read.label] = BarcodeGroup(bc_read.label, idx=bc_read.idx)
+            bc_groups[bc_read.label] = BarcodeGroup(
+                bc_read.label, idx=bc_read.idx)
         bc_groups[bc_read.label].add_read(bc_read)
 
-    columns = [Column(Constants.C_BIOSAMPLE),
-               Column(Constants.C_IDX),
-               Column(Constants.C_BARCODE),
-               Column(Constants.C_NREADS),
-               Column(Constants.C_NSUBREADS),
-               Column(Constants.C_NBASES),
-               Column(Constants.C_READLENGTH),
-               Column(Constants.C_SRL),
-               Column(Constants.C_BCQUAL),
-               Column(Constants.C_RANK)]
+    table = Table('barcode_table',
+                  columns=[Column(column_id) for column_id in column_ids])
 
-    table = Table('barcode_table', columns=columns)
+    def add_column_if_present(column_id, value):
+        if column_id in column_ids:
+            table.add_data_by_column_id(column_id, value)
+
     labels = sorted(bc_groups.keys())
     labels_bc = list(labels)  # this will only contain actual barcodes
     if Constants.LABEL_NONE in labels:
@@ -531,17 +528,18 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     n_barcoded_reads = n_unbarcoded_reads = 0
     for label in labels:
         row = bc_groups[label]
-        table.add_data_by_column_id(Constants.C_BIOSAMPLE, biosamples.get(label, Constants.BIOSAMPLE_NONE))
-        table.add_data_by_column_id(Constants.C_IDX, row.idx)
-        table.add_data_by_column_id(Constants.C_BARCODE, label)
-        table.add_data_by_column_id(Constants.C_NREADS, row.n_reads)
-        table.add_data_by_column_id(Constants.C_NSUBREADS, row.n_subreads)
-        table.add_data_by_column_id(Constants.C_NBASES, row.n_bases)
-        table.add_data_by_column_id(
+        add_column_if_present(Constants.C_BIOSAMPLE, biosamples.get(
+            label, Constants.BIOSAMPLE_NONE))
+        add_column_if_present(Constants.C_IDX, row.idx)
+        add_column_if_present(Constants.C_BARCODE, label)
+        add_column_if_present(Constants.C_NREADS, row.n_reads)
+        add_column_if_present(Constants.C_NSUBREADS, row.n_subreads)
+        add_column_if_present(Constants.C_NBASES, row.n_bases)
+        add_column_if_present(
             Constants.C_READLENGTH, row.mean_read_length())
-        table.add_data_by_column_id(Constants.C_SRL, row.srl_max)
-        table.add_data_by_column_id(Constants.C_BCQUAL, row.mean_bcqual())
-        table.add_data_by_column_id(Constants.C_RANK, rank.get(label, None))
+        add_column_if_present(Constants.C_SRL, row.srl_max)
+        add_column_if_present(Constants.C_BCQUAL, row.mean_bcqual())
+        add_column_if_present(Constants.C_RANK, rank.get(label, None))
         if label == Constants.LABEL_NONE:
             n_unbarcoded_reads += row.n_reads
         else:
@@ -567,14 +565,12 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
             Attribute(Constants.A_MIN_READS, value=min(n_reads_all)),
             # XXX these need to be clarified
             Attribute(Constants.A_MEAN_RL, value=int(rl_sum / n_reads_sum)),
-            Attribute(Constants.A_MEAN_MAX_SRL,
-                      value=int(srl_max_sum / n_barcodes))
         ])
+        if Constants.A_MEAN_MAX_SRL in attribute_ids:
+            attributes.append(Attribute(Constants.A_MEAN_MAX_SRL,
+                                        value=int(srl_max_sum / n_barcodes)))
     else:
-        ids = [Constants.A_MEAN_READS, Constants.A_MAX_READS,
-               Constants.A_MIN_READS, Constants.A_MEAN_RL,
-               Constants.A_MEAN_MAX_SRL]
-        attributes.extend([Attribute(ID, value=0) for ID in ids])
+        attributes.extend([Attribute(ID, value=0) for ID in attribute_ids[3:]])
 
     plotgroups = make_plots(bc_groups.values(), base_dir)
 
@@ -586,35 +582,48 @@ def make_report(biosamples, read_info, dataset_uuids=(), base_dir=None):
     return spec.apply_view(report)
 
 
-def run_to_report(subreads_bc_file, barcodes_file, subreads_in_file,
-                  base_dir=None):
+make_report = functools.partial(
+    _make_report_impl, Constants.SHOW_ATTRIBUTES, Constants.SHOW_COLUMNS)
+make_report_ccs = functools.partial(
+    _make_report_impl, CCSConstants.SHOW_ATTRIBUTES, CCSConstants.SHOW_COLUMNS)
+
+
+def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None,
+                  isoseq_mode=False):
     """
     Generate a Report instance from a SubreadSet and BarcodeSet.
     """
-    barcoded_subreads = get_subread_set(subreads_bc_file)
+    barcoded_reads = get_barcoded_dataset(ds_bc_file)
     subreads_in = SubreadSet(subreads_in_file, strict=True)
     barcodes = BarcodeSet(barcodes_file)
-    ds_bc_uuids = [barcoded_subreads.uuid]
-    if len(barcoded_subreads.subdatasets) > 0:
-        ds_bc_uuids = [ds.uuid for ds in barcoded_subreads.subdatasets]
+    ds_bc_uuids = [barcoded_reads.uuid]
+    if len(barcoded_reads.subdatasets) > 0:
+        ds_bc_uuids = [ds.uuid for ds in barcoded_reads.subdatasets]
     dataset_uuids = [
         barcodes.uuid,
         subreads_in.uuid
     ] + ds_bc_uuids
-    biosamples = get_biosample_dict(barcoded_subreads)
-    read_info = list(iter_reads_by_barcode(barcoded_subreads, barcodes)) + \
-                list(get_unbarcoded_reads_info(subreads_in, barcoded_subreads))
-    return make_report(biosamples=biosamples,
-        read_info=read_info,
-        dataset_uuids=dataset_uuids,
-        base_dir=base_dir)
+    biosamples = get_biosample_dict(barcoded_reads)
+    read_info = list(iter_reads_by_barcode(barcoded_reads, barcodes, isoseq_mode)) + \
+        list(get_unbarcoded_reads_info(subreads_in, barcoded_reads))
+    if isinstance(barcoded_reads, SubreadSet):
+        return make_report(biosamples=biosamples,
+                           read_info=read_info,
+                           dataset_uuids=dataset_uuids,
+                           base_dir=base_dir)
+    else:
+        return make_report_ccs(biosamples=biosamples,
+                               read_info=read_info,
+                               dataset_uuids=dataset_uuids,
+                               base_dir=base_dir)
 
 
 def args_runner(args):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
-    report = run_to_report(args.subreads_bc, args.barcodes, args.subreads_in,
-                           base_dir=op.dirname(args.report_json))
+    report = run_to_report(args.ds_bc, args.barcodes, args.subreads_in,
+                           base_dir=op.dirname(args.report_json),
+                           isoseq_mode=args.isoseq_mode)
     log.info(pformat(report.to_dict()))
     report.write_json(args.report_json)
     return 0
@@ -624,10 +633,11 @@ def resolved_tool_contract_runner(rtc):
     log.info("Starting {f} version {v} report generation".format(
         f=__file__, v=__version__))
     report = run_to_report(
-        subreads_bc_file=rtc.task.input_files[0],
+        ds_bc_file=rtc.task.input_files[0],
         barcodes_file=rtc.task.input_files[2],
         subreads_in_file=rtc.task.input_files[1],
-        base_dir=op.dirname(rtc.task.output_files[0]))
+        base_dir=op.dirname(rtc.task.output_files[0]),
+        isoseq_mode=rtc.task.options.get(Constants.ISOSEQ_MODE, False))
     log.debug(pformat(report.to_dict()))
     report.write_json(rtc.task.output_files[0])
     report.tables[0].to_csv(rtc.task.output_files[1])
@@ -641,9 +651,11 @@ def get_parser():
         name=Constants.TOOL_NAME,
         description=__doc__,
         driver_exe=Constants.DRIVER_EXE)
-    p.add_input_file_type(FileTypes.DATASTORE, "subreads_bc",
-                          name="JSON Datastore or SubreadSet",
-                          description="Datastore of barcoded SubreadSet files")
+    p.add_input_file_type(
+        FileTypes.DATASTORE,
+        "ds_bc",
+        name="JSON Datastore or SubreadSet or ConsensusReadSet",
+        description="Datastore of barcoded SubreadSet/ConsensusReadSet files")
     p.add_input_file_type(FileTypes.DS_SUBREADS, "subreads_in",
                           name="Input SubreadSet",
                           description="Input SubreadSet (without barcodes)")
@@ -659,6 +671,8 @@ def get_parser():
         name="Barcode Report Details",
         description="Barcode Details Table as CSV",
         default_name="barcodes_report")
+    p.add_boolean(Constants.ISOSEQ_MODE, "isoseq_mode", False,
+                  "Iso-Seq mode", "Iso-Seq mode")
     return p
 
 

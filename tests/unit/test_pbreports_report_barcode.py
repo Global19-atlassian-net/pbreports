@@ -12,6 +12,7 @@ from pbcore.util.Process import backticks
 from pbcore.io import SubreadSet, BarcodeSet
 import pbcommand.testkit
 from pbcommand.models import DataStore, DataStoreFile, FileTypes
+from pbreports.plot.helper import DEFAULT_DPI
 
 import pbtestdata
 
@@ -49,21 +50,24 @@ class TestBarcodeReport(unittest.TestCase):
     def test_iter_reads_by_barcode(self):
         datasets = [
             SubreadSet(self.subreads),
-            get_subread_set(_make_datastore(self.subreads))
+            get_barcoded_dataset(_make_datastore(self.subreads))
         ]
         barcodes = BarcodeSet(self.barcodes)
         for ds in datasets:
-            table = sorted(list(iter_reads_by_barcode(ds, barcodes)), lambda a,b: cmp(b.nbases, a.nbases))
+            table = sorted(list(iter_reads_by_barcode(ds, barcodes)),
+                           lambda a, b: cmp(b.nbases, a.nbases))
             self.assertEqual([r.label for r in table],
                              ["Not Barcoded", "lbc1--lbc1", "lbc3--lbc3"])
             self.assertEqual([r.idx for r in table], ["None", "0--0", "2--2"])
             self.assertEqual([r.nbases for r in table], [9791, 1436, 204])
-            self.assertEqual([r.n_subreads for r in table], [1,1,1])
+            self.assertEqual([r.n_subreads for r in table], [1, 1, 1])
 
     @skip_if_data_dir_not_present
     def test_get_unbarcoded_reads_info(self):
-        SUBREADS = get_subread_set("/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/barcode/lima/file.datastore.json")
-        SUBREADS_IN = SubreadSet("/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_micro/m54008_160219_003234_micro_split.subreadset.xml")
+        SUBREADS = get_barcoded_dataset(
+            "/pbi/dept/secondary/siv/testdata/pbreports-unittest/data/barcode/lima/file.datastore.json")
+        SUBREADS_IN = SubreadSet(
+            "/pbi/dept/secondary/siv/testdata/SA3-Sequel/phi29/315/3150101/r54008_20160219_002905/1_A01_micro/m54008_160219_003234_micro_split.subreadset.xml")
         ri = list(get_unbarcoded_reads_info(SUBREADS_IN, SUBREADS))
         self.assertEqual(len(ri), 1)
         self.assertEqual(ri[0].n_subreads, 2)
@@ -71,14 +75,14 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(ri[0].label, "Not Barcoded")
 
     def _get_synthetic_read_info(self):
-        return [ # totally synthetic data
+        return [  # totally synthetic data
             # label nbases qmax srl_max bq
-            ReadInfo("bc1", 1000, 1140, 400, [0.5]*7, (0,0)),
-            ReadInfo("bc1", 2000, 2400, 100, [0.8]*20, (0,0)),
-            ReadInfo("bc2", 2000, 2380, 200, [0.9]*19, (1,1)),
-            ReadInfo("bc2", 3000, 3560, 300, [0.6]*28, (1,1)),
-            ReadInfo("bc3", 2500, 2720, 300, [0.7]*22, (2,2)),
-            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90, (-1,-1))
+            ReadInfo("bc1", 1000, 1140, 400, [0.5] * 7, (0, 0)),
+            ReadInfo("bc1", 2000, 2400, 100, [0.8] * 20, (0, 0)),
+            ReadInfo("bc2", 2000, 2380, 200, [0.9] * 19, (1, 1)),
+            ReadInfo("bc2", 3000, 3560, 300, [0.6] * 28, (1, 1)),
+            ReadInfo("bc3", 2500, 2720, 300, [0.7] * 22, (2, 2)),
+            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0] * 90, (-1, -1))
         ]
 
     def test_read_info(self):
@@ -91,7 +95,7 @@ class TestBarcodeReport(unittest.TestCase):
         read_info = self._get_synthetic_read_info()
         biosamples = {"bc1": "A", "bc2": "B", "bc3": "C", "Not Barcoded": "D"}
         report = make_report(biosamples, read_info)
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr["mean_read_length"], 2440)
         self.assertEqual(attr["mean_longest_subread_length"], 333)
         self.assertEqual(attr["min_reads"], 1)
@@ -99,18 +103,14 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(attr["n_barcodes"], 3)
         self.assertEqual(attr["mean_reads"], 1)
 
-    def test_make_2d_histogram(self):
-        x = [1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3]
-        y = [4,4,3,1,2,5,6,3,3,2,4,5,6,1,3,3,4,6,5,1]
-        fig, ax = make_2d_histogram(x, y, [3,6], "Imaginary read metric")
-        fig.savefig("fake_hist2d.png", dpi=72)
-
     def _get_synthetic_bc_info(self):
         return [
-            BarcodeGroup("bc2", 20, [5,6,3,3,2,4,5,6,1], [40,50,50,80,76,90,84,20,43]),
-            BarcodeGroup("bc3", 10, [3,3,4,6,5,1], [40,50,60,70,55,39]),
-            BarcodeGroup("bc1", 8, [4,4,3,1,2], [25,30,50,75,65]),
-            BarcodeGroup("Not Barcoded", 30, [10,10,10], [0,0,0])
+            BarcodeGroup("bc2", 20, [5, 6, 3, 3, 2, 4, 5, 6, 1], [
+                         40, 50, 50, 80, 76, 90, 84, 20, 43]),
+            BarcodeGroup("bc3", 10, [3, 3, 4, 6, 5, 1], [
+                         40, 50, 60, 70, 55, 39]),
+            BarcodeGroup("bc1", 8, [4, 4, 3, 1, 2], [25, 30, 50, 75, 65]),
+            BarcodeGroup("Not Barcoded", 30, [10, 10, 10], [0, 0, 0])
         ]
 
     def test_barcode_info(self):
@@ -166,7 +166,7 @@ class TestBarcodeReport(unittest.TestCase):
     def test_make_bcqual_hist2d(self):
         bc_groups = self._get_synthetic_bc_info()
         p = make_bcqual_hist2d(bc_groups, self._tmp_dir)
-        self.assertTrue(op.isfile(p.image))
+        self.assertTrue(op.isfile(op.join(self._tmp_dir, p.image)))
 
     def test_make_plots(self):
         bc_groups = self._get_synthetic_bc_info()
@@ -174,21 +174,21 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(len(pgs), 3)
         for pg in pgs:
             for p in pg.plots:
-                self.assertTrue(op.isfile(p.image))
+                self.assertTrue(op.isfile(op.join(self._tmp_dir, p.image)))
 
     def test_make_report_no_reads(self):
         report = make_report({}, [])
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr["n_barcodes"], 0)
         self.assertEqual(len(report.tables[0].columns[0].values), 0)
 
     def test_make_report_no_barcoded_reads(self):
         read_info = [
-            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0]*90, (-1,-1))
+            ReadInfo("Not Barcoded", 10000, 5000, 1000, [0] * 90, (-1, -1))
         ]
         biosamples = {"Not Barcoded": "A"}
         report = make_report(biosamples, read_info)
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr["n_barcodes"], 0)
         self.assertEqual(len(report.tables[0].columns[0].values), 1)
 
@@ -197,7 +197,7 @@ class TestBarcodeReport(unittest.TestCase):
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr, {
             'mean_read_length': 5341,
             'mean_longest_subread_length': 820,
@@ -224,7 +224,7 @@ class TestBarcodeReport(unittest.TestCase):
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr, {
             'mean_read_length': 14411,
             'mean_longest_subread_length': 28314,
@@ -240,8 +240,10 @@ class TestBarcodeReport(unittest.TestCase):
         self.assertEqual(report.tables[0].columns[2].values,
                          ['bc1001--bc1001', 'bc1002--bc1002', 'bc1003--bc1003'])
         self.assertEqual(report.tables[0].columns[3].values, [1091, 1116, 989])
-        self.assertEqual(report.tables[0].columns[4].values, [5370, 5053, 4710])
-        self.assertEqual(report.tables[0].columns[5].values, [10306688, 10034254, 9452616])
+        self.assertEqual(report.tables[0].columns[
+                         4].values, [5370, 5053, 4710])
+        self.assertEqual(report.tables[0].columns[5].values, [
+                         10306688, 10034254, 9452616])
 
     def test_integration(self):
         exe = "barcode_report"
@@ -249,10 +251,10 @@ class TestBarcodeReport(unittest.TestCase):
         json_report_file_name = temp_file.name
         temp_file.close()
         cmd = "{e} --debug {b} {i} {ba} {r}".format(e=exe,
-                                                b=self.subreads,
-                                                i=self.subreads,
-                                                ba=self.barcodes,
-                                                r=json_report_file_name)
+                                                    b=self.subreads,
+                                                    i=self.subreads,
+                                                    ba=self.barcodes,
+                                                    r=json_report_file_name)
         log.info("Running cmd {c}".format(c=cmd))
         output, rcode, emsg = backticks(cmd)
         if rcode != 0:
@@ -280,7 +282,7 @@ class TestBarcodeReport(unittest.TestCase):
         validate_report_complete(self, report)
         d = report.to_dict()
         self.assertIsNotNone(d)
-        attr = {a.id:a.value for a in report.attributes}
+        attr = {a.id: a.value for a in report.attributes}
         self.assertEqual(attr['n_barcodes'], 3)
         self.assertEqual(report.tables[0].columns[2].values,
                          ['lbc1--lbc1', 'lbc2--lbc2', 'lbc3--lbc3', 'Not Barcoded'])

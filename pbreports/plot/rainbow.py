@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from pbcore.io import openDataFile, CmpH5Reader
 from pbcommand.models.report import Report, PlotGroup, Plot
 
-from pbreports.plot.helper import save_figure_with_thumbnail, get_fig_axes_lpr
+from pbreports.plot.helper import save_figure_with_thumbnail, get_fig_axes_lpr, DEFAULT_DPI
 
 log = logging.getLogger(__name__)
 
@@ -106,7 +106,8 @@ def _read_in_indexed_alignmentset(in_fn, reference=None):
     return data
 
 
-def _make_plot(data, png_fn, bounds=None, dpi=72, nolegend=False):
+def _make_plot(data, png_fn, bounds=None, dpi=DEFAULT_DPI, nolegend=False,
+               x_label="Subread Length (bp)"):
     """Make a scatterplot of read length and concordance"""
     fig, axes = get_fig_axes_lpr()
 
@@ -148,14 +149,15 @@ def _make_plot(data, png_fn, bounds=None, dpi=72, nolegend=False):
         intbounds = map(int, bounds.split(":"))
         axes.set_xlim(xmin=intbounds[0], xmax=intbounds[1])
         axes.set_ylim(ymin=intbounds[2], ymax=intbounds[3])
-    axes.set_xlabel('Subread Length / bp')
-    axes.set_ylabel('% Concordance')
+    axes.set_xlabel(x_label)
+    axes.set_ylabel('Mapped Concordance')
     save_figure_with_thumbnail(fig, png_fn, dpi=int(dpi))
     plt.close(fig)
 
 
 def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
-                reference=None, dpi=72, name=None):
+                reference=None, dpi=DEFAULT_DPI, name=None,
+                x_label="Subread Length (bp)"):
     """AlignmentToPng Report
 
     Convert an input bam or DataSet XML file to a figure of Concordance vs.
@@ -180,7 +182,7 @@ def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
     if not name:
         name = '%s.png' % os.path.splitext(os.path.basename(in_fn))[0]
     png_fn = os.path.join(out_dir, name)
-    _make_plot(data, png_fn, bounds, dpi, nolegend)
+    _make_plot(data, png_fn, bounds, dpi, nolegend, x_label=x_label)
     plot_group = PlotGroup(Constants.PLOT_GROUP_ID,
                            plots=[Plot('alignment_to_png_plot',
                                        os.path.basename(png_fn))])
@@ -188,9 +190,10 @@ def make_report(in_fn, out_dir='.', bounds=None, nolegend=False,
     return report
 
 
-def make_rainbow_plot(in_fn, png_name, reference=None):
+def make_rainbow_plot(in_fn, png_name, reference=None,
+                      x_label="Subread Length (bp)"):
     t1 = time.time()
     data = _read_in_file(in_fn, reference)
-    _make_plot(data, png_name)
+    _make_plot(data, png_name, x_label=x_label)
     t2 = time.time()
     log.info("Plot generated in {s:.2f} sec".format(s=t2 - t1))

@@ -25,6 +25,7 @@ from pbcore.io import GffReader, ReferenceSet
 from pbreports.util import (openReference, average_or_none,
                             get_top_contigs_from_ref_entry)
 import pbreports.plot.helper as PH
+from pbreports.plot.helper import DEFAULT_DPI
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
@@ -57,7 +58,7 @@ LENGTH, GAPS, ERR, COV = 0, 1, 2, 3
 spec = load_spec(Constants.R_ID)
 
 
-def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_plot, report, output_dir, dpi=72, dumpdata=True):
+def make_variants_report(aln_summ_gff, variants_gff, reference, max_contigs_to_plot, report, output_dir, dpi=DEFAULT_DPI, dumpdata=True):
     """
     Entry to report.
     :param aln_summ_gff: (str) path to alignment_summary.gff
@@ -182,7 +183,7 @@ def _create_variants_plot_grp(top_contigs, var_map, output_dir):
             imgfiles = PH.save_figure_with_thumbnail(fig, fname)
             thumbnail = os.path.basename(imgfiles[1])
         else:
-            fig.savefig(fname)
+            fig.savefig(fname, dpi=DEFAULT_DPI)
 
         id_ = 'coverage_variants_{i}'.format(i=str(idx))
         caption = "Observed variants across {c}".format(c=ctg_var.name)
@@ -212,7 +213,7 @@ def _get_legend_file(bars, output_dir):
     """
     fig = PH.get_bar_plot_legend_fig(bars)
     fname = 'variants_plot_legend.png'
-    fig.savefig(os.path.join(output_dir, fname), dpi=60)
+    fig.savefig(os.path.join(output_dir, fname), dpi=DEFAULT_DPI)
     plt.close(fig)
     return fname
 

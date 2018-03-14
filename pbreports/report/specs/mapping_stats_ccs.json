@@ -126,7 +126,7 @@
             "id": "ccs_read_concordance_group",
             "plots": [
                 {
-                    "xlabel": "Concordance",
+                    "xlabel": "Mapped Concordance",
                     "description": null,
                     "caption": "Mapped CCS Read Concordance",
                     "ylabel": "CCS Reads",
@@ -141,10 +141,10 @@
         {
             "plots": [
                 {
-                    "xlabel": "Subread Length / bp",
+                    "xlabel": "CCS Read Length",
                     "description": null,
                     "caption": "Mapped Concordance vs. Read Length",
-                    "ylabel": "% Concordance",
+                    "ylabel": "Mapped Concordance",
                     "title": "Mapped Concordance vs. Read Length",
                     "id": "rainbow_plot"
                 }

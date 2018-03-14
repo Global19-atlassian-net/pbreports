@@ -37,7 +37,7 @@ from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
 
-__version__ = '4.2.1'
+__version__ = '4.2.2'
 
 SUBREAD_TYPE = 'SubreadType'
 READ_TYPE = 'ReadType'
@@ -871,6 +871,9 @@ class MappingStatsCollector(object):
                 attributes.insert(0, Attribute(Constants.A_PCT_MAPPED,
                                                value=pct_bases_mapped))
 
+    def _get_rainbow_plot_x_label(self):
+        return get_plot_xlabel(spec, Constants.PG_RAINBOW, Constants.P_RAINBOW)
+
     def to_report(self, output_dir, report_id=Constants.R_ID):
         """
         This needs to be cleaned up. Keeping the old interface for testing purposes.
@@ -968,7 +971,8 @@ class MappingStatsCollector(object):
                                          id_to_aggregators)
             rb_pg = PlotGroup(Constants.PG_RAINBOW)
             rb_png = "mapped_concordance_vs_read_length.png"
-            make_rainbow_plot(self.alignment_file, op.join(output_dir, rb_png))
+            make_rainbow_plot(self.alignment_file, op.join(output_dir, rb_png),
+                              x_label=self._get_rainbow_plot_x_label())
             rb_plt = Plot(Constants.P_RAINBOW, rb_png)
             rb_pg.add_plot(rb_plt)
             plot_groups.append(rb_pg)

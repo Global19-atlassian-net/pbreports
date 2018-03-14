@@ -12,6 +12,9 @@ from pbcommand.models.report import Plot
 
 log = logging.getLogger(__name__)
 
+DEFAULT_DPI = 350
+DEFAULT_THUMB_DPI = 20
+
 
 def get_fig_axes_lpr(dims=(8, 6), facecolor='#ffffff', gridcolor='#e0e0e0'):
     """
@@ -291,7 +294,7 @@ def set_axis_label_font_size(ax, size):
     t.set_fontsize(size)
 
 
-def save_figure_with_thumbnail(figure, filename, dpi=60, bbox_inches=None):
+def save_figure_with_thumbnail(figure, filename, dpi=DEFAULT_DPI, bbox_inches=None):
     """
     Convenience function to save a matplotlib figure object to 2 image files:
     A standard image and a thumbnail.
@@ -312,7 +315,8 @@ def save_figure_with_thumbnail(figure, filename, dpi=60, bbox_inches=None):
     """
     parts = os.path.splitext(filename)
     thumb = '{b}_thumb{e}'.format(b=parts[0], e=parts[1])
-    _save_figures(figure, [(filename, dpi), (thumb, 20)], bbox_inches=bbox_inches)
+    _save_figures(
+        figure, [(filename, dpi), (thumb, DEFAULT_THUMB_DPI)], bbox_inches=bbox_inches)
     plt.close(figure)
     return filename, thumb
 
@@ -433,7 +437,7 @@ def make_histogram_with_cdf(datum, axis_labels, nbins, barcolor):
 
 
 def create_plot_impl(_make_plot_func, plot_id, axis_labels, nbins,
-                     plot_name, barcolor, datum, output_dir, dpi=72):
+                     plot_name, barcolor, datum, output_dir, dpi=DEFAULT_DPI):
     """Internal function used to create Plot instances.
 
     This should probably have a special container class to capture all the
@@ -453,9 +457,48 @@ def create_plot_impl(_make_plot_func, plot_id, axis_labels, nbins,
     log.debug("Saved plot with id {i} to {p}".format(p=path, i=plot_id))
     thumbnail = plot_name.replace(".png", "_thumb.png")
 
-    fig.savefig(os.path.join(output_dir, thumbnail), dpi=20)
+    fig.savefig(os.path.join(output_dir, thumbnail), dpi=DEFAULT_THUMB_DPI)
     plt.close(fig)
     log.debug("Saved plot to {p}".format(p=thumbnail))
     plot = Plot(plot_id, os.path.basename(plot_name),
                 thumbnail=os.path.basename(thumbnail))
     return plot
+
+
+def make_2d_histogram(x, y, n_bins, xlabel, ylabel, cbar_label,
+                      figsize=(12, 4)):
+    """
+    Generate a rainbow-colored 2D histogram.
+
+    :param x: X-axis values, i.e. barcode group indices
+    :param y: Y-axis values corresponding to x
+    :param n_bins: (x,y) bin sizes; x should usually be 1
+    :param xlabel: X-axis label
+    :param ylabel: Y-axis label
+    :param cbar_label: Color bar label
+    :returns: matplotlib figure
+    """
+    cmap = plt.cm.Spectral_r
+    cmap.set_under(color=(0.875, 0.875, 0.875))
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
+    ax.axesPatch.set_facecolor((0.875, 0.875, 0.875))
+    ax.grid(color="white", linewidth=0.5, linestyle='-')
+    counts, xedges, yedges, im = ax.hist2d(x, y, cmap=cmap, vmin=1,
+                                           bins=n_bins)
+    x_margin = 5
+    if n_bins[0] < 20:
+        x_margin = 1
+    elif n_bins[0] < 50:
+        x_margin = 2
+    ymax = max(y) if len(y) > 0 else 1
+    ax.set_xlim(-x_margin, n_bins[0] + x_margin)
+    ax.set_ylim(-(int(ymax * 0.05)), ymax + int(ymax * (0.05)))
+    ax.set_ylabel(ylabel)
+    ax.set_xlabel(xlabel)
+    for spine in ["left", "right", "top", "bottom"]:
+        ax.spines[spine].set_visible(False)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.05, pad=0.01)
+    cbar.ax.set_ylabel(cbar_label)
+    fig.tight_layout()
+    return fig, ax

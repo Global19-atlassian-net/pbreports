@@ -48,9 +48,9 @@ def _get_parser():
     parser = get_pbparser(Constants.TOOL_ID, __version__,
                           spec.title, __doc__,
                           Constants.DRIVER_EXE)
-    parser.add_input_file_type(FileTypes.DS_ALIGN_CCS, "alignment_file",
-                               "ConsensusAlignment XML DataSet",
-                               "BAM, SAM or ConsensusAlignment DataSet")
+    parser.add_input_file_type(FileTypes.DS_ALIGN, "alignment_file",
+                               "Alignment XML DataSet",
+                               "BAM, SAM or Alignment DataSet")
     parser.add_input_file_type(FileTypes.DS_SUBREADS, "subreads_file",
                                "Subreads XML DataSet",
                                "Unmapped BAM or Subreads DataSet")

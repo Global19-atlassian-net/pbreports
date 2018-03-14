@@ -25,6 +25,7 @@ from pbcommand.utils import setup_log
 from pbcore.io.GffIO import GffReader
 
 import pbreports.plot.helper as PH
+from pbreports.plot.helper import DEFAULT_DPI
 from pbreports.io.specs import *
 
 __version__ = '2.0'
@@ -271,7 +272,7 @@ def plotKineticsScatter(kinArr, outputFileName):
         ax.set_xlim(0, np.percentile(kinArr['coverage'], 95.0) * 1.4)
         ax.set_ylim(0, np.percentile(kinArr['score'], 99.9) * 1.3)
 
-    fig.savefig(outputFileName, dpi=72)
+    fig.savefig(outputFileName, dpi=DEFAULT_DPI)
     plt.close(fig)
 
 
@@ -308,7 +309,7 @@ def plotKineticsHist(kinArr, outputFileName):
     if d.size > 0:
         ax.legend(loc='upper right')
 
-    fig.savefig(outputFileName, dpi=72)
+    fig.savefig(outputFileName, dpi=DEFAULT_DPI)
     plt.close(fig)
 
 
@@ -499,7 +500,7 @@ def plotMotifHist(csvFile, kinArr, max_motifs=10):
     return fig, ax
 
 
-def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=72, max_motifs=10):
+def addQmodMotifHist(csvFile, kinData, outputFolder, dpi=DEFAULT_DPI, max_motifs=10):
 
     # Apart from passing in motif_summary.csv file name, nearly identical to
     # addQmodHist

@@ -22,7 +22,7 @@ from pbcommand.cli import pbparser_runner
 from pbcore.io import SubreadSet
 
 from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail, get_green)
+                                   save_figure_with_thumbnail, get_green, DEFAULT_DPI)
 from pbreports.util import (compute_n50, continuous_dist_shaper,
                             get_subreads_report_parser,
                             arg_runner_subreads_report,
@@ -160,7 +160,7 @@ def to_insert_stats_attributes(readLenDists, readQualDists):
 
 
 def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
-                         output_dir, dpi=72, lenDistShaper=None):
+                         output_dir, dpi=DEFAULT_DPI, lenDistShaper=None):
     length_plots = []
     # ReadLen distribution to barplot:
     if lenDistShaper is None:
@@ -229,7 +229,7 @@ to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots
                                           get_plotgroup_title(spec, Constants.PG_IL))
 
 
-def to_report(stats_xml, output_dir, dpi=72):
+def to_report(stats_xml, output_dir, dpi=DEFAULT_DPI):
     """Main point of entry
 
     :type stats_xml: str
@@ -248,7 +248,7 @@ def to_report(stats_xml, output_dir, dpi=72):
     return to_report_impl(dset, output_dir, dpi, from_sts_xml)
 
 
-def to_report_impl(dset, output_dir, dpi=72, from_sts_xml=False):
+def to_report_impl(dset, output_dir, dpi=DEFAULT_DPI, from_sts_xml=False):
     dataset_uuids = [dset.uuid]
     if from_sts_xml:
         dataset_uuids = []
