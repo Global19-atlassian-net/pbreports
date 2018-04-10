@@ -11,17 +11,14 @@ import sys
 
 import numpy as np
 
-from pbcommand.models.report import Report, PlotGroup
+from pbcommand.models.report import Report, PlotGroup, Attribute
 from pbcommand.models import FileTypes, get_pbparser
-from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.cli import pbparser_runner
 from pbcommand.utils import setup_log
 from pbcore.io import TranscriptSet
 
-from pbreports.plot.helper import (create_plot_impl, get_blue,
-                                   make_histogram_with_cdf)
 from pbreports.io.specs import *
-from pbreports.util import attributes_to_table, report_to_attributes
+from pbreports.report.isoseq_cluster import (create_readlength_plot, create_avgqv_plot)
 
 log = logging.getLogger(__name__)
 
