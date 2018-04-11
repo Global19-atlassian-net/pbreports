@@ -43,3 +43,19 @@ class TestIsoSeq3Report(unittest.TestCase):
             "num_polished_hq_isoforms": 11701,
             "num_polished_lq_isoforms": 44
         })
+
+
+class TestIsoSeq3ToolContract(PbTestApp):
+    DRIVER_BASE = "python -m pbreports.report.isoseq3"
+    INPUT_FILES = [TestIsoSeq3Report.TRANSCRIPTS]
+    TASK_OPTIONS = {
+        "pbreports.task_options.hq_rq_cutoff": 0.98
+    }
+
+    def run_after(self, rtc, output_dir):
+        r = load_report_from_json(rtc.task.output_files[0])
+        attr = {a.id:a.value for a in r.attributes}
+        self.assertEqual(attr, {
+            "num_polished_hq_isoforms": 11701,
+            "num_polished_lq_isoforms": 44
+        })

@@ -30,7 +30,7 @@ class Constants(object):
     DRIVER_EXE = "python -m pbreports.report.isoseq3 --resolved-tool-contract"
     R_ID = "isoseq3"
 
-    HQ_RQ_CUTOFF_ID = "hq_rq_cutoff"
+    HQ_RQ_CUTOFF_ID = "pbreports.task_options.hq_rq_cutoff"
     HQ_RQ_CUTOFF_DEFAULT = 0.99
 
     # Attributes
@@ -90,13 +90,12 @@ def make_report(transcripts_file, hq_rq_cutoff, output_dir):
         return spec.apply_view(report)
 
 
-def _run(fasta_file, hq_rq_cutoff, json_report, output_dir):
+def _run(transcripts_file, hq_rq_cutoff, json_report, output_dir):
     if output_dir in ["", None]:
         output_dir = os.getcwd()
     report = make_report(
-        transcripts_file=fasta_file,
+        transcripts_file=transcripts_file,
         hq_rq_cutoff=hq_rq_cutoff,
-        json_report=json_report,
         output_dir=output_dir)
     log.info(pformat(report.to_dict()))
     report.write_json(json_report)
