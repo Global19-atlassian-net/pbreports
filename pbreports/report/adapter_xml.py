@@ -123,6 +123,7 @@ def to_report_impl(dset, output_dir, dpi=DEFAULT_DPI):
     report = Report(Constants.R_ID,
                     attributes=attributes,
                     tables=tables,
+                    dataset_uuids=[dset.uuid]
                     )  # plotgroups=plot_groups)
 
     return spec.apply_view(report)
