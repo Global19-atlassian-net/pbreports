@@ -33,7 +33,7 @@ from pbreports.util import accuracy_as_phred_qv
 from pbreports.io.specs import *
 
 log = logging.getLogger(__name__)
-__version__ = '0.5.0'
+__version__ = '0.6.0'
 
 spec = load_spec("ccs")
 
@@ -409,21 +409,29 @@ def to_report(ccs_set, output_dir):
     num_passes = np.concatenate(ps)
 
     readlength_plot = create_readlength_plot(readlengths, output_dir)
-    accuracy_plot = create_accuracy_plot(accuracies, output_dir)
     npasses_plot = create_npasses_plot(num_passes, output_dir)
     scatter_plot = create_scatter_plot((num_passes, accuracies), output_dir)
 
+    plot_groups = []
     readlength_group = PlotGroup(Constants.PG_READLENGTH,
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
-    accuracy_group = PlotGroup(Constants.PG_ACCURACY, plots=[accuracy_plot],
-                               thumbnail=accuracy_plot.thumbnail)
+    plot_groups.append(readlength_group)
+    if not (accuracies == 0.0).all():
+        log.info("Non-zero read qualities, will generate accuracy plot")
+        accuracy_plot = create_accuracy_plot(accuracies, output_dir)
+        accuracy_group = PlotGroup(Constants.PG_ACCURACY, plots=[accuracy_plot],
+                                   thumbnail=accuracy_plot.thumbnail)
+        plot_groups.append(accuracy_group)
+    else:
+        log.info("All read qualities are 0 - skipping accuracy plot")
 
     npasses_group = PlotGroup(Constants.PG_NPASSES, plots=[npasses_plot],
                               thumbnail=npasses_plot.thumbnail)
 
     scatter_group = PlotGroup(Constants.PG_SCATTER, plots=[scatter_plot],
                               thumbnail=scatter_plot.thumbnail)
+    plot_groups.extend([npasses_group, scatter_group])
 
     movie_table = _movie_results_to_table(movie_results)
     log.debug(str(movie_table))
@@ -435,8 +443,7 @@ def to_report(ccs_set, output_dir):
 
     report = Report(Constants.R_ID,
                     tables=tables, attributes=attributes,
-                    plotgroups=[readlength_group, accuracy_group,
-                                npasses_group, scatter_group],
+                    plotgroups=plot_groups,
                     dataset_uuids=(ccs_set.uuid,))
 
     return spec.apply_view(report)
