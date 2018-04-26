@@ -21,8 +21,8 @@ from pbcommand.models.report import Report, Plot, Attribute, PlotGroup
 from pbcommand.cli import pbparser_runner
 from pbcore.io import SubreadSet
 
-from pbreports.plot.helper import (get_fig_axes_lpr,
-                                   save_figure_with_thumbnail, get_green, DEFAULT_DPI)
+from pbreports.plot.helper import DEFAULT_DPI
+from pbreports.plot.tools import plot_stats_xml_distribution, plot_subread_lengths
 from pbreports.util import (compute_n50, continuous_dist_shaper,
                             get_subreads_report_parser,
                             arg_runner_subreads_report,
@@ -43,6 +43,8 @@ class Constants(object):
     A_NREADS = "nreads"
     A_READ_N50 = "read_n50"
     A_READ_LENGTH = "read_length"
+    A_SUBREAD_LENGTH = "subread_length"
+    A_SUBREAD_N50 = "subread_n50"
 #    A_READ_QUALITY = "read_quality"
     A_INSERT_LENGTH = "insert_length"
     A_INSERT_N50 = "insert_n50"
@@ -54,6 +56,8 @@ class Constants(object):
     P_RL = "read_length_plot"
     PG_IL = "insert_length_plot_group"
     P_IL = "insert_length_plot"
+    PG_SRL = "subread_length_plot_group"
+    P_SRL = "subread_length_plot"
 
 
 class ReadStatsPlots(object):
@@ -168,18 +172,16 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
     for i, orig_rlendist in enumerate(readLenDists):
         rlendist = lenDistShaper(orig_rlendist)
         assert sum(orig_rlendist.bins) == sum(rlendist.bins)
-        len_fig, len_axes = get_fig_axes_lpr()
-        len_axes.bar(rlendist.labels, rlendist.bins,
-                     color=get_green(0), edgecolor=get_green(0),
-                     width=(rlendist.binWidth * 0.75))
-        len_axes.set_xlabel(get_plot_xlabel(spec, PlotConstants.PG_LENGTH,
-                                            PlotConstants.P_LENGTH))
-        len_axes.set_ylabel(get_plot_ylabel(spec, PlotConstants.PG_LENGTH,
-                                            PlotConstants.P_LENGTH))
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
                                                               p=PlotConstants.P_LENGTH_PREFIX))
-        png_base, thumbnail_base = save_figure_with_thumbnail(len_fig, png_fn,
-                                                              dpi=dpi)
+        png_base, thumbnail_base = plot_stats_xml_distribution(
+            rlendist,
+            get_plot_xlabel(spec, PlotConstants.PG_LENGTH,
+                            PlotConstants.P_LENGTH),
+            get_plot_ylabel(spec, PlotConstants.PG_LENGTH,
+                            PlotConstants.P_LENGTH),
+            png_fn,
+            dpi=dpi)
         length_plots.append(
             Plot("{p}_{i}".format(i=i, p=PlotConstants.P_LENGTH),
                  os.path.relpath(png_base, output_dir),
@@ -202,18 +204,14 @@ def _to_read_stats_plots(PlotConstants, title, readLenDists, readQualDists,
     shaper = continuous_dist_shaper(readQualDists, trim_excess=True)
     for i, orig_rqualdist in enumerate(readQualDists):
         rqualdist = shaper(orig_rqualdist)
-        qual_fig, qual_axes = get_fig_axes_lpr()
-        qual_axes.bar(rqualdist.labels, rqualdist.bins,
-                      color=get_green(0), edgecolor=get_green(0),
-                      width=(rqualdist.binWidth * 0.75))
-        qual_axes.set_xlabel(get_plot_xlabel(spec, PlotConstants.PG_QUAL,
-                                             PlotConstants.P_QUAL))
-        qual_axes.set_ylabel(get_plot_ylabel(spec, PlotConstants.PG_QUAL,
-                                             PlotConstants.P_QUAL))
         png_fn = os.path.join(output_dir, "{p}{i}.png".format(i=i,
                                                               p=PlotConstants.P_QUAL_PREFIX))
-        png_base, thumbnail_base = save_figure_with_thumbnail(qual_fig, png_fn,
-                                                              dpi=dpi)
+        png_base, thumbnail_base = plot_stats_xml_distribution(
+            rqualdist,
+            get_plot_xlabel(spec, PlotConstants.PG_QUAL, PlotConstants.P_QUAL),
+            get_plot_ylabel(spec, PlotConstants.PG_QUAL, PlotConstants.P_QUAL),
+            png_fn,
+            dpi=dpi)
         qual_plots.append(
             Plot("{p}_{i}".format(i=i, p=PlotConstants.P_QUAL),
                  os.path.relpath(png_base, output_dir),
@@ -227,6 +225,16 @@ to_read_stats_plots = functools.partial(_to_read_stats_plots, ReadStatsPlots,
                                         get_plotgroup_title(spec, Constants.PG_RL))
 to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots,
                                           get_plotgroup_title(spec, Constants.PG_IL))
+
+
+def to_subread_lengths_plot(dset, output_dir):
+    png_file_name = op.join(output_dir, "subread_lengths")
+    png, thumb = plot_subread_lengths(dset, png_file_name)
+    return PlotGroup(Constants.PG_SRL,
+        plots=[Plot(Constants.P_SRL,
+                    op.basename(png),
+                    thumbnail=op.basename(thumb))])
+
 
 
 def to_report(stats_xml, output_dir, dpi=DEFAULT_DPI):
@@ -265,6 +273,15 @@ def to_report_impl(dset, output_dir, dpi=DEFAULT_DPI, from_sts_xml=False):
     attr = to_read_stats_attributes(
         readLenDists=dset.metadata.summaryStats.readLenDists,
         readQualDists=dset.metadata.summaryStats.readQualDists)
+
+    if not from_sts_xml:
+        log.info("Computing mean subread length and N50 from .pbi indices")
+        subread_lengths = dset.index.qEnd - dset.index.qStart
+        subread_length = int(np.mean(subread_lengths))
+        subread_n50 = compute_n50(subread_lengths)
+        attr.append(Attribute(Constants.A_SUBREAD_LENGTH, value=subread_length))
+        attr.append(Attribute(Constants.A_SUBREAD_N50, value=subread_n50))
+
     attr.extend(to_insert_stats_attributes(
         readLenDists=dset.metadata.summaryStats.insertReadLenDists,
         readQualDists=dset.metadata.summaryStats.insertReadQualDists))
@@ -274,6 +291,8 @@ def to_report_impl(dset, output_dir, dpi=DEFAULT_DPI, from_sts_xml=False):
         readQualDists=dset.metadata.summaryStats.readQualDists,
         output_dir=output_dir,
         lenDistShaper=len_dist_shaper)
+    if not from_sts_xml:
+        plot_groups.append(to_subread_lengths_plot(dset, output_dir))
     plot_groups.extend(to_insert_stats_plots(
         readLenDists=dset.metadata.summaryStats.insertReadLenDists,
         readQualDists=dset.metadata.summaryStats.insertReadQualDists,

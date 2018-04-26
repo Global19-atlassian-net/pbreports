@@ -35,6 +35,20 @@
         {
             "type": "int",
             "format": "{:,d}",
+            "id": "subread_length",
+            "name": "Subread Length (mean)",
+            "description": "The mean subread length"
+        },
+        {
+            "type": "int",
+            "format": "{:,d}",
+            "id": "subread_n50",
+            "name": "Subread N50",
+            "description": "The subread length at which 50% of the subread bases are in subreads longer than, or equal to, this value"
+        },
+        {
+            "type": "int",
+            "format": "{:,d}",
             "id": "insert_length",
             "name": "Insert Length (mean)",
             "description": "The mean insert length"
@@ -80,6 +94,22 @@
             "legend": null,
             "id": "read_quality_plot_group",
             "title": "Read Quality"
+        },
+        {
+            "plots": [
+                {
+                    "xlabel": "Subread Length",
+                    "description": null,
+                    "caption": "Subread Length",
+                    "ylabel": "Number of Subreads",
+                    "title": "Subread Length",
+                    "id": "subread_length_plot"
+                }
+            ],
+            "description": null,
+            "legend": null,
+            "id": "subread_length_plot_group",
+            "title": "Subread Length"
         },
         {
             "plots": [

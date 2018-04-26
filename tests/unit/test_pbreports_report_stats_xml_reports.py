@@ -140,12 +140,18 @@ class TestRawDataRpt(XMLStatsRptsBase):
                 Constants.A_READ_N50: 7750,
                 Constants.A_READ_LENGTH: 4237,
                 Constants.A_INSERT_LENGTH: 4450,
-                Constants.A_INSERT_N50: 7750
+                Constants.A_INSERT_N50: 7750,
+                Constants.A_SUBREAD_LENGTH: 950,
+                Constants.A_SUBREAD_N50: 855
             })
 
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             'readLenDist0.png')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.get_output_dir(),
+            "subread_lengths.png")))
+
 
     # FIXME would be good to remove that input from pbcore
     def test_make_filter_stats_report_dataset_multiple_chips(self):
