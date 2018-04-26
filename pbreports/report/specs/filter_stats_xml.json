@@ -39,6 +39,7 @@
             "name": "Subread Length (mean)",
             "description": "The mean subread length"
         },
+        {
             "type": "int",
             "format": "{:,d}",
             "id": "subread_n50",
