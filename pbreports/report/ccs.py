@@ -417,7 +417,8 @@ def to_report(ccs_set, output_dir):
                                  plots=[readlength_plot],
                                  thumbnail=readlength_plot.thumbnail)
     plot_groups.append(readlength_group)
-    if not (accuracies == 0.0).all():
+    is_all_zero_quality = (accuracies == 0.0).all()
+    if not is_all_zero_quality:
         log.info("Non-zero read qualities, will generate accuracy plot")
         accuracy_plot = create_accuracy_plot(accuracies, output_dir)
         accuracy_group = PlotGroup(Constants.PG_ACCURACY, plots=[accuracy_plot],
@@ -428,10 +429,11 @@ def to_report(ccs_set, output_dir):
 
     npasses_group = PlotGroup(Constants.PG_NPASSES, plots=[npasses_plot],
                               thumbnail=npasses_plot.thumbnail)
-
-    scatter_group = PlotGroup(Constants.PG_SCATTER, plots=[scatter_plot],
-                              thumbnail=scatter_plot.thumbnail)
-    plot_groups.extend([npasses_group, scatter_group])
+    plot_groups.append(npasses_group)
+    if not is_all_zero_quality:
+        scatter_group = PlotGroup(Constants.PG_SCATTER, plots=[scatter_plot],
+                                  thumbnail=scatter_plot.thumbnail)
+        plot_groups.append(scatter_group)
 
     movie_table = _movie_results_to_table(movie_results)
     log.debug(str(movie_table))
