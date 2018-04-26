@@ -228,12 +228,13 @@ to_insert_stats_plots = functools.partial(_to_read_stats_plots, InsertStatsPlots
 
 
 def to_subread_lengths_plot(dset, output_dir):
-    png_file_name = op.join(output_dir, "subread_lengths")
+    png_file_name = op.join(output_dir, "subread_lengths.png")
     png, thumb = plot_subread_lengths(dset, png_file_name)
     return PlotGroup(Constants.PG_SRL,
         plots=[Plot(Constants.P_SRL,
-                    op.basename(png),
-                    thumbnail=op.basename(thumb))])
+                    op.basename(png_file_name),
+                    thumbnail=op.basename(thumb))],
+        thumbnail=op.basename(thumb))
 
 
 
