@@ -202,7 +202,10 @@ def to_report_impl(dset, output_dir):
         output_dir=output_dir))
 
     report = Report(Constants.R_ID,
-                    tables=tables, attributes=None, plotgroups=plot_groups)
+                    tables=tables,
+                    attributes=None,
+                    plotgroups=plot_groups,
+                    dataset_uuids=[dset.uuid])
     return spec.apply_view(report)
 
 

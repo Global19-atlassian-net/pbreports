@@ -187,7 +187,8 @@ def to_report_impl(dset, output_dir):
     plotgroups = to_plotgroups(readlen_dist, readqual_dist, output_dir)
 
     report = Report(Constants.R_ID, attributes=attributes,
-                    plotgroups=plotgroups)
+                    plotgroups=plotgroups,
+                    dataset_uuids=[dset.uuid])
 
     return spec.apply_view(report)
 
