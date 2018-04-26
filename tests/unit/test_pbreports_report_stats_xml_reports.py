@@ -1,5 +1,6 @@
 
 import os
+import os.path as op
 import logging
 import json
 import unittest
@@ -151,6 +152,12 @@ class TestRawDataRpt(XMLStatsRptsBase):
         self.assertTrue(os.path.exists(os.path.join(
             self.get_output_dir(),
             "subread_lengths.png")))
+        for plot_group in rpt.plotGroups:
+            png_file = op.join(self.get_output_dir(), plot_group.plots[0].image)
+            self.assertTrue(op.isfile(png_file))
+            if plot_group.thumbnail is not None:
+                thumbnail = op.join(self.get_output_dir(), plot_group.thumbnail)
+                self.assertTrue(op.isfile(thumbnail))
 
 
     # FIXME would be good to remove that input from pbcore
