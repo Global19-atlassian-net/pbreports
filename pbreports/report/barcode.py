@@ -616,7 +616,7 @@ def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None,
     else:
         use_spec = spec
         if isoseq_mode:
-            use_spec = spec_isoseq3
+            use_spec = load_spec("barcode_isoseq3")
         return make_report_ccs(biosamples=biosamples,
                                read_info=read_info,
                                dataset_uuids=dataset_uuids,
