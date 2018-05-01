@@ -486,7 +486,8 @@ def _make_report_impl(attribute_ids,
                       biosamples,
                       read_info,
                       dataset_uuids=(),
-                      base_dir=None):
+                      base_dir=None,
+                      use_spec=spec):
     """
     Create a Report object starting from an iterable of ReadInfo objects.
     """
@@ -574,12 +575,12 @@ def _make_report_impl(attribute_ids,
 
     plotgroups = make_plots(bc_groups.values(), base_dir)
 
-    report = Report(spec.id,
+    report = Report(use_spec.id,
                     attributes=attributes,
                     tables=[table],
                     dataset_uuids=dataset_uuids,
                     plotgroups=plotgroups)
-    return spec.apply_view(report)
+    return use_spec.apply_view(report)
 
 
 make_report = functools.partial(
@@ -610,12 +611,17 @@ def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None,
         return make_report(biosamples=biosamples,
                            read_info=read_info,
                            dataset_uuids=dataset_uuids,
-                           base_dir=base_dir)
+                           base_dir=base_dir,
+                           use_spec=spec)
     else:
+        use_spec = spec
+        if isoseq_mode:
+            use_spec = spec_isoseq3
         return make_report_ccs(biosamples=biosamples,
                                read_info=read_info,
                                dataset_uuids=dataset_uuids,
-                               base_dir=base_dir)
+                               base_dir=base_dir,
+                               use_spec=use_spec)
 
 
 def args_runner(args):
