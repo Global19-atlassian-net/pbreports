@@ -483,6 +483,7 @@ def get_unbarcoded_reads_info(dataset_in, dataset_bc):
 
 def _make_report_impl(attribute_ids,
                       column_ids,
+                      use_spec,
                       biosamples,
                       read_info,
                       dataset_uuids=(),
@@ -574,12 +575,12 @@ def _make_report_impl(attribute_ids,
 
     plotgroups = make_plots(bc_groups.values(), base_dir)
 
-    report = Report(spec.id,
+    report = Report(use_spec.id,
                     attributes=attributes,
                     tables=[table],
                     dataset_uuids=dataset_uuids,
                     plotgroups=plotgroups)
-    return spec.apply_view(report)
+    return use_spec.apply_view(report)
 
 
 make_report = functools.partial(
@@ -607,12 +608,17 @@ def run_to_report(ds_bc_file, barcodes_file, subreads_in_file, base_dir=None,
     read_info = list(iter_reads_by_barcode(barcoded_reads, barcodes, isoseq_mode)) + \
         list(get_unbarcoded_reads_info(subreads_in, barcoded_reads))
     if isinstance(barcoded_reads, SubreadSet):
-        return make_report(biosamples=biosamples,
+        return make_report(use_spec=spec,
+                           biosamples=biosamples,
                            read_info=read_info,
                            dataset_uuids=dataset_uuids,
                            base_dir=base_dir)
     else:
-        return make_report_ccs(biosamples=biosamples,
+        use_spec = spec
+        if isoseq_mode:
+            use_spec = spec_isoseq3
+        return make_report_ccs(use_spec=use_spec,
+                               biosamples=biosamples,
                                read_info=read_info,
                                dataset_uuids=dataset_uuids,
                                base_dir=base_dir)
